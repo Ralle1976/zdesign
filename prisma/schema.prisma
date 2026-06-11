@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Z.Design - AI-Powered Visual Design Platform
+// Prisma Schema
 
 generator client {
   provider = "prisma-client-js"
@@ -14,19 +11,134 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  avatar        String?
+  locale        String   @default("en")
+  projects      ProjectMember[]
+  comments      Comment[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
-model Post {
+model Project {
+  id             String       @id @default(cuid())
+  name           String
+  description    String?
+  type           ProjectType  @default(PROTOTYPE)
+  designJSON     String       @default("{}")
+  thumbnail      String?
+  status         ProjectStatus @default(DRAFT)
+  designSystemId String?
+  designSystem   DesignSystem? @relation(fields: [designSystemId], references: [id])
+  versions       Version[]
+  comments       Comment[]
+  members        ProjectMember[]
+  isPublic       Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Version {
+  id              String   @id @default(cuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  parentVersionId String?
+  label           String
+  designJSON      String
+  thumbnail       String?
+  branch          String   @default("main")
+  changeSummary   String?
+  createdAt       DateTime @default(now())
+}
+
+model DesignSystem {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  tokens      String    @default("{}")
+  components  String    @default("{}")
+  styles      String    @default("{}")
+  projects    Project[]
+  isDefault   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Comment {
+  id          String    @id @default(cuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  elementId   String?
+  x           Float     @default(0)
+  y           Float     @default(0)
+  content     String
+  isResolved  Boolean   @default(false)
+  parentId    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ProjectMember {
   id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  role      Role     @default(VIEWER)
+  joinedAt  DateTime @default(now())
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  category    String
+  designJSON  String
+  thumbnail   String?
+  authorId    String?
+  downloads   Int      @default(0)
+  rating      Float    @default(0)
+  tags        String   @default("[]")
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  projectId String
+  role      String   // user, assistant, system
+  content   String
+  metadata  String   @default("{}")
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+}
+
+enum ProjectType {
+  PROTOTYPE
+  SLIDE_DECK
+  LANDING_PAGE
+  DASHBOARD
+  WEB_APP
+  MOBILE_APP
+  MARKETING
+  CUSTOM
+}
+
+enum ProjectStatus {
+  DRAFT
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+  ARCHIVED
+}
+
+enum Role {
+  VIEWER
+  COMMENTER
+  EDITOR
+  ADMIN
 }
