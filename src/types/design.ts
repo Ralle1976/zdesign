@@ -138,6 +138,9 @@ export interface DesignNodeMeta {
   componentRef?: string;
   a11yRole?: string;
   a11yLabel?: string;
+  alt?: string;
+  role?: string;
+  ariaLabel?: string;
 }
 
 // ============ Design System ============
@@ -232,6 +235,9 @@ export interface ChatMessageMeta {
   styleUpdate?: Record<string, DesignStyle>;
   suggestions?: string[];
   tokensUsed?: number;
+  usedFallback?: boolean;
+  parseFailedRetryText?: string;
+  templateUsed?: boolean;
 }
 
 // ============ Project ============
@@ -300,4 +306,68 @@ export interface VersionData {
   branch: string;
   changeSummary?: string;
   createdAt: Date;
+}
+
+// ============ AI Provider ============
+
+export type ProviderCapability = 'text' | 'image' | 'vision' | 'code';
+
+export interface AIProviderConfig {
+  id: string;
+  name: string;
+  description: string;
+  capabilities: ProviderCapability[];
+  models: AIModelConfig[];
+  isDefault?: boolean;
+  isAvailable?: boolean;
+}
+
+export interface AIModelConfig {
+  id: string;
+  name: string;
+  description: string;
+  capabilities: ProviderCapability[];
+  maxTokens?: number;
+  isDefault?: boolean;
+}
+
+// ============ Generation Progress ============
+
+export type GenerationStage =
+  | 'idle'
+  | 'analyzing'
+  | 'generating'
+  | 'rendering'
+  | 'evaluating'
+  | 'complete'
+  | 'error';
+
+export interface GenerationProgress {
+  stage: GenerationStage;
+  stageLabel: string;
+  percentage: number;
+  message: string;
+  startedAt: number;
+  estimatedTimeLeft?: number;
+}
+
+// ============ Design Quality ============
+
+export interface DesignQualityReport {
+  overallScore: number; // 0-100
+  completeness: number; // 0-100
+  cssValid: number; // 0-100
+  semantics: number; // 0-100
+  responsiveness: number; // 0-100
+  accessibility: number; // 0-100
+  issues: QualityIssue[];
+  suggestions: string[];
+}
+
+export interface QualityIssue {
+  severity: 'critical' | 'warning' | 'info';
+  category: 'css' | 'semantics' | 'responsiveness' | 'accessibility' | 'completeness';
+  message: string;
+  nodeId?: string;
+  autoFixable: boolean;
 }

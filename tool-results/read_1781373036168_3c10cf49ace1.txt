@@ -1,0 +1,342 @@
+    30→
+    31→// ============ Fallback Design Generator ============
+    32→// Used when Z.ai LLM is unavailable so the app still works
+    33→
+    34→function generateFallbackDesign(userMessage: string, creativeMode?: boolean): string {
+    35→  const msg = userMessage.toLowerCase();
+    36→
+    37→  if (msg.includes('landing') || msg.includes('hero') || msg.includes('page') || msg.includes('website') || msg.includes('saas')) {
+    38→    return JSON.stringify({
+    39→      message: 'I created a landing page with a navigation bar, hero section, features grid, testimonials, and call-to-action. You can customize it by telling me what to change!',
+    40→      design: {
+    41→        id: 'root', type: 'root', tag: 'div',
+    42→        style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#ffffff' },
+    43→        meta: { name: 'Landing Page' },
+    44→        children: [
+    45→          { id: 'nav-1', type: 'nav', tag: 'nav', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 32px', backgroundColor: '#ffffff', borderBottom: '1px solid #e2e8f0', position: 'sticky', top: '0', zIndex: '50' }, meta: { name: 'Navigation' }, children: [
+    46→            { id: 'logo-1', type: 'text', tag: 'span', content: 'Z.Design', style: { fontSize: '20px', fontWeight: '700', color: '#10b981' } },
+    47→            { id: 'nav-links', type: 'flex', tag: 'div', style: { display: 'flex', gap: '24px', alignItems: 'center' }, children: [
+    48→              { id: 'nl1', type: 'link', tag: 'a', content: 'Features', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+    49→              { id: 'nl2', type: 'link', tag: 'a', content: 'Pricing', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+    50→              { id: 'nl3', type: 'link', tag: 'a', content: 'About', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+    51→              { id: 'nb1', type: 'button', tag: 'button', content: 'Get Started', style: { padding: '10px 24px', backgroundColor: '#10b981', color: '#ffffff', borderRadius: '8px', fontSize: '14px', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 2px 8px rgba(16,185,129,0.25)' } }
+    52→            ]}
+    53→          ]},
+    54→          { id: 'hero-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 32px 80px', textAlign: 'center', backgroundColor: '#f8fafc', backgroundImage: 'radial-gradient(circle at 30% 50%, rgba(16,185,129,0.08) 0%, transparent 50%)' }, meta: { name: 'Hero' }, children: [
+    55→            { id: 'hb1', type: 'badge', tag: 'span', content: 'AI-Powered Design', style: { padding: '6px 16px', backgroundColor: '#d1fae5', color: '#065f46', borderRadius: '20px', fontSize: '13px', fontWeight: '500', marginBottom: '24px', display: 'inline-block' } },
+    56→            { id: 'hh1', type: 'heading', tag: 'h1', content: creativeMode ? 'Imagine. Create. Inspire.' : 'Design Beautiful Websites With AI', style: { fontSize: '52px', fontWeight: '800', lineHeight: '1.1', color: '#0f172a', maxWidth: '720px', marginBottom: '20px', letterSpacing: '-0.02em' } },
+    57→            { id: 'hp1', type: 'text', tag: 'p', content: creativeMode ? 'Break free from templates. Our AI understands your vision and crafts unique, boundary-pushing designs that stand out.' : 'Create stunning designs, prototypes, and websites through natural conversation. Powered by Z.ai.', style: { fontSize: '18px', color: '#475569', maxWidth: '540px', lineHeight: '1.7', marginBottom: '36px' } },
+    58→            { id: 'hbtns', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }, children: [
+    59→              { id: 'hb2', type: 'button', tag: 'button', content: 'Start Designing', style: { padding: '14px 32px', backgroundColor: '#10b981', color: '#ffffff', borderRadius: '10px', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 4px 16px rgba(16,185,129,0.3)', transition: 'all 0.2s ease' } },
+    60→              { id: 'hb3', type: 'button', tag: 'button', content: 'View Templates', style: { padding: '14px 32px', backgroundColor: '#ffffff', color: '#475569', borderRadius: '10px', fontSize: '16px', fontWeight: '500', border: '1px solid #e2e8f0', cursor: 'pointer', transition: 'all 0.2s ease' } }
+    61→            ]}
+    62→          ]},
+    63→          { id: 'logos-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '48px 32px', backgroundColor: '#ffffff', borderBottom: '1px solid #f1f5f9' }, meta: { name: 'Trusted By' }, children: [
+    64→            { id: 'lt1', type: 'text', tag: 'p', content: 'Trusted by teams at', style: { fontSize: '13px', color: '#94a3b8', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '24px' } },
+    65→            { id: 'lrow', type: 'flex', tag: 'div', style: { display: 'flex', gap: '48px', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }, children: [
+    66→              { id: 'lg1', type: 'text', tag: 'span', content: 'Acme Corp', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } },
+    67→              { id: 'lg2', type: 'text', tag: 'span', content: 'TechFlow', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } },
+    68→              { id: 'lg3', type: 'text', tag: 'span', content: 'Innovate', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } },
+    69→              { id: 'lg4', type: 'text', tag: 'span', content: 'Quantum', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } },
+    70→              { id: 'lg5', type: 'text', tag: 'span', content: 'Nebula', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } }
+    71→            ]}
+    72→          ]},
+    73→          { id: 'feat-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '96px 32px', backgroundColor: '#ffffff' }, meta: { name: 'Features' }, children: [
+    74→            { id: 'flabel', type: 'badge', tag: 'span', content: 'FEATURES', style: { padding: '4px 12px', backgroundColor: '#d1fae5', color: '#065f46', borderRadius: '16px', fontSize: '12px', fontWeight: '600', letterSpacing: '0.05em', marginBottom: '16px' } },
+    75→            { id: 'fh2', type: 'heading', tag: 'h2', content: 'Everything you need to design faster', style: { fontSize: '36px', fontWeight: '700', color: '#0f172a', marginBottom: '16px', letterSpacing: '-0.01em' } },
+    76→            { id: 'fsub', type: 'text', tag: 'p', content: 'Powerful features that help you go from idea to production in minutes.', style: { fontSize: '18px', color: '#475569', maxWidth: '520px', textAlign: 'center', marginBottom: '56px', lineHeight: '1.6' } },
+    77→            { id: 'fgrid', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '28px', maxWidth: '1020px', width: '100%' }, children: [
+    78→              { id: 'fc1', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', transition: 'box-shadow 0.2s ease' }, meta: { name: 'Feature Card 1' }, children: [
+    79→                { id: 'fi1', type: 'text', tag: 'div', content: '🎨', style: { fontSize: '32px', marginBottom: '16px' } },
+    80→                { id: 'fh3a', type: 'heading', tag: 'h3', content: 'AI Design Engine', style: { fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+    81→                { id: 'fp1', type: 'text', tag: 'p', content: 'Generate complete designs from natural language descriptions. Just describe what you want.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+    82→              ]},
+    83→              { id: 'fc2', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', transition: 'box-shadow 0.2s ease' }, meta: { name: 'Feature Card 2' }, children: [
+    84→                { id: 'fi2', type: 'text', tag: 'div', content: '🎤', style: { fontSize: '32px', marginBottom: '16px' } },
+    85→                { id: 'fh3b', type: 'heading', tag: 'h3', content: 'Voice Control', style: { fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+    86→                { id: 'fp2', type: 'text', tag: 'p', content: 'Design with your voice — speak and see changes in real-time. Hands-free creativity.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+    87→              ]},
+    88→              { id: 'fc3', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', transition: 'box-shadow 0.2s ease' }, meta: { name: 'Feature Card 3' }, children: [
+    89→                { id: 'fi3', type: 'text', tag: 'div', content: '👥', style: { fontSize: '32px', marginBottom: '16px' } },
+    90→                { id: 'fh3c', type: 'heading', tag: 'h3', content: 'Real-time Collab', style: { fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+    91→                { id: 'fp3', type: 'text', tag: 'p', content: 'Work together with your team in real-time. See changes instantly across all devices.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+    92→              ]},
+    93→              { id: 'fc4', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', transition: 'box-shadow 0.2s ease' }, meta: { name: 'Feature Card 4' }, children: [
+    94→                { id: 'fi4', type: 'text', tag: 'div', content: '⚡', style: { fontSize: '32px', marginBottom: '16px' } },
+    95→                { id: 'fh3d', type: 'heading', tag: 'h3', content: 'Instant Export', style: { fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+    96→                { id: 'fp4', type: 'text', tag: 'p', content: 'Export your designs as production-ready code. React, HTML/CSS, or your framework of choice.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+    97→              ]},
+    98→              { id: 'fc5', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', transition: 'box-shadow 0.2s ease' }, meta: { name: 'Feature Card 5' }, children: [
+    99→                { id: 'fi5', type: 'text', tag: 'div', content: '🔒', style: { fontSize: '32px', marginBottom: '16px' } },
+   100→                { id: 'fh3e', type: 'heading', tag: 'h3', content: 'Enterprise Security', style: { fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+   101→                { id: 'fp5', type: 'text', tag: 'p', content: 'SOC 2 compliant with end-to-end encryption. Your designs stay private and secure.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+   102→              ]},
+   103→              { id: 'fc6', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', transition: 'box-shadow 0.2s ease' }, meta: { name: 'Feature Card 6' }, children: [
+   104→                { id: 'fi6', type: 'text', tag: 'div', content: '🧩', style: { fontSize: '32px', marginBottom: '16px' } },
+   105→                { id: 'fh3f', type: 'heading', tag: 'h3', content: 'Design Systems', style: { fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+   106→                { id: 'fp6', type: 'text', tag: 'p', content: 'Create and manage design tokens, components, and patterns in one unified system.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+   107→              ]}
+   108→            ]}
+   109→          ]},
+   110→          { id: 'testimonials-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '96px 32px', backgroundColor: '#f8fafc' }, meta: { name: 'Testimonials' }, children: [
+   111→            { id: 'th2', type: 'heading', tag: 'h2', content: 'Loved by designers everywhere', style: { fontSize: '36px', fontWeight: '700', color: '#0f172a', marginBottom: '56px', letterSpacing: '-0.01em' } },
+   112→            { id: 'tgrid', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', maxWidth: '1020px', width: '100%' }, children: [
+   113→              { id: 'tc1', type: 'card', tag: 'div', style: { padding: '28px', borderRadius: '16px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }, children: [
+   114→                { id: 'tq1', type: 'text', tag: 'p', content: '"Z.Design cut our design time by 80%. We went from weeks to hours for new landing pages."', style: { fontSize: '15px', color: '#0f172a', lineHeight: '1.6', marginBottom: '20px', fontStyle: 'italic' } },
+   115→                { id: 'ta1', type: 'flex', tag: 'div', style: { display: 'flex', alignItems: 'center', gap: '12px' }, children: [
+   116→                  { id: 'tav1', type: 'avatar', tag: 'div', content: 'SK', style: { width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#d1fae5', color: '#065f46', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600' } },
+   117→                  { id: 'tn1', type: 'text', tag: 'div', content: 'Sarah Kim', style: { fontSize: '14px', fontWeight: '600', color: '#0f172a' } },
+   118→                  { id: 'tr1', type: 'text', tag: 'span', content: 'Head of Design, Acme Corp', style: { fontSize: '13px', color: '#94a3b8' } }
+   119→                ]}
+   120→              ]},
+   121→              { id: 'tc2', type: 'card', tag: 'div', style: { padding: '28px', borderRadius: '16px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }, children: [
+   122→                { id: 'tq2', type: 'text', tag: 'p', content: '"The AI understands exactly what I want. It feels like having a senior designer on call 24/7."', style: { fontSize: '15px', color: '#0f172a', lineHeight: '1.6', marginBottom: '20px', fontStyle: 'italic' } },
+   123→                { id: 'ta2', type: 'flex', tag: 'div', style: { display: 'flex', alignItems: 'center', gap: '12px' }, children: [
+   124→                  { id: 'tav2', type: 'avatar', tag: 'div', content: 'MR', style: { width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#dbeafe', color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600' } },
+   125→                  { id: 'tn2', type: 'text', tag: 'div', content: 'Marcus Rivera', style: { fontSize: '14px', fontWeight: '600', color: '#0f172a' } },
+   126→                  { id: 'tr2', type: 'text', tag: 'span', content: 'CTO, TechFlow', style: { fontSize: '13px', color: '#94a3b8' } }
+   127→                ]}
+   128→              ]},
+   129→              { id: 'tc3', type: 'card', tag: 'div', style: { padding: '28px', borderRadius: '16px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }, children: [
+   130→                { id: 'tq3', type: 'text', tag: 'p', content: '"We replaced three design tools with Z.Design. Everything we need is now in one place."', style: { fontSize: '15px', color: '#0f172a', lineHeight: '1.6', marginBottom: '20px', fontStyle: 'italic' } },
+   131→                { id: 'ta3', type: 'flex', tag: 'div', style: { display: 'flex', alignItems: 'center', gap: '12px' }, children: [
+   132→                  { id: 'tav3', type: 'avatar', tag: 'div', content: 'JL', style: { width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#fce7f3', color: '#9d174d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600' } },
+   133→                  { id: 'tn3', type: 'text', tag: 'div', content: 'Julia Lee', style: { fontSize: '14px', fontWeight: '600', color: '#0f172a' } },
+   134→                  { id: 'tr3', type: 'text', tag: 'span', content: 'Product Lead, Innovate', style: { fontSize: '13px', color: '#94a3b8' } }
+   135→                ]}
+   136→              ]}
+   137→            ]}
+   138→          ]},
+   139→          { id: 'cta-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '96px 32px', background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)' }, meta: { name: 'Call to Action' }, children: [
+   140→            { id: 'ch2', type: 'heading', tag: 'h2', content: 'Ready to Start Designing?', style: { fontSize: '40px', fontWeight: '700', color: '#ffffff', marginBottom: '16px', letterSpacing: '-0.01em' } },
+   141→            { id: 'cp1', type: 'text', tag: 'p', content: 'Join thousands of designers who use Z.Design to create faster. Free to start, no credit card required.', style: { fontSize: '18px', color: '#d1fae5', maxWidth: '500px', textAlign: 'center', marginBottom: '32px', lineHeight: '1.6' } },
+   142→            { id: 'cbtns', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }, children: [
+   143→              { id: 'cb1', type: 'button', tag: 'button', content: 'Get Started Free', style: { padding: '14px 32px', backgroundColor: '#ffffff', color: '#059669', borderRadius: '10px', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 4px 16px rgba(0,0,0,0.15)' } },
+   144→              { id: 'cb2', type: 'button', tag: 'button', content: 'Schedule Demo', style: { padding: '14px 32px', backgroundColor: 'transparent', color: '#ffffff', borderRadius: '10px', fontSize: '16px', fontWeight: '500', border: '2px solid rgba(255,255,255,0.4)', cursor: 'pointer' } }
+   145→            ]}
+   146→          ]},
+   147→          { id: 'footer-1', type: 'footer', tag: 'footer', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '64px 48px 32px', backgroundColor: '#0f172a' }, meta: { name: 'Footer' }, children: [
+   148→            { id: 'fcol1', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', maxWidth: '280px' }, children: [
+   149→              { id: 'flogo', type: 'text', tag: 'span', content: 'Z.Design', style: { fontSize: '20px', fontWeight: '700', color: '#34d399', marginBottom: '16px' } },
+   150→              { id: 'fdesc', type: 'text', tag: 'p', content: 'AI-powered visual design platform. Create stunning websites through natural conversation.', style: { fontSize: '14px', color: '#94a3b8', lineHeight: '1.6', marginBottom: '20px' } }
+   151→            ]},
+   152→            { id: 'fcol2', type: 'container', tag: 'div', style: { display: 'flex', gap: '64px' }, children: [
+   153→              { id: 'flinks1', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', gap: '12px' }, children: [
+   154→                { id: 'flt1', type: 'text', tag: 'span', content: 'Product', style: { fontSize: '14px', fontWeight: '600', color: '#ffffff', marginBottom: '4px' } },
+   155→                { id: 'fl1', type: 'link', tag: 'a', content: 'Features', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   156→                { id: 'fl2', type: 'link', tag: 'a', content: 'Pricing', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   157→                { id: 'fl3', type: 'link', tag: 'a', content: 'Changelog', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } }
+   158→              ]},
+   159→              { id: 'flinks2', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', gap: '12px' }, children: [
+   160→                { id: 'flt2', type: 'text', tag: 'span', content: 'Company', style: { fontSize: '14px', fontWeight: '600', color: '#ffffff', marginBottom: '4px' } },
+   161→                { id: 'fl4', type: 'link', tag: 'a', content: 'About', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   162→                { id: 'fl5', type: 'link', tag: 'a', content: 'Blog', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   163→                { id: 'fl6', type: 'link', tag: 'a', content: 'Careers', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } }
+   164→              ]},
+   165→              { id: 'flinks3', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', gap: '12px' }, children: [
+   166→                { id: 'flt3', type: 'text', tag: 'span', content: 'Legal', style: { fontSize: '14px', fontWeight: '600', color: '#ffffff', marginBottom: '4px' } },
+   167→                { id: 'fl7', type: 'link', tag: 'a', content: 'Privacy', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   168→                { id: 'fl8', type: 'link', tag: 'a', content: 'Terms', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } }
+   169→              ]}
+   170→            ]}
+   171→          ]},
+   172→          { id: 'footer-bottom', type: 'container', tag: 'div', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 48px', backgroundColor: '#0f172a', borderTop: '1px solid #1e293b' }, children: [
+   173→            { id: 'fcopy', type: 'text', tag: 'p', content: '© 2026 Z.Design. All rights reserved.', style: { color: '#64748b', fontSize: '13px' } }
+   174→          ]}
+   175→        ]
+   176→      }
+   177→    });
+   178→  }
+   179→
+   180→  if (msg.includes('dashboard') || msg.includes('analytics') || msg.includes('admin')) {
+   181→    return JSON.stringify({
+   182→      message: 'I created a comprehensive dashboard layout with a sidebar, metric cards, activity feed, and chart area. Tell me what data you want to display!',
+   183→      design: {
+   184→        id: 'root', type: 'root', tag: 'div',
+   185→        style: { display: 'flex', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#f8fafc' },
+   186→        meta: { name: 'Dashboard' },
+   187→        children: [
+   188→          { id: 'sb1', type: 'sidebar', tag: 'aside', style: { width: '260px', minHeight: '100vh', backgroundColor: '#0f172a', padding: '24px 16px', display: 'flex', flexDirection: 'column', flexShrink: '0' }, meta: { name: 'Sidebar' }, children: [
+   189→            { id: 'sbl', type: 'text', tag: 'div', content: '📊 Dashboard', style: { fontSize: '18px', fontWeight: '700', color: '#34d399', marginBottom: '32px', padding: '0 8px' } },
+   190→            { id: 'sbi1', type: 'text', tag: 'div', content: '📈 Overview', style: { padding: '10px 12px', borderRadius: '8px', backgroundColor: '#064e3b', color: '#34d399', fontSize: '14px', marginBottom: '4px', cursor: 'pointer' } },
+   191→            { id: 'sbi2', type: 'text', tag: 'div', content: '📋 Projects', style: { padding: '10px 12px', borderRadius: '8px', color: '#94a3b8', fontSize: '14px', marginBottom: '4px', cursor: 'pointer' } },
+   192→            { id: 'sbi3', type: 'text', tag: 'div', content: '👥 Team', style: { padding: '10px 12px', borderRadius: '8px', color: '#94a3b8', fontSize: '14px', marginBottom: '4px', cursor: 'pointer' } },
+   193→            { id: 'sbi4', type: 'text', tag: 'div', content: '📊 Analytics', style: { padding: '10px 12px', borderRadius: '8px', color: '#94a3b8', fontSize: '14px', marginBottom: '4px', cursor: 'pointer' } },
+   194→            { id: 'sbi5', type: 'text', tag: 'div', content: '⚙️ Settings', style: { padding: '10px 12px', borderRadius: '8px', color: '#94a3b8', fontSize: '14px', cursor: 'pointer' } }
+   195→          ]},
+   196→          { id: 'main1', type: 'container', tag: 'main', style: { flex: '1', padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px' }, meta: { name: 'Main Content' }, children: [
+   197→            { id: 'mheader', type: 'flex', tag: 'div', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }, children: [
+   198→              { id: 'mh1', type: 'heading', tag: 'h1', content: 'Dashboard Overview', style: { fontSize: '24px', fontWeight: '700', color: '#0f172a' } },
+   199→              { id: 'mhb1', type: 'button', tag: 'button', content: '+ New Report', style: { padding: '8px 20px', backgroundColor: '#10b981', color: '#ffffff', borderRadius: '8px', fontSize: '14px', fontWeight: '500', border: 'none', cursor: 'pointer' } }
+   200→            ]},
+   201→            { id: 'mgrid', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }, children: [
+   202→              { id: 'mc1', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }, meta: { name: 'Metric: Users' }, children: [
+   203→                { id: 'ml1', type: 'text', tag: 'p', content: 'Total Users', style: { fontSize: '13px', color: '#64748b', marginBottom: '8px', fontWeight: '500' } },
+   204→                { id: 'mv1', type: 'heading', tag: 'h3', content: '12,345', style: { fontSize: '32px', fontWeight: '700', color: '#0f172a', marginBottom: '4px' } },
+   205→                { id: 'mc1c', type: 'text', tag: 'span', content: '↑ 12.5% from last month', style: { fontSize: '13px', color: '#10b981', fontWeight: '500' } }
+   206→              ]},
+   207→              { id: 'mc2', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }, meta: { name: 'Metric: Revenue' }, children: [
+   208→                { id: 'ml2', type: 'text', tag: 'p', content: 'Revenue', style: { fontSize: '13px', color: '#64748b', marginBottom: '8px', fontWeight: '500' } },
+   209→                { id: 'mv2', type: 'heading', tag: 'h3', content: '$48.2K', style: { fontSize: '32px', fontWeight: '700', color: '#0f172a', marginBottom: '4px' } },
+   210→                { id: 'mc2c', type: 'text', tag: 'span', content: '↑ 8.1% from last month', style: { fontSize: '13px', color: '#10b981', fontWeight: '500' } }
+   211→              ]},
+   212→              { id: 'mc3', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }, meta: { name: 'Metric: Active' }, children: [
+   213→                { id: 'ml3', type: 'text', tag: 'p', content: 'Active Now', style: { fontSize: '13px', color: '#64748b', marginBottom: '8px', fontWeight: '500' } },
+   214→                { id: 'mv3', type: 'heading', tag: 'h3', content: '573', style: { fontSize: '32px', fontWeight: '700', color: '#0f172a', marginBottom: '4px' } },
+   215→                { id: 'mc3c', type: 'text', tag: 'span', content: '↑ 2.4% from last hour', style: { fontSize: '13px', color: '#10b981', fontWeight: '500' } }
+   216→              ]},
+   217→              { id: 'mc4', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }, meta: { name: 'Metric: Conversion' }, children: [
+   218→                { id: 'ml4', type: 'text', tag: 'p', content: 'Conversion', style: { fontSize: '13px', color: '#64748b', marginBottom: '8px', fontWeight: '500' } },
+   219→                { id: 'mv4', type: 'heading', tag: 'h3', content: '3.2%', style: { fontSize: '32px', fontWeight: '700', color: '#0f172a', marginBottom: '4px' } },
+   220→                { id: 'mc4c', type: 'text', tag: 'span', content: '↓ 0.4% from last month', style: { fontSize: '13px', color: '#ef4444', fontWeight: '500' } }
+   221→              ]}
+   222→            ]},
+   223→            { id: 'mcontent-grid', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }, children: [
+   224→              { id: 'chart1', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }, meta: { name: 'Revenue Chart' }, children: [
+   225→                { id: 'cht1', type: 'heading', tag: 'h3', content: 'Revenue Over Time', style: { fontSize: '16px', fontWeight: '600', color: '#0f172a', marginBottom: '16px' } },
+   226→                { id: 'chp1', type: 'text', tag: 'p', content: '📊 Interactive chart area — Ask me to add specific visualizations!', style: { color: '#94a3b8', fontSize: '15px', padding: '40px 0', textAlign: 'center' } }
+   227→              ]},
+   228→              { id: 'activity1', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }, meta: { name: 'Recent Activity' }, children: [
+   229→                { id: 'act1', type: 'heading', tag: 'h3', content: 'Recent Activity', style: { fontSize: '16px', fontWeight: '600', color: '#0f172a', marginBottom: '16px' } },
+   230→                { id: 'ai1', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '16px' }, children: [
+   231→                  { id: 'ai1d', type: 'avatar', tag: 'div', content: 'SK', style: { width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#d1fae5', color: '#065f46', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '600', flexShrink: '0' } },
+   232→                  { id: 'ai1t', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column' }, children: [
+   233→                    { id: 'ai1m', type: 'text', tag: 'p', content: 'Sarah updated the landing page design', style: { fontSize: '14px', color: '#0f172a', lineHeight: '1.4' } },
+   234→                    { id: 'ai1tm', type: 'text', tag: 'span', content: '2 min ago', style: { fontSize: '12px', color: '#94a3b8' } }
+   235→                  ]}
+   236→                ]},
+   237→                { id: 'ai2', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '16px' }, children: [
+   238→                  { id: 'ai2d', type: 'avatar', tag: 'div', content: 'MR', style: { width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#dbeafe', color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '600', flexShrink: '0' } },
+   239→                  { id: 'ai2t', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column' }, children: [
+   240→                    { id: 'ai2m', type: 'text', tag: 'p', content: 'Marcus published the Q4 report', style: { fontSize: '14px', color: '#0f172a', lineHeight: '1.4' } },
+   241→                    { id: 'ai2tm', type: 'text', tag: 'span', content: '15 min ago', style: { fontSize: '12px', color: '#94a3b8' } }
+   242→                  ]}
+   243→                ]},
+   244→                { id: 'ai3', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px', alignItems: 'flex-start' }, children: [
+   245→                  { id: 'ai3d', type: 'avatar', tag: 'div', content: 'JL', style: { width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#fce7f3', color: '#9d174d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '600', flexShrink: '0' } },
+   246→                  { id: 'ai3t', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column' }, children: [
+   247→                    { id: 'ai3m', type: 'text', tag: 'p', content: 'Julia added 3 new team members', style: { fontSize: '14px', color: '#0f172a', lineHeight: '1.4' } },
+   248→                    { id: 'ai3tm', type: 'text', tag: 'span', content: '1 hour ago', style: { fontSize: '12px', color: '#94a3b8' } }
+   249→                  ]}
+   250→                ]}
+   251→              ]}
+   252→            ]}
+   253→          ]}
+   254→        ]
+   255→      }
+   256→    });
+   257→  }
+   258→
+   259→  // Portfolio / creative design
+   260→  if (msg.includes('portfolio') || msg.includes('gallery') || msg.includes('showcase')) {
+   261→    return JSON.stringify({
+   262→      message: 'I created a stunning portfolio layout with a hero section, project gallery grid, and contact section. Let me know how to customize it!',
+   263→      design: {
+   264→        id: 'root', type: 'root', tag: 'div',
+   265→        style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#0f172a' },
+   266→        meta: { name: 'Portfolio' },
+   267→        children: [
+   268→          { id: 'nav-1', type: 'nav', tag: 'nav', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 48px' }, meta: { name: 'Navigation' }, children: [
+   269→            { id: 'logo-1', type: 'text', tag: 'span', content: 'Portfolio', style: { fontSize: '18px', fontWeight: '700', color: '#ffffff' } },
+   270→            { id: 'nav-links', type: 'flex', tag: 'div', style: { display: 'flex', gap: '32px', alignItems: 'center' }, children: [
+   271→              { id: 'nl1', type: 'link', tag: 'a', content: 'Work', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none', fontWeight: '500' } },
+   272→              { id: 'nl2', type: 'link', tag: 'a', content: 'About', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none', fontWeight: '500' } },
+   273→              { id: 'nl3', type: 'link', tag: 'a', content: 'Contact', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none', fontWeight: '500' } }
+   274→            ]}
+   275→          ]},
+   276→          { id: 'hero-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '120px 48px 80px', minHeight: '80vh' }, meta: { name: 'Hero' }, children: [
+   277→            { id: 'hl1', type: 'text', tag: 'p', content: 'Creative Designer & Developer', style: { fontSize: '16px', color: '#34d399', fontWeight: '500', marginBottom: '24px', letterSpacing: '0.05em', textTransform: 'uppercase' } },
+   278→            { id: 'hh1', type: 'heading', tag: 'h1', content: 'I craft digital experiences that inspire and delight', style: { fontSize: '56px', fontWeight: '800', lineHeight: '1.1', color: '#ffffff', maxWidth: '700px', letterSpacing: '-0.02em' } },
+   279→            { id: 'hp1', type: 'text', tag: 'p', content: 'Designing for the web, mobile, and beyond. Currently available for freelance projects.', style: { fontSize: '18px', color: '#94a3b8', maxWidth: '480px', lineHeight: '1.7', marginTop: '24px' } }
+   280→          ]},
+   281→          { id: 'projects-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', padding: '80px 48px' }, meta: { name: 'Projects' }, children: [
+   282→            { id: 'ph2', type: 'heading', tag: 'h2', content: 'Selected Work', style: { fontSize: '32px', fontWeight: '700', color: '#ffffff', marginBottom: '48px' } },
+   283→            { id: 'pgrid', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }, children: [
+   284→              { id: 'pc1', type: 'card', tag: 'div', style: { borderRadius: '16px', overflow: 'hidden', backgroundColor: '#1e293b' }, meta: { name: 'Project 1' }, children: [
+   285→                { id: 'pimg1', type: 'image', tag: 'img', content: 'https://placehold.co/600x400/10b981/ffffff?text=Project+1', style: { width: '100%', height: '280px', objectFit: 'cover' } },
+   286→                { id: 'pc1info', type: 'container', tag: 'div', style: { padding: '24px' }, children: [
+   287→                  { id: 'pc1t', type: 'heading', tag: 'h3', content: 'E-Commerce Redesign', style: { fontSize: '18px', fontWeight: '600', color: '#ffffff', marginBottom: '8px' } },
+   288→                  { id: 'pc1d', type: 'text', tag: 'p', content: 'UX/UI Design • Web Development', style: { fontSize: '14px', color: '#94a3b8' } }
+   289→                ]}
+   290→              ]},
+   291→              { id: 'pc2', type: 'card', tag: 'div', style: { borderRadius: '16px', overflow: 'hidden', backgroundColor: '#1e293b' }, meta: { name: 'Project 2' }, children: [
+   292→                { id: 'pimg2', type: 'image', tag: 'img', content: 'https://placehold.co/600x400/06b6d4/ffffff?text=Project+2', style: { width: '100%', height: '280px', objectFit: 'cover' } },
+   293→                { id: 'pc2info', type: 'container', tag: 'div', style: { padding: '24px' }, children: [
+   294→                  { id: 'pc2t', type: 'heading', tag: 'h3', content: 'Finance Dashboard', style: { fontSize: '18px', fontWeight: '600', color: '#ffffff', marginBottom: '8px' } },
+   295→                  { id: 'pc2d', type: 'text', tag: 'p', content: 'Product Design • Data Visualization', style: { fontSize: '14px', color: '#94a3b8' } }
+   296→                ]}
+   297→              ]},
+   298→              { id: 'pc3', type: 'card', tag: 'div', style: { borderRadius: '16px', overflow: 'hidden', backgroundColor: '#1e293b' }, meta: { name: 'Project 3' }, children: [
+   299→                { id: 'pimg3', type: 'image', tag: 'img', content: 'https://placehold.co/600x400/8b5cf6/ffffff?text=Project+3', style: { width: '100%', height: '280px', objectFit: 'cover' } },
+   300→                { id: 'pc3info', type: 'container', tag: 'div', style: { padding: '24px' }, children: [
+   301→                  { id: 'pc3t', type: 'heading', tag: 'h3', content: 'Mobile Banking App', style: { fontSize: '18px', fontWeight: '600', color: '#ffffff', marginBottom: '8px' } },
+   302→                  { id: 'pc3d', type: 'text', tag: 'p', content: 'Mobile Design • iOS/Android', style: { fontSize: '14px', color: '#94a3b8' } }
+   303→                ]}
+   304→              ]},
+   305→              { id: 'pc4', type: 'card', tag: 'div', style: { borderRadius: '16px', overflow: 'hidden', backgroundColor: '#1e293b' }, meta: { name: 'Project 4' }, children: [
+   306→                { id: 'pimg4', type: 'image', tag: 'img', content: 'https://placehold.co/600x400/f59e0b/ffffff?text=Project+4', style: { width: '100%', height: '280px', objectFit: 'cover' } },
+   307→                { id: 'pc4info', type: 'container', tag: 'div', style: { padding: '24px' }, children: [
+   308→                  { id: 'pc4t', type: 'heading', tag: 'h3', content: 'Brand Identity System', style: { fontSize: '18px', fontWeight: '600', color: '#ffffff', marginBottom: '8px' } },
+   309→                  { id: 'pc4d', type: 'text', tag: 'p', content: 'Branding • Visual Identity', style: { fontSize: '14px', color: '#94a3b8' } }
+   310→                ]}
+   311→              ]}
+   312→            ]}
+   313→          ]},
+   314→          { id: 'footer-1', type: 'footer', tag: 'footer', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '32px 48px', borderTop: '1px solid #1e293b' }, meta: { name: 'Footer' }, children: [
+   315→            { id: 'ft1', type: 'text', tag: 'p', content: '© 2026 Portfolio. All rights reserved.', style: { color: '#64748b', fontSize: '14px' } },
+   316→            { id: 'flinks', type: 'flex', tag: 'div', style: { display: 'flex', gap: '24px' }, children: [
+   317→              { id: 'fl1', type: 'link', tag: 'a', content: 'Twitter', style: { color: '#94a3b8', textDecoration: 'none', fontSize: '14px' } },
+   318→              { id: 'fl2', type: 'link', tag: 'a', content: 'LinkedIn', style: { color: '#94a3b8', textDecoration: 'none', fontSize: '14px' } },
+   319→              { id: 'fl3', type: 'link', tag: 'a', content: 'GitHub', style: { color: '#94a3b8', textDecoration: 'none', fontSize: '14px' } }
+   320→            ]}
+   321→          ]}
+   322→        ]
+   323→      }
+   324→    });
+   325→  }
+   326→
+   327→  // Default design for any other request
+   328→  return JSON.stringify({
+   329→    message: 'I created a design based on your request. Tell me what to change — for example: "Make it darker", "Add a contact form", or "Change the layout"!',
+   330→    design: {
+   331→      id: 'root', type: 'root', tag: 'div',
+   332→      style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#ffffff' },
+   333→      meta: { name: 'Custom Design' },
+   334→      children: [
+   335→        { id: 'nav-1', type: 'nav', tag: 'nav', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 32px', borderBottom: '1px solid #e2e8f0', backgroundColor: '#ffffff' }, meta: { name: 'Navigation' }, children: [
+   336→          { id: 'hl1', type: 'text', tag: 'span', content: 'Z.Design', style: { fontSize: '20px', fontWeight: '700', color: '#10b981' } },
+   337→          { id: 'nav-r', type: 'flex', tag: 'div', style: { display: 'flex', gap: '20px', alignItems: 'center' }, children: [
+   338→            { id: 'nl1', type: 'link', tag: 'a', content: 'Home', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   339→            { id: 'nl2', type: 'link', tag: 'a', content: 'About', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   340→            { id: 'nl3', type: 'link', tag: 'a', content: 'Contact', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   341→            { id: 'hb1', type: 'button', tag: 'button', content: 'Get Started', style: { padding: '8px 20px', backgroundColor: '#10b981', color: '#ffffff', borderRadius: '8px', fontSize: '14px', fontWeight: '600', border: 'none', cursor: 'pointer' } }
+   342→          ]}
+   343→        ]},
+   344→        { id: 'hero-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: '1', padding: '100px 32px', textAlign: 'center', background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)' }, meta: { name: 'Hero' }, children: [
+   345→          { id: 'hb1', type: 'badge', tag: 'span', content: '✨ AI-Powered', style: { padding: '6px 16px', backgroundColor: '#d1fae5', color: '#065f46', borderRadius: '20px', fontSize: '13px', fontWeight: '500', marginBottom: '24px', display: 'inline-block' } },
+   346→          { id: 'sh1', type: 'heading', tag: 'h1', content: 'Your Design Starts Here', style: { fontSize: '48px', fontWeight: '800', color: '#0f172a', marginBottom: '20px', letterSpacing: '-0.02em' } },
+   347→          { id: 'sp1', type: 'text', tag: 'p', content: 'Tell me more about what you want and I\'ll create a custom design for you. Try things like "Make a portfolio" or "Add a pricing section"!', style: { fontSize: '18px', color: '#475569', maxWidth: '540px', lineHeight: '1.7', marginBottom: '32px' } },
+   348→          { id: 'sbtns', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }, children: [
+   349→            { id: 'sb1', type: 'button', tag: 'button', content: 'Start Creating', style: { padding: '14px 32px', backgroundColor: '#10b981', color: '#ffffff', borderRadius: '10px', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' } },
+   350→            { id: 'sb2', type: 'button', tag: 'button', content: 'See Examples', style: { padding: '14px 32px', backgroundColor: '#ffffff', color: '#475569', borderRadius: '10px', fontSize: '16px', fontWeight: '500', border: '1px solid #e2e8f0', cursor: 'pointer' } }
+   351→          ]}
+   352→        ]},
+   353→        { id: 'ftr1', type: 'footer', tag: 'footer', style: { display: 'flex', justifyContent: 'center', padding: '32px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0' }, meta: { name: 'Footer' }, children: [
+   354→          { id: 'ft1', type: 'text', tag: 'p', content: '© 2026 Z.Design — AI-Powered Visual Design Platform', style: { color: '#94a3b8', fontSize: '14px' } }
+   355→        ]}
+   356→      ]
+   357→    }
+   358→  });
+   359→}
+   360→
+   361→// ============ POST Handler ============
+   362→
+   363→export async function POST(request: NextRequest) {
+   364→  try {
+   365→    const body: ChatRequestBody = await request.json();
+   366→    const { message, projectId, designTree, designSystem, history, creativeMode } = body;
+   367→
+   368→    if (!message || !projectId) {
+   369→      return NextResponse.json({ error: 'message and projectId are required' }, { status: 400 });
+
+[showing lines 30-369 of 597; use offset=370 with limit to continue reading]

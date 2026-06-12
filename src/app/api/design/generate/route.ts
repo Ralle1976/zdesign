@@ -1,10 +1,23 @@
 // Z.Design - Design Generation API Route
-// Generates complete DesignNode trees from text prompts using AI
+// Generates complete DesignNode trees from text prompts using Z.ai LLM
 
 import { NextRequest, NextResponse } from 'next/server';
 import ZAI from 'z-ai-web-dev-sdk';
 import { db } from '@/lib/db';
-import { DESIGN_GENERATION_SYSTEM_PROMPT } from '@/lib/ai-prompts';
+import { DESIGN_GENERATION_SYSTEM_PROMPT, parseAIResponse } from '@/lib/ai-prompts';
+
+// ============ ZAI Singleton ============
+
+let zaiInstance: ZAI | null = null;
+
+async function getZAI(): Promise<ZAI> {
+  if (!zaiInstance) {
+    zaiInstance = await ZAI.create();
+  }
+  return zaiInstance;
+}
+
+// ============ Types ============
 
 type ProjectType =
   | 'PROTOTYPE'
@@ -22,6 +35,8 @@ interface GenerateRequestBody {
   designSystem?: Record<string, unknown>;
   viewport?: 'desktop' | 'tablet' | 'mobile';
 }
+
+// ============ Prompt Builder ============
 
 function buildGenerationPrompt(
   prompt: string,
@@ -71,6 +86,8 @@ function buildGenerationPrompt(
   return enhancedPrompt;
 }
 
+// ============ POST Handler ============
+
 export async function POST(request: NextRequest) {
   try {
     const body: GenerateRequestBody = await request.json();
@@ -103,61 +120,67 @@ export async function POST(request: NextRequest) {
     // Build the enhanced prompt
     const enhancedPrompt = buildGenerationPrompt(prompt, projectType, viewport, designSystem);
 
-    // Call Z.ai LLM to generate the design
-    const zai = await ZAI.create();
-    const completion = await zai.chat.completions.create({
-      messages: [
-        { role: 'system', content: DESIGN_GENERATION_SYSTEM_PROMPT },
-        { role: 'user', content: enhancedPrompt },
-      ],
-      thinking: { type: 'disabled' },
-    });
+    // Call Z.ai LLM with retry logic and generous timeouts
+    // LLM takes ~60-90s to generate a full design, so we need generous timeouts
+    let rawResponse: string | null = null;
+    let usedFallback = false;
+    const maxRetries = 2;
+    const LLM_TIMEOUT_FIRST = 120000; // 120s for first attempt
+    const LLM_TIMEOUT_RETRY = 90000; // 90s for retries
 
-    const rawResponse = completion.choices[0]?.message?.content || '';
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const zai = await getZAI();
+        const timeoutMs = attempt === 0 ? LLM_TIMEOUT_FIRST : LLM_TIMEOUT_RETRY;
 
-    // Parse the AI response to extract the design JSON
-    let design = null;
+        const completionPromise = zai.chat.completions.create({
+          messages: [
+            { role: 'system', content: DESIGN_GENERATION_SYSTEM_PROMPT },
+            { role: 'user', content: enhancedPrompt },
+          ],
+          thinking: { type: 'disabled' },
+        });
+
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('LLM timeout')), timeoutMs)
+        );
+
+        const completion = await Promise.race([completionPromise, timeoutPromise]);
+        rawResponse = completion.choices[0]?.message?.content || null;
+        break; // Success
+      } catch (llmError) {
+        console.warn(`[Design Generate API] Z.ai LLM attempt ${attempt + 1} failed:`, llmError instanceof Error ? llmError.message : llmError);
+        if (attempt < maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        } else {
+          console.error('[Design Generate API] All Z.ai LLM attempts failed');
+          usedFallback = true;
+        }
+      }
+    }
+
+    if (!rawResponse) {
+      return NextResponse.json(
+        { error: 'Failed to generate design. The AI service is unavailable. Please try again later.' },
+        { status: 503 }
+      );
+    }
+
+    // Parse the AI response using the shared parser
+    const parsed = parseAIResponse(rawResponse);
+
+    let design = parsed.design;
     let name = `${projectType.replace('_', ' ')} Design`;
     let description = prompt;
 
-    try {
-      // Try direct JSON parse
-      const parsed = JSON.parse(rawResponse);
-      if (parsed.design) {
-        design = parsed.design;
-        name = parsed.name || name;
-        description = parsed.description || description;
-      } else if (parsed.id || parsed.type) {
-        design = parsed;
-      }
-    } catch {
-      // Try to extract JSON from markdown code blocks
-      const jsonMatch = rawResponse.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
-      if (jsonMatch) {
-        try {
-          const extracted = JSON.parse(jsonMatch[1]);
-          if (extracted.design) {
-            design = extracted.design;
-            name = extracted.name || name;
-            description = extracted.description || description;
-          } else if (extracted.id || extracted.type) {
-            design = extracted;
-          }
-        } catch {
-          // Continue to next extraction attempt
-        }
-      }
-
-      // Try to find any JSON object with an id field
-      if (!design) {
-        const objectMatch = rawResponse.match(/\{[\s\S]*"id"[\s\S]*\}/);
-        if (objectMatch) {
-          try {
-            design = JSON.parse(objectMatch[0]);
-          } catch {
-            // Give up on parsing
-          }
-        }
+    // If the parser extracted a design from a wrapper object, also try to get name/description
+    if (design) {
+      try {
+        const fullParsed = JSON.parse(rawResponse);
+        name = fullParsed.name || name;
+        description = fullParsed.description || description;
+      } catch {
+        // Keep defaults
       }
     }
 

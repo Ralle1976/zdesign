@@ -12,6 +12,8 @@ import {
   ZoomIn,
   Globe,
   Clock,
+  Loader2,
+  CheckCircle2,
 } from 'lucide-react';
 import type { CanvasMode, ViewportSize } from '@/types/design';
 
@@ -26,9 +28,14 @@ const VIEWPORT_ICONS: Record<ViewportSize, typeof Monitor> = {
   mobile: Smartphone,
 };
 
-export function StatusBar() {
+interface StatusBarProps {
+  isSaving?: boolean;
+}
+
+export function StatusBar({ isSaving = false }: StatusBarProps) {
   const { t, locale } = useI18n();
   const canvas = useZDesignStore((s) => s.canvas);
+  const isDirty = useZDesignStore((s) => s.isDirty);
 
   const ModeIcon = MODE_ICONS[canvas.mode];
   const ViewportIcon = VIEWPORT_ICONS[canvas.viewport];
@@ -64,6 +71,25 @@ export function StatusBar() {
       </div>
 
       <div className="flex items-center gap-3">
+        {/* Save Status */}
+        {isSaving ? (
+          <div className="flex items-center gap-1.5 text-amber-600">
+            <Loader2 className="size-3 animate-spin" />
+            <span>Saving...</span>
+          </div>
+        ) : isDirty ? (
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <span>Unsaved</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5 text-emerald-600">
+            <CheckCircle2 className="size-3" />
+            <span>Saved</span>
+          </div>
+        )}
+
+        <Separator orientation="vertical" className="h-3" />
+
         {/* Language */}
         <div className="flex items-center gap-1.5">
           <Globe className="size-3" />

@@ -8,6 +8,8 @@ interface ViewportFrameProps {
   viewport: ViewportSize;
   zoom: number;
   showGrid: boolean;
+  panX?: number;
+  panY?: number;
   children: React.ReactNode;
 }
 
@@ -30,7 +32,7 @@ const VIEWPORT_CONFIG: Record<ViewportSize, { width: string; maxWidth: string; l
 };
 
 export const ViewportFrame: React.FC<ViewportFrameProps> = React.memo(
-  function ViewportFrame({ viewport, zoom, showGrid, children }) {
+  function ViewportFrame({ viewport, zoom, showGrid, panX = 0, panY = 0, children }) {
     const config = VIEWPORT_CONFIG[viewport];
     const scale = zoom / 100;
     const isDeviceFrame = viewport !== 'desktop';
@@ -41,7 +43,7 @@ export const ViewportFrame: React.FC<ViewportFrameProps> = React.memo(
           layout
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           style={{
-            transform: `scale(${scale})`,
+            transform: `translate(${panX}px, ${panY}px) scale(${scale})`,
             transformOrigin: 'top center',
             width: config.width,
             maxWidth: config.maxWidth,

@@ -16,6 +16,7 @@ export const translations = {
       templates: 'Templates',
       designSystems: 'Design Systems',
       settings: 'Settings',
+      providers: 'Providers',
     },
 
     // Chat Panel
@@ -53,6 +54,14 @@ export const translations = {
       },
       noDesign: 'Your design will appear here. Start by describing what you want in the chat!',
       loading: 'Generating your design...',
+      steps: {
+        analyzing: 'Analyzing request...',
+        generating: 'Generating design...',
+        rendering: 'Rendering preview...',
+        evaluating: 'Evaluating quality...',
+        complete: 'Complete!',
+        error: 'Generation failed',
+      },
     },
 
     // Props Panel
@@ -235,6 +244,16 @@ export const translations = {
       transcript: 'Transcript',
     },
 
+    // Research
+    research: {
+      title: 'Design Research',
+      placeholder: 'Search for design inspiration...',
+      button: 'Research',
+      searching: 'Searching...',
+      results: 'Found inspiration!',
+      noResults: 'No results found',
+    },
+
     // Accessibility
     a11y: {
       title: 'Accessibility Scanner',
@@ -261,6 +280,49 @@ export const translations = {
         touchTarget: 'Touch Targets',
         semantics: 'Semantic HTML',
       },
+    },
+
+    // Provider Settings
+    provider: {
+      title: 'AI Provider Settings',
+      subtitle: 'Configure AI providers and models for design generation',
+      selectProvider: 'Select Provider',
+      modelSelection: 'Model Selection',
+      activeConfig: 'Active Configuration',
+      capabilities: 'Capabilities',
+      featureRequirements: 'Feature Requirements',
+      apiKeys: 'API Keys',
+      securityNotice: 'Security Notice',
+      securityDesc: 'API keys are stored locally in your browser session. They are never sent to our servers.',
+      noKeyNeeded: 'No key needed',
+      keyRequired: 'Key required',
+      keySet: 'Key set',
+      available: 'Available',
+      missingCapability: 'Missing capability',
+      default: 'Default',
+      recommended: 'Recommended',
+    },
+
+    // Quality
+    quality: {
+      title: 'Quality Score',
+      css: 'CSS',
+      semantic: 'Semantic',
+      responsive: 'Responsive',
+      a11y: 'A11y',
+      complete: 'Complete',
+      excellent: 'Excellent',
+      good: 'Good',
+      needsWork: 'Needs work',
+      poor: 'Poor',
+    },
+
+    // Creative Mode
+    creative: {
+      title: 'Creative Mode',
+      description: 'Multi-pass generation for more diverse and experimental designs',
+      enabled: 'Creative Mode active',
+      disabled: 'Creative Mode off',
     },
 
     // Common
@@ -299,6 +361,7 @@ export const translations = {
       templates: 'Vorlagen',
       designSystems: 'Design-Systeme',
       settings: 'Einstellungen',
+      providers: 'Anbieter',
     },
 
     // Chat Panel
@@ -336,6 +399,14 @@ export const translations = {
       },
       noDesign: 'Dein Design erscheint hier. Beginne, indem du beschreibst, was du möchtest!',
       loading: 'Generiere dein Design...',
+      steps: {
+        analyzing: 'Anfrage analysieren...',
+        generating: 'Design generieren...',
+        rendering: 'Vorschau rendern...',
+        evaluating: 'Qualität bewerten...',
+        complete: 'Fertig!',
+        error: 'Generierung fehlgeschlagen',
+      },
     },
 
     // Props Panel
@@ -518,6 +589,16 @@ export const translations = {
       transcript: 'Transkript',
     },
 
+    // Research
+    research: {
+      title: 'Design-Recherche',
+      placeholder: 'Suche nach Design-Inspiration...',
+      button: 'Recherchieren',
+      searching: 'Suche...',
+      results: 'Inspiration gefunden!',
+      noResults: 'Keine Ergebnisse gefunden',
+    },
+
     // Accessibility
     a11y: {
       title: 'Barrierefreiheits-Scanner',
@@ -544,6 +625,49 @@ export const translations = {
         touchTarget: 'Berührungsziele',
         semantics: 'Semantisches HTML',
       },
+    },
+
+    // Provider Settings
+    provider: {
+      title: 'KI-Anbieter-Einstellungen',
+      subtitle: 'Konfiguriere KI-Anbieter und Modelle für die Designgenerierung',
+      selectProvider: 'Anbieter auswählen',
+      modelSelection: 'Modellauswahl',
+      activeConfig: 'Aktive Konfiguration',
+      capabilities: 'Fähigkeiten',
+      featureRequirements: 'Feature-Anforderungen',
+      apiKeys: 'API-Schlüssel',
+      securityNotice: 'Sicherheitshinweis',
+      securityDesc: 'API-Schlüssel werden lokal in deiner Browsersitzung gespeichert und niemals an unsere Server gesendet.',
+      noKeyNeeded: 'Kein Schlüssel nötig',
+      keyRequired: 'Schlüssel erforderlich',
+      keySet: 'Schlüssel gesetzt',
+      available: 'Verfügbar',
+      missingCapability: 'Fähigkeit fehlt',
+      default: 'Standard',
+      recommended: 'Empfohlen',
+    },
+
+    // Quality
+    quality: {
+      title: 'Qualitätsbewertung',
+      css: 'CSS',
+      semantic: 'Semantisch',
+      responsive: 'Responsiv',
+      a11y: 'Barrierefr.',
+      complete: 'Vollst.',
+      excellent: 'Hervorragend',
+      good: 'Gut',
+      needsWork: 'Verbesserungsbedarf',
+      poor: 'Schlecht',
+    },
+
+    // Creative Mode
+    creative: {
+      title: 'Kreativ-Modus',
+      description: 'Mehrstufige Generierung für vielfältigere und experimentellere Designs',
+      enabled: 'Kreativ-Modus aktiv',
+      disabled: 'Kreativ-Modus aus',
     },
 
     // Common

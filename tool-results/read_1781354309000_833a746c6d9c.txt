@@ -1,0 +1,680 @@
+     1→'use client';
+     2→
+     3→import { useState, useCallback, useEffect } from 'react';
+     4→import { useZDesignStore } from '@/stores/zdesign-store';
+     5→import { useI18n } from '@/i18n';
+     6→import { ScrollArea } from '@/components/ui/scroll-area';
+     7→import { Button } from '@/components/ui/button';
+     8→import { Badge } from '@/components/ui/badge';
+     9→import { Input } from '@/components/ui/input';
+    10→import { Separator } from '@/components/ui/separator';
+    11→import {
+    12→  Dialog,
+    13→  DialogContent,
+    14→  DialogDescription,
+    15→  DialogFooter,
+    16→  DialogHeader,
+    17→  DialogTitle,
+    18→  DialogTrigger,
+    19→} from '@/components/ui/dialog';
+    20→import {
+    21→  Tooltip,
+    22→  TooltipContent,
+    23→  TooltipProvider,
+    24→  TooltipTrigger,
+    25→} from '@/components/ui/tooltip';
+    26→import {
+    27→  GitBranch,
+    28→  Plus,
+    29→  RotateCcw,
+    30→  ArrowLeftRight,
+    31→  GitFork,
+    32→  Save,
+    33→  Clock,
+    34→  MoreHorizontal,
+    35→  CheckCircle2,
+    36→  Pencil,
+    37→} from 'lucide-react';
+    38→import { motion, AnimatePresence } from 'framer-motion';
+    39→import { formatDistanceToNow } from 'date-fns';
+    40→import { toast } from 'sonner';
+    41→import type { VersionData } from '@/types/design';
+    42→
+    43→export function VersionTree() {
+    44→  const { t } = useI18n();
+    45→  const projectId = useZDesignStore((s) => s.projectId);
+    46→  const designTree = useZDesignStore((s) => s.designTree);
+    47→  const setDesignTree = useZDesignStore((s) => s.setDesignTree);
+    48→  const versions = useZDesignStore((s) => s.versions);
+    49→  const setVersions = useZDesignStore((s) => s.setVersions);
+    50→  const addVersion = useZDesignStore((s) => s.addVersion);
+    51→  const currentVersionId = useZDesignStore((s) => s.currentVersionId);
+    52→  const setCurrentVersionId = useZDesignStore((s) => s.setCurrentVersionId);
+    53→
+    54→  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+    55→  const [versionLabel, setVersionLabel] = useState('');
+    56→  const [versionSummary, setVersionSummary] = useState('');
+    57→  const [isSaving, setIsSaving] = useState(false);
+    58→  const [branchDialogOpen, setBranchDialogOpen] = useState(false);
+    59→  const [branchName, setBranchName] = useState('');
+    60→  const [branchFromVersionId, setBranchFromVersionId] = useState<string | null>(null);
+    61→  const [isCreatingBranch, setIsCreatingBranch] = useState(false);
+    62→  const [editingVersionId, setEditingVersionId] = useState<string | null>(null);
+    63→  const [editingLabel, setEditingLabel] = useState('');
+    64→
+    65→  // Determine active branch from the latest version
+    66→  const activeBranch =
+    67→    versions.length > 0 ? versions[0].branch : 'main';
+    68→  const branches = [...new Set(versions.map((v) => v.branch))];
+    69→
+    70→  // Fetch versions when projectId changes
+    71→  useEffect(() => {
+    72→    if (!projectId) return;
+    73→    const fetchVersions = async () => {
+    74→      try {
+    75→        const res = await fetch(`/api/projects/${projectId}/versions`);
+    76→        if (res.ok) {
+    77→          const data = await res.json();
+    78→          const mapped: VersionData[] = data.versions.map(
+    79→            (v: Record<string, unknown>) => ({
+    80→              id: v.id as string,
+    81→              projectId: v.projectId as string,
+    82→              parentVersionId: v.parentVersionId as string | undefined,
+    83→              label: v.label as string,
+    84→              designJSON: v.designJSON as string,
+    85→              thumbnail: v.thumbnail as string | undefined,
+    86→              branch: v.branch as string,
+    87→              changeSummary: v.changeSummary as string | undefined,
+    88→              createdAt: new Date(v.createdAt as string),
+    89→            })
+    90→          );
+    91→          setVersions(mapped);
+    92→          if (mapped.length > 0 && !currentVersionId) {
+    93→            setCurrentVersionId(mapped[0].id);
+    94→          }
+    95→        }
+    96→      } catch {
+    97→        // Failed to load versions
+    98→      }
+    99→    };
+   100→    fetchVersions();
+   101→  }, [projectId, setVersions, setCurrentVersionId, currentVersionId]);
+   102→
+   103→  const handleSaveVersion = useCallback(async () => {
+   104→    if (!projectId || !versionLabel.trim()) return;
+   105→    setIsSaving(true);
+   106→    try {
+   107→      // First update the project's designJSON
+   108→      const updateRes = await fetch(`/api/projects/${projectId}`, {
+   109→        method: 'PATCH',
+   110→        headers: { 'Content-Type': 'application/json' },
+   111→        body: JSON.stringify({
+   112→          designJSON: JSON.stringify(designTree),
+   113→        }),
+   114→      });
+   115→
+   116→      if (!updateRes.ok) {
+   117→        throw new Error('Failed to update project');
+   118→      }
+   119→
+   120→      // Then create a version
+   121→      const versionRes = await fetch(`/api/projects/${projectId}/versions`, {
+   122→        method: 'POST',
+   123→        headers: { 'Content-Type': 'application/json' },
+   124→        body: JSON.stringify({
+   125→          label: versionLabel.trim(),
+   126→          changeSummary: versionSummary.trim() || undefined,
+   127→          branch: activeBranch,
+   128→        }),
+   129→      });
+   130→
+   131→      if (!versionRes.ok) {
+   132→        throw new Error('Failed to create version');
+   133→      }
+   134→
+   135→      const data = await versionRes.json();
+   136→      const newVersion: VersionData = {
+   137→        id: data.version.id,
+   138→        projectId: data.version.projectId,
+   139→        parentVersionId: data.version.parentVersionId || undefined,
+   140→        label: data.version.label,
+   141→        designJSON: data.version.designJSON,
+   142→        thumbnail: data.version.thumbnail || undefined,
+   143→        branch: data.version.branch,
+   144→        changeSummary: data.version.changeSummary || undefined,
+   145→        createdAt: new Date(data.version.createdAt),
+   146→      };
+   147→
+   148→      addVersion(newVersion);
+   149→      setCurrentVersionId(newVersion.id);
+   150→      setVersionLabel('');
+   151→      setVersionSummary('');
+   152→      setSaveDialogOpen(false);
+   153→      toast.success(t.versions.saveSuccess);
+   154→    } catch {
+   155→      toast.error(t.common.error);
+   156→    } finally {
+   157→      setIsSaving(false);
+   158→    }
+   159→  }, [
+   160→    projectId,
+   161→    versionLabel,
+   162→    versionSummary,
+   163→    activeBranch,
+   164→    designTree,
+   165→    addVersion,
+   166→    setCurrentVersionId,
+   167→    t,
+   168→  ]);
+   169→
+   170→  const handleRollback = useCallback(
+   171→    async (version: VersionData) => {
+   172→      if (!projectId) return;
+   173→      try {
+   174→        const res = await fetch(
+   175→          `/api/projects/${projectId}/versions/${version.id}`
+   176→        );
+   177→        if (!res.ok) throw new Error('Version not found');
+   178→
+   179→        const data = await res.json();
+   180→        const designJSON =
+   181→          typeof data.version.designJSON === 'string'
+   182→            ? JSON.parse(data.version.designJSON)
+   183→            : data.version.designJSON;
+   184→
+   185→        setDesignTree(designJSON);
+   186→        setCurrentVersionId(version.id);
+   187→
+   188→        // Also update the project's designJSON
+   189→        await fetch(`/api/projects/${projectId}`, {
+   190→          method: 'PATCH',
+   191→          headers: { 'Content-Type': 'application/json' },
+   192→          body: JSON.stringify({ designJSON: JSON.stringify(designJSON) }),
+   193→        });
+   194→
+   195→        toast.success(t.versions.rollbackSuccess);
+   196→      } catch {
+   197→        toast.error(t.common.error);
+   198→      }
+   199→    },
+   200→    [projectId, setDesignTree, setCurrentVersionId, t]
+   201→  );
+   202→
+   203→  const handleCreateBranch = useCallback(async () => {
+   204→    if (!projectId || !branchName.trim()) return;
+   205→    setIsCreatingBranch(true);
+   206→    try {
+   207→      const res = await fetch(`/api/projects/${projectId}/versions`, {
+   208→        method: 'POST',
+   209→        headers: { 'Content-Type': 'application/json' },
+   210→        body: JSON.stringify({
+   211→          label: `Branch: ${branchName.trim()}`,
+   212→          changeSummary: `Created from ${branchFromVersionId ? 'version' : 'current state'}`,
+   213→          branch: branchName.trim(),
+   214→          parentVersionId: branchFromVersionId || undefined,
+   215→        }),
+   216→      });
+   217→
+   218→      if (!res.ok) throw new Error('Failed to create branch');
+   219→
+   220→      const data = await res.json();
+   221→      const newVersion: VersionData = {
+   222→        id: data.version.id,
+   223→        projectId: data.version.projectId,
+   224→        parentVersionId: data.version.parentVersionId || undefined,
+   225→        label: data.version.label,
+   226→        designJSON: data.version.designJSON,
+   227→        thumbnail: data.version.thumbnail || undefined,
+   228→        branch: data.version.branch,
+   229→        changeSummary: data.version.changeSummary || undefined,
+   230→        createdAt: new Date(data.version.createdAt),
+   231→      };
+   232→
+   233→      addVersion(newVersion);
+   234→      setCurrentVersionId(newVersion.id);
+   235→      setBranchDialogOpen(false);
+   236→      setBranchName('');
+   237→      setBranchFromVersionId(null);
+   238→      toast.success(t.versions.createBranch);
+   239→    } catch {
+   240→      toast.error(t.common.error);
+   241→    } finally {
+   242→      setIsCreatingBranch(false);
+   243→    }
+   244→  }, [
+   245→    projectId,
+   246→    branchName,
+   247→    branchFromVersionId,
+   248→    addVersion,
+   249→    setCurrentVersionId,
+   250→    t,
+   251→  ]);
+   252→
+   253→  const handleEditLabel = useCallback(
+   254→    async (versionId: string, newLabel: string) => {
+   255→      if (!projectId || !newLabel.trim()) return;
+   256→      try {
+   257→        await fetch(`/api/projects/${projectId}/versions/${versionId}`, {
+   258→          method: 'PATCH',
+   259→          headers: { 'Content-Type': 'application/json' },
+   260→          body: JSON.stringify({ label: newLabel.trim() }),
+   261→        });
+   262→        // Update local state
+   263→        const updatedVersions = versions.map((v) =>
+   264→          v.id === versionId ? { ...v, label: newLabel.trim() } : v
+   265→        );
+   266→        setVersions(updatedVersions);
+   267→        setEditingVersionId(null);
+   268→      } catch {
+   269→        toast.error(t.common.error);
+   270→      }
+   271→    },
+   272→    [projectId, versions, setVersions, t]
+   273→  );
+   274→
+   275→  const formatTimestamp = useCallback(
+   276→    (date: Date) => {
+   277→      try {
+   278→        return formatDistanceToNow(new Date(date), { addSuffix: false });
+   279→      } catch {
+   280→        return '';
+   281→      }
+   282→    },
+   283→    []
+   284→  );
+   285→
+   286→  // Group versions by branch for display
+   287→  const versionsByBranch = versions.reduce<Record<string, VersionData[]>>(
+   288→    (acc, v) => {
+   289→      if (!acc[v.branch]) acc[v.branch] = [];
+   290→      acc[v.branch].push(v);
+   291→      return acc;
+   292→    },
+   293→    {}
+   294→  );
+   295→
+   296→  return (
+   297→    <TooltipProvider delayDuration={300}>
+   298→      <div className="flex flex-col h-full bg-background">
+   299→        {/* Header */}
+   300→        <div className="flex items-center justify-between px-4 h-11 border-b shrink-0">
+   301→          <div className="flex items-center gap-2">
+   302→            <GitBranch className="size-4 text-emerald-600" />
+   303→            <span className="text-sm font-medium">{t.versions.title}</span>
+   304→          </div>
+   305→          <div className="flex items-center gap-1.5">
+   306→            <Dialog open={branchDialogOpen} onOpenChange={setBranchDialogOpen}>
+   307→              <DialogTrigger asChild>
+   308→                <Button
+   309→                  variant="ghost"
+   310→                  size="sm"
+   311→                  className="h-7 text-[11px] px-2"
+   312→                >
+   313→                  <GitFork className="size-3.5 mr-1" />
+   314→                  {t.versions.branch}
+   315→                </Button>
+   316→              </DialogTrigger>
+   317→              <DialogContent className="sm:max-w-md">
+   318→                <DialogHeader>
+   319→                  <DialogTitle>{t.versions.createBranch}</DialogTitle>
+   320→                  <DialogDescription>
+   321→                    Create a new branch from the current design state
+   322→                  </DialogDescription>
+   323→                </DialogHeader>
+   324→                <div className="space-y-3 py-2">
+   325→                  <Input
+   326→                    value={branchName}
+   327→                    onChange={(e) => setBranchName(e.target.value)}
+   328→                    placeholder={t.versions.branchName}
+   329→                    className="text-sm"
+   330→                    onKeyDown={(e) => {
+   331→                      if (e.key === 'Enter') handleCreateBranch();
+   332→                    }}
+   333→                  />
+   334→                </div>
+   335→                <DialogFooter>
+   336→                  <Button
+   337→                    variant="outline"
+   338→                    onClick={() => setBranchDialogOpen(false)}
+   339→                    className="text-sm"
+   340→                  >
+   341→                    {t.common.cancel}
+   342→                  </Button>
+   343→                  <Button
+   344→                    onClick={handleCreateBranch}
+   345→                    disabled={!branchName.trim() || isCreatingBranch}
+   346→                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm"
+   347→                  >
+   348→                    {t.versions.createBranch}
+   349→                  </Button>
+   350→                </DialogFooter>
+   351→              </DialogContent>
+   352→            </Dialog>
+   353→
+   354→            <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+   355→              <DialogTrigger asChild>
+   356→                <Button
+   357→                  size="sm"
+   358→                  className="h-7 text-[11px] px-2.5 bg-emerald-600 hover:bg-emerald-700 text-white"
+   359→                >
+   360→                  <Save className="size-3.5 mr-1" />
+   361→                  {t.versions.save}
+   362→                </Button>
+   363→              </DialogTrigger>
+   364→              <DialogContent className="sm:max-w-md">
+   365→                <DialogHeader>
+   366→                  <DialogTitle>{t.versions.save}</DialogTitle>
+   367→                  <DialogDescription>
+   368→                    Save the current design state as a version
+   369→                  </DialogDescription>
+   370→                </DialogHeader>
+   371→                <div className="space-y-3 py-2">
+   372→                  <div className="space-y-1.5">
+   373→                    <label className="text-xs font-medium">
+   374→                      {t.versions.label}
+   375→                    </label>
+   376→                    <Input
+   377→                      value={versionLabel}
+   378→                      onChange={(e) => setVersionLabel(e.target.value)}
+   379→                      placeholder="v1.0"
+   380→                      className="text-sm"
+   381→                      autoFocus
+   382→                    />
+   383→                  </div>
+   384→                  <div className="space-y-1.5">
+   385→                    <label className="text-xs font-medium">
+   386→                      {t.versions.summary}
+   387→                    </label>
+   388→                    <Input
+   389→                      value={versionSummary}
+   390→                      onChange={(e) => setVersionSummary(e.target.value)}
+   391→                      placeholder={t.versions.summaryPlaceholder}
+   392→                      className="text-sm"
+   393→                      onKeyDown={(e) => {
+   394→                        if (e.key === 'Enter' && versionLabel.trim())
+   395→                          handleSaveVersion();
+   396→                      }}
+   397→                    />
+   398→                  </div>
+   399→                </div>
+   400→                <DialogFooter>
+   401→                  <Button
+   402→                    variant="outline"
+   403→                    onClick={() => setSaveDialogOpen(false)}
+   404→                    className="text-sm"
+   405→                  >
+   406→                    {t.common.cancel}
+   407→                  </Button>
+   408→                  <Button
+   409→                    onClick={handleSaveVersion}
+   410→                    disabled={!versionLabel.trim() || isSaving}
+   411→                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm"
+   412→                  >
+   413→                    {isSaving ? t.common.loading : t.common.save}
+   414→                  </Button>
+   415→                </DialogFooter>
+   416→              </DialogContent>
+   417→            </Dialog>
+   418→          </div>
+   419→        </div>
+   420→
+   421→        {/* Active Branch Indicator */}
+   422→        {branches.length > 1 && (
+   423→          <div className="flex items-center gap-2 px-4 py-2 border-b bg-muted/30 shrink-0">
+   424→            <GitBranch className="size-3 text-emerald-600" />
+   425→            <span className="text-[11px] text-muted-foreground">
+   426→              {t.versions.activeBranch}:
+   427→            </span>
+   428→            <Badge
+   429→              variant="secondary"
+   430→              className="text-[10px] bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+   431→            >
+   432→              {activeBranch}
+   433→            </Badge>
+   434→          </div>
+   435→        )}
+   436→
+   437→        {/* Version Timeline */}
+   438→        <ScrollArea className="flex-1">
+   439→          <div className="p-4">
+   440→            <AnimatePresence mode="popLayout">
+   441→              {versions.length === 0 && (
+   442→                <motion.div
+   443→                  initial={{ opacity: 0, y: 8 }}
+   444→                  animate={{ opacity: 1, y: 0 }}
+   445→                  exit={{ opacity: 0, y: -8 }}
+   446→                  className="flex flex-col items-center justify-center py-12 text-center"
+   447→                >
+   448→                  <div className="flex items-center justify-center size-12 rounded-xl bg-muted mb-3">
+   449→                    <Clock className="size-5 text-muted-foreground" />
+   450→                  </div>
+   451→                  <p className="text-xs text-muted-foreground">
+   452→                    {t.versions.noVersions}
+   453→                  </p>
+   454→                  <Button
+   455→                    variant="outline"
+   456→                    size="sm"
+   457→                    className="mt-3 h-7 text-[11px] border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
+   458→                    onClick={() => setSaveDialogOpen(true)}
+   459→                  >
+   460→                    <Plus className="size-3 mr-1" />
+   461→                    {t.versions.save}
+   462→                  </Button>
+   463→                </motion.div>
+   464→              )}
+   465→
+   466→              {/* Version timeline */}
+   467→              {Object.entries(versionsByBranch).map(
+   468→                ([branchName, branchVersions]) => (
+   469→                  <div key={branchName} className="mb-4 last:mb-0">
+   470→                    {branches.length > 1 && (
+   471→                      <div className="flex items-center gap-2 mb-2">
+   472→                        <GitBranch className="size-3 text-muted-foreground" />
+   473→                        <span className="text-[11px] font-medium text-muted-foreground">
+   474→                          {branchName}
+   475→                        </span>
+   476→                        {branchName === activeBranch && (
+   477→                          <Badge
+   478→                            variant="secondary"
+   479→                            className="text-[9px] h-4 px-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+   480→                          >
+   481→                            {t.versions.current}
+   482→                          </Badge>
+   483→                        )}
+   484→                      </div>
+   485→                    )}
+   486→
+   487→                    <div className="relative ml-2">
+   488→                      {/* Timeline line */}
+   489→                      <div className="absolute left-[7px] top-2 bottom-2 w-px bg-border" />
+   490→
+   491→                      {branchVersions.map((version, index) => {
+   492→                        const isCurrent = version.id === currentVersionId;
+   493→                        const isFirst = index === 0;
+   494→
+   495→                        return (
+   496→                          <motion.div
+   497→                            key={version.id}
+   498→                            initial={{ opacity: 0, x: -12 }}
+   499→                            animate={{ opacity: 1, x: 0 }}
+   500→                            transition={{ delay: index * 0.05, duration: 0.2 }}
+   501→                            className="relative pl-6 pb-3 last:pb-0 group"
+   502→                          >
+   503→                            {/* Timeline dot */}
+   504→                            <div className="absolute left-0 top-2.5">
+   505→                              <div
+   506→                                className={`size-3.5 rounded-full border-2 flex items-center justify-center ${
+   507→                                  isCurrent
+   508→                                    ? 'bg-emerald-500 border-emerald-500'
+   509→                                    : 'bg-background border-border'
+   510→                                }`}
+   511→                              >
+   512→                                {isCurrent && (
+   513→                                  <div className="size-1.5 rounded-full bg-white" />
+   514→                                )}
+   515→                              </div>
+   516→                            </div>
+   517→
+   518→                            {/* Version Card */}
+   519→                            <div
+   520→                              className={`rounded-lg border p-2.5 transition-colors ${
+   521→                                isCurrent
+   522→                                  ? 'border-emerald-200 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-900/10'
+   523→                                  : 'hover:bg-muted/30'
+   524→                              }`}
+   525→                            >
+   526→                              <div className="flex items-start justify-between gap-2">
+   527→                                <div className="flex-1 min-w-0">
+   528→                                  {/* Editable Label */}
+   529→                                  {editingVersionId === version.id ? (
+   530→                                    <Input
+   531→                                      value={editingLabel}
+   532→                                      onChange={(e) =>
+   533→                                        setEditingLabel(e.target.value)
+   534→                                      }
+   535→                                      onBlur={() =>
+   536→                                        handleEditLabel(
+   537→                                          version.id,
+   538→                                          editingLabel
+   539→                                        )
+   540→                                      }
+   541→                                      onKeyDown={(e) => {
+   542→                                        if (e.key === 'Enter')
+   543→                                          handleEditLabel(
+   544→                                            version.id,
+   545→                                            editingLabel
+   546→                                          );
+   547→                                        if (e.key === 'Escape')
+   548→                                          setEditingVersionId(null);
+   549→                                      }}
+   550→                                      className="h-6 text-xs"
+   551→                                      autoFocus
+   552→                                    />
+   553→                                  ) : (
+   554→                                    <div className="flex items-center gap-1.5">
+   555→                                      <span className="text-xs font-medium truncate">
+   556→                                        {version.label}
+   557→                                      </span>
+   558→                                      {isCurrent && (
+   559→                                        <Badge
+   560→                                          variant="secondary"
+   561→                                          className="text-[9px] h-4 px-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 shrink-0"
+   562→                                        >
+   563→                                          <CheckCircle2 className="size-2.5 mr-0.5" />
+   564→                                          {t.versions.current}
+   565→                                        </Badge>
+   566→                                      )}
+   567→                                      {isFirst &&
+   568→                                        !isCurrent &&
+   569→                                        version.branch === activeBranch && (
+   570→                                          <Badge
+   571→                                            variant="outline"
+   572→                                            className="text-[9px] h-4 px-1 shrink-0"
+   573→                                          >
+   574→                                            Latest
+   575→                                          </Badge>
+   576→                                        )}
+   577→                                    </div>
+   578→                                  )}
+   579→
+   580→                                  {/* Timestamp */}
+   581→                                  <div className="flex items-center gap-1 mt-0.5">
+   582→                                    <Clock className="size-2.5 text-muted-foreground" />
+   583→                                    <span className="text-[10px] text-muted-foreground">
+   584→                                      {formatTimestamp(version.createdAt)}{' '}
+   585→                                      {t.versions.ago}
+   586→                                    </span>
+   587→                                  </div>
+   588→
+   589→                                  {/* Change summary */}
+   590→                                  {version.changeSummary && (
+   591→                                    <p className="text-[10px] text-muted-foreground mt-1 line-clamp-2">
+   592→                                      {version.changeSummary}
+   593→                                    </p>
+   594→                                  )}
+   595→                                </div>
+   596→
+   597→                                {/* Actions */}
+   598→                                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+   599→                                  <Tooltip>
+   600→                                    <TooltipTrigger asChild>
+   601→                                      <Button
+   602→                                        variant="ghost"
+   603→                                        size="sm"
+   604→                                        className="h-6 w-6 p-0"
+   605→                                        onClick={(e) => {
+   606→                                          e.stopPropagation();
+   607→                                          setEditingVersionId(version.id);
+   608→                                          setEditingLabel(version.label);
+   609→                                        }}
+   610→                                      >
+   611→                                        <Pencil className="size-3" />
+   612→                                      </Button>
+   613→                                    </TooltipTrigger>
+   614→                                    <TooltipContent side="left" className="text-xs">
+   615→                                      Edit label
+   616→                                    </TooltipContent>
+   617→                                  </Tooltip>
+   618→
+   619→                                  {!isCurrent && (
+   620→                                    <>
+   621→                                      <Tooltip>
+   622→                                        <TooltipTrigger asChild>
+   623→                                          <Button
+   624→                                            variant="ghost"
+   625→                                            size="sm"
+   626→                                            className="h-6 w-6 p-0"
+   627→                                            onClick={(e) => {
+   628→                                              e.stopPropagation();
+   629→                                              handleRollback(version);
+   630→                                            }}
+   631→                                          >
+   632→                                            <RotateCcw className="size-3" />
+   633→                                          </Button>
+   634→                                        </TooltipTrigger>
+   635→                                        <TooltipContent side="left" className="text-xs">
+   636→                                          {t.versions.rollback}
+   637→                                        </TooltipContent>
+   638→                                      </Tooltip>
+   639→
+   640→                                      <Tooltip>
+   641→                                        <TooltipTrigger asChild>
+   642→                                          <Button
+   643→                                            variant="ghost"
+   644→                                            size="sm"
+   645→                                            className="h-6 w-6 p-0"
+   646→                                            onClick={(e) => {
+   647→                                              e.stopPropagation();
+   648→                                              setBranchFromVersionId(
+   649→                                                version.id
+   650→                                              );
+   651→                                              setBranchDialogOpen(true);
+   652→                                            }}
+   653→                                          >
+   654→                                            <GitFork className="size-3" />
+   655→                                          </Button>
+   656→                                        </TooltipTrigger>
+   657→                                        <TooltipContent side="left" className="text-xs">
+   658→                                          {t.versions.branch}
+   659→                                        </TooltipContent>
+   660→                                      </Tooltip>
+   661→                                    </>
+   662→                                  )}
+   663→                                </div>
+   664→                              </div>
+   665→                            </div>
+   666→                          </motion.div>
+   667→                        );
+   668→                      })}
+   669→                    </div>
+   670→                  </div>
+   671→                )
+   672→              )}
+   673→            </AnimatePresence>
+   674→          </div>
+   675→        </ScrollArea>
+   676→      </div>
+   677→    </TooltipProvider>
+   678→  );
+   679→}
+   680→

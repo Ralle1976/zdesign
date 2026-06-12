@@ -6,10 +6,12 @@ import { ZDesignApp } from '@/components/zdesign/ZDesignApp';
 
 export default function Home() {
   return (
-    <ThemeProvider attribute="class" defaultTheme="light">
-      <I18nProvider>
-        <ZDesignApp />
-      </I18nProvider>
-    </ThemeProvider>
+    <div suppressHydrationWarning>
+      <ThemeProvider attribute="class" defaultTheme="light">
+        <I18nProvider>
+          <ZDesignApp />
+        </I18nProvider>
+      </ThemeProvider>
+    </div>
   );
 }

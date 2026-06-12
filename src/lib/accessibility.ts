@@ -198,12 +198,12 @@ export function scanDesignTree(tree: DesignNode): AccessibilityIssue[] {
       const ratio = calculateContrastRatio(textColor, bgColor);
 
       if (node.type === 'text' || node.type === 'heading' || node.type === 'button') {
+        // WCAG large text: >= 18pt (24px) OR >= 14pt (18.66px) with bold weight
+        const fontSizePx = parsePixelValue(style.fontSize);
+        const fontWeight = parseInt(style.fontWeight || '400');
         const isLargeText =
-          parsePixelValue(style.fontSize) !== null &&
-          (parsePixelValue(style.fontSize) ?? 0) >= 18 &&
-          (parseInt(style.fontWeight || '400') >= 700 ||
-            parsePixelValue(style.fontSize) !== null &&
-            (parsePixelValue(style.fontSize) ?? 0) >= 24);
+          (fontSizePx !== null && fontSizePx >= 24) ||
+          (fontSizePx !== null && fontSizePx >= 18 && fontWeight >= 700);
 
         const aaThreshold = isLargeText ? 3 : 4.5;
         const aaaThreshold = isLargeText ? 4.5 : 7;
@@ -239,8 +239,9 @@ export function scanDesignTree(tree: DesignNode): AccessibilityIssue[] {
     }
 
     // 2. Missing Alt Text for Images
+    // Note: node.content on images is typically the src URL, not alt text
     if (node.type === 'image') {
-      if (!node.content && !node.meta?.description && !node.meta?.a11yLabel) {
+      if (!node.meta?.alt && !node.meta?.description && !node.meta?.a11yLabel && !node.meta?.ariaLabel) {
         issues.push(
           createIssue(
             'critical',
@@ -262,7 +263,7 @@ export function scanDesignTree(tree: DesignNode): AccessibilityIssue[] {
 
     // 3. Missing Labels for Form Inputs
     if (node.type === 'input' || node.type === 'toggle' || node.type === 'slider') {
-      if (!node.meta?.a11yLabel && !node.content && !node.props?.['aria-label'] && !node.props?.['placeholder']) {
+      if (!node.meta?.a11yLabel && !node.meta?.ariaLabel && !node.content && !node.props?.['aria-label'] && !node.props?.['placeholder']) {
         issues.push(
           createIssue(
             'critical',
@@ -285,11 +286,18 @@ export function scanDesignTree(tree: DesignNode): AccessibilityIssue[] {
 
     // 4. Heading Hierarchy
     if (node.type === 'heading') {
-      const level = node.meta?.componentRef
-        ? parseInt(node.meta.componentRef.replace(/\D/g, ''), 10)
-        : 1;
+      // Determine heading level from tag (e.g., "h1" -> 1) or componentRef
+      let level = 1;
+      if (node.tag && /^h[1-6]$/.test(node.tag)) {
+        level = parseInt(node.tag.replace('h', ''), 10);
+      } else if (node.meta?.componentRef) {
+        const parsed = parseInt(node.meta.componentRef.replace(/\D/g, ''), 10);
+        if (!isNaN(parsed) && parsed >= 1 && parsed <= 6) {
+          level = parsed;
+        }
+      }
 
-      if (!isNaN(level) && level >= 1 && level <= 6) {
+      if (level >= 1 && level <= 6) {
         headingLevels.push({ level, id: node.id, name });
       }
     }
@@ -343,7 +351,7 @@ export function scanDesignTree(tree: DesignNode): AccessibilityIssue[] {
     }
 
     // 6. Semantic HTML Checks
-    if (node.type === 'nav' && !node.meta?.a11yRole) {
+    if (node.type === 'nav' && !node.meta?.a11yRole && !node.meta?.role && !node.meta?.ariaLabel && !node.meta?.a11yLabel) {
       // Nav should have an aria-label if there are multiple navs
       // Just flag it as info
       issues.push(
@@ -364,7 +372,7 @@ export function scanDesignTree(tree: DesignNode): AccessibilityIssue[] {
       );
     }
 
-    if (node.type === 'image' && node.style?.backgroundImage && !node.meta?.a11yLabel) {
+    if (node.type === 'image' && node.style?.backgroundImage && !node.meta?.a11yLabel && !node.meta?.ariaLabel && !node.meta?.alt) {
       issues.push(
         createIssue(
           'warning',
@@ -383,12 +391,13 @@ export function scanDesignTree(tree: DesignNode): AccessibilityIssue[] {
       );
     }
 
-    // Check for section without heading
+    // Check for section without heading - only flag if no ariaLabel is set
     if (node.type === 'section' && node.children) {
       const hasHeading = node.children.some(
         (child) => child.type === 'heading'
       );
-      if (!hasHeading) {
+      const hasAriaLabel = node.meta?.ariaLabel || node.meta?.a11yLabel;
+      if (!hasHeading && !hasAriaLabel) {
         issues.push(
           createIssue(
             'info',
@@ -481,27 +490,59 @@ export function scanDesignTree(tree: DesignNode): AccessibilityIssue[] {
 
 /**
  * Calculate an accessibility score from 0-100 based on issues found.
+ *
+ * Uses a proportional scoring system that doesn't collapse to 0
+ * on large design trees with many minor issues. Each category
+ * is scored independently (0-100), then averaged with weights.
  */
 export function calculateAccessibilityScore(issues: AccessibilityIssue[]): number {
   if (issues.length === 0) return 100;
 
-  let penalty = 0;
+  // Group issues by category and calculate per-category scores
+  const categories: Record<A11yCategory, { critical: number; warning: number; info: number }> = {
+    contrast: { critical: 0, warning: 0, info: 0 },
+    'alt-text': { critical: 0, warning: 0, info: 0 },
+    labels: { critical: 0, warning: 0, info: 0 },
+    headings: { critical: 0, warning: 0, info: 0 },
+    'touch-target': { critical: 0, warning: 0, info: 0 },
+    semantics: { critical: 0, warning: 0, info: 0 },
+  };
 
   for (const issue of issues) {
-    switch (issue.severity) {
-      case 'critical':
-        penalty += 15;
-        break;
-      case 'warning':
-        penalty += 7;
-        break;
-      case 'info':
-        penalty += 2;
-        break;
+    const cat = categories[issue.category];
+    if (cat) {
+      cat[issue.severity]++;
     }
   }
 
-  return Math.max(0, Math.round(100 - penalty));
+  // Score each category: start at 100, deduct per issue but cap deductions per category
+  // This prevents a single category from completely tanking the overall score
+  const categoryWeights: Record<A11yCategory, number> = {
+    contrast: 0.30,    // Most impactful for users
+    'alt-text': 0.20,  // Critical for screen readers
+    labels: 0.20,      // Critical for forms
+    headings: 0.10,    // Important for navigation
+    'touch-target': 0.10, // Important for mobile
+    semantics: 0.10,   // Nice to have
+  };
+
+  let overallScore = 0;
+
+  for (const [catName, catIssues] of Object.entries(categories)) {
+    const weight = categoryWeights[catName as A11yCategory] ?? 0.1;
+
+    // Per-category deduction: critical = 20, warning = 10, info = 3
+    // But cap total deduction at 100 per category (score floor = 0 per category)
+    const deduction = Math.min(
+      100,
+      catIssues.critical * 20 + catIssues.warning * 10 + catIssues.info * 3
+    );
+    const catScore = Math.max(0, 100 - deduction);
+
+    overallScore += catScore * weight;
+  }
+
+  return Math.round(overallScore);
 }
 
 /**

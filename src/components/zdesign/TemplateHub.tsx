@@ -27,6 +27,13 @@ import {
   X,
   Loader2,
   Check,
+  Upload,
+  Link,
+  FileJson,
+  Globe,
+  Figma,
+  Image as ImageIcon,
+  Sparkles,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -86,6 +93,13 @@ export function TemplateHub({ open, onOpenChange }: TemplateHubProps) {
   const [loading, setLoading] = useState(false);
   const [usingTemplate, setUsingTemplate] = useState<string | null>(null);
   const [seeding, setSeeding] = useState(false);
+  const [importTab, setImportTab] = useState<'browse' | 'import'>('browse');
+  const [importJson, setImportJson] = useState('');
+  const [importUrl, setImportUrl] = useState('');
+  const [importFigmaUrl, setImportFigmaUrl] = useState('');
+  const [importing, setImporting] = useState<string | null>(null); // 'json' | 'url' | 'figma' | null
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importSuccess, setImportSuccess] = useState<string | null>(null);
 
   // Seed templates if none exist
   const seedTemplates = useCallback(async () => {
@@ -250,6 +264,134 @@ export function TemplateHub({ open, onOpenChange }: TemplateHubProps) {
     return stars;
   };
 
+  // Helper: apply imported design tree to the store and optionally create a project
+  const applyImportedDesign = useCallback(async (design: Record<string, unknown>, sourceLabel: string) => {
+    const designTree = design as unknown as DesignNode;
+    const designName = (design.meta as Record<string, unknown>)?.name as string || sourceLabel;
+
+    // Try to create a project for the imported design
+    try {
+      const res = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: `Imported: ${designName}`,
+          type: 'CUSTOM',
+          designJSON: JSON.stringify(designTree),
+        }),
+      });
+      if (res.ok) {
+        const project = await res.json();
+        setProject(project.id, project.name, project.type);
+      }
+    } catch {
+      // Project creation failed, but we still apply the design
+    }
+
+    setDesignTree(designTree);
+    onOpenChange(false);
+    toast.success(`Design imported from ${sourceLabel}!`, { icon: '📦' });
+  }, [setProject, setDesignTree, onOpenChange]);
+
+  // Handle JSON import via /api/design/import
+  const handleImportJson = useCallback(async () => {
+    if (!importJson.trim()) return;
+    setImporting('json');
+    setImportError(null);
+    setImportSuccess(null);
+    try {
+      const res = await fetch('/api/design/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source: 'json', data: importJson.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.details || data.error || 'Failed to import JSON');
+      }
+      if (data.design) {
+        await applyImportedDesign(data.design, data.source === 'figma-json' ? 'Figma JSON' : 'JSON');
+      } else {
+        throw new Error('No design data returned from import');
+      }
+    } catch (err) {
+      setImportError(err instanceof Error ? err.message : 'Invalid JSON format');
+    } finally {
+      setImporting(null);
+    }
+  }, [importJson, applyImportedDesign]);
+
+  // Handle URL import via /api/design/import
+  const handleImportUrl = useCallback(async () => {
+    if (!importUrl.trim()) return;
+    setImporting('url');
+    setImportError(null);
+    setImportSuccess(null);
+    try {
+      const res = await fetch('/api/design/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source: 'url', data: importUrl.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.details || data.error || 'Failed to import from URL');
+      }
+      if (data.design) {
+        const hostname = (() => { try { return new URL(importUrl).hostname; } catch { return importUrl; } })();
+        await applyImportedDesign(data.design, hostname);
+      } else {
+        throw new Error('No design data returned from URL import');
+      }
+    } catch (err) {
+      setImportError(err instanceof Error ? err.message : 'Failed to import from URL');
+    } finally {
+      setImporting(null);
+    }
+  }, [importUrl, applyImportedDesign]);
+
+  // Handle Figma URL import via /api/design/import
+  const handleImportFigma = useCallback(async () => {
+    if (!importFigmaUrl.trim()) return;
+    setImporting('figma');
+    setImportError(null);
+    setImportSuccess(null);
+    try {
+      const res = await fetch('/api/design/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source: 'figma', data: importFigmaUrl.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.details || data.error || 'Failed to import from Figma');
+      }
+      if (data.design) {
+        await applyImportedDesign(data.design, 'Figma');
+      } else {
+        throw new Error('No design data returned from Figma import');
+      }
+    } catch (err) {
+      setImportError(err instanceof Error ? err.message : 'Failed to import from Figma');
+    } finally {
+      setImporting(null);
+    }
+  }, [importFigmaUrl, applyImportedDesign]);
+
+  // Handle file upload
+  const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      setImportJson(content);
+      setImportError(null);
+      setImportSuccess(`File "${file.name}" loaded. Click "Import JSON Design" to apply.`);
+    };
+    reader.readAsText(file);
+  }, []);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[95vw] w-full max-h-[90vh] h-[90vh] p-0 gap-0 overflow-hidden">
@@ -269,14 +411,45 @@ export function TemplateHub({ open, onOpenChange }: TemplateHubProps) {
                 </p>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-8"
-              onClick={() => onOpenChange(false)}
-            >
-              <X className="size-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              {/* Browse / Import Tabs */}
+              <div className="flex rounded-lg border bg-muted/50 p-0.5">
+                <button
+                  onClick={() => setImportTab('browse')}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    importTab === 'browse'
+                      ? 'bg-background shadow-sm text-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Layout className="size-3.5" />
+                    Browse
+                  </span>
+                </button>
+                <button
+                  onClick={() => setImportTab('import')}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    importTab === 'import'
+                      ? 'bg-background shadow-sm text-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Upload className="size-3.5" />
+                    Import
+                  </span>
+                </button>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8"
+                onClick={() => onOpenChange(false)}
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
           </div>
 
           {/* Search + Sort */}
@@ -338,24 +511,217 @@ export function TemplateHub({ open, onOpenChange }: TemplateHubProps) {
           </div>
         </div>
 
-        {/* Template Grid */}
-        <ScrollArea className="flex-1 h-[calc(90vh-200px)]">
-          <div className="p-6">
-            {seeding ? (
-              <div className="flex flex-col items-center justify-center py-20 gap-4">
-                <Loader2 className="size-8 animate-spin text-emerald-500" />
-                <p className="text-sm text-muted-foreground">Loading templates...</p>
-              </div>
-            ) : loading ? (
-              <div className="flex flex-col items-center justify-center py-20 gap-4">
-                <Loader2 className="size-8 animate-spin text-emerald-500" />
-                <p className="text-sm text-muted-foreground">{t.common.loading}</p>
-              </div>
-            ) : templates.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 gap-4">
-                <div className="size-16 rounded-2xl bg-muted flex items-center justify-center">
-                  <Layout className="size-8 text-muted-foreground" />
+        {/* Import Tab */}
+        {importTab === 'import' ? (
+          <ScrollArea className="flex-1 h-[calc(90vh-200px)]">
+            <div className="p-6 max-w-2xl mx-auto space-y-6">
+              <div className="text-center space-y-2 mb-6">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Sparkles className="size-5 text-emerald-500" />
+                  <h3 className="text-lg font-semibold">Import Design from External Sources</h3>
                 </div>
+                <p className="text-sm text-muted-foreground">
+                  Import designs from JSON files, URLs, or Figma. Each source is processed and converted to a Z.Design design tree.
+                </p>
+              </div>
+
+              {/* URL Import */}
+              <div className="space-y-3 p-4 rounded-xl border bg-card">
+                <h4 className="text-sm font-medium flex items-center gap-2">
+                  <Globe className="size-4 text-violet-500" />
+                  Import from URL
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  Paste a URL to analyze the page design, extract colors, headings, and create a similar layout.
+                </p>
+                <div className="flex gap-2">
+                  <Input
+                    value={importUrl}
+                    onChange={(e) => { setImportUrl(e.target.value); setImportError(null); setImportSuccess(null); }}
+                    placeholder="https://example.com"
+                    className="flex-1 h-9"
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleImportUrl(); }}
+                  />
+                  <Button
+                    onClick={handleImportUrl}
+                    disabled={!importUrl.trim() || importing !== null}
+                    className="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    {importing === 'url' ? (
+                      <><Loader2 className="size-4 mr-1.5 animate-spin" />Importing...</>
+                    ) : (
+                      <><Link className="size-4 mr-1.5" />Import URL</>
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">or</span>
+                </div>
+              </div>
+
+              {/* Figma Import */}
+              <div className="space-y-3 p-4 rounded-xl border bg-card">
+                <h4 className="text-sm font-medium flex items-center gap-2">
+                  <Figma className="size-4 text-[#A259FF]" />
+                  Import from Figma
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                    Beta
+                  </Badge>
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  Paste a Figma file URL to import as a starting design. You can also paste Figma export JSON below.
+                </p>
+                <div className="flex gap-2">
+                  <Input
+                    value={importFigmaUrl}
+                    onChange={(e) => { setImportFigmaUrl(e.target.value); setImportError(null); setImportSuccess(null); }}
+                    placeholder="https://figma.com/file/..."
+                    className="flex-1 h-9"
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleImportFigma(); }}
+                  />
+                  <Button
+                    onClick={handleImportFigma}
+                    disabled={!importFigmaUrl.trim() || importing !== null}
+                    variant="outline"
+                    className="shrink-0 border-purple-300 text-purple-700 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-300 dark:hover:bg-purple-900/20"
+                  >
+                    {importing === 'figma' ? (
+                      <><Loader2 className="size-4 mr-1.5 animate-spin" />Importing...</>
+                    ) : (
+                      <><Figma className="size-4 mr-1.5" />Import Figma</>
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">or</span>
+                </div>
+              </div>
+
+              {/* File Upload + Paste JSON */}
+              <div className="space-y-3 p-4 rounded-xl border bg-card">
+                <h4 className="text-sm font-medium flex items-center gap-2">
+                  <FileJson className="size-4 text-emerald-500" />
+                  Import from JSON
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  Upload a .json file or paste a Z.Design JSON / Figma export JSON directly.
+                </p>
+
+                {/* File Upload */}
+                <div className="border-2 border-dashed rounded-lg p-4 text-center hover:border-emerald-400 transition-colors">
+                  <input
+                    type="file"
+                    accept=".json,.txt"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="template-file-upload"
+                  />
+                  <label
+                    htmlFor="template-file-upload"
+                    className="cursor-pointer flex flex-col items-center gap-1.5"
+                  >
+                    <Upload className="size-6 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Click to upload a .json design file</span>
+                    <span className="text-xs text-muted-foreground/60">Supports Z.Design and Figma JSON</span>
+                  </label>
+                </div>
+
+                {/* Paste JSON */}
+                <textarea
+                  value={importJson}
+                  onChange={(e) => { setImportJson(e.target.value); setImportError(null); setImportSuccess(null); }}
+                  placeholder={'Paste your design JSON here...\n\nExample: {\n  "id": "root",\n  "type": "root",\n  "tag": "div",\n  "children": [...]\n}'}
+                  className="w-full h-36 rounded-lg border bg-muted/30 p-3 text-xs font-mono resize-y focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+                />
+                <Button
+                  onClick={handleImportJson}
+                  disabled={!importJson.trim() || importing !== null}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  {importing === 'json' ? (
+                    <><Loader2 className="size-4 mr-2 animate-spin" />Importing...</>
+                  ) : (
+                    <><FileJson className="size-4 mr-2" />Import JSON Design</>
+                  )}
+                </Button>
+              </div>
+
+              {/* Import Success */}
+              {importSuccess && !importError && (
+                <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800">
+                  <p className="text-sm text-emerald-700 dark:text-emerald-300">{importSuccess}</p>
+                </div>
+              )}
+
+              {/* Import Error */}
+              {importError && (
+                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800">
+                  <p className="text-sm text-red-600 dark:text-red-400">{importError}</p>
+                </div>
+              )}
+
+              {/* Supported Sources Info */}
+              <div className="p-4 rounded-xl bg-muted/30 border">
+                <h4 className="text-sm font-medium mb-2">Supported Import Sources</h4>
+                <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Globe className="size-3.5 text-violet-500" />
+                    Website URLs
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Figma className="size-3.5 text-[#A259FF]" />
+                    Figma URLs
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FileJson className="size-3.5 text-emerald-500" />
+                    Z.Design JSON
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FileJson className="size-3.5 text-cyan-500" />
+                    Figma export JSON
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Upload className="size-3.5 text-amber-500" />
+                    File upload
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="size-3.5 text-rose-500" />
+                    Image (via chat)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ScrollArea>
+        ) : (
+          <ScrollArea className="flex-1 h-[calc(90vh-200px)]">
+            <div className="p-6">
+              {seeding ? (
+                <div className="flex flex-col items-center justify-center py-20 gap-4">
+                  <Loader2 className="size-8 animate-spin text-emerald-500" />
+                  <p className="text-sm text-muted-foreground">Loading templates...</p>
+                </div>
+              ) : loading ? (
+                <div className="flex flex-col items-center justify-center py-20 gap-4">
+                  <Loader2 className="size-8 animate-spin text-emerald-500" />
+                  <p className="text-sm text-muted-foreground">{t.common.loading}</p>
+                </div>
+              ) : templates.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 gap-4">
+                  <div className="size-16 rounded-2xl bg-muted flex items-center justify-center">
+                    <Layout className="size-8 text-muted-foreground" />
+                  </div>
                 <p className="text-muted-foreground">No templates found</p>
                 <Button
                   variant="outline"
@@ -476,6 +842,7 @@ export function TemplateHub({ open, onOpenChange }: TemplateHubProps) {
             )}
           </div>
         </ScrollArea>
+        )}
       </DialogContent>
     </Dialog>
   );

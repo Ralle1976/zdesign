@@ -1,0 +1,850 @@
+     1→'use client';
+     2→
+     3→import { useState, useEffect, useCallback, useMemo } from 'react';
+     4→import { useZDesignStore } from '@/stores/zdesign-store';
+     5→import { useI18n } from '@/i18n';
+     6→import {
+     7→  Dialog,
+     8→  DialogContent,
+     9→  DialogTitle,
+    10→} from '@/components/ui/dialog';
+    11→import { Input } from '@/components/ui/input';
+    12→import { Button } from '@/components/ui/button';
+    13→import { Badge } from '@/components/ui/badge';
+    14→import { ScrollArea } from '@/components/ui/scroll-area';
+    15→import {
+    16→  Select,
+    17→  SelectContent,
+    18→  SelectItem,
+    19→  SelectTrigger,
+    20→  SelectValue,
+    21→} from '@/components/ui/select';
+    22→import {
+    23→  Search,
+    24→  Star,
+    25→  Download,
+    26→  Layout,
+    27→  X,
+    28→  Loader2,
+    29→  Check,
+    30→  Upload,
+    31→  Link,
+    32→  FileJson,
+    33→  Globe,
+    34→  Figma,
+    35→  Image as ImageIcon,
+    36→  Sparkles,
+    37→} from 'lucide-react';
+    38→import { motion, AnimatePresence } from 'framer-motion';
+    39→import { toast } from 'sonner';
+    40→import type { DesignNode } from '@/types/design';
+    41→
+    42→interface TemplateData {
+    43→  id: string;
+    44→  name: string;
+    45→  description: string;
+    46→  category: string;
+    47→  designJSON: string;
+    48→  thumbnail: string | null;
+    49→  tags: string[];
+    50→  downloads: number;
+    51→  rating: number;
+    52→  isPublic: boolean;
+    53→  createdAt: string;
+    54→}
+    55→
+    56→const CATEGORY_GRADIENTS: Record<string, string> = {
+    57→  'SaaS': 'from-emerald-400 to-teal-500',
+    58→  'Dashboard': 'from-cyan-400 to-emerald-500',
+    59→  'App UI': 'from-teal-400 to-emerald-600',
+    60→  'E-Commerce': 'from-amber-400 to-orange-500',
+    61→  'Portfolio': 'from-rose-400 to-pink-500',
+    62→  'Marketing': 'from-violet-400 to-purple-500',
+    63→  'Landing Pages': 'from-emerald-500 to-cyan-500',
+    64→};
+    65→
+    66→const CATEGORY_ICONS: Record<string, string> = {
+    67→  'SaaS': '☁️',
+    68→  'Dashboard': '📊',
+    69→  'App UI': '📱',
+    70→  'E-Commerce': '🛍️',
+    71→  'Portfolio': '🎨',
+    72→  'Marketing': '📣',
+    73→  'Landing Pages': '🚀',
+    74→};
+    75→
+    76→type SortOption = 'popular' | 'newest' | 'rating';
+    77→
+    78→interface TemplateHubProps {
+    79→  open: boolean;
+    80→  onOpenChange: (open: boolean) => void;
+    81→}
+    82→
+    83→export function TemplateHub({ open, onOpenChange }: TemplateHubProps) {
+    84→  const { t } = useI18n();
+    85→  const setProject = useZDesignStore((s) => s.setProject);
+    86→  const setDesignTree = useZDesignStore((s) => s.setDesignTree);
+    87→
+    88→  const [templates, setTemplates] = useState<TemplateData[]>([]);
+    89→  const [categories, setCategories] = useState<string[]>([]);
+    90→  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+    91→  const [searchQuery, setSearchQuery] = useState('');
+    92→  const [sortBy, setSortBy] = useState<SortOption>('popular');
+    93→  const [loading, setLoading] = useState(false);
+    94→  const [usingTemplate, setUsingTemplate] = useState<string | null>(null);
+    95→  const [seeding, setSeeding] = useState(false);
+    96→  const [importTab, setImportTab] = useState<'browse' | 'import'>('browse');
+    97→  const [importJson, setImportJson] = useState('');
+    98→  const [importUrl, setImportUrl] = useState('');
+    99→  const [importFigmaUrl, setImportFigmaUrl] = useState('');
+   100→  const [importing, setImporting] = useState<string | null>(null); // 'json' | 'url' | 'figma' | null
+   101→  const [importError, setImportError] = useState<string | null>(null);
+   102→  const [importSuccess, setImportSuccess] = useState<string | null>(null);
+   103→
+   104→  // Seed templates if none exist
+   105→  const seedTemplates = useCallback(async () => {
+   106→    setSeeding(true);
+   107→    try {
+   108→      const res = await fetch('/api/templates/seed', { method: 'POST' });
+   109→      if (res.ok) {
+   110→        const data = await res.json();
+   111→        if (!data.skipped) {
+   112→          // Templates were just seeded, fetch them
+   113→        }
+   114→      }
+   115→    } catch {
+   116→      // Seeding failed
+   117→    } finally {
+   118→      setSeeding(false);
+   119→    }
+   120→  }, []);
+   121→
+   122→  // Fetch templates
+   123→  const fetchTemplates = useCallback(async () => {
+   124→    setLoading(true);
+   125→    try {
+   126→      // First, ensure templates are seeded
+   127→      await seedTemplates();
+   128→
+   129→      const params = new URLSearchParams();
+   130→      params.set('limit', '50');
+   131→      if (selectedCategory !== 'all') {
+   132→        params.set('category', selectedCategory);
+   133→      }
+   134→      if (searchQuery) {
+   135→        params.set('search', searchQuery);
+   136→      }
+   137→      if (sortBy === 'popular') {
+   138→        params.set('sortBy', 'downloads');
+   139→        params.set('sortOrder', 'desc');
+   140→      } else if (sortBy === 'newest') {
+   141→        params.set('sortBy', 'createdAt');
+   142→        params.set('sortOrder', 'desc');
+   143→      } else if (sortBy === 'rating') {
+   144→        params.set('sortBy', 'rating');
+   145→        params.set('sortOrder', 'desc');
+   146→      }
+   147→
+   148→      const res = await fetch(`/api/templates?${params.toString()}`);
+   149→      if (res.ok) {
+   150→        const data = await res.json();
+   151→        setTemplates(data.templates || []);
+   152→        if (data.categories && data.categories.length > 0) {
+   153→          setCategories(data.categories);
+   154→        }
+   155→      }
+   156→    } catch {
+   157→      // Fetch failed
+   158→    } finally {
+   159→      setLoading(false);
+   160→    }
+   161→  }, [selectedCategory, searchQuery, sortBy, seedTemplates]);
+   162→
+   163→  useEffect(() => {
+   164→    if (open) {
+   165→      fetchTemplates();
+   166→    }
+   167→  }, [open, fetchTemplates]);
+   168→
+   169→  // Filter categories for display - always show the standard categories
+   170→  const displayCategories = useMemo(() => {
+   171→    const standard = [
+   172→      'all',
+   173→      'SaaS',
+   174→      'Dashboard',
+   175→      'App UI',
+   176→      'Marketing',
+   177→      'Portfolio',
+   178→      'E-Commerce',
+   179→      'Landing Pages',
+   180→    ];
+   181→    // Merge with any from DB
+   182→    const merged = [...standard];
+   183→    for (const cat of categories) {
+   184→      if (!merged.includes(cat)) {
+   185→        merged.push(cat);
+   186→      }
+   187→    }
+   188→    return merged;
+   189→  }, [categories]);
+   190→
+   191→  // Use template handler
+   192→  const handleUseTemplate = useCallback(
+   193→    async (template: TemplateData) => {
+   194→      setUsingTemplate(template.id);
+   195→      try {
+   196→        let designTree: DesignNode;
+   197→        try {
+   198→          designTree = JSON.parse(template.designJSON);
+   199→        } catch {
+   200→          designTree = {
+   201→            id: 'root',
+   202→            type: 'root',
+   203→            tag: 'div',
+   204→            children: [],
+   205→            style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' },
+   206→          };
+   207→        }
+   208→
+   209→        // Create a new project with the template's design
+   210→        const res = await fetch('/api/projects', {
+   211→          method: 'POST',
+   212→          headers: { 'Content-Type': 'application/json' },
+   213→          body: JSON.stringify({
+   214→            name: `${template.name} Project`,
+   215→            type: 'PROTOTYPE',
+   216→            designJSON: template.designJSON,
+   217→          }),
+   218→        });
+   219→
+   220→        if (res.ok) {
+   221→          const project = await res.json();
+   222→          setProject(project.id, project.name, project.type);
+   223→          setDesignTree(designTree);
+   224→          onOpenChange(false);
+   225→          toast.success(
+   226→            `${template.name} applied! Project created successfully.`,
+   227→            { icon: '🎨' }
+   228→          );
+   229→        } else {
+   230→          // Fallback: just update the current project
+   231→          setDesignTree(designTree);
+   232→          onOpenChange(false);
+   233→          toast.success(`${template.name} template applied!`, { icon: '🎨' });
+   234→        }
+   235→      } catch {
+   236→        toast.error('Failed to apply template. Please try again.');
+   237→      } finally {
+   238→        setUsingTemplate(null);
+   239→      }
+   240→    },
+   241→    [setProject, setDesignTree, onOpenChange]
+   242→  );
+   243→
+   244→  // Render star rating
+   245→  const renderStars = (rating: number) => {
+   246→    const stars = [];
+   247→    const fullStars = Math.floor(rating);
+   248→    const hasHalf = rating % 1 >= 0.3;
+   249→    for (let i = 0; i < 5; i++) {
+   250→      if (i < fullStars) {
+   251→        stars.push(
+   252→          <Star key={i} className="size-3.5 fill-amber-400 text-amber-400" />
+   253→        );
+   254→      } else if (i === fullStars && hasHalf) {
+   255→        stars.push(
+   256→          <Star key={i} className="size-3.5 fill-amber-400/50 text-amber-400" />
+   257→        );
+   258→      } else {
+   259→        stars.push(
+   260→          <Star key={i} className="size-3.5 text-gray-300 dark:text-gray-600" />
+   261→        );
+   262→      }
+   263→    }
+   264→    return stars;
+   265→  };
+   266→
+   267→  // Helper: apply imported design tree to the store and optionally create a project
+   268→  const applyImportedDesign = useCallback(async (design: Record<string, unknown>, sourceLabel: string) => {
+   269→    const designTree = design as unknown as DesignNode;
+   270→    const designName = (design.meta as Record<string, unknown>)?.name as string || sourceLabel;
+   271→
+   272→    // Try to create a project for the imported design
+   273→    try {
+   274→      const res = await fetch('/api/projects', {
+   275→        method: 'POST',
+   276→        headers: { 'Content-Type': 'application/json' },
+   277→        body: JSON.stringify({
+   278→          name: `Imported: ${designName}`,
+   279→          type: 'CUSTOM',
+   280→          designJSON: JSON.stringify(designTree),
+   281→        }),
+   282→      });
+   283→      if (res.ok) {
+   284→        const project = await res.json();
+   285→        setProject(project.id, project.name, project.type);
+   286→      }
+   287→    } catch {
+   288→      // Project creation failed, but we still apply the design
+   289→    }
+   290→
+   291→    setDesignTree(designTree);
+   292→    onOpenChange(false);
+   293→    toast.success(`Design imported from ${sourceLabel}!`, { icon: '📦' });
+   294→  }, [setProject, setDesignTree, onOpenChange]);
+   295→
+   296→  // Handle JSON import via /api/design/import
+   297→  const handleImportJson = useCallback(async () => {
+   298→    if (!importJson.trim()) return;
+   299→    setImporting('json');
+   300→    setImportError(null);
+   301→    setImportSuccess(null);
+   302→    try {
+   303→      const res = await fetch('/api/design/import', {
+   304→        method: 'POST',
+   305→        headers: { 'Content-Type': 'application/json' },
+   306→        body: JSON.stringify({ source: 'json', data: importJson.trim() }),
+   307→      });
+   308→      const data = await res.json();
+   309→      if (!res.ok) {
+   310→        throw new Error(data.details || data.error || 'Failed to import JSON');
+   311→      }
+   312→      if (data.design) {
+   313→        await applyImportedDesign(data.design, data.source === 'figma-json' ? 'Figma JSON' : 'JSON');
+   314→      } else {
+   315→        throw new Error('No design data returned from import');
+   316→      }
+   317→    } catch (err) {
+   318→      setImportError(err instanceof Error ? err.message : 'Invalid JSON format');
+   319→    } finally {
+   320→      setImporting(null);
+   321→    }
+   322→  }, [importJson, applyImportedDesign]);
+   323→
+   324→  // Handle URL import via /api/design/import
+   325→  const handleImportUrl = useCallback(async () => {
+   326→    if (!importUrl.trim()) return;
+   327→    setImporting('url');
+   328→    setImportError(null);
+   329→    setImportSuccess(null);
+   330→    try {
+   331→      const res = await fetch('/api/design/import', {
+   332→        method: 'POST',
+   333→        headers: { 'Content-Type': 'application/json' },
+   334→        body: JSON.stringify({ source: 'url', data: importUrl.trim() }),
+   335→      });
+   336→      const data = await res.json();
+   337→      if (!res.ok) {
+   338→        throw new Error(data.details || data.error || 'Failed to import from URL');
+   339→      }
+   340→      if (data.design) {
+   341→        const hostname = (() => { try { return new URL(importUrl).hostname; } catch { return importUrl; } })();
+   342→        await applyImportedDesign(data.design, hostname);
+   343→      } else {
+   344→        throw new Error('No design data returned from URL import');
+   345→      }
+   346→    } catch (err) {
+   347→      setImportError(err instanceof Error ? err.message : 'Failed to import from URL');
+   348→    } finally {
+   349→      setImporting(null);
+   350→    }
+   351→  }, [importUrl, applyImportedDesign]);
+   352→
+   353→  // Handle Figma URL import via /api/design/import
+   354→  const handleImportFigma = useCallback(async () => {
+   355→    if (!importFigmaUrl.trim()) return;
+   356→    setImporting('figma');
+   357→    setImportError(null);
+   358→    setImportSuccess(null);
+   359→    try {
+   360→      const res = await fetch('/api/design/import', {
+   361→        method: 'POST',
+   362→        headers: { 'Content-Type': 'application/json' },
+   363→        body: JSON.stringify({ source: 'figma', data: importFigmaUrl.trim() }),
+   364→      });
+   365→      const data = await res.json();
+   366→      if (!res.ok) {
+   367→        throw new Error(data.details || data.error || 'Failed to import from Figma');
+   368→      }
+   369→      if (data.design) {
+   370→        await applyImportedDesign(data.design, 'Figma');
+   371→      } else {
+   372→        throw new Error('No design data returned from Figma import');
+   373→      }
+   374→    } catch (err) {
+   375→      setImportError(err instanceof Error ? err.message : 'Failed to import from Figma');
+   376→    } finally {
+   377→      setImporting(null);
+   378→    }
+   379→  }, [importFigmaUrl, applyImportedDesign]);
+   380→
+   381→  // Handle file upload
+   382→  const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+   383→    const file = e.target.files?.[0];
+   384→    if (!file) return;
+   385→    const reader = new FileReader();
+   386→    reader.onload = (event) => {
+   387→      const content = event.target?.result as string;
+   388→      setImportJson(content);
+   389→      setImportError(null);
+   390→      setImportSuccess(`File "${file.name}" loaded. Click "Import JSON Design" to apply.`);
+   391→    };
+   392→    reader.readAsText(file);
+   393→  }, []);
+   394→
+   395→  return (
+   396→    <Dialog open={open} onOpenChange={onOpenChange}>
+   397→      <DialogContent className="max-w-[95vw] w-full max-h-[90vh] h-[90vh] p-0 gap-0 overflow-hidden">
+   398→        <DialogTitle className="sr-only">{t.templates.title}</DialogTitle>
+   399→
+   400→        {/* Header */}
+   401→        <div className="flex flex-col border-b bg-background px-6 py-4 gap-4">
+   402→          <div className="flex items-center justify-between">
+   403→            <div className="flex items-center gap-3">
+   404→              <div className="flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-sm">
+   405→                <Layout className="size-5" />
+   406→              </div>
+   407→              <div>
+   408→                <h2 className="text-xl font-bold text-foreground">{t.templates.title}</h2>
+   409→                <p className="text-sm text-muted-foreground">
+   410→                  {loading ? t.common.loading : `${templates.length} templates available`}
+   411→                </p>
+   412→              </div>
+   413→            </div>
+   414→            <div className="flex items-center gap-2">
+   415→              {/* Browse / Import Tabs */}
+   416→              <div className="flex rounded-lg border bg-muted/50 p-0.5">
+   417→                <button
+   418→                  onClick={() => setImportTab('browse')}
+   419→                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+   420→                    importTab === 'browse'
+   421→                      ? 'bg-background shadow-sm text-foreground'
+   422→                      : 'text-muted-foreground hover:text-foreground'
+   423→                  }`}
+   424→                >
+   425→                  <span className="flex items-center gap-1.5">
+   426→                    <Layout className="size-3.5" />
+   427→                    Browse
+   428→                  </span>
+   429→                </button>
+   430→                <button
+   431→                  onClick={() => setImportTab('import')}
+   432→                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+   433→                    importTab === 'import'
+   434→                      ? 'bg-background shadow-sm text-foreground'
+   435→                      : 'text-muted-foreground hover:text-foreground'
+   436→                  }`}
+   437→                >
+   438→                  <span className="flex items-center gap-1.5">
+   439→                    <Upload className="size-3.5" />
+   440→                    Import
+   441→                  </span>
+   442→                </button>
+   443→              </div>
+   444→              <Button
+   445→                variant="ghost"
+   446→                size="icon"
+   447→                className="size-8"
+   448→                onClick={() => onOpenChange(false)}
+   449→              >
+   450→                <X className="size-4" />
+   451→              </Button>
+   452→            </div>
+   453→          </div>
+   454→
+   455→          {/* Search + Sort */}
+   456→          <div className="flex items-center gap-3">
+   457→            <div className="relative flex-1">
+   458→              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+   459→              <Input
+   460→                placeholder={t.templates.search}
+   461→                value={searchQuery}
+   462→                onChange={(e) => setSearchQuery(e.target.value)}
+   463→                className="pl-9 h-9"
+   464→              />
+   465→              {searchQuery && (
+   466→                <button
+   467→                  onClick={() => setSearchQuery('')}
+   468→                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+   469→                >
+   470→                  <X className="size-3.5" />
+   471→                </button>
+   472→              )}
+   473→            </div>
+   474→            <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+   475→              <SelectTrigger className="w-[140px] h-9">
+   476→                <SelectValue />
+   477→              </SelectTrigger>
+   478→              <SelectContent>
+   479→                <SelectItem value="popular">
+   480→                  <span className="flex items-center gap-2">
+   481→                    <Download className="size-3.5" /> Popular
+   482→                  </span>
+   483→                </SelectItem>
+   484→                <SelectItem value="newest">Newest</SelectItem>
+   485→                <SelectItem value="rating">
+   486→                  <span className="flex items-center gap-2">
+   487→                    <Star className="size-3.5" /> Highest Rated
+   488→                  </span>
+   489→                </SelectItem>
+   490→              </SelectContent>
+   491→            </Select>
+   492→          </div>
+   493→
+   494→          {/* Category pills */}
+   495→          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+   496→            {displayCategories.map((cat) => (
+   497→              <button
+   498→                key={cat}
+   499→                onClick={() => setSelectedCategory(cat)}
+   500→                className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+   501→                  selectedCategory === cat
+   502→                    ? 'bg-emerald-600 text-white shadow-sm'
+   503→                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+   504→                }`}
+   505→              >
+   506→                {cat === 'all'
+   507→                  ? t.templates.categories.all
+   508→                  : cat}
+   509→              </button>
+   510→            ))}
+   511→          </div>
+   512→        </div>
+   513→
+   514→        {/* Import Tab */}
+   515→        {importTab === 'import' ? (
+   516→          <ScrollArea className="flex-1 h-[calc(90vh-200px)]">
+   517→            <div className="p-6 max-w-2xl mx-auto space-y-6">
+   518→              <div className="text-center space-y-2 mb-6">
+   519→                <div className="flex items-center justify-center gap-2 mb-2">
+   520→                  <Sparkles className="size-5 text-emerald-500" />
+   521→                  <h3 className="text-lg font-semibold">Import Design from External Sources</h3>
+   522→                </div>
+   523→                <p className="text-sm text-muted-foreground">
+   524→                  Import designs from JSON files, URLs, or Figma. Each source is processed and converted to a Z.Design design tree.
+   525→                </p>
+   526→              </div>
+   527→
+   528→              {/* URL Import */}
+   529→              <div className="space-y-3 p-4 rounded-xl border bg-card">
+   530→                <h4 className="text-sm font-medium flex items-center gap-2">
+   531→                  <Globe className="size-4 text-violet-500" />
+   532→                  Import from URL
+   533→                </h4>
+   534→                <p className="text-xs text-muted-foreground">
+   535→                  Paste a URL to analyze the page design, extract colors, headings, and create a similar layout.
+   536→                </p>
+   537→                <div className="flex gap-2">
+   538→                  <Input
+   539→                    value={importUrl}
+   540→                    onChange={(e) => { setImportUrl(e.target.value); setImportError(null); setImportSuccess(null); }}
+   541→                    placeholder="https://example.com"
+   542→                    className="flex-1 h-9"
+   543→                    onKeyDown={(e) => { if (e.key === 'Enter') handleImportUrl(); }}
+   544→                  />
+   545→                  <Button
+   546→                    onClick={handleImportUrl}
+   547→                    disabled={!importUrl.trim() || importing !== null}
+   548→                    className="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white"
+   549→                  >
+   550→                    {importing === 'url' ? (
+   551→                      <><Loader2 className="size-4 mr-1.5 animate-spin" />Importing...</>
+   552→                    ) : (
+   553→                      <><Link className="size-4 mr-1.5" />Import URL</>
+   554→                    )}
+   555→                  </Button>
+   556→                </div>
+   557→              </div>
+   558→
+   559→              <div className="relative">
+   560→                <div className="absolute inset-0 flex items-center">
+   561→                  <span className="w-full border-t" />
+   562→                </div>
+   563→                <div className="relative flex justify-center text-xs uppercase">
+   564→                  <span className="bg-background px-2 text-muted-foreground">or</span>
+   565→                </div>
+   566→              </div>
+   567→
+   568→              {/* Figma Import */}
+   569→              <div className="space-y-3 p-4 rounded-xl border bg-card">
+   570→                <h4 className="text-sm font-medium flex items-center gap-2">
+   571→                  <Figma className="size-4 text-[#A259FF]" />
+   572→                  Import from Figma
+   573→                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+   574→                    Beta
+   575→                  </Badge>
+   576→                </h4>
+   577→                <p className="text-xs text-muted-foreground">
+   578→                  Paste a Figma file URL to import as a starting design. You can also paste Figma export JSON below.
+   579→                </p>
+   580→                <div className="flex gap-2">
+   581→                  <Input
+   582→                    value={importFigmaUrl}
+   583→                    onChange={(e) => { setImportFigmaUrl(e.target.value); setImportError(null); setImportSuccess(null); }}
+   584→                    placeholder="https://figma.com/file/..."
+   585→                    className="flex-1 h-9"
+   586→                    onKeyDown={(e) => { if (e.key === 'Enter') handleImportFigma(); }}
+   587→                  />
+   588→                  <Button
+   589→                    onClick={handleImportFigma}
+   590→                    disabled={!importFigmaUrl.trim() || importing !== null}
+   591→                    variant="outline"
+   592→                    className="shrink-0 border-purple-300 text-purple-700 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-300 dark:hover:bg-purple-900/20"
+   593→                  >
+   594→                    {importing === 'figma' ? (
+   595→                      <><Loader2 className="size-4 mr-1.5 animate-spin" />Importing...</>
+   596→                    ) : (
+   597→                      <><Figma className="size-4 mr-1.5" />Import Figma</>
+   598→                    )}
+   599→                  </Button>
+   600→                </div>
+   601→              </div>
+   602→
+   603→              <div className="relative">
+   604→                <div className="absolute inset-0 flex items-center">
+   605→                  <span className="w-full border-t" />
+   606→                </div>
+   607→                <div className="relative flex justify-center text-xs uppercase">
+   608→                  <span className="bg-background px-2 text-muted-foreground">or</span>
+   609→                </div>
+   610→              </div>
+   611→
+   612→              {/* File Upload + Paste JSON */}
+   613→              <div className="space-y-3 p-4 rounded-xl border bg-card">
+   614→                <h4 className="text-sm font-medium flex items-center gap-2">
+   615→                  <FileJson className="size-4 text-emerald-500" />
+   616→                  Import from JSON
+   617→                </h4>
+   618→                <p className="text-xs text-muted-foreground">
+   619→                  Upload a .json file or paste a Z.Design JSON / Figma export JSON directly.
+   620→                </p>
+   621→
+   622→                {/* File Upload */}
+   623→                <div className="border-2 border-dashed rounded-lg p-4 text-center hover:border-emerald-400 transition-colors">
+   624→                  <input
+   625→                    type="file"
+   626→                    accept=".json,.txt"
+   627→                    onChange={handleFileUpload}
+   628→                    className="hidden"
+   629→                    id="template-file-upload"
+   630→                  />
+   631→                  <label
+   632→                    htmlFor="template-file-upload"
+   633→                    className="cursor-pointer flex flex-col items-center gap-1.5"
+   634→                  >
+   635→                    <Upload className="size-6 text-muted-foreground" />
+   636→                    <span className="text-sm text-muted-foreground">Click to upload a .json design file</span>
+   637→                    <span className="text-xs text-muted-foreground/60">Supports Z.Design and Figma JSON</span>
+   638→                  </label>
+   639→                </div>
+   640→
+   641→                {/* Paste JSON */}
+   642→                <textarea
+   643→                  value={importJson}
+   644→                  onChange={(e) => { setImportJson(e.target.value); setImportError(null); setImportSuccess(null); }}
+   645→                  placeholder={'Paste your design JSON here...\n\nExample: {\n  "id": "root",\n  "type": "root",\n  "tag": "div",\n  "children": [...]\n}'}
+   646→                  className="w-full h-36 rounded-lg border bg-muted/30 p-3 text-xs font-mono resize-y focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+   647→                />
+   648→                <Button
+   649→                  onClick={handleImportJson}
+   650→                  disabled={!importJson.trim() || importing !== null}
+   651→                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+   652→                >
+   653→                  {importing === 'json' ? (
+   654→                    <><Loader2 className="size-4 mr-2 animate-spin" />Importing...</>
+   655→                  ) : (
+   656→                    <><FileJson className="size-4 mr-2" />Import JSON Design</>
+   657→                  )}
+   658→                </Button>
+   659→              </div>
+   660→
+   661→              {/* Import Success */}
+   662→              {importSuccess && !importError && (
+   663→                <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800">
+   664→                  <p className="text-sm text-emerald-700 dark:text-emerald-300">{importSuccess}</p>
+   665→                </div>
+   666→              )}
+   667→
+   668→              {/* Import Error */}
+   669→              {importError && (
+   670→                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800">
+   671→                  <p className="text-sm text-red-600 dark:text-red-400">{importError}</p>
+   672→                </div>
+   673→              )}
+   674→
+   675→              {/* Supported Sources Info */}
+   676→              <div className="p-4 rounded-xl bg-muted/30 border">
+   677→                <h4 className="text-sm font-medium mb-2">Supported Import Sources</h4>
+   678→                <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+   679→                  <div className="flex items-center gap-2">
+   680→                    <Globe className="size-3.5 text-violet-500" />
+   681→                    Website URLs
+   682→                  </div>
+   683→                  <div className="flex items-center gap-2">
+   684→                    <Figma className="size-3.5 text-[#A259FF]" />
+   685→                    Figma URLs
+   686→                  </div>
+   687→                  <div className="flex items-center gap-2">
+   688→                    <FileJson className="size-3.5 text-emerald-500" />
+   689→                    Z.Design JSON
+   690→                  </div>
+   691→                  <div className="flex items-center gap-2">
+   692→                    <FileJson className="size-3.5 text-cyan-500" />
+   693→                    Figma export JSON
+   694→                  </div>
+   695→                  <div className="flex items-center gap-2">
+   696→                    <Upload className="size-3.5 text-amber-500" />
+   697→                    File upload
+   698→                  </div>
+   699→                  <div className="flex items-center gap-2">
+   700→                    <ImageIcon className="size-3.5 text-rose-500" />
+   701→                    Image (via chat)
+   702→                  </div>
+   703→                </div>
+   704→              </div>
+   705→            </div>
+   706→          </ScrollArea>
+   707→        ) : (
+   708→          <ScrollArea className="flex-1 h-[calc(90vh-200px)]">
+   709→            <div className="p-6">
+   710→              {seeding ? (
+   711→                <div className="flex flex-col items-center justify-center py-20 gap-4">
+   712→                  <Loader2 className="size-8 animate-spin text-emerald-500" />
+   713→                  <p className="text-sm text-muted-foreground">Loading templates...</p>
+   714→                </div>
+   715→              ) : loading ? (
+   716→                <div className="flex flex-col items-center justify-center py-20 gap-4">
+   717→                  <Loader2 className="size-8 animate-spin text-emerald-500" />
+   718→                  <p className="text-sm text-muted-foreground">{t.common.loading}</p>
+   719→                </div>
+   720→              ) : templates.length === 0 ? (
+   721→                <div className="flex flex-col items-center justify-center py-20 gap-4">
+   722→                  <div className="size-16 rounded-2xl bg-muted flex items-center justify-center">
+   723→                    <Layout className="size-8 text-muted-foreground" />
+   724→                  </div>
+   725→                <p className="text-muted-foreground">No templates found</p>
+   726→                <Button
+   727→                  variant="outline"
+   728→                  size="sm"
+   729→                  onClick={fetchTemplates}
+   730→                  className="gap-2"
+   731→                >
+   732→                  <Loader2 className="size-3.5" />
+   733→                  {t.common.retry}
+   734→                </Button>
+   735→              </div>
+   736→            ) : (
+   737→              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+   738→                <AnimatePresence mode="popLayout">
+   739→                  {templates.map((template, index) => {
+   740→                    const gradient =
+   741→                      CATEGORY_GRADIENTS[template.category] ||
+   742→                      'from-gray-400 to-gray-500';
+   743→                    const icon =
+   744→                      CATEGORY_ICONS[template.category] || '📄';
+   745→                    const isUsing = usingTemplate === template.id;
+   746→
+   747→                    return (
+   748→                      <motion.div
+   749→                        key={template.id}
+   750→                        layout
+   751→                        initial={{ opacity: 0, y: 20 }}
+   752→                        animate={{ opacity: 1, y: 0 }}
+   753→                        exit={{ opacity: 0, y: -20 }}
+   754→                        transition={{ delay: index * 0.05 }}
+   755→                        whileHover={{ y: -4 }}
+   756→                        className="group flex flex-col rounded-xl border bg-card overflow-hidden shadow-sm hover:shadow-lg transition-shadow"
+   757→                      >
+   758→                        {/* Thumbnail */}
+   759→                        <div
+   760→                          className={`relative h-44 bg-gradient-to-br ${gradient} flex items-center justify-center overflow-hidden`}
+   761→                        >
+   762→                          <span className="text-5xl opacity-80 group-hover:scale-110 transition-transform duration-300">
+   763→                            {icon}
+   764→                          </span>
+   765→                          {/* Category badge overlay */}
+   766→                          <div className="absolute top-3 left-3">
+   767→                            <Badge
+   768→                              variant="secondary"
+   769→                              className="bg-white/90 text-gray-800 backdrop-blur-sm text-[11px] font-semibold"
+   770→                            >
+   771→                              {template.category}
+   772→                            </Badge>
+   773→                          </div>
+   774→                          {/* Hover overlay */}
+   775→                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+   776→                        </div>
+   777→
+   778→                        {/* Content */}
+   779→                        <div className="flex flex-col flex-1 p-4 gap-2">
+   780→                          <h3 className="font-semibold text-sm text-foreground leading-tight">
+   781→                            {template.name}
+   782→                          </h3>
+   783→                          <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+   784→                            {template.description}
+   785→                          </p>
+   786→
+   787→                          {/* Tags */}
+   788→                          {template.tags && template.tags.length > 0 && (
+   789→                            <div className="flex gap-1.5 flex-wrap mt-1">
+   790→                              {template.tags.slice(0, 3).map((tag) => (
+   791→                                <span
+   792→                                  key={tag}
+   793→                                  className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium"
+   794→                                >
+   795→                                  {tag}
+   796→                                </span>
+   797→                              ))}
+   798→                            </div>
+   799→                          )}
+   800→
+   801→                          {/* Footer: rating + downloads + button */}
+   802→                          <div className="flex items-center justify-between mt-auto pt-3 border-t">
+   803→                            <div className="flex flex-col gap-1">
+   804→                              <div className="flex items-center gap-1">
+   805→                                {renderStars(template.rating)}
+   806→                                <span className="text-[11px] text-muted-foreground ml-1">
+   807→                                  {template.rating.toFixed(1)}
+   808→                                </span>
+   809→                              </div>
+   810→                              <div className="flex items-center gap-1 text-muted-foreground">
+   811→                                <Download className="size-3" />
+   812→                                <span className="text-[11px]">
+   813→                                  {template.downloads.toLocaleString()}
+   814→                                </span>
+   815→                              </div>
+   816→                            </div>
+   817→                            <Button
+   818→                              size="sm"
+   819→                              className="h-8 gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+   820→                              disabled={isUsing}
+   821→                              onClick={() => handleUseTemplate(template)}
+   822→                            >
+   823→                              {isUsing ? (
+   824→                                <>
+   825→                                  <Loader2 className="size-3 animate-spin" />
+   826→                                  Applying...
+   827→                                </>
+   828→                              ) : (
+   829→                                <>
+   830→                                  <Check className="size-3" />
+   831→                                  {t.templates.useTemplate}
+   832→                                </>
+   833→                              )}
+   834→                            </Button>
+   835→                          </div>
+   836→                        </div>
+   837→                      </motion.div>
+   838→                    );
+   839→                  })}
+   840→                </AnimatePresence>
+   841→              </div>
+   842→            )}
+   843→          </div>
+   844→        </ScrollArea>
+   845→        )}
+   846→      </DialogContent>
+   847→    </Dialog>
+   848→  );
+   849→}
+   850→

@@ -43,6 +43,19 @@ const NodeRenderer: React.FC<NodeRendererProps> = React.memo(
     // For heading nodes, determine the correct level
     const actualTag = node.type === 'heading' ? getHeadingLevel(node) : tag;
 
+    // Build accessibility attributes from meta
+    const a11yAttrs: Record<string, string> = {};
+    if (node.meta?.role || node.meta?.a11yRole) {
+      a11yAttrs.role = node.meta.role || node.meta?.a11yRole || '';
+    }
+    if (node.meta?.ariaLabel || node.meta?.a11yLabel) {
+      a11yAttrs['aria-label'] = node.meta.ariaLabel || node.meta?.a11yLabel || '';
+    }
+    // For images, add alt text
+    if (node.type === 'image') {
+      a11yAttrs.alt = node.meta?.alt || node.meta?.description || node.meta?.a11yLabel || '';
+    }
+
     // Merge default styles with node-specific styles
     const defaultStyle = useMemo(() => getDefaultStyle(node.type), [node.type]);
     const mergedStyle = useMemo(
@@ -100,6 +113,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = React.memo(
         onClick: handleClick,
         onMouseEnter: handleMouseEnter,
         onMouseLeave: handleMouseLeave,
+        ...a11yAttrs,
         ...(node.type === 'input' ? { placeholder: node.content || 'Input...', type: 'text' } : {}),
         ...(node.type === 'slider' ? { type: 'range' } : {}),
         ...(node.props ?? {}),
@@ -123,6 +137,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = React.memo(
           onClick: handleClick,
           onMouseEnter: handleMouseEnter,
           onMouseLeave: handleMouseLeave,
+          ...a11yAttrs,
         },
         !node.content && (
           <div className="flex h-full w-full items-center justify-center text-gray-400">
@@ -178,6 +193,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = React.memo(
           onClick: handleClick,
           onMouseEnter: handleMouseEnter,
           onMouseLeave: handleMouseLeave,
+          ...a11yAttrs,
         },
         node.content,
         node.children?.map((child) => (
@@ -204,6 +220,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = React.memo(
         onClick: handleClick,
         onMouseEnter: handleMouseEnter,
         onMouseLeave: handleMouseLeave,
+        ...a11yAttrs,
         ...(node.type === 'link' ? { href: '#' } : {}),
         ...(node.type === 'button' ? { type: 'button' } : {}),
         ...(node.props ?? {}),
@@ -253,9 +270,17 @@ export const DesignRenderer: React.FC<DesignRendererProps> = React.memo(
 
     const canvasRef = useRef<HTMLDivElement>(null);
     const [selectionRect, setSelectionRect] = useState<DOMRect | null>(null);
+    const [containerRect, setContainerRect] = useState<DOMRect | null>(null);
 
-    // Update selection overlay rect when selection changes
-    useEffect(() => {
+    // Panning state
+    const [isPanning, setIsPanning] = useState(false);
+    const [spaceHeld, setSpaceHeld] = useState(false);
+    const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+    const panStartRef = useRef<{ mouseX: number; mouseY: number; panX: number; panY: number } | null>(null);
+
+    // ---- Update selection rect ----
+
+    const updateSelectionRect = useCallback(() => {
       if (selectedId && canvasRef.current) {
         const el = canvasRef.current.querySelector(`[data-node-id="${selectedId}"]`);
         if (el) {
@@ -266,32 +291,190 @@ export const DesignRenderer: React.FC<DesignRendererProps> = React.memo(
       } else {
         setSelectionRect(null);
       }
-    }, [selectedId, node]);
+    }, [selectedId]);
+
+    // Update container rect
+    const updateContainerRect = useCallback(() => {
+      if (canvasRef.current) {
+        setContainerRect(canvasRef.current.getBoundingClientRect());
+      }
+    }, []);
+
+    // Update selection overlay rect when selection changes
+    useEffect(() => {
+      updateSelectionRect();
+      updateContainerRect();
+    }, [selectedId, node, updateSelectionRect, updateContainerRect]);
 
     // Update rect on scroll / resize
     useEffect(() => {
       if (!selectedId) return;
 
-      const updateRect = () => {
-        if (canvasRef.current) {
-          const el = canvasRef.current.querySelector(`[data-node-id="${selectedId}"]`);
-          if (el) {
-            setSelectionRect(el.getBoundingClientRect());
+      const updateRects = () => {
+        updateSelectionRect();
+        updateContainerRect();
+      };
+
+      window.addEventListener('scroll', updateRects, true);
+      window.addEventListener('resize', updateRects);
+      const observer = new ResizeObserver(updateRects);
+      if (canvasRef.current) observer.observe(canvasRef.current);
+
+      return () => {
+        window.removeEventListener('scroll', updateRects, true);
+        window.removeEventListener('resize', updateRects);
+        observer.disconnect();
+      };
+    }, [selectedId, updateSelectionRect, updateContainerRect]);
+
+    // ---- Keyboard shortcuts ----
+
+    useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        // Track space key for panning
+        if (e.code === 'Space' && !e.repeat) {
+          setSpaceHeld(true);
+          return;
+        }
+
+        // Skip if user is typing in an input/textarea/contentEditable
+        const target = e.target as HTMLElement;
+        if (
+          target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable
+        ) {
+          return;
+        }
+
+        // Delete/Backspace: delete selected node
+        if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId) {
+          e.preventDefault();
+          store.deleteNode(selectedId);
+          store.selectNode(null);
+          return;
+        }
+
+        // Escape: deselect
+        if (e.key === 'Escape' && selectedId) {
+          e.preventDefault();
+          store.selectNode(null);
+          return;
+        }
+
+        // Ctrl+Z / Cmd+Z: undo
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+          e.preventDefault();
+          store.undo();
+          return;
+        }
+
+        // Ctrl+Shift+Z / Ctrl+Y / Cmd+Shift+Z: redo
+        if (
+          ((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey) ||
+          ((e.ctrlKey || e.metaKey) && e.key === 'y')
+        ) {
+          e.preventDefault();
+          store.redo();
+          return;
+        }
+
+        // Arrow keys: nudge selected element
+        if (selectedId && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+          e.preventDefault();
+          const nudge = e.shiftKey ? 10 : 1;
+          switch (e.key) {
+            case 'ArrowUp':
+              store.nudgeNode(selectedId, 0, -nudge);
+              break;
+            case 'ArrowDown':
+              store.nudgeNode(selectedId, 0, nudge);
+              break;
+            case 'ArrowLeft':
+              store.nudgeNode(selectedId, -nudge, 0);
+              break;
+            case 'ArrowRight':
+              store.nudgeNode(selectedId, nudge, 0);
+              break;
+          }
+          return;
+        }
+      };
+
+      const handleKeyUp = (e: KeyboardEvent) => {
+        if (e.code === 'Space') {
+          setSpaceHeld(false);
+          // If we were panning, stop
+          if (isPanning) {
+            setIsPanning(false);
+            panStartRef.current = null;
           }
         }
       };
 
-      window.addEventListener('scroll', updateRect, true);
-      window.addEventListener('resize', updateRect);
-      const observer = new ResizeObserver(updateRect);
-      if (canvasRef.current) observer.observe(canvasRef.current);
+      window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener('keyup', handleKeyUp);
 
       return () => {
-        window.removeEventListener('scroll', updateRect, true);
-        window.removeEventListener('resize', updateRect);
-        observer.disconnect();
+        window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('keyup', handleKeyUp);
       };
-    }, [selectedId]);
+    }, [selectedId, store, isPanning, spaceHeld]);
+
+    // ---- Canvas panning (Space + drag) ----
+
+    useEffect(() => {
+      if (!isPanning) return;
+
+      const handleMouseMove = (e: MouseEvent) => {
+        if (!panStartRef.current) return;
+        const dx = e.clientX - panStartRef.current.mouseX;
+        const dy = e.clientY - panStartRef.current.mouseY;
+        setPanOffset({
+          x: panStartRef.current.panX + dx,
+          y: panStartRef.current.panY + dy,
+        });
+      };
+
+      const handleMouseUp = () => {
+        setIsPanning(false);
+        panStartRef.current = null;
+      };
+
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }, [isPanning]);
+
+    const handleCanvasMouseDown = useCallback(
+      (e: React.MouseEvent) => {
+        // Space + click = pan
+        if (spaceHeld) {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsPanning(true);
+          panStartRef.current = {
+            mouseX: e.clientX,
+            mouseY: e.clientY,
+            panX: panOffset.x,
+            panY: panOffset.y,
+          };
+          return;
+        }
+
+        // Clicking canvas background deselects
+        if ((e.target as HTMLElement).dataset?.nodeId === undefined) {
+          store.selectNode(null);
+        }
+      },
+      [store, panOffset, spaceHeld]
+    );
+
+    // ---- Handlers ----
 
     const handleSelect = useCallback(
       (id: string) => {
@@ -331,6 +514,7 @@ export const DesignRenderer: React.FC<DesignRendererProps> = React.memo(
 
     const handleZoomReset = useCallback(() => {
       store.setZoom(100);
+      setPanOffset({ x: 0, y: 0 });
     }, [store]);
 
     const handleViewportChange = useCallback(
@@ -360,21 +544,28 @@ export const DesignRenderer: React.FC<DesignRendererProps> = React.memo(
       }
     }, []);
 
-    const handleCanvasClick = useCallback(
-      (e: React.MouseEvent) => {
-        // Clicking canvas background deselects
-        if ((e.target as HTMLElement).dataset?.nodeId === undefined) {
-          store.selectNode(null);
-        }
-      },
-      [store]
-    );
-
     const handleAnnotationClick = useCallback(
       (x: number, y: number) => {
         onAnnotationClick?.(x, y);
       },
       [onAnnotationClick]
+    );
+
+    // ---- Drag-to-move handler ----
+    const handleMove = useCallback(
+      (nodeId: string, deltaX: number, deltaY: number) => {
+        // Use nudgeNode with the pixel delta
+        store.nudgeNode(nodeId, deltaX, deltaY);
+      },
+      [store]
+    );
+
+    // ---- Drag-to-resize handler ----
+    const handleResize = useCallback(
+      (nodeId: string, newStyle: Partial<import('@/types/design').DesignStyle>) => {
+        store.updateNode(nodeId, { style: { ...(findNodeById(node, nodeId)?.style ?? {}), ...newStyle } });
+      },
+      [store, node]
     );
 
     // Find selected node for the overlay
@@ -383,14 +574,28 @@ export const DesignRenderer: React.FC<DesignRendererProps> = React.memo(
       return findNodeById(node, selectedId);
     }, [node, selectedId]);
 
+    // Cursor style for panning
+    const canvasCursor = isPanning
+      ? 'grabbing'
+      : spaceHeld
+        ? 'grab'
+        : undefined;
+
     return (
       <div
         ref={canvasRef}
         className="relative flex h-full w-full flex-col overflow-hidden"
-        onClick={handleCanvasClick}
+        style={{ cursor: canvasCursor }}
+        onMouseDown={handleCanvasMouseDown}
       >
-        {/* Viewport Frame */}
-        <ViewportFrame viewport={viewport} zoom={zoom} showGrid={showGrid}>
+        {/* Viewport Frame with pan support */}
+        <ViewportFrame
+          viewport={viewport}
+          zoom={zoom}
+          showGrid={showGrid}
+          panX={panOffset.x}
+          panY={panOffset.y}
+        >
           {/* Render the design tree */}
           <NodeRenderer
             node={node}
@@ -424,9 +629,13 @@ export const DesignRenderer: React.FC<DesignRendererProps> = React.memo(
             nodeId={selectedId}
             nodeType={selectedNode.type}
             nodeName={selectedNode.meta?.name}
+            nodeStyle={selectedNode.style}
             rect={selectionRect}
+            containerRect={containerRect}
             onDelete={handleDelete}
             onDeselect={handleDeselect}
+            onMove={handleMove}
+            onResize={handleResize}
           />
         )}
 

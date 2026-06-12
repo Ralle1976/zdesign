@@ -71,6 +71,12 @@ export function mapDesignStyleToCSS(style?: DesignStyle): CSSProperties {
   if (style.borderStyle) css.borderStyle = style.borderStyle as CSSProperties['borderStyle'];
   if (style.borderColor) css.borderColor = style.borderColor;
   if (style.borderRadius) css.borderRadius = style.borderRadius;
+  // Border side shorthands
+  const styleAny = style as Record<string, unknown>;
+  if (styleAny.borderTop) css.borderTop = styleAny.borderTop as string;
+  if (styleAny.borderRight) css.borderRight = styleAny.borderRight as string;
+  if (styleAny.borderBottom) css.borderBottom = styleAny.borderBottom as string;
+  if (styleAny.borderLeft) css.borderLeft = styleAny.borderLeft as string;
 
   // Effects
   if (style.boxShadow) css.boxShadow = style.boxShadow;
@@ -98,12 +104,15 @@ export function mapDesignStyleToCSS(style?: DesignStyle): CSSProperties {
     'backgroundColor', 'backgroundImage', 'backgroundSize',
     'backgroundPosition', 'backgroundRepeat',
     'border', 'borderWidth', 'borderStyle', 'borderColor', 'borderRadius',
+    'borderTop', 'borderRight', 'borderBottom', 'borderLeft',
     'boxShadow', 'opacity', 'transform', 'transition', 'filter', 'backdropFilter',
     'overflow', 'overflowX', 'overflowY',
   ]);
 
   for (const [key, value] of Object.entries(style)) {
     if (!knownKeys.has(key) && value !== undefined && value !== null && typeof value === 'string') {
+      // Skip pseudo-selectors and other invalid CSS keys from LLM output
+      if (key.startsWith('&') || key.startsWith(':') || key.startsWith('@')) continue;
       // Convert camelCase to kebab-case for custom CSS properties
       const cssKey = key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`) as keyof CSSProperties;
       (css as Record<string, unknown>)[cssKey] = value;

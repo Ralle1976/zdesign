@@ -253,7 +253,7 @@ export function AccessibilityScanner({
       setIssues(found);
       setHasScanned(true);
       setIsScanning(false);
-    }, 500);
+    }, 300);
   }, [designTree]);
 
   const handleAutoFix = useCallback(
@@ -281,7 +281,7 @@ export function AccessibilityScanner({
       const newIssues = scanDesignTree(newTree);
       setIssues(newIssues);
     },
-    [designTree, setDesignTree]
+    [designTree, setDesignTree, updateNode]
   );
 
   const handleAutoFixAll = useCallback(() => {

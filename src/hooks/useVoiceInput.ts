@@ -29,17 +29,22 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
   const [transcript, setTranscript] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
+  // Hydration-safe: defer isSupported check to client-only
+  const [isSupported, setIsSupported] = useState(false);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
-  // Check browser support
-  const isSupported = typeof window !== 'undefined' && (
-    'SpeechRecognition' in window ||
-    'webkitSpeechRecognition' in window ||
-    (navigator.mediaDevices && typeof MediaRecorder !== 'undefined')
-  );
+  // Check browser support only on the client (avoids hydration mismatch)
+  useEffect(() => {
+    const supported = typeof window !== 'undefined' && (
+      'SpeechRecognition' in window ||
+      'webkitSpeechRecognition' in window ||
+      (navigator.mediaDevices && typeof MediaRecorder !== 'undefined')
+    );
+    setIsSupported(supported); // eslint-disable-line react-hooks/set-state-in-effect
+  }, []);
 
   const stopListening = useCallback(() => {
     // Stop Web Speech API
@@ -63,8 +68,8 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
 
   const startWithWebSpeech = useCallback(() => {
     const SpeechRecognitionClass =
-      (window as unknown as { SpeechRecognition?: typeof SpeechRecognition }).SpeechRecognition ||
-      (window as unknown as { webkitSpeechRecognition?: typeof SpeechRecognition }).webkitSpeechRecognition;
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
 
     if (!SpeechRecognitionClass) return false;
 
