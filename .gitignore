@@ -43,6 +43,14 @@ next-env.d.ts
 local-*
 .claude
 .z-ai-config
+
+# Claude Harness - Ephemeral/Per-Session State
+.claude-harness/sessions/
+.claude-harness/memory/compaction-backups/
+
+# Claude Code - Local settings
+.claude/settings.local.json
+
 *.log
 dev.log
 dev.out.log
@@ -51,4 +59,4 @@ prompt
 
 server.log
 # Skills directory
-/skills/
+/skills/tool-results/

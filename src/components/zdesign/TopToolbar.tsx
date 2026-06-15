@@ -75,6 +75,7 @@ export function TopToolbar() {
   const setQualityReport = useZDesignStore((s) => s.setQualityReport);
   const isGenerating = useZDesignStore((s) => s.isGenerating);
   const [isEnhancing, setIsEnhancing] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const handleEnhance = useCallback(async () => {
     if (!designTree.children || designTree.children.length === 0 || isEnhancing) return;
@@ -115,39 +116,104 @@ export function TopToolbar() {
 
   const handleExport = useCallback(
     async (format: string) => {
-      if (!projectId) return;
+      if (!projectId || isExporting) return;
+      setIsExporting(true);
+
       try {
         const res = await fetch('/api/export', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ projectId, format }),
         });
+
         if (res.ok) {
-          const data = await res.json();
-          if (format === 'html' && data.html) {
-            const blob = new Blob([data.html], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${projectName}.html`;
-            a.click();
-            URL.revokeObjectURL(url);
-          } else if (format === 'zip' && data.files) {
-            const json = JSON.stringify(data, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${projectName}-export.json`;
-            a.click();
-            URL.revokeObjectURL(url);
+          // Handle PDF export (returns binary data)
+          if (format === 'pdf') {
+            const contentType = res.headers.get('Content-Type');
+            if (contentType?.includes('application/pdf')) {
+              const blob = await res.blob();
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `${projectName}.pdf`;
+              a.click();
+              URL.revokeObjectURL(url);
+
+              // Show success feedback
+              console.log('[PDF Export] Success:', {
+                pages: res.headers.get('X-PDF-Pages'),
+                size: res.headers.get('X-PDF-Size'),
+                generatedAt: res.headers.get('X-PDF-Generated-At'),
+              });
+            } else {
+              // Fallback to HTML if PDF generation failed
+              const text = await res.text();
+              console.warn('[PDF Export] Fallback to HTML:', res.headers.get('X-PDF-Error'));
+
+              const blob = new Blob([text], { type: 'text/html' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `${projectName}.html`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }
           }
+          // Handle ZIP export (returns binary data)
+          else if (format === 'zip') {
+            const contentType = res.headers.get('Content-Type');
+            if (contentType?.includes('application/zip')) {
+              const blob = await res.blob();
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `${projectName}.zip`;
+              a.click();
+              URL.revokeObjectURL(url);
+
+              console.log('[ZIP Export] Success:', {
+                files: res.headers.get('X-ZIP-Files'),
+                size: res.headers.get('X-ZIP-Size'),
+                generatedAt: res.headers.get('X-ZIP-Generated-At'),
+              });
+            } else {
+              // Server returned error JSON
+              const errData = await res.json().catch(() => ({}));
+              console.error('[ZIP Export] Failed:', errData?.error || 'Unknown error');
+            }
+          }
+          // Handle JSON-based exports
+          else {
+            const data = await res.json();
+            if (format === 'html' && typeof data === 'string') {
+              const blob = new Blob([data], { type: 'text/html' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `${projectName}.html`;
+              a.click();
+              URL.revokeObjectURL(url);
+            } else if (format === 'nextjs' || format === 'react' || format === 'figma') {
+              const json = JSON.stringify(data, null, 2);
+              const blob = new Blob([json], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `${projectName}-${format}-export.json`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }
+          }
+        } else {
+          console.error('[Export] Failed:', res.status, res.statusText);
         }
-      } catch {
-        // Export failed
+      } catch (error) {
+        console.error('[Export] Error:', error);
+      } finally {
+        setIsExporting(false);
       }
     },
-    [projectId, projectName]
+    [projectId, projectName, isExporting]
   );
 
   return (
@@ -404,33 +470,44 @@ export function TopToolbar() {
         {/* Export dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-xs">
-              <Download className="size-3.5" />
-              <span className="hidden md:inline">{t.export.title}</span>
-              <ChevronDown className="size-3" />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 gap-1.5 text-xs"
+              disabled={isExporting}
+            >
+              {isExporting ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <Download className="size-3.5" />
+              )}
+              <span className="hidden md:inline">
+                {isExporting ? 'Exporting...' : t.export.title}
+              </span>
+              {!isExporting && <ChevronDown className="size-3" />}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuLabel>{t.export.title}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleExport('html')}>
+            <DropdownMenuItem onClick={() => handleExport('html')} disabled={isExporting}>
               <FileCode className="size-4" />
               {t.export.html}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleExport('pdf')}>
+            <DropdownMenuItem onClick={() => handleExport('pdf')} disabled={isExporting}>
               <FileText className="size-4" />
               {t.export.pdf}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleExport('zip')}>
+            <DropdownMenuItem onClick={() => handleExport('zip')} disabled={isExporting}>
               <Archive className="size-4" />
               {t.export.zip}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleExport('nextjs')}>
+            <DropdownMenuItem onClick={() => handleExport('nextjs')} disabled={isExporting}>
               <Globe className="size-4" />
               {t.export.nextjs}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleExport('react')}>
+            <DropdownMenuItem onClick={() => handleExport('react')} disabled={isExporting}>
               <FileCode className="size-4" />
               {t.export.react}
             </DropdownMenuItem>

@@ -3,6 +3,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { generatePDF, validatePDFEnvironment, estimatePDFGenerationTime } from '@/lib/export/pdf-generator';
+import { generateZIP } from '@/lib/export/zip-generator';
 
 interface DesignNode {
   id: string;
@@ -194,39 +196,92 @@ export async function POST(request: NextRequest) {
       }
 
       case 'pdf': {
-        // Return HTML with PDF-suggesting headers
-        // In a production environment, this would use a headless browser to render PDF
-        return new NextResponse(htmlContent, {
+        console.log('[Export API] Generating real PDF with Puppeteer...');
+
+        // Estimate generation time
+        const estimatedTime = estimatePDFGenerationTime(project.designJSON);
+        console.log(`[Export API] Estimated generation time: ${estimatedTime}ms`);
+
+        // Generate PDF using Puppeteer
+        const pdfResult = await generatePDF(project.designJSON, project.name, {
+          format: 'A4',
+          orientation: 'portrait',
+          margin: {
+            top: '20px',
+            right: '20px',
+            bottom: '20px',
+            left: '20px',
+          },
+          scale: 1,
+        });
+
+        if (!pdfResult.success || !pdfResult.pdfBuffer) {
+          console.error('[Export API] PDF generation failed:', pdfResult.error);
+
+          // Fall back to HTML if PDF generation fails
+          return new NextResponse(htmlContent, {
+            status: 200,
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8',
+              'Content-Disposition': `attachment; filename="${project.name.replace(/\s+/g, '-').toLowerCase()}.html"`,
+              'X-PDF-Error': pdfResult.error || 'PDF generation failed',
+              'X-Fallback': 'HTML',
+            },
+          });
+        }
+
+        console.log('[Export API] PDF generated successfully:', pdfResult.metadata);
+
+        // Return the real PDF
+        return new NextResponse(pdfResult.pdfBuffer, {
           status: 200,
           headers: {
-            'Content-Type': 'text/html; charset=utf-8',
+            'Content-Type': 'application/pdf',
             'Content-Disposition': `attachment; filename="${project.name.replace(/\s+/g, '-').toLowerCase()}.pdf"`,
+            'Content-Length': pdfResult.pdfBuffer.length.toString(),
             'X-Export-Format': 'pdf',
-            'X-Export-Note': 'HTML rendered for PDF conversion. Use a headless browser for actual PDF generation.',
+            'X-Export-Version': '2.0.0',
+            'X-PDF-Pages': pdfResult.metadata?.pages.toString() || '0',
+            'X-PDF-Size': pdfResult.metadata?.size.toString() || '0',
+            'X-PDF-Generated-At': pdfResult.metadata?.generatedAt || new Date().toISOString(),
           },
         });
       }
 
       case 'zip': {
-        // Return the design JSON and HTML for frontend to package
-        return NextResponse.json({
-          projectName: project.name,
-          files: [
+        console.log('[Export API] Generating real ZIP archive with jszip...');
+
+        const zipResult = await generateZIP(project.designJSON, project.name, {
+          includeAssets: true,
+          includeREADME: true,
+          includeDesignJSON: true,
+        });
+
+        if (!zipResult.success || !zipResult.zipBuffer) {
+          console.error('[Export API] ZIP generation failed:', zipResult.error);
+          return NextResponse.json(
             {
-              name: 'index.html',
-              content: htmlContent,
-              type: 'text/html',
+              error: 'ZIP generation failed',
+              details: zipResult.error || 'Unknown error',
             },
-            {
-              name: 'design.json',
-              content: project.designJSON,
-              type: 'application/json',
-            },
-          ],
-          metadata: {
-            exportedAt: new Date().toISOString(),
-            projectType: project.type,
-            version: '1.0.0',
+            { status: 500 }
+          );
+        }
+
+        console.log('[Export API] ZIP generated successfully:', zipResult.metadata);
+
+        const zipBytes = new Uint8Array(zipResult.zipBuffer);
+        return new NextResponse(zipBytes, {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/zip',
+            'Content-Disposition': `attachment; filename="${project.name.replace(/\s+/g, '-').toLowerCase()}.zip"`,
+            'Content-Length': zipBytes.length.toString(),
+            'X-Export-Format': 'zip',
+            'X-Export-Version': '1.0.0',
+            'X-ZIP-Files': (zipResult.metadata?.fileCount ?? 0).toString(),
+            'X-ZIP-Size': (zipResult.metadata?.size ?? 0).toString(),
+            'X-ZIP-Generated-At': zipResult.metadata?.generatedAt || new Date().toISOString(),
           },
         });
       }
