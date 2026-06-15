@@ -8,6 +8,7 @@ import { ChatPanel } from './ChatPanel';
 import { CanvasArea } from './CanvasArea';
 import { PropsPanel } from './PropsPanel';
 import { StatusBar } from './StatusBar';
+import { ErrorBoundary } from '@/components/zdesign/ErrorBoundary';
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -250,13 +251,19 @@ export function ZDesignApp() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="chat" className="flex-1 min-h-0 mt-0">
-            <ChatPanel />
+            <ErrorBoundary onError={(err) => console.error('[Chat Boundary]', err)}>
+              <ChatPanel />
+            </ErrorBoundary>
           </TabsContent>
           <TabsContent value="canvas" className="flex-1 min-h-0 mt-0">
-            <CanvasArea />
+            <ErrorBoundary onError={(err) => console.error('[Canvas Boundary]', err)}>
+              <CanvasArea />
+            </ErrorBoundary>
           </TabsContent>
           <TabsContent value="props" className="flex-1 min-h-0 mt-0">
-            <PropsPanel />
+            <ErrorBoundary onError={(err) => console.error('[Props Boundary]', err)}>
+              <PropsPanel />
+            </ErrorBoundary>
           </TabsContent>
         </Tabs>
         <StatusBar isSaving={isSaving} />
@@ -278,7 +285,9 @@ export function ZDesignApp() {
                 maxSize={35}
                 className="min-w-[280px]"
               >
-                <ChatPanel />
+                <ErrorBoundary onError={(err) => console.error('[Chat Boundary]', err)}>
+                  <ChatPanel />
+                </ErrorBoundary>
               </ResizablePanel>
               <ResizableHandle withHandle />
             </>
@@ -286,7 +295,9 @@ export function ZDesignApp() {
 
           {/* Center Panel - Canvas */}
           <ResizablePanel defaultSize={leftPanelOpen && rightPanelOpen ? 56 : leftPanelOpen || rightPanelOpen ? 72 : 100}>
-            <CanvasArea />
+            <ErrorBoundary onError={(err) => console.error('[Canvas Boundary]', err)}>
+              <CanvasArea />
+            </ErrorBoundary>
           </ResizablePanel>
 
           {/* Right Panel - Props */}
@@ -299,7 +310,9 @@ export function ZDesignApp() {
                 maxSize={30}
                 className="min-w-[240px]"
               >
-                <PropsPanel />
+                <ErrorBoundary onError={(err) => console.error('[Props Boundary]', err)}>
+                  <PropsPanel />
+                </ErrorBoundary>
               </ResizablePanel>
             </>
           )}
