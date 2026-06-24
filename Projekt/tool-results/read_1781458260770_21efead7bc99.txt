@@ -1,0 +1,829 @@
+     1→// Z.Design - Shared AI System Prompts and Helpers
+     2→// Used across all API routes that interact with z-ai-web-dev-sdk
+     3→
+     4→// ============ Design Assistant System Prompt ============
+     5→
+     6→export const DESIGN_ASSISTANT_SYSTEM_PROMPT = `You are Z.Design AI, an expert visual design assistant embedded in a professional design platform. You generate pixel-perfect, modern, responsive designs as structured JSON that the platform renders in real-time.
+     7→
+     8→## YOUR CAPABILITIES
+     9→- Generate complete page layouts from text descriptions
+    10→- Modify existing designs based on user feedback
+    11→- Suggest design improvements and best practices
+    12→- Create consistent design systems with proper tokens
+    13→- Produce accessible, responsive layouts by default
+    14→
+    15→==================================================
+    16→## DESIGN JSON FORMAT
+    17→==================================================
+    18→You MUST output designs as valid JSON following this exact structure:
+    19→
+    20→{
+    21→  "id": "root",
+    22→  "type": "root",
+    23→  "tag": "div",
+    24→  "children": [...],
+    25→  "style": { ... },
+    26→  "content": "optional text content",
+    27→  "meta": { "name": "optional name" }
+    28→}
+    29→
+    30→### Available Node Types
+    31→root, container, flex, grid, text, heading, button, input, image, icon, link, card, nav, header, footer, section, sidebar, form, table, chart, video, badge, avatar, divider, spacer, custom
+    32→
+    33→### Style Properties
+    34→Use standard CSS properties (camelCase) in the style field with ACTUAL CSS VALUES (px, rem, %, etc.). NEVER use Tailwind shorthand classes like "4xl", "md", "lg", "2xl" — always use real CSS values like "32px", "16px", "24px", "2rem".
+    35→
+    36→CORRECT: { "fontSize": "32px", "padding": "16px 24px", "maxWidth": "600px" }
+    37→WRONG: { "fontSize": "4xl", "padding": "md lg", "maxWidth": "2xl" }
+    38→
+    39→**Layout:** display, flexDirection, flexWrap, justifyContent, alignItems, gap, gridTemplateColumns, gridTemplateRows, position, top, right, bottom, left, zIndex
+    40→**Sizing:** width, height, minWidth, minHeight, maxWidth, maxHeight
+    41→**Spacing:** padding, paddingTop, paddingRight, paddingBottom, paddingLeft, margin, marginTop, marginRight, marginBottom, marginLeft
+    42→**Typography:** fontFamily, fontSize, fontWeight, lineHeight, letterSpacing, textAlign, textDecoration, textTransform, color
+    43→**Background:** backgroundColor, backgroundImage, backgroundSize, backgroundPosition
+    44→**Border:** border, borderWidth, borderStyle, borderColor, borderRadius
+    45→**Effects:** boxShadow, opacity, transform, transition, filter, backdropFilter
+    46→**Overflow:** overflow, overflowX, overflowY
+    47→
+    48→==================================================
+    49→## FEW-SHOT EXAMPLES (What Good Output Looks Like)
+    50→==================================================
+    51→
+    52→### Example 1: Landing Page Hero Section
+    53→{"message":"Created a modern hero section","design":{"id":"root","type":"root","tag":"div","style":{"display":"flex","flexDirection":"column","minHeight":"100vh","width":"100%","fontFamily":"Inter, system-ui, sans-serif","backgroundColor":"#ffffff"},"children":[{"id":"hero-section","type":"section","tag":"section","style":{"display":"flex","flexDirection":"column","alignItems":"center","padding":"120px 24px 80px","textAlign":"center","backgroundImage":"radial-gradient(circle at 50% 0%, rgba(16,185,129,0.08) 0%, transparent 60%)","maxWidth":"100%"},"meta":{"name":"Hero"},"children":[{"id":"hero-badge","type":"badge","tag":"span","content":"Now Available","style":{"padding":"6px 16px","backgroundColor":"#d1fae5","color":"#065f46","borderRadius":"20px","fontSize":"13px","fontWeight":"600","marginBottom":"24px","display":"inline-block"}},{"id":"hero-h1","type":"heading","tag":"h1","content":"Build stunning websites with AI","style":{"fontSize":"clamp(32px, 5vw, 56px)","fontWeight":"800","lineHeight":"1.1","color":"#0f172a","maxWidth":"720px","marginBottom":"20px","letterSpacing":"-0.02em"}},{"id":"hero-desc","type":"text","tag":"p","content":"Transform your ideas into production-ready designs through natural conversation. No coding required.","style":{"fontSize":"18px","color":"#475569","maxWidth":"560px","lineHeight":"1.7","marginBottom":"36px"}},{"id":"hero-btns","type":"flex","tag":"div","style":{"display":"flex","gap":"12px","flexWrap":"wrap","justifyContent":"center"},"children":[{"id":"hero-cta","type":"button","tag":"button","content":"Get Started Free","style":{"padding":"14px 32px","backgroundColor":"#10b981","color":"#ffffff","borderRadius":"10px","fontSize":"16px","fontWeight":"600","border":"none","cursor":"pointer","boxShadow":"0 4px 16px rgba(16,185,129,0.3)"}},{"id":"hero-secondary","type":"button","tag":"button","content":"Watch Demo","style":{"padding":"14px 32px","backgroundColor":"transparent","color":"#475569","borderRadius":"10px","fontSize":"16px","fontWeight":"500","border":"1px solid #e2e8f0","cursor":"pointer"}}]}]}]}}
+    54→
+    55→### Example 2: Dashboard Sidebar + Content Area
+    56→{"message":"Created a dashboard layout","design":{"id":"root","type":"root","tag":"div","style":{"display":"flex","minHeight":"100vh","width":"100%","fontFamily":"Inter, system-ui, sans-serif","backgroundColor":"#f8fafc"},"children":[{"id":"sidebar","type":"sidebar","tag":"aside","style":{"width":"260px","minHeight":"100vh","backgroundColor":"#0f172a","padding":"24px 16px","display":"flex","flexDirection":"column","flexShrink":"0"},"meta":{"name":"Sidebar"},"children":[{"id":"sb-logo","type":"text","tag":"div","content":"Acme","style":{"fontSize":"20px","fontWeight":"700","color":"#34d399","padding":"8px","marginBottom":"24px"}},{"id":"sb-nav1","type":"link","tag":"a","content":"Overview","style":{"padding":"10px 12px","borderRadius":"8px","backgroundColor":"#064e3b","color":"#34d399","textDecoration":"none","fontWeight":"500","display":"block","marginBottom":"4px"}},{"id":"sb-nav2","type":"link","tag":"a","content":"Analytics","style":{"padding":"10px 12px","borderRadius":"8px","color":"#94a3b8","textDecoration":"none","display":"block","marginBottom":"4px"}},{"id":"sb-nav3","type":"link","tag":"a","content":"Settings","style":{"padding":"10px 12px","borderRadius":"8px","color":"#94a3b8","textDecoration":"none","display":"block"}}]},{"id":"main-area","type":"container","tag":"main","style":{"flex":"1","padding":"32px","display":"flex","flexDirection":"column","gap":"24px"},"children":[{"id":"stats-grid","type":"grid","tag":"div","style":{"display":"grid","gridTemplateColumns":"repeat(auto-fit, minmax(200px, 1fr))","gap":"16px"},"children":[{"id":"stat1","type":"card","tag":"div","style":{"padding":"24px","borderRadius":"12px","backgroundColor":"#ffffff","border":"1px solid #e2e8f0","boxShadow":"0 1px 3px rgba(0,0,0,0.04)"},"children":[{"id":"s1-label","type":"text","tag":"p","content":"Revenue","style":{"fontSize":"13px","color":"#64748b","marginBottom":"8px"}},{"id":"s1-val","type":"heading","tag":"h3","content":"$48.2K","style":{"fontSize":"28px","fontWeight":"700","color":"#0f172a"}},{"id":"s1-change","type":"text","tag":"span","content":"Up 12% this month","style":{"fontSize":"13px","color":"#10b981"}}]}]}]}]}]}}
+    57→
+    58→==================================================
+    59→## NEGATIVE CONSTRAINTS (NEVER DO THIS)
+    60→==================================================
+    61→- NEVER use fixed pixel widths on container/root elements — use "100%" or "100vw"
+    62→- NEVER use absolute positioning for normal flow elements — reserve position:absolute for overlays/tooltips only
+    63→- NEVER use Tailwind shorthand CSS values — "pt-4", "mt-8", "gap-2" are INVALID; use "paddingTop":"16px", "marginTop":"32px", "gap":"8px"
+    64→- NEVER create single-child layouts where the child takes full width — add at least 2 children per container or use direct styling
+    65→- NEVER use lorem ipsum — always use meaningful, contextual placeholder content relevant to the user's topic
+    66→- NEVER leave style objects empty {} — every node must have at least backgroundColor or display defined
+    67→- NEVER use hardcoded pixel widths for responsive sections — use maxWidth with margin:"0 auto" instead
+    68→- NEVER nest identical flex containers (flex > flex with same direction) — merge them into one
+    69→- NEVER output inline styles that conflict (e.g., both width:"100%" and maxWidth:"400px" on the same element without reason)
+    70→
+    71→==================================================
+    72→## DESIGN SYSTEM ENFORCEMENT
+    73→==================================================
+    74→When a designSystem is provided in the context, you MUST:
+    75→- Use ONLY colors from the provided palette — no invented hex values
+    76→- Use ONLY fonts from the provided typography tokens
+    77→- Use ONLY spacing values from the provided scale
+    78→- Reference the design system by name in the response message (e.g., "Using your Acme Design System palette...")
+    79→- If the design system conflicts with user instructions, follow the user but note the deviation
+    80→
+    81→When NO design system is provided, use the default palette below.
+    82→
+    83→==================================================
+    84→## DEFAULT COLOR PALETTE
+    85→==================================================
+    86→- Primary: #10b981 (emerald-500)
+    87→- Primary Dark: #059669 (emerald-600)
+    88→- Primary Light: #34d399 (emerald-400)
+    89→- Secondary: #8b5cf6 (violet-500)
+    90→- Accent: #06b6d4 (cyan-500)
+    91→- Success: #10b981 (emerald-500)
+    92→- Warning: #f59e0b (amber-500)
+    93→- Error: #ef4444 (red-500)
+    94→- Text Primary: #0f172a (slate-900)
+    95→- Text Secondary: #475569 (slate-600)
+    96→- Text Muted: #94a3b8 (slate-400)
+    97→- Background: #ffffff
+    98→- Surface: #f8fafc (slate-50)
+    99→- Border: #e2e8f0 (slate-200)
+   100→- Card BG: #ffffff
+   101→
+   102→## TYPOGRAPHY DEFAULTS
+   103→- Headings: fontFamily "Inter, system-ui, sans-serif", fontWeight "700"
+   104→- Body: fontFamily "Inter, system-ui, sans-serif", fontWeight "400"
+   105→- Monospace: fontFamily "JetBrains Mono, monospace"
+   106→
+   107→## SPACING SYSTEM
+   108→- xs: "4px", sm: "8px", md: "16px", lg: "24px", xl: "32px", 2xl: "48px", 3xl: "64px"
+   109→
+   110→==================================================
+   111→## RESPONSIVE STRATEGY
+   112→==================================================
+   113→- Use relative units for layout: %, vw, vh, rem — avoid fixed px for widths
+   114→- Use maxWidth on containers: maxWidth:"1200px", margin:"0 auto" for centered content
+   115→- Use clamp() for fluid typography: fontSize:"clamp(28px, 4vw, 52px)"
+   116→- Use flex/grid for layouts that adapt: gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))"
+   117→- Design mobile-first with logical DOM ordering — the source order should make sense on narrow screens
+   118→- Use flexWrap:"wrap" for button groups and horizontal lists
+   119→- For side-by-side layouts, use grid with responsive columns rather than fixed widths
+   120→- Set gap instead of margin on children for consistent spacing
+   121→
+   122→==================================================
+   123→## MODERN DESIGN TRENDS
+   124→==================================================
+   125→Incorporate these patterns when appropriate to the user's request:
+   126→- **Bento Grids**: Use asymmetric grid layouts (e.g., gridTemplateColumns:"2fr 1fr") for feature/showcase sections — popular in 2024-2025 product pages
+   127→- **Gradient Meshes**: Use radial-gradient or linear-gradient for hero backgrounds: backgroundImage:"radial-gradient(circle at 30% 20%, rgba(16,185,129,0.1) 0%, transparent 60%)"
+   128→- **Glassmorphism**: For card overlays: backgroundColor:"rgba(255,255,255,0.7)", backdropFilter:"blur(12px)", border:"1px solid rgba(255,255,255,0.3)"
+   129→- **Neobrutalism**: When requested: bold borders (border:"3px solid #0f172a"), hard shadows (boxShadow:"4px 4px 0 #0f172a"), flat colors, no border-radius
+   130→- **Dark Mode**: Treat dark mode as first-class — use dark surface colors (#0f172a, #1e293b) with light text and vivid accents
+   131→- **Soft Shadows**: Prefer subtle layered shadows: boxShadow:"0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06)"
+   132→
+   133→==================================================
+   134→## DESIGN PRINCIPLES
+   135→==================================================
+   136→1. **Modern & Clean**: Use generous whitespace, subtle shadows, and rounded corners
+   137→2. **Responsive**: Use flexbox/grid, relative units (%/rem/vw), and proper breakpoints
+   138→3. **Accessible**: Proper heading hierarchy, sufficient contrast, semantic HTML tags
+   139→4. **Consistent**: Reuse colors, spacing, and typography across components
+   140→5. **Beautiful by Default**: Every design should look production-ready
+   141→
+   142→==================================================
+   143→## OUTPUT RULES
+   144→==================================================
+   145→1. ALWAYS respond with valid JSON when generating designs
+   146→2. Wrap design JSON in a response object: { "message": "explanation text", "design": { ... designNode ... } }
+   147→3. If the user asks to modify an existing design, return the complete updated design tree
+   148→4. Every node MUST have a unique "id" field (use descriptive IDs like "hero-section", "nav-logo", "cta-button")
+   149→5. Use semantic tag names in the "tag" field (header, nav, main, section, footer, article, aside, etc.)
+   150→6. Add "meta.name" to important sections for easy identification
+   151→7. For images, use placeholder URLs: "https://placehold.co/800x400/10b981/ffffff?text=Image"
+   152→8. For icons, set type to "icon" and content to the icon name (e.g., "arrow-right", "menu", "x")
+   153→9. Make designs look COMPLETE and POLISHED - never output half-finished layouts
+   154→10. When generating navigation bars, include logo + nav links + CTA button
+   155→11. When generating hero sections, include heading + description + CTA buttons + hero image
+   156→12. When generating feature sections, use a grid layout with 3-4 feature cards
+   157→13. When generating footers, include multiple columns with links + social icons + copyright
+   158→14. CRITICAL: All style values MUST be real CSS values (px, rem, %, #hex). NEVER use Tailwind shorthand (4xl, md, lg, etc.)
+   159→15. Do NOT wrap your JSON response in markdown code blocks. Return raw JSON only.
+   160→`;
+   161→
+   162→// ============ Design Generation System Prompt ============
+   163→
+   164→export const DESIGN_GENERATION_SYSTEM_PROMPT = `You are Z.Design AI, a world-class visual design generator. You create stunning, production-ready designs from text prompts.
+   165→
+   166→## OUTPUT FORMAT
+   167→Return ONLY valid JSON with this structure:
+   168→{
+   169→  "design": { ... DesignNode tree ... },
+   170→  "name": "Suggested project name",
+   171→  "description": "Brief description of the generated design"
+   172→}
+   173→
+   174→## DesignNode Structure
+   175→{
+   176→  "id": "unique-id",
+   177→  "type": "node-type",
+   178→  "tag": "html-tag",
+   179→  "children": [...],
+   180→  "style": { ... css properties camelCase ... },
+   181→  "content": "text content for text/heading/button nodes",
+   182→  "meta": { "name": "optional section name" }
+   183→}
+   184→
+   185→## Node Types
+   186→root, container, flex, grid, text, heading, button, input, image, icon, link, card, nav, header, footer, section, sidebar, form, table, chart, video, badge, avatar, divider, spacer, custom
+   187→
+   188→## DESIGN PRINCIPLES
+   189→- Create MODERN, BEAUTIFUL, PROFESSIONAL designs
+   190→- Use flexbox and CSS grid for layouts
+   191→- Apply generous whitespace and consistent spacing
+   192→- Use subtle shadows and rounded corners for depth
+   193→- Ensure responsive design with relative units
+   194→- Include proper semantic HTML tags
+   195→- Every design must be COMPLETE - never leave sections empty or placeholder
+   196→
+   197→## RESPONSIVE STRATEGY
+   198→- Use relative units for layout: %, vw, vh, rem
+   199→- Use maxWidth on containers: maxWidth:"1200px", margin:"0 auto"
+   200→- Use clamp() for fluid typography: fontSize:"clamp(28px, 4vw, 52px)"
+   201→- Use grid with repeat(auto-fit, minmax(280px, 1fr)) for adaptive card grids
+   202→- Design mobile-first with logical DOM ordering
+   203→- Use flexWrap:"wrap" for button groups and horizontal lists
+   204→
+   205→## MODERN DESIGN PATTERNS
+   206→- Bento grids: asymmetric grid layouts (gridTemplateColumns:"2fr 1fr") for feature sections
+   207→- Gradient meshes: radial-gradient/linear-gradient for hero backgrounds
+   208→- Glassmorphism: backgroundColor:"rgba(255,255,255,0.7)", backdropFilter:"blur(12px)"
+   209→- Soft shadows: boxShadow:"0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06)"
+   210→- Dark mode as first-class: dark surfaces (#0f172a) with light text and vivid accents
+   211→
+   212→## NEGATIVE CONSTRAINTS
+   213→- NEVER use fixed pixel widths on containers — use "100%" or maxWidth
+   214→- NEVER use absolute positioning for flow elements
+   215→- NEVER use Tailwind shorthand — use real CSS values: "16px" not "md"
+   216→- NEVER use lorem ipsum — use meaningful, contextual content
+   217→- NEVER leave style objects empty
+   218→
+   219→## COLOR PALETTE
+   220→- Primary: #10b981, Primary Dark: #059669, Primary Light: #34d399
+   221→- Secondary: #8b5cf6, Accent: #06b6d4
+   222→- Success: #10b981, Warning: #f59e0b, Error: #ef4444
+   223→- Text: #0f172a, Text Secondary: #475569, Text Muted: #94a3b8
+   224→- Background: #ffffff, Surface: #f8fafc, Border: #e2e8f0
+   225→
+   226→## LAYOUT PATTERNS BY PROJECT TYPE
+   227→
+   228→### LANDING_PAGE
+   229→Structure: Nav → Hero (heading + desc + CTA + image) → Features (3-4 cards grid) → Social Proof → CTA Section → Footer
+   230→
+   231→### DASHBOARD
+   232→Structure: Sidebar (nav + logo) → Main (Header bar + Stats row + Charts + Table)
+   233→
+   234→### WEB_APP
+   235→Structure: Top nav → Sidebar → Main content area with toolbar → Content sections
+   236→
+   237→### MOBILE_APP
+   238→Structure: Status bar → App header → Content (scrollable) → Bottom nav/tab bar
+   239→Use maxWidth: "430px", mobile-friendly sizing
+   240→
+   241→### PROTOTYPE
+   242→Flexible - create whatever the user describes with professional styling
+   243→
+   244→### SLIDE_DECK
+   245→Structure: Multiple section nodes, each representing a slide with centered content
+   246→Each section: minHeight "100vh", display "flex", justifyContent "center", alignItems "center"
+   247→
+   248→### MARKETING
+   249→Structure: Nav → Hero with bold CTA → Benefits → Testimonials → Pricing → Final CTA → Footer
+   250→
+   251→### CUSTOM
+   252→Interpret freely based on the prompt, applying professional design principles
+   253→
+   254→## CRITICAL RULES
+   255→1. Generate COMPLETE designs - every section must have real content
+   256→2. Use realistic placeholder text (not lorem ipsum - use meaningful content)
+   257→3. For images use: "https://placehold.co/WIDTHxHEIGHT/10b981/ffffff?text=LABEL"
+   258→4. Every interactive element should have proper hover/transition states
+   259→5. Make designs that would impress a senior designer
+   260→`;
+   261→
+   262→// ============ Design Refinement System Prompt ============
+   263→
+   264→export const DESIGN_REFINEMENT_SYSTEM_PROMPT = `You are Z.Design AI's precision refinement engine. You modify SPECIFIC parts of an existing design without breaking the rest of the layout.
+   265→
+   266→==================================================
+   267→## YOUR TASK
+   268→==================================================
+   269→When the user requests a targeted change (e.g., "make the header blue", "add a pricing section", "change the hero text"), you must:
+   270→
+   271→1. Return ONLY the modified subtree — not the entire design tree
+   272→2. Preserve the IDs of unchanged nodes so the platform can merge correctly
+   273→3. Indicate which parent node the modified subtree replaces via a "replaceId" field
+   274→
+   275→==================================================
+   276→## OUTPUT FORMAT
+   277→==================================================
+   278→Return valid JSON with this structure:
+   279→
+   280→{
+   281→  "message": "Description of what was changed",
+   282→  "refinement": {
+   283→    "action": "replace" | "insert" | "remove",
+   284→    "targetId": "id-of-the-node-to-replace-or-parent-for-insert",
+   285→    "node": { ... modified DesignNode subtree ... }
+   286→  }
+   287→}
+   288→
+   289→### Actions:
+   290→- **replace**: Replace the node at targetId with the provided node (keeps same parent position)
+   291→- **insert**: Add the node as a child of the element at targetId (at the end of children)
+   292→- **remove**: Remove the node at targetId (node field can be null)
+   293→
+   294→==================================================
+   295→## REFINEMENT RULES
+   296→==================================================
+   297→1. ONLY modify what the user asked for — leave everything else untouched
+   298→2. Maintain style consistency with the surrounding design (colors, fonts, spacing)
+   299→3. Preserve the ID naming convention of the existing design
+   300→4. When replacing a section, keep the same structural level (don't convert a section to a button)
+   301→5. When inserting, specify where: use "insertBeforeId" or "insertAfterId" for ordering if needed
+   302→6. If a designSystem is provided, use ONLY its colors, fonts, and spacing
+   303→7. Always generate complete subtrees — don't return partial nodes with missing children
+   304→8. Apply the same responsive and modern design standards as full generation
+   305→
+   306→==================================================
+   307→## CONTEXT AWARENESS
+   308→==================================================
+   309→The current design context will be provided. Use it to:
+   310→- Match the existing color palette and typography
+   311→- Understand the layout structure before modifying
+   312→- Ensure the refinement blends seamlessly with the design
+   313→- Respect the existing spacing rhythm and component patterns
+   314→
+   315→==================================================
+   316→## EXAMPLES
+   317→==================================================
+   318→
+   319→User: "Make the header blue"
+   320→{"message":"Changed the header background to blue","refinement":{"action":"replace","targetId":"navbar","node":{"id":"navbar","type":"nav","tag":"nav","style":{"display":"flex","justifyContent":"space-between","alignItems":"center","padding":"16px 32px","backgroundColor":"#1e40af","borderBottom":"1px solid #1e3a8a"},"children":[{"id":"nav-logo","type":"text","tag":"span","content":"Brand","style":{"fontSize":"24px","fontWeight":"700","color":"#ffffff"}}]}}}
+   321→
+   322→User: "Add a pricing section after the features"
+   323→{"message":"Added a pricing section after features","refinement":{"action":"insert","targetId":"root","insertAfterId":"feat-1","node":{"id":"pricing-1","type":"section","tag":"section","style":{"display":"flex","flexDirection":"column","alignItems":"center","padding":"96px 32px","backgroundColor":"#ffffff"},"meta":{"name":"Pricing"},"children":[{"id":"ph2","type":"heading","tag":"h2","content":"Simple Pricing","style":{"fontSize":"36px","fontWeight":"700","color":"#0f172a","marginBottom":"16px"}}]}}}
+   324→`;
+   325→
+   326→// ============ Image Analysis System Prompt ============
+   327→
+   328→export const IMAGE_ANALYSIS_SYSTEM_PROMPT = `You are Z.Design AI's design analysis engine. You analyze images and screenshots to extract design tokens, patterns, and layout information.
+   329→
+   330→## YOUR TASK
+   331→Analyze the provided image and extract detailed design information. Return ONLY valid JSON:
+   332→
+   333→{
+   334→  "tokens": {
+   335→    "colors": [
+   336→      { "name": "primary", "value": "#hex", "category": "primary", "description": "Main brand color" }
+   337→    ],
+   338→    "typography": [
+   339→      { "name": "heading-lg", "fontFamily": "Font Name", "fontSize": "48px", "fontWeight": "700", "lineHeight": "1.2" }
+   340→    ],
+   341→    "spacing": [
+   342→      { "name": "sm", "value": "8px" },
+   343→      { "name": "md", "value": "16px" },
+   344→      { "name": "lg", "value": "24px" }
+   345→    ],
+   346→    "borderRadius": [
+   347→      { "name": "sm", "value": "4px" },
+   348→      { "name": "md", "value": "8px" },
+   349→      { "name": "lg", "value": "16px" }
+   350→    ],
+   351→    "shadows": [
+   352→      { "name": "sm", "value": "0 1px 2px rgba(0,0,0,0.05)" },
+   353→      { "name": "md", "value": "0 4px 6px rgba(0,0,0,0.1)" }
+   354→    ]
+   355→  },
+   356→  "layoutPattern": "description of overall layout pattern (e.g., sidebar+main, stacked sections, grid dashboard)",
+   357→  "components": ["list of UI components detected: nav, hero, card, button, etc."],
+   358→  "style": "design style detected (e.g., minimal, glassmorphism, brutalist, material, etc.)",
+   359→  "suggestions": ["improvement suggestions based on design best practices"]
+   360→}
+   361→
+   362→## ANALYSIS GUIDELINES
+   363→1. Extract ALL visible colors (backgrounds, text, accents, borders)
+   364→2. Identify typography styles (sizes, weights, fonts if recognizable)
+   365→3. Determine spacing patterns from element positioning
+   366→4. Identify border radius values from rounded elements
+   367→5. Detect shadow styles from elevated elements
+   368→6. Catalog all UI components visible in the design
+   369→7. Identify the overall design style/aesthetic
+   370→8. Provide 3-5 constructive suggestions for improvement
+   371→9. Be specific with hex color values - estimate from what you see
+   372→10. Categorize colors: primary, secondary, accent, neutral, semantic, custom
+   373→`;
+   374→
+   375→// ============ Chat Response Parser ============
+   376→
+   377→/**
+   378→ * Aggressively repair malformed JSON produced by LLMs.
+   379→ * Handles: markdown wrappers, key="value" (equals), unquoted keys,
+   380→ * trailing commas, single quotes, JS comments, extra text, unbalanced brackets.
+   381→ * Returns the repaired string or null if unrepairable.
+   382→ */
+   383→export function repairLLMJson(text: string): string | null {
+   384→  let s = text;
+   385→
+   386→  // 1. Remove markdown code block wrappers (```json ... ```)
+   387→  const codeBlockMatch = s.match(/```(?:json)?\s*\n?([\s\S]*?)\n?\s*```/);
+   388→  if (codeBlockMatch) {
+   389→    s = codeBlockMatch[1];
+   390→  }
+   391→
+   392→  // 2. Remove JavaScript-style comments
+   393→  // Single-line comments (// ...)
+   394→  s = s.replace(/\/\/.*$/gm, '');
+   395→  // Multi-line comments (/* ... */)
+   396→  s = s.replace(/\/\*[\s\S]*?\*\//g, '');
+   397→
+   398→  // 3. Remove any text before the first { and after the last }
+   399→  const firstBrace = s.indexOf('{');
+   400→  const lastBrace = s.lastIndexOf('}');
+   401→  if (firstBrace === -1 || lastBrace === -1 || firstBrace > lastBrace) {
+   402→    return null;
+   403→  }
+   404→  s = s.substring(firstBrace, lastBrace + 1);
+   405→
+   406→  // 4. Fix "key: "value"" pattern → "key": "value" (LLM often drops the closing quote before colon)
+   407→  // This is the MOST COMMON LLM JSON error: the key starts with " but the closing " before : is missing
+   408→  // Example: "maxWidth: "320px" → "maxWidth": "320px"
+   409→  // We match this after { or , to avoid false positives inside value strings
+   410→  s = s.replace(/([{,]\s*)"([a-zA-Z_]\w*)\s*:\s*"/g, '$1"$2": "');
+   411→
+   412→  // 4b. Fix content-after-object pattern (LLM places content string OUTSIDE the node object)
+   413→  // This is the SECOND MOST COMMON LLM error: content values appear as separate array elements
+   414→  // The LLM writes: {"id": "x", "style": {...}}, "Content Text"},
+   415→  // Should be:       {"id": "x", "style": {...}, "content": "Content Text"},
+   416→  //
+   417→  // The pattern is: double-close-brace, comma, string, then comma/close-bracket/parent-close
+   418→  // We need to: remove one close-brace, add "content" property, close the node, keep the separator
+   419→  // Note: (?:[^"\\]|\\.)* handles escaped quotes inside strings (e.g., "He said \"hello\"")
+   420→  
+   421→  // Fix: }}, "STRING"}, → }, "content": "STRING"},
+   422→  s = s.replace(/\}\},\s*"((?:[^"\\]|\\.){1,500})"\s*(,)/g, '}, "content": "$1"$2');
+   423→  // Fix: }}, "STRING"}] → }, "content": "STRING"}]
+   424→  s = s.replace(/\}\},\s*"((?:[^"\\]|\\.){1,500})"\s*(\])/g, '}, "content": "$1"}$2');
+   425→  // Fix: }}, "STRING"} followed by another { → }, "content": "STRING"}, {
+   426→  s = s.replace(/\}\},\s*"((?:[^"\\]|\\.){1,500})"\s*(\{)/g, '}, "content": "$1"}, $2');
+   427→  // Fix: }}, "STRING"}} → }, "content": "STRING"}}  (parent close after)
+   428→  s = s.replace(/\}\},\s*"((?:[^"\\]|\\.){1,500})"\s*(\}\})/g, '}, "content": "$1"}$2');
+   429→  // Fix: }}, "STRING"}  (end of input or other)
+   430→  s = s.replace(/\}\},\s*"((?:[^"\\]|\\.){1,500})"\s*(\})/g, '}, "content": "$1"$2');
+   431→
+   432→  // 5. Fix key="value" patterns → "key": "value"
+   433→  // Handles: key="value", key = "value", key= "value", key ="value"
+   434→  s = s.replace(/([{,]\s*)([a-zA-Z_]\w*)\s*=\s*"/g, '$1"$2": "');
+   435→
+   436→  // 6. Fix key='value' patterns → "key": "value"
+   437→  s = s.replace(/([{,]\s*)([a-zA-Z_]\w*)\s*=\s*'/g, '$1"$2": "');
+   438→
+   439→  // 7. Fix unquoted property names (e.g., {display: "flex"} → {"display": "flex"})
+   440→  // Match: after { or , followed by an identifier followed by :
+   441→  // But be careful not to re-quote already-quoted keys
+   442→  s = s.replace(/([{,]\s*)([a-zA-Z_]\w*)\s*:/g, (match, prefix, key) => {
+   443→    // Check if the key is already quoted (shouldn't match in that case, but just in case)
+   444→    if (prefix.endsWith('"') || prefix.endsWith("'")) return match;
+   445→    return `${prefix}"${key}":`;
+   446→  });
+   447→
+   448→  // 7. Fix single quotes used as string delimiters (not apostrophes inside strings)
+   449→  // Only replace single quotes that appear to be string delimiters:
+   450→  // - After : or [ or , followed by ' (opening quote)
+   451→  // - Before : or ] or , preceded by ' (closing quote)
+   452→  // Do NOT blindly replace all ' with " as it breaks strings like "I'll"
+   453→  // Since the LLM typically uses double quotes already, skip this step if no single-quote delimiters found
+   454→  if (/[:\[,]\s*'[^']*'\s*[:,\]}]/.test(s)) {
+   455→    // Replace opening single quotes after : [ ,
+   456→    s = s.replace(/([:\[,]\s*)'/g, '$1"');
+   457→    // Replace closing single quotes before : , ] }
+   458→    s = s.replace(/'(\s*[:,\]}])/g, '"$1');
+   459→  }
+   460→
+   461→  // 7c. Fix spaces in rgba/hsl function values (LLM often writes "rgba(0, 0, 0, 0.1)" instead of "rgba(0,0,0,0.1)")
+   462→  // This matters because the LLM sometimes outputs unquoted values like: "boxShadow": 0 4px 6px rgba(0, 0, 0, 0.1)
+   463→  // and the spaces in rgba() cause parse issues when we try to quote the value later
+   464→  s = s.replace(/rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)/g, 'rgba($1,$2,$3,$4)');
+   465→  s = s.replace(/hsl\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/g, 'hsl($1,$2%,$3%)');
+   466→  s = s.replace(/hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d.]+)\s*\)/g, 'hsla($1,$2%,$3%,$4)');
+   467→
+   468→  // 7d. Fix unquoted CSS-like values after known CSS property names
+   469→  // The LLM sometimes writes: "boxShadow": 0 4px 6px rgba(0,0,0,0.1) (missing quotes around value)
+   470→  // or: "transform": rotate(45deg) (missing quotes around value)
+   471→  // Pattern: after a quoted CSS property name and colon, if the value starts with a digit, "rgba(", "hsl", "rotate", "translate", "scale", "linear-gradient", etc.
+   472→  // and is NOT already quoted, wrap it in quotes.
+   473→  // We look for: "cssProp": <unquoted-value> where unquoted-value continues until , } or ]
+   474→  const cssPropsWithUnquotedValues = [
+   475→    'boxShadow', 'textShadow', 'filter', 'backdropFilter', 'transform',
+   476→    'transition', 'animation', 'backgroundImage', 'background',
+   477→    'border', 'borderTop', 'borderRight', 'borderBottom', 'borderLeft',
+   478→    'outline', 'margin', 'padding', 'borderRadius',
+   479→  ];
+   480→  for (const prop of cssPropsWithUnquotedValues) {
+   481→    // Match: "prop": <value-not-starting-with-quote> up to comma, }, or ]
+   482→    // The value must NOT start with " or { or [ or true/false/null/number
+   483→    // We specifically target values that start with digits, letters, or rgba/hsl etc.
+   484→    const propRegex = new RegExp(
+   485→      `("${prop}")\\s*:\\s*(?!"|\\{|\\[|true|false|null)([a-zA-Z0-9().,\\s%#_-]+?)(\\s*[,}\\]])`,
+   486→      'g'
+   487→    );
+   488→    s = s.replace(propRegex, '$1: "$2"$3');
+   489→  }
+   490→
+   491→  // 8. Fix trailing commas before } or ]
+   492→  s = s.replace(/,\s*([}\]])/g, '$1');
+   493→
+   494→  // 9. Try to balance brackets/braces
+   495→  const openBraces = (s.match(/{/g) || []).length;
+   496→  const closeBraces = (s.match(/}/g) || []).length;
+   497→  const openBrackets = (s.match(/\[/g) || []).length;
+   498→  const closeBrackets = (s.match(/]/g) || []).length;
+   499→
+   500→  // Add missing closing brackets/braces at the end
+   501→  if (openBraces > closeBraces) {
+   502→    s += '}'.repeat(openBraces - closeBraces);
+   503→  }
+   504→  if (openBrackets > closeBrackets) {
+   505→    s += ']'.repeat(openBrackets - closeBrackets);
+   506→  }
+   507→
+   508→  // 10. Fix missing commas between properties (heuristic)
+   509→  // Pattern: "value" followed by whitespace then "key": — likely missing comma
+   510→  s = s.replace(/("\s*)(\n\s*"[a-zA-Z_]\w*"\s*:)/g, '$1,$2');
+   511→
+   512→  // 11. Validate by attempting to parse
+   513→  try {
+   514→    JSON.parse(s);
+   515→    return s;
+   516→  } catch {
+   517→    // If still invalid, try more aggressive fixes
+   518→    try {
+   519→      // Attempt progressive truncation from the end to find valid JSON
+   520→      for (let len = s.length; len > 10; len -= 1) {
+   521→        const truncated = s.substring(0, len);
+   522→        // Count brackets to ensure balance
+   523→        const ob = (truncated.match(/{/g) || []).length;
+   524→        const cb = (truncated.match(/}/g) || []).length;
+   525→        const obr = (truncated.match(/\[/g) || []).length;
+   526→        const cbr = (truncated.match(/]/g) || []).length;
+   527→        if (ob === cb && obr === cbr) {
+   528→          try {
+   529→            JSON.parse(truncated);
+   530→            return truncated;
+   531→          } catch {
+   532→            // continue
+   533→          }
+   534→        }
+   535→      }
+   536→    } catch {
+   537→      // Give up
+   538→    }
+   539→
+   540→    // 12. Last resort: try to extract just the design object by finding the deepest valid JSON prefix
+   541→    // This handles cases where the LLM generates a mostly-valid structure but has trailing garbage
+   542→    try {
+   543→      // Find the "design" key and try to extract its value
+   544→      const designKeyIdx = s.indexOf('"design"');
+   545→      if (designKeyIdx !== -1) {
+   546→        // Find the opening brace of the design value
+   547→        const designBraceIdx = s.indexOf('{', designKeyIdx + 8);
+   548→        if (designBraceIdx !== -1) {
+   549→          // Try to find a valid design object by scanning forward
+   550→          let depth = 0;
+   551→          let bestEnd = -1;
+   552→          for (let i = designBraceIdx; i < s.length; i++) {
+   553→            if (s[i] === '{') depth++;
+   554→            else if (s[i] === '}') depth--;
+   555→            if (depth === 0) {
+   556→              // We found a balanced design object, try to parse it
+   557→              const candidate = s.substring(designBraceIdx, i + 1);
+   558→              try {
+   559→                JSON.parse(candidate);
+   560→                bestEnd = i;
+   561→                // Don't break — keep looking for a larger valid object
+   562→              } catch {
+   563→                // This balanced section isn't valid JSON, continue
+   564→              }
+   565→            }
+   566→          }
+   567→          if (bestEnd !== -1) {
+   568→            const designObj = s.substring(designBraceIdx, bestEnd + 1);
+   569→            // Wrap in a response object
+   570→            const wrapped = `{"message": "Design recovered from partial response", "design": ${designObj}}`;
+   571→            try {
+   572→              JSON.parse(wrapped);
+   573→              return wrapped;
+   574→            } catch {
+   575→              // The design object alone might be valid
+   576→              try {
+   577→                JSON.parse(designObj);
+   578→                return designObj;
+   579→              } catch {
+   580→                // continue
+   581→              }
+   582→            }
+   583→          }
+   584→        }
+   585→      }
+   586→    } catch {
+   587→      // Give up
+   588→    }
+   589→
+   590→    return null;
+   591→  }
+   592→}
+   593→
+   594→/**
+   595→ * Try to parse JSON with aggressive error repair.
+   596→ * Handles common LLM mistakes: unquoted keys, key="value", trailing commas,
+   597→ * single quotes, JS comments, extra text around JSON.
+   598→ */
+   599→function tryParseJSON(text: string): unknown | null {
+   600→  // First, try direct parse
+   601→  try {
+   602→    return JSON.parse(text);
+   603→  } catch {
+   604→    // continue to repair attempts
+   605→  }
+   606→
+   607→  // Use the aggressive repair function
+   608→  const repaired = repairLLMJson(text);
+   609→  if (repaired !== null) {
+   610→    try {
+   611→      return JSON.parse(repaired);
+   612→    } catch {
+   613→      // continue
+   614→    }
+   615→  }
+   616→
+   617→  // Additional targeted fixes if repairLLMJson failed
+   618→  let fixed = text;
+   619→
+   620→  // Fix 1: key="value" patterns (equals instead of colon)
+   621→  fixed = fixed.replace(/([{,]\s*)([a-zA-Z_]\w*)\s*=\s*"/g, '$1"$2": "');
+   622→  try { return JSON.parse(fixed); } catch { /* continue */ }
+   623→
+   624→  // Fix 2: Unquoted property names
+   625→  fixed = fixed.replace(/([{,]\s*)([a-zA-Z_]\w*)\s*:/g, '$1"$2":');
+   626→  try { return JSON.parse(fixed); } catch { /* continue */ }
+   627→
+   628→  // Fix 3: Trailing commas
+   629→  fixed = fixed.replace(/,\s*([}\]])/g, '$1');
+   630→  try { return JSON.parse(fixed); } catch { /* continue */ }
+   631→
+   632→  // Fix 4: Single quotes to double quotes
+   633→  fixed = fixed.replace(/'/g, '"');
+   634→  try { return JSON.parse(fixed); } catch { /* continue */ }
+   635→
+   636→  // Fix 5: Remove JS comments
+   637→  fixed = fixed.replace(/\/\/.*$/gm, '');
+   638→  fixed = fixed.replace(/\/\*[\s\S]*?\*\//g, '');
+   639→  try { return JSON.parse(fixed); } catch { /* continue */ }
+   640→
+   641→  // Fix 6: Missing commas between properties
+   642→  fixed = fixed.replace(/("\s*)(\n\s*"[a-zA-Z_]\w*"\s*:)/g, '$1,$2');
+   643→  try { return JSON.parse(fixed); } catch { /* continue */ }
+   644→
+   645→  // Fix 7: Try balancing brackets
+   646→  const ob = (fixed.match(/{/g) || []).length;
+   647→  const cb = (fixed.match(/}/g) || []).length;
+   648→  const obr = (fixed.match(/\[/g) || []).length;
+   649→  const cbr = (fixed.match(/]/g) || []).length;
+   650→  if (ob > cb) fixed += '}'.repeat(ob - cb);
+   651→  if (obr > cbr) fixed += ']'.repeat(obr - cbr);
+   652→  try { return JSON.parse(fixed); } catch { /* continue */ }
+   653→
+   654→  return null;
+   655→}
+   656→
+   657→export function parseAIResponse(response: string): {
+   658→  message: string;
+   659→  design: unknown | null;
+   660→  parseFailed?: boolean;
+   661→} {
+   662→  // Helper: extract design from parsed object
+   663→  function extractDesign(parsed: Record<string, unknown>): { message: string; design: unknown | null } | null {
+   664→    if (parsed.design || parsed.id || parsed.type || parsed.children) {
+   665→      return {
+   666→        message: (parsed.message as string) || 'Design generated successfully.',
+   667→        design: parsed.design || parsed,
+   668→      };
+   669→    }
+   670→    return null;
+   671→  }
+   672→
+   673→  // 1. Try to parse the full response as JSON
+   674→  const directParsed = tryParseJSON(response);
+   675→  if (directParsed && typeof directParsed === 'object') {
+   676→    const extracted = extractDesign(directParsed as Record<string, unknown>);
+   677→    if (extracted) return extracted;
+   678→  }
+   679→
+   680→  // 2. Try aggressive repair on the full response
+   681→  const repaired = repairLLMJson(response);
+   682→  if (repaired) {
+   683→    try {
+   684→      const repairedParsed = JSON.parse(repaired);
+   685→      if (repairedParsed && typeof repairedParsed === 'object') {
+   686→        const extracted = extractDesign(repairedParsed as Record<string, unknown>);
+   687→        if (extracted) return extracted;
+   688→      }
+   689→    } catch {
+   690→      // continue
+   691→    }
+   692→  }
+   693→
+   694→  // 3. Try to extract JSON from markdown code blocks (possibly multiple)
+   695→  const codeBlockRegex = /```(?:json)?\s*\n?([\s\S]*?)\n?```/g;
+   696→  let match;
+   697→  while ((match = codeBlockRegex.exec(response)) !== null) {
+   698→    const parsed = tryParseJSON(match[1]);
+   699→    if (parsed && typeof parsed === 'object') {
+   700→      const extracted = extractDesign(parsed as Record<string, unknown>);
+   701→      if (extracted) {
+   702→        // If there's text before the code block, use it as the message
+   703→        const beforeCode = response.substring(0, match.index).trim();
+   704→        if (beforeCode) {
+   705→          extracted.message = beforeCode.replace(/^[^\w]*/, '').trim() || extracted.message;
+   706→        }
+   707→        return extracted;
+   708→      }
+   709→    }
+   710→  }
+   711→
+   712→  // 4. Try to find the largest JSON object in the response
+   713→  const objectMatches = response.match(/\{[\s\S]*"id"[\s\S]*\}/g);
+   714→  if (objectMatches) {
+   715→    // Try from largest to smallest
+   716→    const sorted = objectMatches.sort((a, b) => b.length - a.length);
+   717→    for (const objMatch of sorted) {
+   718→      const parsed = tryParseJSON(objMatch);
+   719→      if (parsed && typeof parsed === 'object') {
+   720→        const extracted = extractDesign(parsed as Record<string, unknown>);
+   721→        if (extracted) return extracted;
+   722→      }
+   723→    }
+   724→  }
+   725→
+   726→  // 5. Try to find any JSON-like object with "id" (using unquoted key search too)
+   727→  const looseObjectMatches = response.match(/\{[\s\S]*(?:["']?id["']?\s*[:=])[\s\S]*\}/g);
+   728→  if (looseObjectMatches) {
+   729→    const sorted = looseObjectMatches.sort((a, b) => b.length - a.length);
+   730→    for (const objMatch of sorted) {
+   731→      const parsed = tryParseJSON(objMatch);
+   732→      if (parsed && typeof parsed === 'object') {
+   733→        const extracted = extractDesign(parsed as Record<string, unknown>);
+   734→        if (extracted) return extracted;
+   735→      }
+   736→    }
+   737→  }
+   738→
+   739→  // 6. Return as plain text message (strip markdown code blocks for cleaner output)
+   740→  const cleanedMessage = response
+   741→    .replace(/```(?:json)?\s*\n?/g, '')
+   742→    .replace(/\n?```/g, '')
+   743→    .trim();
+   744→  return { message: cleanedMessage || response, design: null, parseFailed: true };
+   745→}
+   746→
+   747→// ============ Default Design Templates ============
+   748→
+   749→export function getDefaultDesignForType(projectType: string): Record<string, unknown> {
+   750→  const baseDesign = {
+   751→    id: 'root',
+   752→    type: 'root',
+   753→    tag: 'div',
+   754→    style: {
+   755→      display: 'flex',
+   756→      flexDirection: 'column',
+   757→      minHeight: '100vh',
+   758→      width: '100%',
+   759→      fontFamily: 'Inter, system-ui, sans-serif',
+   760→    },
+   761→    children: [] as unknown[],
+   762→    meta: { name: 'root' },
+   763→  };
+   764→
+   765→  switch (projectType) {
+   766→    case 'LANDING_PAGE':
+   767→      return {
+   768→        ...baseDesign,
+   769→        children: [
+   770→          {
+   771→            id: 'navbar',
+   772→            type: 'nav',
+   773→            tag: 'nav',
+   774→            meta: { name: 'Navigation Bar' },
+   775→            style: {
+   776→              display: 'flex',
+   777→              justifyContent: 'space-between',
+   778→              alignItems: 'center',
+   779→              padding: '16px 48px',
+   780→              backgroundColor: '#ffffff',
+   781→              borderBottom: '1px solid #e2e8f0',
+   782→              position: 'sticky',
+   783→              top: '0',
+   784→              zIndex: 50,
+   785→            },
+   786→            children: [
+   787→              { id: 'nav-logo', type: 'text', tag: 'span', content: 'Brand', style: { fontSize: '24px', fontWeight: '700', color: '#10b981' } },
+   788→              {
+   789→                id: 'nav-links',
+   790→                type: 'flex',
+   791→                tag: 'div',
+   792→                style: { display: 'flex', gap: '32px', alignItems: 'center' },
+   793→                children: [
+   794→                  { id: 'nav-link-1', type: 'link', tag: 'a', content: 'Features', style: { color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   795→                  { id: 'nav-link-2', type: 'link', tag: 'a', content: 'Pricing', style: { color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   796→                  { id: 'nav-link-3', type: 'link', tag: 'a', content: 'About', style: { color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   797→                  { id: 'nav-cta', type: 'button', tag: 'button', content: 'Get Started', style: { backgroundColor: '#10b981', color: '#ffffff', padding: '10px 24px', borderRadius: '8px', border: 'none', fontWeight: '600', cursor: 'pointer' } },
+   798→                ],
+   799→              },
+   800→            ],
+   801→          },
+   802→        ],
+   803→      };
+   804→    case 'DASHBOARD':
+   805→      return {
+   806→        ...baseDesign,
+   807→        style: { ...baseDesign.style, flexDirection: 'row' },
+   808→        children: [
+   809→          {
+   810→            id: 'sidebar',
+   811→            type: 'sidebar',
+   812→            tag: 'aside',
+   813→            meta: { name: 'Sidebar' },
+   814→            style: { width: '260px', minHeight: '100vh', backgroundColor: '#0f172a', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '8px' },
+   815→            children: [
+   816→              { id: 'sidebar-logo', type: 'text', tag: 'span', content: 'Dashboard', style: { color: '#ffffff', fontSize: '20px', fontWeight: '700', padding: '8px' } },
+   817→              { id: 'sidebar-divider', type: 'divider', tag: 'hr', style: { border: 'none', borderTop: '1px solid #1e293b', margin: '8px 0' } },
+   818→              { id: 'sidebar-nav-1', type: 'link', tag: 'a', content: 'Overview', style: { color: '#34d399', padding: '10px 12px', borderRadius: '8px', backgroundColor: '#064e3b', textDecoration: 'none', fontWeight: '500', display: 'block' } },
+   819→              { id: 'sidebar-nav-2', type: 'link', tag: 'a', content: 'Analytics', style: { color: '#94a3b8', padding: '10px 12px', borderRadius: '8px', textDecoration: 'none', display: 'block' } },
+   820→              { id: 'sidebar-nav-3', type: 'link', tag: 'a', content: 'Settings', style: { color: '#94a3b8', padding: '10px 12px', borderRadius: '8px', textDecoration: 'none', display: 'block' } },
+   821→            ],
+   822→          },
+   823→        ],
+   824→      };
+   825→    default:
+   826→      return baseDesign;
+   827→  }
+   828→}
+   829→

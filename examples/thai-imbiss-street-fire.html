@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAI THAI — Streetfood Imbiss Berlin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rot:#E63946;
+    --gelb:#FFD60A;
+    --schwarz:#1D1D1D;
+    --asche:#262424;
+    --pappe:#2a2724;
+    --creme:#f4ede0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--schwarz);
+    color:var(--creme);
+    overflow-x:hidden;
+    line-height:1.55;
+  }
+  ::selection{background:var(--gelb);color:var(--schwarz)}
+
+  /* RAUCH / HITZE Hintergrund */
+  .smoke{
+    position:fixed;inset:0;pointer-events:none;z-index:1;
+    background:
+      radial-gradient(60% 50% at 15% 100%, rgba(230,57,70,.25), transparent 60%),
+      radial-gradient(50% 40% at 85% 90%, rgba(255,214,10,.12), transparent 65%),
+      radial-gradient(80% 60% at 50% -10%, rgba(230,57,70,.18), transparent 70%);
+    mix-blend-mode:screen;
+    animation:smokeShift 14s ease-in-out infinite alternate;
+  }
+  @keyframes smokeShift{
+    0%{transform:translate3d(-2%,0,0) scale(1.05);opacity:.85}
+    100%{transform:translate3d(3%,-2%,0) scale(1.15);opacity:1}
+  }
+  .grain{
+    position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.07;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/></svg>");
+  }
+
+  /* NAV */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 5vw;
+    background:linear-gradient(180deg,rgba(29,29,29,.85),rgba(29,29,29,0));
+    backdrop-filter:blur(6px);
+  }
+  .logo{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:30px;letter-spacing:3px;color:var(--gelb);
+    display:flex;align-items:baseline;gap:8px;
+  }
+  .logo small{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:4px;color:var(--rot);font-weight:700}
+  .navlinks{display:flex;gap:32px;align-items:center}
+  .navlinks a{
+    color:var(--creme);text-decoration:none;font-size:12px;
+    letter-spacing:2px;text-transform:uppercase;font-weight:600;
+    transition:color .25s;
+  }
+  .navlinks a:hover{color:var(--gelb)}
+  .btn-flamme{
+    background:var(--rot);color:#fff;padding:10px 20px;
+    font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:11px;
+    border:none;cursor:pointer;text-decoration:none;
+    box-shadow:0 0 0 3px rgba(230,57,70,.25);
+    transition:transform .2s, box-shadow .2s;
+  }
+  .btn-flamme:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(230,57,70,.45)}
+
+  /* HERO */
+  header.hero{
+    position:relative;min-height:100vh;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    text-align:center;padding:120px 5vw 80px;z-index:3;
+    overflow:hidden;
+  }
+  .hero-bg{
+    position:absolute;inset:0;z-index:-1;
+    background:
+      linear-gradient(180deg,rgba(29,29,29,.55) 0%, rgba(29,29,29,.85) 70%, var(--schwarz) 100%),
+      url('https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1920&q=80') center/cover;
+  }
+  .hero-bg::after{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 50% 60%, transparent 0%, rgba(230,57,70,.25) 60%, transparent 100%);
+    mix-blend-mode:screen;
+    animation:glow 4s ease-in-out infinite alternate;
+  }
+  @keyframes glow{0%{opacity:.5}100%{opacity:1}}
+
+  .hero .badge{
+    display:inline-flex;align-items:center;gap:10px;
+    background:rgba(255,214,10,.12);border:1px solid var(--gelb);
+    padding:8px 18px;border-radius:100px;
+    font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gelb);
+    font-weight:600;margin-bottom:30px;
+  }
+  .hero .badge .dot{width:8px;height:8px;border-radius:50%;background:var(--gelb);animation:blink 1.4s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+  h1.title{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(70px, 16vw, 240px);
+    line-height:.85;letter-spacing:2px;
+    color:var(--creme);
+    text-shadow:0 0 60px rgba(230,57,70,.5);
+  }
+  h1.title .accent{color:var(--gelb);display:inline-block;transform:rotate(-3deg)}
+  .hero .sub{
+    max-width:620px;margin:30px auto 0;
+    font-size:18px;color:rgba(244,237,224,.85);font-weight:300;
+  }
+  .hero .meta-row{
+    display:flex;gap:40px;justify-content:center;margin-top:40px;flex-wrap:wrap;
+  }
+  .hero .meta-row div{text-align:center}
+  .hero .meta-row .k{
+    font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gelb);letter-spacing:2px;
+  }
+  .hero .meta-row .l{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(244,237,224,.6)}
+  .scroll-hint{
+    position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+    font-size:10px;letter-spacing:4px;color:var(--gelb);text-transform:uppercase;
+    writing-mode:vertical-rl;
+  }
+
+  /* SECTION BASE */
+  section{position:relative;z-index:3;padding:100px 5vw}
+  .eyebrow{
+    display:inline-block;
+    color:var(--rot);font-weight:700;font-size:11px;letter-spacing:4px;text-transform:uppercase;
+    padding-left:30px;position:relative;margin-bottom:18px;
+  }
+  .eyebrow::before{
+    content:"";position:absolute;left:0;top:50%;width:20px;height:2px;background:var(--rot);
+  }
+  h2.section-title{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(48px,8vw,110px);
+    line-height:.9;letter-spacing:1px;
+    margin-bottom:20px;
+  }
+  h2.section-title .y{color:var(--gelb)}
+
+  /* STORY */
+  .story-wrap{
+    display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;max-width:1300px;margin:0 auto;
+  }
+  .story-img{
+    position:relative;height:520px;
+    background:url('https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=80') center/cover;
+    filter:saturate(1.1) contrast(1.05);
+  }
+  .story-img::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(45deg,rgba(230,57,70,.3),transparent 60%);
+    mix-blend-mode:overlay;
+  }
+  .story-img .tag{
+    position:absolute;bottom:20px;left:20px;
+    background:var(--gelb);color:var(--schwarz);
+    padding:8px 16px;font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  }
+  .story-text p{margin-bottom:18px;color:rgba(244,237,224,.85);font-weight:300;font-size:16px}
+  .story-text .quote{
+    font-family:'Bebas Neue',sans-serif;font-size:34px;line-height:1;
+    color:var(--gelb);margin:30px 0;letter-spacing:1px;
+    padding-left:20px;border-left:4px solid var(--rot);
+  }
+
+  /* MENU */
+  .menu-section{background:linear-gradient(180deg,var(--schwarz),var(--asche))}
+  .menu-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:30px;margin-bottom:60px;max-width:1300px;margin-left:auto;margin-right:auto}
+  .menu-tabs{display:flex;gap:10px;flex-wrap:wrap}
+  .menu-tabs button{
+    background:transparent;border:1px solid rgba(244,237,224,.2);color:var(--creme);
+    padding:10px 18px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;
+    cursor:pointer;transition:all .25s;font-family:'Inter',sans-serif;
+  }
+  .menu-tabs button.active,.menu-tabs button:hover{background:var(--rot);border-color:var(--rot);color:#fff}
+
+  .menu-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:30px 60px;
+    max-width:1300px;margin:0 auto;
+  }
+  .dish{
+    display:grid;grid-template-columns:90px 1fr auto;gap:20px;align-items:center;
+    padding:18px 0;border-bottom:1px dashed rgba(244,237,224,.15);
+    transition:transform .3s;
+  }
+  .dish:hover{transform:translateX(8px)}
+  .dish-img{
+    width:90px;height:90px;border-radius:50%;
+    background-size:cover;background-position:center;
+    border:2px solid var(--gelb);
+    transition:transform .4s, box-shadow .4s;
+    overflow:hidden;
+  }
+  .dish:hover .dish-img{transform:scale(1.08) rotate(-3deg);box-shadow:0 0 25px rgba(255,214,10,.4)}
+  .dish-info h3{
+    font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;color:var(--creme);
+    display:flex;align-items:center;gap:10px;
+  }
+  .dish-info h3 .heat{color:var(--rot);font-size:14px}
+  .dish-info p{font-size:13px;color:rgba(244,237,224,.6);font-weight:300;margin-top:4px}
+  .dish-price{
+    font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--gelb);letter-spacing:1px;
+  }
+  .dish-num{
+    font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--rot);margin-right:6px;
+  }
+
+  /* GALLERY */
+  .gallery-section{padding:100px 0;background:var(--asche)}
+  .gallery-section .head{padding:0 5vw;margin-bottom:50px}
+  .gallery{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+    padding:0 5vw;
+  }
+  .gallery div{
+    height:240px;background-size:cover;background-position:center;
+    transition:transform .5s, filter .5s;cursor:pointer;
+    filter:saturate(1.05);
+  }
+  .gallery div:hover{transform:scale(1.04);filter:saturate(1.3) brightness(1.1);z-index:5}
+  .gallery .tall{grid-row:span 2;height:488px}
+  .gallery .wide{grid-column:span 2}
+
+  /* HOURS / LOCATION */
+  .info-section{background:var(--schwarz)}
+  .info-wrap{display:grid;grid-template-columns:1fr 1fr;gap:60px;max-width:1300px;margin:0 auto}
+  .card{
+    background:var(--pappe);padding:40px;border-top:4px solid var(--gelb);
+    position:relative;
+  }
+  .card h3{
+    font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:2px;color:var(--gelb);
+    margin-bottom:25px;
+  }
+  .hours-row{
+    display:flex;justify-content:space-between;padding:14px 0;
+    border-bottom:1px solid rgba(244,237,224,.1);font-size:14px;
+  }
+  .hours-row .day{color:rgba(244,237,224,.7);text-transform:uppercase;letter-spacing:2px;font-size:12px;font-weight:600}
+  .hours-row .time{color:var(--creme);font-weight:600}
+  .hours-row.today{background:rgba(230,57,70,.15);padding:14px 12px;margin:0 -12px;border-radius:4px;border-bottom:1px solid var(--rot)}
+  .hours-row.today .day{color:var(--gelb)}
+  .hours-row.today .time{color:var(--gelb)}
+
+  .map-box{
+    height:280px;margin-top:20px;
+    background:
+      linear-gradient(45deg,rgba(230,57,70,.2),transparent),
+      url('https://images.unsplash.com/photo-1565214975134-4e7c05ac1c80?auto=format&fit=crop&w=900&q=80') center/cover;
+    border:1px solid rgba(244,237,224,.15);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+  }
+  .map-pin{
+    background:var(--rot);color:#fff;padding:8px 18px;font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;
+    box-shadow:0 0 0 8px rgba(230,57,70,.25);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(230,57,70,.5)}100%{box-shadow:0 0 0 20px rgba(230,57,70,0)}}
+  .addr{font-size:15px;color:var(--creme);margin-top:20px;font-weight:300}
+  .addr strong{color:var(--gelb);font-weight:700;display:block;margin-bottom:5px;letter-spacing:1px;font-family:'Bebas Neue',sans-serif;font-size:20px}
+
+  /* CTA */
+  .cta-section{
+    text-align:center;padding:120px 5vw;
+    background:
+      linear-gradient(rgba(29,29,29,.7),rgba(29,29,29,.9)),
+      url('https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1920&q=80') center/cover fixed;
+  }
+  .cta-section h2{
+    font-family:'Bebas Neue',sans-serif;font-size:clamp(50px,10vw,140px);
+    line-height:.9;letter-spacing:1px;margin-bottom:25px;
+  }
+  .cta-section h2 span{color:var(--rot)}
+  .cta-section p{max-width:600px;margin:0 auto 40px;color:rgba(244,237,224,.8);font-size:17px;font-weight:300}
+  .cta-buttons{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+  .btn-primary{
+    background:var(--gelb);color:var(--schwarz);padding:18px 36px;
+    font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:13px;
+    text-decoration:none;transition:all .25s;
+  }
+  .btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(255,214,10,.4)}
+  .btn-ghost{
+    background:transparent;color:var(--creme);padding:18px 36px;
+    font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:13px;
+    text-decoration:none;border:1px solid var(--creme);transition:all .25s;
+  }
+  .btn-ghost:hover{background:var(--creme);color:var(--schwarz)}
+
+  /* FOOTER */
+  footer{
+    background:#0e0d0d;padding:50px 5vw 30px;
+    border-top:1px solid rgba(244,237,224,.08);
+    position:relative;z-index:3;
+  }
+  .footer-grid{
+    display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;
+    max-width:1300px;margin:0 auto;
+  }
+  .footer-grid h4{
+    font-family:'Bebas Neue',sans-serif;color:var(--gelb);font-size:22px;letter-spacing:2px;margin-bottom:18px;
+  }
+  .footer-grid a,.footer-grid p{
+    display:block;color:rgba(244,237,224,.6);text-decoration:none;font-size:13px;margin-bottom:8px;transition:color .2s;
+  }
+  .footer-grid a:hover{color:var(--gelb)}
+  .footer-bottom{
+    max-width:1300px;margin:40px auto 0;padding-top:25px;
+    border-top:1px solid rgba(244,237,224,.08);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:15px;
+    font-size:11px;color:rgba(244,237,224,.4);letter-spacing:2px;text-transform:uppercase;
+  }
+  .socials{display:flex;gap:14px;margin-top:12px}
+  .socials a{
+    width:36px;height:36px;border:1px solid rgba(244,237,224,.2);
+    display:flex;align-items:center;justify-content:center;color:var(--creme);
+    transition:all .25s;font-size:14px;
+  }
+  .socials a:hover{background:var(--rot);border-color:var(--rot);transform:translateY(-3px)}
+
+  /* RESPONSIVE */
+  @media (max-width:900px){
+    .navlinks a:not(.btn-flamme){display:none}
+    .story-wrap,.info-wrap{grid-template-columns:1fr;gap:30px}
+    .menu-grid{grid-template-columns:1fr;gap:20px}
+    .gallery{grid-template-columns:repeat(2,1fr)}
+    .gallery .wide{grid-column:span 2}
+    .gallery .tall{grid-row:span 1;height:240px}
+    .footer-grid{grid-template-columns:1fr 1fr}
+    .hero .meta-row{gap:25px}
+  }
+  @media (max-width:560px){
+    .dish{grid-template-columns:70px 1fr;gap:14px}
+    .dish-img{width:70px;height:70px}
+    .dish-price{grid-column:1/-1;text-align:right;margin-top:-10px}
+    .gallery{grid-template-columns:1fr}
+    .gallery .wide{grid-column:span 1}
+    .footer-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="smoke"></div>
+<div class="grain"></div>
+
+<nav>
+  <div class="logo">PAI THAI <small>EST. 2014</small></div>
+  <div class="navlinks">
+    <a href="#menu">Speisekarte</a>
+    <a href="#story">Story</a>
+    <a href="#galerie">Galerie</a>
+    <a href="#standort">Standort</a>
+    <a href="#bestellen" class="btn-flamme">Jetzt bestellen</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-bg"></div>
+  <span class="badge"><span class="dot"></span> Offene Flamme · Täglich frisch</span>
+  <h1 class="title">FEUER <span class="accent">&</span><br>STRAßE</h1>
+  <p class="sub">Authentisches thailändisches Streetfood. Wok-Hitze, rauchige Currys und die Schärfe, die Bangkok berühmt gemacht hat — direkt aus Kreuzberg.</p>
+  <div class="meta-row">
+    <div><div class="k">12'</div><div class="l">Wok-Zeit</div></div>
+    <div><div class="k">4.9★</div><div class="l">2.300+ Reviews</div></div>
+    <div><div class="k">100%</div><div class="l">House-made Paste</div></div>
+    <div><div class="k">7 TAGE</div><div class="l">Geöffnet</div></div>
+  </div>
+  <div class="scroll-hint">Scroll · 觸</div>
+</header>
+
+<section class="story-section" id="story">
+  <div class="story-wrap">
+    <div class="story-img">
+      <span class="tag">Seit 2014 · Berlin</span>
+    </div>
+    <div class="story-text">
+      <span class="eyebrow">Unsere Geschichte</span>
+      <h2 class="section-title">AUS DEM <span class="y">WOK</span><br>AUF DIE STRASSE.</h2>
+      <p class="quote">"Kochen ist Hitze. Hitze ist Leben."</p>
+      <p>Was 2014 als kleiner Stand am Görlitzer Park begann, ist heute das geworden, was wir immer sein wollten: eine ehrliche Straßenküche. Khun Pai kocht selbst — jeden Tag, jede Paste, jede Soße von Hand.</p>
+      <p>Wir glauben nicht an Kompromisse. Die Kokosmilch kommt aus Surat Thani, die Chilis aus dem Norden, die Nudeln aus Bangkok. Der Wok? Der brennt seit zehn Jahren am selben Feuer.</p>
+    </div>
+  </div>
+</section>
+
+<section class="menu-section" id="menu">
+  <div class="menu-head">
+    <div>
+      <span class="eyebrow">Speisekarte</span>
+      <h2 class="section-title">VON DER <span class="y">FLAMME</span></h2>
+    </div>
+    <div class="menu-tabs">
+      <button class="active" data-cat="all">Alles</button>
+      <button data-cat="starter">Vorspeisen</button>
+      <button data-cat="wok">Aus dem Wok</button>
+      <button data-cat="curry">Currys</button>
+      <button data-cat="sweet">Süß</button>
+    </div>
+  </div>
+
+  <div class="menu-grid">
+
+    <div class="dish" data-cat="starter">
+      <div class="dish-img" style="background-image:url('https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=300&q=80')"></div>
+      <div class="dish-info">
+        <h3><span class="dish-num">01</span>Frühlingsrollen <span class="heat">●</span></h3>
+        <p>Knusprig, Glasnudeln, Gemüse, Sweet-Chili-Soße · 4 Stk.</p>
+      </div>
+      <div class="dish-price">6,50</div>
+    </div>
+
+    <div class="dish" data-cat="starter">
+      <div class="dish-img" style="background-image:url('https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=300&q=80')"></div>
+      <div class="dish-info">
+        <h3><span class="dish-num">02</span>Satay Spieße</h3>
+        <p>Hähnchen, Erdnusssoße, mariniert im Kurkuma · 4 Stk.</p>
+      </div>
+      <div class="dish-price">7,90</div>
+    </div>
+
+    <div class="dish" data-cat="starter">
+      <div class="dish-img" style="background-image:url('https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=300&q=80')"></div>
+      <div class="dish-info">
+        <h3><span class="dish-num">03</span>Tom Yum Suppe <span class="heat">●●●</span></h3>
+        <p>Scharf-saure Garnelensuppe, Zitronengras, Galgant</p>
+      </div>
+      <div class="dish-price">8,50</div>
+    </div>
+
+    <div class="dish" data-cat="starter">
+      <div class="dish-img" style="background-image:url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80')"></div>
+      <div class="dish-info">
+        <h3><span class="dish-num">04</span>Papaya Salat <span class="heat">●●</span></h3>
+        <p>Som Tum, grüne Papaya, Chili, Erdnüsse, Limette</p>
+      </div>
+      <div class="dish-price">8,90</div>
+    </div>
+
+    <div class="dish" data-cat="wok">
+      <div class="dish-img" style="background-image:url('https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=300&q=80')"></div>
+      <div class="dish-info">
+        <h3><span class="dish-num">05</span>Pad Thai <span class="heat">●</span></h3>
+        <p>Reisnudeln, Tamarinde, Garnelen, Erdnüsse, Limette — Klassiker</p>
+      </div>
+      <div class="dish-price">11,90</div>
+    </div>
+
+    <div class="dish" data-cat="wok">
+      <div class="dish-img" style="background-image:url('https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=300&q=80')"></div>
+      <div class="dish-info">
+        <h3><span class="dish-num">06</span>Pad See Ew</h3>
+        <p>Breite Reisnudeln, chinesischer Brokkoli, Sojasoße, Rind</p>
+      </div>
+      <div class="dish-price">12,50</div>
+    </div>
+
+    <div class="dish" data-cat="wok">
+      <div class="dish-img" style="background-image:url('https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=300&q=80')"></div>
+      <div class="dish-info">
+        <h3><span class="dish-num">07</span>Drunken Noodles <span class="heat">●●●</span></h3>
+        <p>Basil, Chili, Knoblauch, Hähnchen — die wilde Variante</p>
+      </div>
+      <div class="dish-price">12,90</div>
+    </div>
+
+    <div class="dish" data-cat="wok">
+      <div class="dish-img" style="background-image:url('https://images.unsplash.com/photo-1554998171-89445e31c52b?auto=format&fit=crop&w=300&q=80')"></div>
+      <div class="dish-info">
+        <h3><span class="dish-num">08</span>Kra Pao <span class="heat">●●</span></h3>
+        <p>Gebratenes Hähnchen, heiliges Basil, Spiegelei, Reis</p>
+      </div>
+      <div class="dish-price">10,90</div>
+    </div>
+
+    <div class="dish" data-cat="curry">
+      <div class="dish-img" style="background-image:url('https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&w=300&q=80')"></div>
+      <div class="dish-info">
+        <h3><span class="dish-num">09</span>Massaman Curry</h3>
+        <p>Rind, Kartoffeln, Erdnüsse, milde Kokosnote</p>
+      </div>
+      <div class="dish-price">13,50</div>
+    </div>
+
+    <div class="dish" data-cat="curry">
+      <div class="dish-img" style="background-image:url('https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=300&q=80')"></div>
+      <div class="dish-info">
+        <h3><span class="dish-num">10</span>Grünes Curry <span class="heat">●●●</span></h3>
+        <p>Hähnchen, Aubergine, Thai-Basilikum, Kokosmilch</p>
+      </div>
+      <div class="dish-price">12,90</div>
+    </div>
+
+    <div class="dish" data-cat="curry">
+      <div class="dish-img" style="background-image:url('https://images.unsplash.com/photo-1606491956689-2ea866880c84?auto=format&fit=crop&w=300&q=80')"></div>
+      <div class="dish-info">
+        <h3><span class="dish-num">11</span>Rotes Curry <span class="heat">●●●●</span></h3>
+        <p>Ente, Bambus, Ananas, hausgemachte Paste</p>
+      </div>
+      <div class="dish-price">14,90</div>
+    </div>
+
+    <div class="dish" data-cat="curry">
+      <div class="dish-img" style="background-image:url('https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=300&q=80')"></div>
+      <div class="dish-info">
+        <h3><span class="dish-num">12</span>Gelbes Curry <span class="heat">●●</span></h3>
+        <p>Tofu, Süßkartoffel, Kurkuma, milde Soße</p>
+      </div>
+      <div class="dish-price">11,90</div>
+    </div>
+
+    <div class="dish" data-cat="sweet">
+      <div class="dish-img" style="background-image:url('https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=300&q=80')"></div>
+      <div class="dish-info">
+        <h3><span class="dish-num">13</span>Mango Sticky Rice</h3>
+        <p>Klebreis, Kokosmilch, reife Mango — Pai's Rezept</p>
+      </div>
+      <div class="dish-price">6,90</div>
+    </div>
+
+    <div class="dish" data-cat="sweet">
+      <div class="dish-img" style="background-image:url('https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=300&q=80')"></div>
+      <div class="dish-info">
+        <h3><span class="dish-num">14</span>Thai Eistee</h3>
+        <p>Cha Yen, gezuckerter Schwarztee, Kondensmilch, Eis</p>
+      </div>
+      <div class="dish-price">3,90</div>
+    </div>
+
+  </div>
+</section>
+
+<section class="gallery-section" id="galerie">
+  <div class="head">
+    <span class="eyebrow">Galerie</span>
+    <h2 class="section-title">FEUER & <span class="y">DAMPF</span></h2>
+  </div>
+  <div class="gallery">
+    <div class="tall" style="background-image:url('https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=800&q=80')"></div>
+    <div style="background-image:url('https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80')"></div>
+    <div style="background-image:url('https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=600&q=80')"></div>
+    <div class="wide" style="background-image:url('https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&w=900&q=80')"></div>
+    <div style="background-image:url('https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=600&q=80')"></div>
+    <div style="background-image:url('https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=600&q=80')"></div>
+  </div>
+</section>
+
+<section class="info-section" id="standort">
+  <div class="info-wrap">
+    <div class="card">
+      <h3>ÖFFNUNGSZEITEN</h3>
+      <div class="hours-row"><span class="day">Montag</span><span class="time">12:00 – 22:00</span></div>
+      <div class="hours-row"><span class="day">Dienstag</span><span class="time">12:00 – 22:00</span></div>
+      <div class="hours-row today"><span class="day">● Mittwoch</span><span class="time">12:00 – 23:00</span></div>
+      <div class="hours-row"><span class="day">Donnerstag</span><span class="time">12:00 – 23:00</span></div>
+      <div class="hours-row"><span class="day">Freitag</span><span class="time">12:00 – 24:00</span></div>
+      <div class="hours-row"><span class="day">Samstag</span><span class="time">13:00 – 24:00</span></div>
+      <div class="hours-row"><span class="day">Sonntag</span><span class="time">13:00 – 21:00</span></div>
+      <p style="margin-top:25px;font-size:12px;color:rgba(244,237,224,.5);letter-spacing:1px">★ Hot-Pot-Abend jeden 1. Freitag im Monat</p>
+    </div>
+
+    <div class="card">
+      <h3>STANDORT</h3>
+      <p class="addr">
+        <strong>PAI THAI Imbiss</strong>
+        Oranienstraße 187<br>
+        10999 Berlin · Kreuzberg<br>
+        U-Bahn Kottbusser Tor
+      </p>
+      <p style="margin-top:14px;font-size:13px;color:rgba(244,237,224,.7)">
+        Tel. <a href="tel:+493061234567" style="color:var(--gelb);text-decoration:none">030 · 6123 4567</a><br>
+        Mail <a href="mailto:sawasdee@paithai.berlin" style="color:var(--gelb);text-decoration:none">sawasdee@paithai.berlin</a>
+      </p>
+      <div class="map-box">
+        <span class="map-pin">▲ Hier brennt der Wok</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="bestellen">
+  <span class="eyebrow" style="color:var(--gelb)">Bereit?</span>
+  <h2>HUNGER AUF <span>FEUER?</span></h2>
+  <p>Abholung in 15 Minuten oder Lieferung quer durch Kreuzberg. Wok brennt, Nudeln warten.</p>
+  <div class="cta-buttons">
+    <a href="#" class="btn-primary">Jetzt online bestellen</a>
+    <a href="tel:+493061234567" class="btn-ghost">Anrufen · 030 6123 4567</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="logo" style="margin-bottom:18px">PAI THAI <small>EST. 2014</small></div>
+      <p style="max-width:280px">Echte thailändische Straßenküche in Berlin-Kreuzberg. Seit 2014. Mit offener Flamme und geschlossenen Augen.</p>
+      <div class="socials">
+        <a href="#" aria-label="Instagram">IG</a>
+        <a href="#" aria-label="Facebook">FB</a>
+        <a href="#" aria-label="TikTok">TT</a>
+      </div>
+    </div>
+    <div>
+      <h4>Essen</h4>
+      <a href="#menu">Speisekarte</a>
+      <a href="#">Tagesgerichte</a>
+      <a href="#">Vegetarisch</a>
+      <a href="#">Catering</a>
+    </div>
+    <div>
+      <h4>Info</h4>
+      <a href="#story">Über uns</a>
+      <a href="#standort">Standort</a>
+      <a href="#">Liefergebiet</a>
+      <a href="#">Presse</a>
+    </div>
+    <div>
+      <h4>Kontakt</h4>
+      <a href="tel:+493061234567">030 6123 4567</a>
+      <a href="mailto:sawasdee@paithai.berlin">sawasdee@paithai.berlin</a>
+      <p>Oranienstr. 187<br>10999 Berlin</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 PAI THAI Berlin · Sawasdee 🌶</span>
+    <span>Impressum · Datenschutz · AGB</span>
+  </div>
+</footer>
+
+<script>
+  // Menu-Filter
+  const tabs = document.querySelectorAll('.menu-tabs button');
+  const dishes = document.querySelectorAll('.dish');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const cat = tab.dataset.cat;
+      dishes.forEach(d => {
+        const show = (cat === 'all' || d.dataset.cat === cat);
+        d.style.display = show ? 'grid' : 'none';
+        if(show){
+          d.style.opacity = 0;
+          requestAnimationFrame(() => {
+            d.style.transition = 'opacity .4s';
+            d.style.opacity = 1;
+          });
+        }
+      });
+    });
+  });
+
+  // Heute-Markierung (Mittwoch als Demo)
+  const today = new Date().getDay(); // 0=So
+  const rows = document.querySelectorAll('.hours-row');
+  const labels = ['SONNTAG','MONTAG','DIENSTAG','MITTWOCH','DONNERSTAG','FREITAG','SAMSTAG'];
+  rows.forEach(r => r.classList.remove('today'));
+  // Wir lassen die Demo-Markierung auf Mittwoch — real:
+  // const todayLabel = labels[today];
+  // rows.forEach(r => { if(r.querySelector('.day').textContent.includes(todayLabel)) r.classList.add('today'); });
+
+  // Parallax Smoke
+  document.addEventListener('mousemove', (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+    document.querySelector('.smoke').style.transform = `translate(${x}px, ${y}px)`;
+  });
+
+  // Smooth reveal für Dishes beim Scrollen
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        e.target.style.transform = 'translateX(0)';
+        e.target.style.opacity = '1';
+      }
+    });
+  }, {threshold: 0.1});
+  dishes.forEach((d, i) => {
+    d.style.transform = 'translateX(-30px)';
+    d.style.opacity = '0';
+    d.style.transition = `all .6s ease ${i*0.05}s`;
+    io.observe(d);
+  });
+</script>
+
+</body>
+</html>

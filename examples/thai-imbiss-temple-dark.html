@@ -1,0 +1,1218 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WAT ARUN — Thai Imbiss · Tempel der Aromen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Marcellus&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0A0A;
+    --black-2:#0F0D0A;
+    --black-3:#14110D;
+    --gold:#D4AF37;
+    --gold-soft:#B8932E;
+    --gold-bright:#E8C766;
+    --red:#8B0000;
+    --red-glow:#B22222;
+    --cream:#EDE3CF;
+    --muted:#8A7E63;
+    --line:rgba(212,175,55,0.18);
+    --line-strong:rgba(212,175,55,0.45);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--black);
+    color:var(--cream);
+    font-family:'Cormorant Garamond',serif;
+    font-weight:300;
+    line-height:1.6;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* Background atmospheric layer */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(139,0,0,0.12), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 20% 100%, rgba(212,175,55,0.06), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 50%, rgba(139,0,0,0.05), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.83 0 0 0 0 0.69 0 0 0 0 0.22 0 0 0 0.05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity:0.5;
+    mix-blend-mode:overlay;
+    pointer-events:none;
+    z-index:1;
+  }
+
+  /* Candle flicker */
+  .candle-layer{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:2;
+    background:
+      radial-gradient(circle 200px at 15% 30%, rgba(212,175,55,0.10), transparent 70%),
+      radial-gradient(circle 240px at 85% 70%, rgba(212,175,55,0.08), transparent 70%),
+      radial-gradient(circle 180px at 50% 90%, rgba(139,0,0,0.10), transparent 70%);
+    animation:flicker 4s ease-in-out infinite alternate;
+  }
+  @keyframes flicker{
+    0%{opacity:0.7; transform:translateY(0)}
+    25%{opacity:0.95; transform:translateY(-2px)}
+    50%{opacity:0.6; transform:translateY(1px)}
+    75%{opacity:0.9; transform:translateY(-1px)}
+    100%{opacity:0.75; transform:translateY(0)}
+  }
+
+  /* Navigation */
+  nav{
+    position:fixed;
+    top:0;left:0;right:0;
+    z-index:100;
+    padding:1.5rem 3rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:linear-gradient(180deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.4) 70%, transparent 100%);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    transition:padding 0.4s ease;
+  }
+  nav.scrolled{padding:1rem 3rem; background:rgba(10,10,10,0.92); border-bottom:1px solid var(--line)}
+  .logo{
+    font-family:'Marcellus',serif;
+    font-size:1.4rem;
+    letter-spacing:0.35em;
+    color:var(--gold);
+    text-shadow:0 0 20px rgba(212,175,55,0.4);
+  }
+  .logo span{color:var(--cream); font-weight:300}
+  nav ul{
+    display:flex;
+    gap:2.5rem;
+    list-style:none;
+  }
+  nav a{
+    color:var(--cream);
+    text-decoration:none;
+    font-family:'Marcellus',serif;
+    font-size:0.78rem;
+    letter-spacing:0.25em;
+    text-transform:uppercase;
+    position:relative;
+    padding:0.3rem 0;
+    transition:color 0.3s ease;
+  }
+  nav a::after{
+    content:"";
+    position:absolute;
+    bottom:0; left:50%;
+    width:0; height:1px;
+    background:var(--gold);
+    transition:all 0.4s ease;
+    box-shadow:0 0 8px var(--gold);
+  }
+  nav a:hover{color:var(--gold)}
+  nav a:hover::after{width:100%; left:0}
+
+  /* Hero */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    overflow:hidden;
+    z-index:3;
+  }
+  .hero-bg{
+    position:absolute;
+    inset:0;
+    background-image:url("https://images.unsplash.com/photo-1569718212165-3a8278d5f624?q=80&w=2400&auto=format&fit=crop");
+    background-size:cover;
+    background-position:center;
+    filter:brightness(0.32) saturate(1.2) contrast(1.05);
+    z-index:-1;
+  }
+  .hero-bg::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 50%, transparent, rgba(10,10,10,0.85) 80%),
+      linear-gradient(180deg, rgba(10,10,10,0.5) 0%, transparent 30%, transparent 70%, rgba(10,10,10,0.95) 100%);
+  }
+  .hero-content{
+    max-width:900px;
+    padding:0 2rem;
+    position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'Marcellus',serif;
+    font-size:0.85rem;
+    letter-spacing:0.6em;
+    color:var(--gold);
+    margin-bottom:2rem;
+    text-transform:uppercase;
+    opacity:0;
+    animation:fadeUp 1.2s ease 0.3s forwards;
+  }
+  .hero h1{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:300;
+    font-size:clamp(3rem, 9vw, 7.5rem);
+    line-height:0.95;
+    letter-spacing:0.02em;
+    margin-bottom:1.5rem;
+    color:var(--cream);
+    opacity:0;
+    animation:fadeUp 1.4s ease 0.6s forwards;
+  }
+  .hero h1 em{
+    font-style:italic;
+    font-weight:500;
+    color:var(--gold);
+    text-shadow:0 0 40px rgba(212,175,55,0.5);
+  }
+  .hero-sub{
+    font-size:1.25rem;
+    font-style:italic;
+    color:var(--muted);
+    max-width:560px;
+    margin:0 auto 3rem;
+    opacity:0;
+    animation:fadeUp 1.4s ease 0.9s forwards;
+  }
+  .hero-cta{
+    display:inline-flex;
+    align-items:center;
+    gap:1rem;
+    opacity:0;
+    animation:fadeUp 1.4s ease 1.2s forwards;
+  }
+  .btn{
+    display:inline-block;
+    padding:1rem 2.5rem;
+    font-family:'Marcellus',serif;
+    font-size:0.8rem;
+    letter-spacing:0.3em;
+    text-transform:uppercase;
+    text-decoration:none;
+    color:var(--gold);
+    border:1px solid var(--gold);
+    background:transparent;
+    position:relative;
+    overflow:hidden;
+    transition:all 0.4s ease;
+    cursor:pointer;
+  }
+  .btn::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg, transparent, rgba(212,175,55,0.25), transparent);
+    transform:translateX(-100%);
+    transition:transform 0.6s ease;
+  }
+  .btn:hover{
+    color:var(--black);
+    background:var(--gold);
+    box-shadow:0 0 30px rgba(212,175,55,0.5), inset 0 0 20px rgba(232,199,102,0.3);
+  }
+  .btn:hover::before{transform:translateX(100%)}
+  .btn-ghost{
+    border-color:var(--line-strong);
+    color:var(--cream);
+  }
+  .btn-ghost:hover{
+    background:transparent;
+    color:var(--gold);
+    border-color:var(--gold);
+  }
+
+  @keyframes fadeUp{
+    from{opacity:0; transform:translateY(30px)}
+    to{opacity:1; transform:translateY(0)}
+  }
+
+  .scroll-indicator{
+    position:absolute;
+    bottom:2.5rem;
+    left:50%;
+    transform:translateX(-50%);
+    color:var(--gold);
+    font-family:'Marcellus',serif;
+    font-size:0.7rem;
+    letter-spacing:0.4em;
+    text-transform:uppercase;
+    opacity:0.7;
+    animation:fadeUp 1.5s ease 1.8s forwards, bounce 2.5s ease-in-out 2.5s infinite;
+    opacity:0;
+  }
+  .scroll-indicator::after{
+    content:"";
+    display:block;
+    width:1px;
+    height:40px;
+    background:linear-gradient(180deg, var(--gold), transparent);
+    margin:1rem auto 0;
+  }
+  @keyframes bounce{
+    0%,100%{transform:translateX(-50%) translateY(0)}
+    50%{transform:translateX(-50%) translateY(8px)}
+  }
+
+  /* Section base */
+  section{
+    position:relative;
+    z-index:3;
+    padding:8rem 2rem;
+  }
+  .container{
+    max-width:1280px;
+    margin:0 auto;
+    position:relative;
+  }
+  .section-label{
+    font-family:'Marcellus',serif;
+    font-size:0.75rem;
+    letter-spacing:0.5em;
+    color:var(--gold);
+    text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    margin-bottom:1.5rem;
+  }
+  .section-label::before{
+    content:"";
+    width:40px;
+    height:1px;
+    background:var(--gold);
+    box-shadow:0 0 8px var(--gold);
+  }
+  .section-title{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:300;
+    font-size:clamp(2.2rem, 5vw, 4rem);
+    line-height:1.05;
+    margin-bottom:1.5rem;
+    letter-spacing:0.01em;
+  }
+  .section-title em{
+    font-style:italic;
+    color:var(--gold);
+  }
+  .section-intro{
+    font-size:1.15rem;
+    color:var(--muted);
+    max-width:600px;
+    font-style:italic;
+    line-height:1.7;
+  }
+
+  /* Reveal animation */
+  .reveal{
+    opacity:0;
+    transform:translateY(40px);
+    transition:opacity 1.2s ease, transform 1.2s ease;
+  }
+  .reveal.visible{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  /* Philosophy section */
+  .philosophy{
+    background:linear-gradient(180deg, var(--black) 0%, var(--black-2) 100%);
+    border-top:1px solid var(--line);
+  }
+  .philosophy-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6rem;
+    align-items:center;
+  }
+  .philosophy-image{
+    position:relative;
+    aspect-ratio:3/4;
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .philosophy-image img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    filter:brightness(0.65) saturate(1.15) contrast(1.05);
+    transition:transform 1.5s ease, filter 1.5s ease;
+  }
+  .philosophy-image:hover img{
+    transform:scale(1.05);
+    filter:brightness(0.8) saturate(1.25);
+  }
+  .philosophy-image::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, transparent 40%, rgba(10,10,10,0.7) 100%);
+    z-index:1;
+  }
+  .philosophy-image::after{
+    content:"";
+    position:absolute;
+    inset:-1px;
+    border:1px solid var(--gold);
+    opacity:0;
+    transition:opacity 0.6s ease;
+    pointer-events:none;
+  }
+  .philosophy-image:hover::after{opacity:0.5}
+  .philosophy-text p{
+    margin-bottom:1.5rem;
+    font-size:1.1rem;
+    color:var(--cream);
+    line-height:1.8;
+  }
+  .philosophy-text p.lead{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:1.5rem;
+    color:var(--gold);
+    line-height:1.5;
+    margin-bottom:2rem;
+  }
+  .signature{
+    margin-top:3rem;
+    padding-top:2rem;
+    border-top:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    gap:1.5rem;
+  }
+  .signature-mark{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:2rem;
+    color:var(--gold);
+  }
+  .signature-info{
+    font-family:'Marcellus',serif;
+    font-size:0.75rem;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .signature-info strong{
+    display:block;
+    color:var(--cream);
+    font-weight:400;
+    margin-bottom:0.3rem;
+  }
+
+  /* Menu */
+  .menu{
+    background:var(--black);
+    position:relative;
+  }
+  .menu::before{
+    content:"";
+    position:absolute;
+    top:0; left:50%;
+    transform:translateX(-50%);
+    width:80%;
+    max-width:1200px;
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity:0.4;
+  }
+  .menu-header{
+    text-align:center;
+    margin-bottom:5rem;
+  }
+  .menu-header .section-label{
+    justify-content:center;
+  }
+  .menu-header .section-label::before{
+    display:none;
+  }
+  .menu-header .ornament{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:1.5rem;
+    margin-bottom:1.5rem;
+  }
+  .menu-header .ornament span{
+    width:60px;
+    height:1px;
+    background:var(--gold);
+    opacity:0.5;
+  }
+  .menu-header .ornament-dot{
+    width:6px;
+    height:6px;
+    background:var(--gold);
+    border-radius:50%;
+    box-shadow:0 0 12px var(--gold);
+    animation:pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{box-shadow:0 0 8px var(--gold); transform:scale(1)}
+    50%{box-shadow:0 0 20px var(--gold), 0 0 40px rgba(212,175,55,0.4); transform:scale(1.3)}
+  }
+
+  .menu-category{
+    margin-bottom:5rem;
+  }
+  .menu-category-title{
+    font-family:'Marcellus',serif;
+    font-size:1rem;
+    letter-spacing:0.4em;
+    text-transform:uppercase;
+    color:var(--gold);
+    text-align:center;
+    margin-bottom:0.5rem;
+    position:relative;
+  }
+  .menu-category-subtitle{
+    text-align:center;
+    font-style:italic;
+    color:var(--muted);
+    margin-bottom:3rem;
+    font-size:1rem;
+  }
+  .menu-list{
+    max-width:880px;
+    margin:0 auto;
+  }
+  .menu-item{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:2rem;
+    padding:1.8rem 0;
+    border-bottom:1px dashed var(--line);
+    align-items:start;
+    transition:padding 0.4s ease;
+  }
+  .menu-item:hover{
+    padding-left:1rem;
+    padding-right:1rem;
+  }
+  .menu-item-name{
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.5rem;
+    font-weight:400;
+    color:var(--cream);
+    margin-bottom:0.4rem;
+    display:flex;
+    align-items:baseline;
+    gap:0.8rem;
+  }
+  .menu-item-thai{
+    font-size:0.85rem;
+    color:var(--muted);
+    font-style:italic;
+    letter-spacing:0.05em;
+  }
+  .menu-item-desc{
+    font-size:1rem;
+    color:var(--muted);
+    line-height:1.6;
+    font-style:italic;
+  }
+  .menu-item-price{
+    font-family:'Marcellus',serif;
+    font-size:1.3rem;
+    color:var(--gold);
+    white-space:nowrap;
+    text-shadow:0 0 12px rgba(212,175,55,0.3);
+  }
+  .menu-item-spicy{
+    display:inline-block;
+    color:var(--red-glow);
+    font-size:0.9rem;
+    margin-left:0.4rem;
+  }
+
+  .menu-cta{
+    text-align:center;
+    margin-top:4rem;
+    padding-top:3rem;
+    border-top:1px solid var(--line);
+  }
+  .menu-note{
+    color:var(--muted);
+    font-style:italic;
+    margin-top:1.5rem;
+    font-size:0.95rem;
+  }
+
+  /* Gallery */
+  .gallery{
+    background:linear-gradient(180deg, var(--black) 0%, var(--black-2) 100%);
+    border-top:1px solid var(--line);
+  }
+  .gallery-header{
+    text-align:center;
+    margin-bottom:4rem;
+  }
+  .gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    grid-auto-rows:240px;
+    gap:1rem;
+    max-width:1400px;
+    margin:0 auto;
+  }
+  .gallery-item{
+    position:relative;
+    overflow:hidden;
+    border:1px solid var(--line);
+    cursor:pointer;
+  }
+  .gallery-item img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    filter:brightness(0.55) saturate(1.2) contrast(1.05);
+    transition:transform 1.5s ease, filter 1s ease;
+  }
+  .gallery-item:hover img{
+    transform:scale(1.08);
+    filter:brightness(0.85) saturate(1.3);
+  }
+  .gallery-item::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, transparent 50%, rgba(10,10,10,0.9) 100%);
+    pointer-events:none;
+  }
+  .gallery-item-label{
+    position:absolute;
+    bottom:1.2rem;
+    left:1.2rem;
+    z-index:2;
+    font-family:'Marcellus',serif;
+    font-size:0.75rem;
+    letter-spacing:0.25em;
+    text-transform:uppercase;
+    color:var(--gold);
+    text-shadow:0 2px 12px rgba(0,0,0,0.8);
+  }
+  .gallery-item.wide{grid-column:span 2}
+  .gallery-item.tall{grid-row:span 2}
+
+  /* Visit / Info */
+  .visit{
+    background:var(--black);
+    border-top:1px solid var(--line);
+  }
+  .visit-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:5rem;
+  }
+  .visit-card{
+    padding:3rem;
+    background:linear-gradient(180deg, var(--black-2), var(--black-3));
+    border:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+  }
+  .visit-card::before{
+    content:"";
+    position:absolute;
+    top:0; left:0;
+    width:60px;
+    height:60px;
+    border-top:1px solid var(--gold);
+    border-left:1px solid var(--gold);
+  }
+  .visit-card::after{
+    content:"";
+    position:absolute;
+    bottom:0; right:0;
+    width:60px;
+    height:60px;
+    border-bottom:1px solid var(--gold);
+    border-right:1px solid var(--gold);
+  }
+  .visit-card h3{
+    font-family:'Marcellus',serif;
+    font-size:0.85rem;
+    letter-spacing:0.4em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:2rem;
+  }
+  .visit-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:1rem 0;
+    border-bottom:1px solid var(--line);
+    gap:1rem;
+  }
+  .visit-row:last-child{border-bottom:none}
+  .visit-day{
+    font-family:'Marcellus',serif;
+    font-size:0.9rem;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    color:var(--cream);
+  }
+  .visit-time{
+    color:var(--gold);
+    font-size:1.05rem;
+    font-style:italic;
+  }
+  .visit-time.closed{color:var(--red-glow); opacity:0.7}
+  .address-block{
+    font-family:'Cormorant Garamond',serif;
+  }
+  .address-block .name{
+    font-size:2rem;
+    color:var(--cream);
+    margin-bottom:0.5rem;
+    font-weight:400;
+  }
+  .address-block .street{
+    font-size:1.2rem;
+    color:var(--gold);
+    margin-bottom:0.3rem;
+    font-style:italic;
+  }
+  .address-block .city{
+    font-size:1.2rem;
+    color:var(--gold);
+    margin-bottom:1.5rem;
+    font-style:italic;
+  }
+  .contact-line{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    padding:0.8rem 0;
+    color:var(--cream);
+    font-size:1.05rem;
+    border-top:1px solid var(--line);
+  }
+  .contact-line svg{
+    width:16px; height:16px;
+    stroke:var(--gold);
+    fill:none;
+    stroke-width:1.5;
+    flex-shrink:0;
+  }
+
+  /* Quote section */
+  .quote-section{
+    padding:6rem 2rem;
+    background:
+      linear-gradient(180deg, var(--black-2), var(--black)),
+      radial-gradient(ellipse at center, rgba(139,0,0,0.15), transparent 70%);
+    text-align:center;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .quote-mark{
+    font-family:'Cormorant Garamond',serif;
+    font-size:5rem;
+    color:var(--gold);
+    line-height:1;
+    margin-bottom:1rem;
+    opacity:0.5;
+  }
+  .quote-text{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-weight:300;
+    font-size:clamp(1.5rem, 3.5vw, 2.5rem);
+    line-height:1.4;
+    max-width:900px;
+    margin:0 auto 2rem;
+    color:var(--cream);
+  }
+  .quote-text em{color:var(--gold)}
+  .quote-author{
+    font-family:'Marcellus',serif;
+    font-size:0.8rem;
+    letter-spacing:0.4em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+
+  /* Footer */
+  footer{
+    background:var(--black);
+    padding:4rem 2rem 2rem;
+    border-top:1px solid var(--line);
+    position:relative;
+    z-index:3;
+  }
+  .footer-grid{
+    max-width:1280px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr;
+    gap:4rem;
+    margin-bottom:3rem;
+  }
+  .footer-brand h4{
+    font-family:'Marcellus',serif;
+    font-size:1.5rem;
+    letter-spacing:0.3em;
+    color:var(--gold);
+    margin-bottom:1rem;
+  }
+  .footer-brand p{
+    color:var(--muted);
+    font-style:italic;
+    max-width:380px;
+    line-height:1.7;
+  }
+  .footer-col h5{
+    font-family:'Marcellus',serif;
+    font-size:0.75rem;
+    letter-spacing:0.3em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:1.5rem;
+  }
+  .footer-col ul{
+    list-style:none;
+  }
+  .footer-col li{
+    padding:0.4rem 0;
+    color:var(--cream);
+    font-size:1rem;
+  }
+  .footer-col a{
+    color:var(--cream);
+    text-decoration:none;
+    transition:color 0.3s ease;
+  }
+  .footer-col a:hover{color:var(--gold)}
+  .footer-bottom{
+    max-width:1280px;
+    margin:0 auto;
+    padding-top:2rem;
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:var(--muted);
+    font-size:0.85rem;
+    font-style:italic;
+  }
+  .footer-bottom .ornament{
+    color:var(--gold);
+    letter-spacing:0.5em;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px){
+    nav{padding:1rem 1.5rem}
+    nav ul{display:none}
+    section{padding:5rem 1.5rem}
+    .philosophy-grid, .visit-grid{grid-template-columns:1fr; gap:3rem}
+    .gallery-grid{grid-template-columns:repeat(2, 1fr); grid-auto-rows:200px}
+    .gallery-item.wide, .gallery-item.tall{grid-column:span 1; grid-row:span 1}
+    .footer-grid{grid-template-columns:1fr; gap:2.5rem}
+    .footer-bottom{flex-direction:column; gap:1rem; text-align:center}
+    .menu-item{grid-template-columns:1fr; gap:0.5rem}
+    .menu-item-price{font-size:1.1rem}
+    .visit-card{padding:2rem}
+  }
+
+  /* Decorative ornament */
+  .ornament-divider{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:1.5rem;
+    margin:2rem 0;
+  }
+  .ornament-divider .line{
+    width:80px;
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .ornament-divider .diamond{
+    width:8px;
+    height:8px;
+    background:var(--gold);
+    transform:rotate(45deg);
+    box-shadow:0 0 12px var(--gold);
+  }
+
+</style>
+</head>
+<body>
+
+<div class="candle-layer"></div>
+
+<nav id="nav">
+  <div class="logo">WAT <span>ARUN</span></div>
+  <ul>
+    <li><a href="#philosophie">Philosophie</a></li>
+    <li><a href="#speisekarte">Speisekarte</a></li>
+    <li><a href="#galerie">Galerie</a></li>
+    <li><a href="#besuch">Besuch</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Thai Imbiss · seit 2009</div>
+    <h1>Tempel<br>der <em>Aromen</em></h1>
+    <p class="hero-sub">Authentische thailändische Küche, gekocht mit Geduld, gewürzt mit Erinnerung — serviert im Schein der Kerzen.</p>
+    <div class="hero-cta">
+      <a href="#speisekarte" class="btn">Speisekarte ansehen</a>
+      <a href="#besuch" class="btn btn-ghost">Tisch reservieren</a>
+    </div>
+  </div>
+  <div class="scroll-indicator">Hinabsteigen</div>
+</section>
+
+<!-- PHILOSOPHIE -->
+<section class="philosophy" id="philosophie">
+  <div class="container">
+    <div class="philosophy-grid">
+      <div class="philosophy-image reveal">
+        <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1400&auto=format&fit=crop" alt="Thai Curry dunkel">
+      </div>
+      <div class="philosophy-text reveal">
+        <div class="section-label">Unsere Philosophie</div>
+        <h2 class="section-title">Aus dem <em>Rauch</em><br>der Vergangenheit</h2>
+        <p class="lead">„Ein Gericht ist nur so tief, wie die Stille, aus der es kommt."</p>
+        <p>Wat Arun ist mehr als ein Imbiss — es ist ein Ort, an dem das Echo Bangkoks durch gewürzten Rauch und Kerzenschein wandert. Jede Paste wird morgens im Mörser zerrieben, jede Kokosmilch mit der Hand gerührt.</p>
+        <p>Wir kochen nicht für Eile. Wir kochen für Erinnerung. Für den Geschmack der Gassen von Chiang Mai, für das Feuer der Märkte von Phuket, für das leise Summen eines Tempels bei Einbruch der Nacht.</p>
+        <div class="signature">
+          <div class="signature-mark">— Nong&nbsp;S.</div>
+          <div class="signature-info">
+            <strong>Nong Saetang</strong>
+            Köchin &amp; Gründerin
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-section">
+  <div class="reveal">
+    <div class="quote-mark">"</div>
+    <p class="quote-text">In jedem Teller wohnt ein <em>Stück Nacht</em> —<br>man muss ihn nur lange genug ansehen.</p>
+    <div class="quote-author">— Alte thailändische Redensart</div>
+  </div>
+</section>
+
+<!-- SPEISEKARTE -->
+<section class="menu" id="speisekarte">
+  <div class="container">
+    <div class="menu-header reveal">
+      <div class="ornament">
+        <span></span>
+        <div class="ornament-dot"></div>
+        <span></span>
+      </div>
+      <div class="section-label" style="justify-content:center">Die Speisekarte</div>
+      <h2 class="section-title">Köstlichkeiten des <em>Hauses</em></h2>
+      <p class="section-intro" style="margin:0 auto">Jedes Gericht wird frisch zubereitet — mit Zutaten aus nachhaltigem Anbau und Gewürzen, die direkt aus Thailand kommen.</p>
+    </div>
+
+    <!-- Vorspeisen -->
+    <div class="menu-category reveal">
+      <h3 class="menu-category-title">Vorspeisen</h3>
+      <p class="menu-category-subtitle">— ein leiser Auftakt —</p>
+      <div class="menu-list">
+        <div class="menu-item">
+          <div>
+            <div class="menu-item-name">Frühlingsrollen <span class="menu-item-thai">· Por Pia Tod</span></div>
+            <div class="menu-item-desc">Knusprig gebacken, gefüllt mit Glasnudeln, Gemüse &amp; Tofu. Mit süß-pikanter Chilisauce.</div>
+          </div>
+          <div class="menu-item-price">6,50 €</div>
+        </div>
+        <div class="menu-item">
+          <div>
+            <div class="menu-item-name">Satay-Spieße <span class="menu-item-thai">· Moo Satay</span></div>
+            <div class="menu-item-desc">Gegrillte Hähnchenspieße in Kurkuma-Marinade, mit Erdnussbutter &amp; Gurkenrelish.</div>
+          </div>
+          <div class="menu-item-price">8,00 €</div>
+        </div>
+        <div class="menu-item">
+          <div>
+            <div class="menu-item-name">Tom Kha Gai <span class="menu-item-thai">· Kokos-Suppe</span></div>
+            <div class="menu-item-desc">Cremige Kokosnusssuppe mit Hähnchen, Galgant, Limette &amp; Champignons.</div>
+          </div>
+          <div class="menu-item-price">7,50 €</div>
+        </div>
+        <div class="menu-item">
+          <div>
+            <div class="menu-item-name">Tom Yum Goong <span class="menu-item-spicy">✦</span> <span class="menu-item-thai">· Scharf-saure Suppe</span></div>
+            <div class="menu-item-desc">Feurige Suppe mit Garnelen, Zitronengras, Kaffirlimette &amp; frischen Kräutern.</div>
+          </div>
+          <div class="menu-item-price">9,00 €</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ornament-divider"><div class="line"></div><div class="diamond"></div><div class="line"></div></div>
+
+    <!-- Hauptspeisen -->
+    <div class="menu-category reveal">
+      <h3 class="menu-category-title">Hauptspeisen</h3>
+      <p class="menu-category-subtitle">— das Herz der Karte —</p>
+      <div class="menu-list">
+        <div class="menu-item">
+          <div>
+            <div class="menu-item-name">Pad Thai <span class="menu-item-thai">· Klassiker</span></div>
+            <div class="menu-item-desc">Wok-gebratene Reisnudeln mit Tofu, Garnelen, Erdnüssen, Sprossen &amp; Tamarindenpaste.</div>
+          </div>
+          <div class="menu-item-price">11,50 €</div>
+        </div>
+        <div class="menu-item">
+          <div>
+            <div class="menu-item-name">Panang Curry <span class="menu-item-spicy">✦</span> <span class="menu-item-thai">· Rind</span></div>
+            <div class="menu-item-desc">Cremiges rotes Curry mit Rindfleisch, Kokosmilch, Limettenblättern &amp; Thai-Basilikum.</div>
+          </div>
+          <div class="menu-item-price">12,50 €</div>
+        </div>
+        <div class="menu-item">
+          <div>
+            <div class="menu-item-name">Massaman Curry <span class="menu-item-thai">· Hähnchen</span></div>
+            <div class="menu-item-desc">Mildes, nussiges Curry mit Hähnchen, Kartoffeln, Erdnüssen &amp; Zimt.</div>
+          </div>
+          <div class="menu-item-price">12,00 €</div>
+        </div>
+        <div class="menu-item">
+          <div>
+            <div class="menu-item-name">Khao Soi <span class="menu-item-spicy">✦</span> <span class="menu-item-thai">· Nordthailand</span></div>
+            <div class="menu-item-desc">Eier nudeln in goldener Curry-Brühe, mit Hähnchen, frittierten Nudeln &amp; Pickles.</div>
+          </div>
+          <div class="menu-item-price">12,50 €</div>
+        </div>
+        <div class="menu-item">
+          <div>
+            <div class="menu-item-name">Pad Kra Pao <span class="menu-item-spicy">✦✦</span> <span class="menu-item-thai">· Heiliges Basilikum</span></div>
+            <div class="menu-item-desc">Scharf gebratenes Hähnchen mit Knoblauch, Chili &amp; heiligem Basilikum, auf Reis mit Spiegelei.</div>
+          </div>
+          <div class="menu-item-price">10,50 €</div>
+        </div>
+        <div class="menu-item">
+          <div>
+            <div class="menu-item-name">Gai Tod <span class="menu-item-thai">· Frittiertes Hähnchen</span></div>
+            <div class="menu-item-desc">Knusprig frittiertes Hähnchen mit Knoblauch-Pfeffer-Sauce &amp; Jasminreis.</div>
+          </div>
+          <div class="menu-item-price">10,00 €</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ornament-divider"><div class="line"></div><div class="diamond"></div><div class="line"></div></div>
+
+    <!-- Desserts -->
+    <div class="menu-category reveal">
+      <h3 class="menu-category-title">Süßes</h3>
+      <p class="menu-category-subtitle">— ein sanftes Ende —</p>
+      <div class="menu-list">
+        <div class="menu-item">
+          <div>
+            <div class="menu-item-name">Mango Sticky Rice <span class="menu-item-thai">· Khao Niao Mamuang</span></div>
+            <div class="menu-item-desc">Klebreis in Kokosmilch, mit frischer Mango &amp; geröstetem Sesam.</div>
+          </div>
+          <div class="menu-item-price">6,50 €</div>
+        </div>
+        <div class="menu-item">
+          <div>
+            <div class="menu-item-name">Kokos-Eis <span class="menu-item-thai">· Itim Kati</span></div>
+            <div class="menu-item-desc">Hausgemachtes Kokosnuss-Eis mit Erdnuss-Karamell &amp; geriebener Kokosraspel.</div>
+          </div>
+          <div class="menu-item-price">5,00 €</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-cta reveal">
+      <a href="#besuch" class="btn">Vorbeikommen</a>
+      <p class="menu-note">✦ mild gewürzt · ✦✦ feurig · alle Gerichte auch vegan erhältlich</p>
+    </div>
+  </div>
+</section>
+
+<!-- GALERIE -->
+<section class="gallery" id="galerie">
+  <div class="container">
+    <div class="gallery-header reveal">
+      <div class="section-label" style="justify-content:center">Galerie</div>
+      <h2 class="section-title">Bilder aus dem <em>Schatten</em></h2>
+    </div>
+    <div class="gallery-grid">
+      <div class="gallery-item wide reveal">
+        <img src="https://images.unsplash.com/photo-1559314809-0d155014e29e?q=80&w=1600&auto=format&fit=crop" alt="Pad Thai Dunkel">
+        <div class="gallery-item-label">Pad Thai</div>
+      </div>
+      <div class="gallery-item tall reveal">
+        <img src="https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?q=80&w=1000&auto=format&fit=crop" alt="Curry dunkel">
+        <div class="gallery-item-label">Panang Curry</div>
+      </div>
+      <div class="gallery-item reveal">
+        <img src="https://images.unsplash.com/photo-1606755962773-d324e0a13086?q=80&w=1000&auto=format&fit=crop" alt="Frühlingsrollen">
+        <div class="gallery-item-label">Por Pia</div>
+      </div>
+      <div class="gallery-item reveal">
+        <img src="https://images.unsplash.com/photo-1606851091851-e8c8c0fca5ba?q=80&w=1000&auto=format&fit=crop" alt="Tom Yum">
+        <div class="gallery-item-label">Tom Yum</div>
+      </div>
+      <div class="gallery-item wide reveal">
+        <img src="https://images.unsplash.com/photo-1606471191009-63994c53433b?q=80&w=1600&auto=format&fit=crop" alt="Mango Sticky Rice">
+        <div class="gallery-item-label">Mango Sticky Rice</div>
+      </div>
+      <div class="gallery-item reveal">
+        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000&auto=format&fit=crop" alt="Thai Gewürze">
+        <div class="gallery-item-label">Gewürze</div>
+      </div>
+      <div class="gallery-item reveal">
+        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1000&auto=format&fit=crop" alt="Thai Food Teller">
+        <div class="gallery-item-label">Khao Soi</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BESUCH -->
+<section class="visit" id="besuch">
+  <div class="container">
+    <div class="visit-grid">
+      <div class="visit-card reveal">
+        <h3>Öffnungszeiten</h3>
+        <div class="visit-row">
+          <div class="visit-day">Montag</div>
+          <div class="visit-time closed">Ruhetag</div>
+        </div>
+        <div class="visit-row">
+          <div class="visit-day">Dienstag – Donnerstag</div>
+          <div class="visit-time">12 – 22 Uhr</div>
+        </div>
+        <div class="visit-row">
+          <div class="visit-day">Freitag – Samstag</div>
+          <div class="visit-time">12 – 23:30 Uhr</div>
+        </div>
+        <div class="visit-row">
+          <div class="visit-day">Sonntag</div>
+          <div class="visit-time">13 – 21 Uhr</div>
+        </div>
+      </div>
+
+      <div class="visit-card reveal">
+        <h3>Den Tempel finden</h3>
+        <div class="address-block">
+          <div class="name">Wat Arun — Thai Imbiss</div>
+          <div class="street">Lotosgasse 14</div>
+          <div class="city">10115 Berlin-Mitte</div>
+        </div>
+        <div class="contact-line">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>+49 30 55 66 77 88</span>
+        </div>
+        <div class="contact-line">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>sawasdee@watarun-berlin.de</span>
+        </div>
+        <div class="contact-line">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Reservierung empfohlen · ab 18 Uhr</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h4>WAT ARUN</h4>
+      <p>Ein Thai-Imbiss im Herzen Berlins. Gewürzt mit Erinnerung, serviert im Schein der Kerzen. Sawasdee — willkommen im Tempel der Aromen.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Navigation</h5>
+      <ul>
+        <li><a href="#philosophie">Philosophie</a></li>
+        <li><a href="#speisekarte">Speisekarte</a></li>
+        <li><a href="#galerie">Galerie</a></li>
+        <li><a href="#besuch">Besuch</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Kontakt</h5>
+      <ul>
+        <li>Lotosgasse 14</li>
+        <li>10115 Berlin</li>
+        <li>+49 30 55 66 77 88</li>
+        <li><a href="mailto:sawasdee@watarun-berlin.de">sawasdee@watarun-berlin.de</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2025 Wat Arun — Thai Imbiss · Alle Rechte vorbehalten</div>
+    <div class="ornament">✦ ✦ ✦</div>
+    <div>Gekocht mit Geduld in Berlin-Mitte</div>
+  </div>
+</footer>
+
+<script>
+  // Nav scroll state
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 60) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  });
+
+  // Reveal on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

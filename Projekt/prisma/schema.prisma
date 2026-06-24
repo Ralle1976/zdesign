@@ -1,0 +1,201 @@
+// Z.Design - AI-Powered Visual Design Platform
+// Prisma Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  avatar        String?
+  locale        String   @default("en")
+  projects      ProjectMember[]
+  comments      Comment[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Project {
+  id             String       @id @default(cuid())
+  name           String
+  description    String?
+  type           ProjectType  @default(PROTOTYPE)
+  designMode     DesignMode   @default(NODE_TREE)
+  designJSON     String       @default("{}")
+  designHTML     String?
+  thumbnail      String?
+  status         ProjectStatus @default(DRAFT)
+  designSystemId String?
+  designSystem   DesignSystem? @relation(fields: [designSystemId], references: [id])
+  versions       Version[]
+  comments       Comment[]
+  members        ProjectMember[]
+  isPublic       Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model DesignLesson {
+  id         String   @id @default(cuid())
+  topic      String
+  recipeJson String
+  composite  Float
+  source     String   @default("auto")
+  approved   Boolean  @default(false)
+  version    Int      @default(1)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+enum DesignMode {
+  NODE_TREE
+  HTML_ARTIFACT
+}
+
+model Version {
+  id              String   @id @default(cuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  parentVersionId String?
+  label           String
+  designJSON      String
+  thumbnail       String?
+  branch          String   @default("main")
+  changeSummary   String?
+  createdAt       DateTime @default(now())
+}
+
+model DesignSystem {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  tokens      String    @default("{}")
+  components  String    @default("{}")
+  styles      String    @default("{}")
+  projects    Project[]
+  isDefault   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Comment {
+  id          String    @id @default(cuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  elementId   String?
+  x           Float     @default(0)
+  y           Float     @default(0)
+  content     String
+  isResolved  Boolean   @default(false)
+  parentId    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ProjectMember {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  role      Role     @default(VIEWER)
+  joinedAt  DateTime @default(now())
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  category    String
+  designJSON  String
+  thumbnail   String?
+  authorId    String?
+  downloads   Int      @default(0)
+  rating      Float    @default(0)
+  tags        String   @default("[]")
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  projectId String
+  role      String   // user, assistant, system
+  content   String
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now())
+}
+
+enum ProjectType {
+  PROTOTYPE
+  SLIDE_DECK
+  LANDING_PAGE
+  DASHBOARD
+  WEB_APP
+  MOBILE_APP
+  MARKETING
+  CUSTOM
+}
+
+enum ProjectStatus {
+  DRAFT
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+  ARCHIVED
+}
+
+enum Role {
+  VIEWER
+  COMMENTER
+  EDITOR
+  ADMIN
+}
+
+// ============ Observability (F0) ============
+
+model TokenLog {
+  id             String   @id @default(cuid())
+  model          String
+  purpose        String
+  inputTokens    Int      @default(0)
+  outputTokens   Int      @default(0)
+  cachedTokens   Int      @default(0)
+  projectId      String?
+  batchId        String?
+  createdAt      DateTime @default(now())
+}
+
+model ErrorLog {
+  id         String   @id @default(cuid())
+  level      String   @default("error")
+  component  String
+  message    String
+  context    String?
+  projectId  String?
+  createdAt  DateTime @default(now())
+}
+
+// ============ Design History (M2) ============
+
+model DesignHistory {
+  id          String   @id @default(cuid())
+  prompt      String
+  conceptName String?
+  domain      String
+  composite   Float?
+  palette     String?
+  feedback    String?
+  projectId   String?
+  createdAt   DateTime @default(now())
+}

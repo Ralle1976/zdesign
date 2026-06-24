@@ -1,0 +1,686 @@
+     1→     1→// Z.Design - Shared AI System Prompts and Helpers
+     2→     2→// Used across all API routes that interact with z-ai-web-dev-sdk
+     3→     3→
+     4→     4→// ============ Design Assistant System Prompt ============
+     5→     5→
+     6→     6→export const DESIGN_ASSISTANT_SYSTEM_PROMPT = `You are Z.Design AI, an expert visual design assistant embedded in a professional design platform. You generate pixel-perfect, modern, responsive designs as structured JSON that the platform renders in real-time.
+     7→     7→
+     8→     8→## YOUR CAPABILITIES
+     9→     9→- Generate complete page layouts from text descriptions
+    10→    10→- Modify existing designs based on user feedback
+    11→    11→- Suggest design improvements and best practices
+    12→    12→- Create consistent design systems with proper tokens
+    13→    13→- Produce accessible, responsive layouts by default
+    14→    14→
+    15→    15→## DESIGN JSON FORMAT
+    16→    16→You MUST output designs as valid JSON following this exact structure:
+    17→    17→
+    18→    18→\`\`\`json
+    19→    19→{
+    20→    20→  "id": "root",
+    21→    21→  "type": "root",
+    22→    22→  "tag": "div",
+    23→    23→  "children": [...],
+    24→    24→  "style": { ... },
+    25→    25→  "content": "optional text content",
+    26→    26→  "meta": { "name": "optional name" }
+    27→    27→}
+    28→    28→\`\`\`
+    29→    29→
+    30→    30→### Available Node Types
+    31→    31→root, container, flex, grid, text, heading, button, input, image, icon, link, card, nav, header, footer, section, sidebar, form, table, chart, video, badge, avatar, divider, spacer, custom
+    32→    32→
+    33→    33→### Style Properties
+    34→    34→Use standard CSS properties (camelCase) in the style field with ACTUAL CSS VALUES (px, rem, %, etc.). NEVER use Tailwind shorthand classes like "4xl", "md", "lg", "2xl" — always use real CSS values like "32px", "16px", "24px", "2rem".
+    35→    35→
+    36→    36→CORRECT: { "fontSize": "32px", "padding": "16px 24px", "maxWidth": "600px" }
+    37→    37→WRONG: { "fontSize": "4xl", "padding": "md lg", "maxWidth": "2xl" }
+    38→    38→
+    39→    39→**Layout:** display, flexDirection, flexWrap, justifyContent, alignItems, gap, gridTemplateColumns, gridTemplateRows, position, top, right, bottom, left, zIndex
+    40→    40→
+    41→    41→**Sizing:** width, height, minWidth, minHeight, maxWidth, maxHeight
+    42→    42→
+    43→    43→**Spacing:** padding, paddingTop, paddingRight, paddingBottom, paddingLeft, margin, marginTop, marginRight, marginBottom, marginLeft
+    44→    44→
+    45→    45→**Typography:** fontFamily, fontSize, fontWeight, lineHeight, letterSpacing, textAlign, textDecoration, textTransform, color
+    46→    46→
+    47→    47→**Background:** backgroundColor, backgroundImage, backgroundSize, backgroundPosition
+    48→    48→
+    49→    49→**Border:** border, borderWidth, borderStyle, borderColor, borderRadius
+    50→    50→
+    51→    51→**Effects:** boxShadow, opacity, transform, transition, filter, backdropFilter
+    52→    52→
+    53→    53→**Overflow:** overflow, overflowX, overflowY
+    54→    54→
+    55→    55→## DESIGN PRINCIPLES
+    56→    56→1. **Modern & Clean**: Use generous whitespace, subtle shadows, and rounded corners
+    57→    57→2. **Responsive**: Use flexbox/grid, relative units (%/rem/vw), and proper breakpoints
+    58→    58→3. **Accessible**: Proper heading hierarchy, sufficient contrast, semantic HTML tags
+    59→    59→4. **Consistent**: Reuse colors, spacing, and typography across components
+    60→    60→5. **Beautiful by Default**: Every design should look production-ready
+    61→    61→
+    62→    62→## COLOR PALETTE (use these unless user specifies otherwise)
+    63→    63→- Primary: #10b981 (emerald-500)
+    64→    64→- Primary Dark: #059669 (emerald-600)
+    65→    65→- Primary Light: #34d399 (emerald-400)
+    66→    66→- Secondary: #8b5cf6 (violet-500)
+    67→    67→- Accent: #06b6d4 (cyan-500)
+    68→    68→- Success: #10b981 (emerald-500)
+    69→    69→- Warning: #f59e0b (amber-500)
+    70→    70→- Error: #ef4444 (red-500)
+    71→    71→- Text Primary: #0f172a (slate-900)
+    72→    72→- Text Secondary: #475569 (slate-600)
+    73→    73→- Text Muted: #94a3b8 (slate-400)
+    74→    74→- Background: #ffffff
+    75→    75→- Surface: #f8fafc (slate-50)
+    76→    76→- Border: #e2e8f0 (slate-200)
+    77→    77→- Card BG: #ffffff
+    78→    78→
+    79→    79→## TYPOGRAPHY DEFAULTS
+    80→    80→- Headings: fontFamily "Inter, system-ui, sans-serif", fontWeight "700"
+    81→    81→- Body: fontFamily "Inter, system-ui, sans-serif", fontWeight "400"
+    82→    82→- Monospace: fontFamily "JetBrains Mono, monospace"
+    83→    83→
+    84→    84→## SPACING SYSTEM
+    85→    85→- xs: "4px", sm: "8px", md: "16px", lg: "24px", xl: "32px", 2xl: "48px", 3xl: "64px"
+    86→    86→
+    87→    87→## OUTPUT RULES
+    88→    88→1. ALWAYS respond with valid JSON when generating designs
+    89→    89→2. Wrap design JSON in a response object: { "message": "explanation text", "design": { ... designNode ... } }
+    90→    90→3. If the user asks to modify an existing design, return the complete updated design tree
+    91→    91→4. Every node MUST have a unique "id" field (use descriptive IDs like "hero-section", "nav-logo", "cta-button")
+    92→    92→5. Use semantic tag names in the "tag" field (header, nav, main, section, footer, article, aside, etc.)
+    93→    93→6. Add "meta.name" to important sections for easy identification
+    94→    94→7. For images, use placeholder URLs: "https://placehold.co/800x400/10b981/ffffff?text=Image"
+    95→    95→8. For icons, set type to "icon" and content to the icon name (e.g., "arrow-right", "menu", "x")
+    96→    96→9. Make designs look COMPLETE and POLISHED - never output half-finished layouts
+    97→    97→10. When generating navigation bars, include logo + nav links + CTA button
+    98→    98→11. When generating hero sections, include heading + description + CTA buttons + hero image
+    99→    99→12. When generating feature sections, use a grid layout with 3-4 feature cards
+   100→   100→13. When generating footers, include multiple columns with links + social icons + copyright
+   101→   101→14. CRITICAL: All style values MUST be real CSS values (px, rem, %, #hex). NEVER use Tailwind shorthand (4xl, md, lg, etc.)
+   102→   102→15. Do NOT wrap your JSON response in markdown code blocks. Return raw JSON only.
+   103→   103→`;
+   104→   104→
+   105→   105→// ============ Design Generation System Prompt ============
+   106→   106→
+   107→   107→export const DESIGN_GENERATION_SYSTEM_PROMPT = `You are Z.Design AI, a world-class visual design generator. You create stunning, production-ready designs from text prompts.
+   108→   108→
+   109→   109→## OUTPUT FORMAT
+   110→   110→Return ONLY valid JSON with this structure:
+   111→   111→{
+   112→   112→  "design": { ... DesignNode tree ... },
+   113→   113→  "name": "Suggested project name",
+   114→   114→  "description": "Brief description of the generated design"
+   115→   115→}
+   116→   116→
+   117→   117→## DesignNode Structure
+   118→   118→{
+   119→   119→  "id": "unique-id",
+   120→   120→  "type": "node-type",
+   121→   121→  "tag": "html-tag",
+   122→   122→  "children": [...],
+   123→   123→  "style": { ... css properties camelCase ... },
+   124→   124→  "content": "text content for text/heading/button nodes",
+   125→   125→  "meta": { "name": "optional section name" }
+   126→   126→}
+   127→   127→
+   128→   128→## Node Types
+   129→   129→root, container, flex, grid, text, heading, button, input, image, icon, link, card, nav, header, footer, section, sidebar, form, table, chart, video, badge, avatar, divider, spacer, custom
+   130→   130→
+   131→   131→## DESIGN PRINCIPLES
+   132→   132→- Create MODERN, BEAUTIFUL, PROFESSIONAL designs
+   133→   133→- Use flexbox and CSS grid for layouts
+   134→   134→- Apply generous whitespace and consistent spacing
+   135→   135→- Use subtle shadows and rounded corners for depth
+   136→   136→- Ensure responsive design with relative units
+   137→   137→- Include proper semantic HTML tags
+   138→   138→- Every design must be COMPLETE - never leave sections empty or placeholder
+   139→   139→
+   140→   140→## COLOR PALETTE
+   141→   141→- Primary: #10b981, Primary Dark: #059669, Primary Light: #34d399
+   142→   142→- Secondary: #8b5cf6, Accent: #06b6d4
+   143→   143→- Success: #10b981, Warning: #f59e0b, Error: #ef4444
+   144→   144→- Text: #0f172a, Text Secondary: #475569, Text Muted: #94a3b8
+   145→   145→- Background: #ffffff, Surface: #f8fafc, Border: #e2e8f0
+   146→   146→
+   147→   147→## LAYOUT PATTERNS BY PROJECT TYPE
+   148→   148→
+   149→   149→### LANDING_PAGE
+   150→   150→Structure: Nav → Hero (heading + desc + CTA + image) → Features (3-4 cards grid) → Social Proof → CTA Section → Footer
+   151→   151→
+   152→   152→### DASHBOARD
+   153→   153→Structure: Sidebar (nav + logo) → Main (Header bar + Stats row + Charts + Table)
+   154→   154→
+   155→   155→### WEB_APP
+   156→   156→Structure: Top nav → Sidebar → Main content area with toolbar → Content sections
+   157→   157→
+   158→   158→### MOBILE_APP
+   159→   159→Structure: Status bar → App header → Content (scrollable) → Bottom nav/tab bar
+   160→   160→Use maxWidth: "430px", mobile-friendly sizing
+   161→   161→
+   162→   162→### PROTOTYPE
+   163→   163→Flexible - create whatever the user describes with professional styling
+   164→   164→
+   165→   165→### SLIDE_DECK
+   166→   166→Structure: Multiple section nodes, each representing a slide with centered content
+   167→   167→Each section: minHeight "100vh", display "flex", justifyContent "center", alignItems "center"
+   168→   168→
+   169→   169→### MARKETING
+   170→   170→Structure: Nav → Hero with bold CTA → Benefits → Testimonials → Pricing → Final CTA → Footer
+   171→   171→
+   172→   172→### CUSTOM
+   173→   173→Interpret freely based on the prompt, applying professional design principles
+   174→   174→
+   175→   175→## CRITICAL RULES
+   176→   176→1. Generate COMPLETE designs - every section must have real content
+   177→   177→2. Use realistic placeholder text (not lorem ipsum - use meaningful content)
+   178→   178→3. For images use: "https://placehold.co/WIDTHxHEIGHT/10b981/ffffff?text=LABEL"
+   179→   179→4. Every interactive element should have proper hover/transition states
+   180→   180→5. Make designs that would impress a senior designer
+   181→   181→`;
+   182→   182→
+   183→   183→// ============ Image Analysis System Prompt ============
+   184→   184→
+   185→   185→export const IMAGE_ANALYSIS_SYSTEM_PROMPT = `You are Z.Design AI's design analysis engine. You analyze images and screenshots to extract design tokens, patterns, and layout information.
+   186→   186→
+   187→   187→## YOUR TASK
+   188→   188→Analyze the provided image and extract detailed design information. Return ONLY valid JSON:
+   189→   189→
+   190→   190→{
+   191→   191→  "tokens": {
+   192→   192→    "colors": [
+   193→   193→      { "name": "primary", "value": "#hex", "category": "primary", "description": "Main brand color" }
+   194→   194→    ],
+   195→   195→    "typography": [
+   196→   196→      { "name": "heading-lg", "fontFamily": "Font Name", "fontSize": "48px", "fontWeight": "700", "lineHeight": "1.2" }
+   197→   197→    ],
+   198→   198→    "spacing": [
+   199→   199→      { "name": "sm", "value": "8px" },
+   200→   200→      { "name": "md", "value": "16px" },
+   201→   201→      { "name": "lg", "value": "24px" }
+   202→   202→    ],
+   203→   203→    "borderRadius": [
+   204→   204→      { "name": "sm", "value": "4px" },
+   205→   205→      { "name": "md", "value": "8px" },
+   206→   206→      { "name": "lg", "value": "16px" }
+   207→   207→    ],
+   208→   208→    "shadows": [
+   209→   209→      { "name": "sm", "value": "0 1px 2px rgba(0,0,0,0.05)" },
+   210→   210→      { "name": "md", "value": "0 4px 6px rgba(0,0,0,0.1)" }
+   211→   211→    ]
+   212→   212→  },
+   213→   213→  "layoutPattern": "description of overall layout pattern (e.g., sidebar+main, stacked sections, grid dashboard)",
+   214→   214→  "components": ["list of UI components detected: nav, hero, card, button, etc."],
+   215→   215→  "style": "design style detected (e.g., minimal, glassmorphism, brutalist, material, etc.)",
+   216→   216→  "suggestions": ["improvement suggestions based on design best practices"]
+   217→   217→}
+   218→   218→
+   219→   219→## ANALYSIS GUIDELINES
+   220→   220→1. Extract ALL visible colors (backgrounds, text, accents, borders)
+   221→   221→2. Identify typography styles (sizes, weights, fonts if recognizable)
+   222→   222→3. Determine spacing patterns from element positioning
+   223→   223→4. Identify border radius values from rounded elements
+   224→   224→5. Detect shadow styles from elevated elements
+   225→   225→6. Catalog all UI components visible in the design
+   226→   226→7. Identify the overall design style/aesthetic
+   227→   227→8. Provide 3-5 constructive suggestions for improvement
+   228→   228→9. Be specific with hex color values - estimate from what you see
+   229→   229→10. Categorize colors: primary, secondary, accent, neutral, semantic, custom
+   230→   230→`;
+   231→   231→
+   232→   232→// ============ Chat Response Parser ============
+   233→   233→
+   234→   234→/**
+   235→   235→ * Aggressively repair malformed JSON produced by LLMs.
+   236→   236→ * Handles: markdown wrappers, key="value" (equals), unquoted keys,
+   237→   237→ * trailing commas, single quotes, JS comments, extra text, unbalanced brackets.
+   238→   238→ * Returns the repaired string or null if unrepairable.
+   239→   239→ */
+   240→   240→export function repairLLMJson(text: string): string | null {
+   241→   241→  let s = text;
+   242→   242→
+   243→   243→  // 1. Remove markdown code block wrappers (```json ... ```)
+   244→   244→  const codeBlockMatch = s.match(/```(?:json)?\s*\n?([\s\S]*?)\n?\s*```/);
+   245→   245→  if (codeBlockMatch) {
+   246→   246→    s = codeBlockMatch[1];
+   247→   247→  }
+   248→   248→
+   249→   249→  // 2. Remove JavaScript-style comments
+   250→   250→  // Single-line comments (// ...)
+   251→   251→  s = s.replace(/\/\/.*$/gm, '');
+   252→   252→  // Multi-line comments (/* ... */)
+   253→   253→  s = s.replace(/\/\*[\s\S]*?\*\//g, '');
+   254→   254→
+   255→   255→  // 3. Remove any text before the first { and after the last }
+   256→   256→  const firstBrace = s.indexOf('{');
+   257→   257→  const lastBrace = s.lastIndexOf('}');
+   258→   258→  if (firstBrace === -1 || lastBrace === -1 || firstBrace > lastBrace) {
+   259→   259→    return null;
+   260→   260→  }
+   261→   261→  s = s.substring(firstBrace, lastBrace + 1);
+   262→   262→
+   263→   263→  // 4. Fix "key: "value"" pattern → "key": "value" (LLM often drops the closing quote before colon)
+   264→   264→  // This is the MOST COMMON LLM JSON error: the key starts with " but the closing " before : is missing
+   265→   265→  // Example: "maxWidth: "320px" → "maxWidth": "320px"
+   266→   266→  // We match this after { or , to avoid false positives inside value strings
+   267→   267→  s = s.replace(/([{,]\s*)"([a-zA-Z_]\w*)\s*:\s*"/g, '$1"$2": "');
+   268→   268→
+   269→   269→  // 4b. Fix content-after-object pattern (LLM places content string OUTSIDE the node object)
+   270→   270→  // This is the SECOND MOST COMMON LLM error: content values appear as separate array elements
+   271→   271→  // The LLM writes: {"id": "x", "style": {...}}, "Content Text"},
+   272→   272→  // Should be:       {"id": "x", "style": {...}, "content": "Content Text"},
+   273→   273→  //
+   274→   274→  // The pattern is: double-close-brace, comma, string, then comma/close-bracket/parent-close
+   275→   275→  // We need to: remove one close-brace, add "content" property, close the node, keep the separator
+   276→   276→  // Note: (?:[^"\\]|\\.)* handles escaped quotes inside strings (e.g., "He said \"hello\"")
+   277→   277→  
+   278→   278→  // Fix: }}, "STRING"}, → }, "content": "STRING"},
+   279→   279→  s = s.replace(/\}\},\s*"((?:[^"\\]|\\.){1,500})"\s*(,)/g, '}, "content": "$1"$2');
+   280→   280→  // Fix: }}, "STRING"}] → }, "content": "STRING"}]
+   281→   281→  s = s.replace(/\}\},\s*"((?:[^"\\]|\\.){1,500})"\s*(\])/g, '}, "content": "$1"}$2');
+   282→   282→  // Fix: }}, "STRING"} followed by another { → }, "content": "STRING"}, {
+   283→   283→  s = s.replace(/\}\},\s*"((?:[^"\\]|\\.){1,500})"\s*(\{)/g, '}, "content": "$1"}, $2');
+   284→   284→  // Fix: }}, "STRING"}} → }, "content": "STRING"}}  (parent close after)
+   285→   285→  s = s.replace(/\}\},\s*"((?:[^"\\]|\\.){1,500})"\s*(\}\})/g, '}, "content": "$1"}$2');
+   286→   286→  // Fix: }}, "STRING"}  (end of input or other)
+   287→   287→  s = s.replace(/\}\},\s*"((?:[^"\\]|\\.){1,500})"\s*(\})/g, '}, "content": "$1"$2');
+   288→   288→
+   289→   289→  // 5. Fix key="value" patterns → "key": "value"
+   290→   290→  // Handles: key="value", key = "value", key= "value", key ="value"
+   291→   291→  s = s.replace(/([{,]\s*)([a-zA-Z_]\w*)\s*=\s*"/g, '$1"$2": "');
+   292→   292→
+   293→   293→  // 6. Fix key='value' patterns → "key": "value"
+   294→   294→  s = s.replace(/([{,]\s*)([a-zA-Z_]\w*)\s*=\s*'/g, '$1"$2": "');
+   295→   295→
+   296→   296→  // 7. Fix unquoted property names (e.g., {display: "flex"} → {"display": "flex"})
+   297→   297→  // Match: after { or , followed by an identifier followed by :
+   298→   298→  // But be careful not to re-quote already-quoted keys
+   299→   299→  s = s.replace(/([{,]\s*)([a-zA-Z_]\w*)\s*:/g, (match, prefix, key) => {
+   300→   300→    // Check if the key is already quoted (shouldn't match in that case, but just in case)
+   301→   301→    if (prefix.endsWith('"') || prefix.endsWith("'")) return match;
+   302→   302→    return `${prefix}"${key}":`;
+   303→   303→  });
+   304→   304→
+   305→   305→  // 7. Fix single quotes used as string delimiters (not apostrophes inside strings)
+   306→   306→  // Only replace single quotes that appear to be string delimiters:
+   307→   307→  // - After : or [ or , followed by ' (opening quote)
+   308→   308→  // - Before : or ] or , preceded by ' (closing quote)
+   309→   309→  // Do NOT blindly replace all ' with " as it breaks strings like "I'll"
+   310→   310→  // Since the LLM typically uses double quotes already, skip this step if no single-quote delimiters found
+   311→   311→  if (/[:\[,]\s*'[^']*'\s*[:,\]}]/.test(s)) {
+   312→   312→    // Replace opening single quotes after : [ ,
+   313→   313→    s = s.replace(/([:\[,]\s*)'/g, '$1"');
+   314→   314→    // Replace closing single quotes before : , ] }
+   315→   315→    s = s.replace(/'(\s*[:,\]}])/g, '"$1');
+   316→   316→  }
+   317→   317→
+   318→   318→  // 7c. Fix spaces in rgba/hsl function values (LLM often writes "rgba(0, 0, 0, 0.1)" instead of "rgba(0,0,0,0.1)")
+   319→   319→  // This matters because the LLM sometimes outputs unquoted values like: "boxShadow": 0 4px 6px rgba(0, 0, 0, 0.1)
+   320→   320→  // and the spaces in rgba() cause parse issues when we try to quote the value later
+   321→   321→  s = s.replace(/rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)/g, 'rgba($1,$2,$3,$4)');
+   322→   322→  s = s.replace(/hsl\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/g, 'hsl($1,$2%,$3%)');
+   323→   323→  s = s.replace(/hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d.]+)\s*\)/g, 'hsla($1,$2%,$3%,$4)');
+   324→   324→
+   325→   325→  // 7d. Fix unquoted CSS-like values after known CSS property names
+   326→   326→  // The LLM sometimes writes: "boxShadow": 0 4px 6px rgba(0,0,0,0.1) (missing quotes around value)
+   327→   327→  // or: "transform": rotate(45deg) (missing quotes around value)
+   328→   328→  // Pattern: after a quoted CSS property name and colon, if the value starts with a digit, "rgba(", "hsl", "rotate", "translate", "scale", "linear-gradient", etc.
+   329→   329→  // and is NOT already quoted, wrap it in quotes.
+   330→   330→  // We look for: "cssProp": <unquoted-value> where unquoted-value continues until , } or ]
+   331→   331→  const cssPropsWithUnquotedValues = [
+   332→   332→    'boxShadow', 'textShadow', 'filter', 'backdropFilter', 'transform',
+   333→   333→    'transition', 'animation', 'backgroundImage', 'background',
+   334→   334→    'border', 'borderTop', 'borderRight', 'borderBottom', 'borderLeft',
+   335→   335→    'outline', 'margin', 'padding', 'borderRadius',
+   336→   336→  ];
+   337→   337→  for (const prop of cssPropsWithUnquotedValues) {
+   338→   338→    // Match: "prop": <value-not-starting-with-quote> up to comma, }, or ]
+   339→   339→    // The value must NOT start with " or { or [ or true/false/null/number
+   340→   340→    // We specifically target values that start with digits, letters, or rgba/hsl etc.
+   341→   341→    const propRegex = new RegExp(
+   342→   342→      `("${prop}")\\s*:\\s*(?!"|\\{|\\[|true|false|null)([a-zA-Z0-9().,\\s%#_-]+?)(\\s*[,}\\]])`,
+   343→   343→      'g'
+   344→   344→    );
+   345→   345→    s = s.replace(propRegex, '$1: "$2"$3');
+   346→   346→  }
+   347→   347→
+   348→   348→  // 8. Fix trailing commas before } or ]
+   349→   349→  s = s.replace(/,\s*([}\]])/g, '$1');
+   350→   350→
+   351→   351→  // 9. Try to balance brackets/braces
+   352→   352→  const openBraces = (s.match(/{/g) || []).length;
+   353→   353→  const closeBraces = (s.match(/}/g) || []).length;
+   354→   354→  const openBrackets = (s.match(/\[/g) || []).length;
+   355→   355→  const closeBrackets = (s.match(/]/g) || []).length;
+   356→   356→
+   357→   357→  // Add missing closing brackets/braces at the end
+   358→   358→  if (openBraces > closeBraces) {
+   359→   359→    s += '}'.repeat(openBraces - closeBraces);
+   360→   360→  }
+   361→   361→  if (openBrackets > closeBrackets) {
+   362→   362→    s += ']'.repeat(openBrackets - closeBrackets);
+   363→   363→  }
+   364→   364→
+   365→   365→  // 10. Fix missing commas between properties (heuristic)
+   366→   366→  // Pattern: "value" followed by whitespace then "key": — likely missing comma
+   367→   367→  s = s.replace(/("\s*)(\n\s*"[a-zA-Z_]\w*"\s*:)/g, '$1,$2');
+   368→   368→
+   369→   369→  // 11. Validate by attempting to parse
+   370→   370→  try {
+   371→   371→    JSON.parse(s);
+   372→   372→    return s;
+   373→   373→  } catch {
+   374→   374→    // If still invalid, try more aggressive fixes
+   375→   375→    try {
+   376→   376→      // Attempt progressive truncation from the end to find valid JSON
+   377→   377→      for (let len = s.length; len > 10; len -= 1) {
+   378→   378→        const truncated = s.substring(0, len);
+   379→   379→        // Count brackets to ensure balance
+   380→   380→        const ob = (truncated.match(/{/g) || []).length;
+   381→   381→        const cb = (truncated.match(/}/g) || []).length;
+   382→   382→        const obr = (truncated.match(/\[/g) || []).length;
+   383→   383→        const cbr = (truncated.match(/]/g) || []).length;
+   384→   384→        if (ob === cb && obr === cbr) {
+   385→   385→          try {
+   386→   386→            JSON.parse(truncated);
+   387→   387→            return truncated;
+   388→   388→          } catch {
+   389→   389→            // continue
+   390→   390→          }
+   391→   391→        }
+   392→   392→      }
+   393→   393→    } catch {
+   394→   394→      // Give up
+   395→   395→    }
+   396→   396→
+   397→   397→    // 12. Last resort: try to extract just the design object by finding the deepest valid JSON prefix
+   398→   398→    // This handles cases where the LLM generates a mostly-valid structure but has trailing garbage
+   399→   399→    try {
+   400→   400→      // Find the "design" key and try to extract its value
+   401→   401→      const designKeyIdx = s.indexOf('"design"');
+   402→   402→      if (designKeyIdx !== -1) {
+   403→   403→        // Find the opening brace of the design value
+   404→   404→        const designBraceIdx = s.indexOf('{', designKeyIdx + 8);
+   405→   405→        if (designBraceIdx !== -1) {
+   406→   406→          // Try to find a valid design object by scanning forward
+   407→   407→          let depth = 0;
+   408→   408→          let bestEnd = -1;
+   409→   409→          for (let i = designBraceIdx; i < s.length; i++) {
+   410→   410→            if (s[i] === '{') depth++;
+   411→   411→            else if (s[i] === '}') depth--;
+   412→   412→            if (depth === 0) {
+   413→   413→              // We found a balanced design object, try to parse it
+   414→   414→              const candidate = s.substring(designBraceIdx, i + 1);
+   415→   415→              try {
+   416→   416→                JSON.parse(candidate);
+   417→   417→                bestEnd = i;
+   418→   418→                // Don't break — keep looking for a larger valid object
+   419→   419→              } catch {
+   420→   420→                // This balanced section isn't valid JSON, continue
+   421→   421→              }
+   422→   422→            }
+   423→   423→          }
+   424→   424→          if (bestEnd !== -1) {
+   425→   425→            const designObj = s.substring(designBraceIdx, bestEnd + 1);
+   426→   426→            // Wrap in a response object
+   427→   427→            const wrapped = `{"message": "Design recovered from partial response", "design": ${designObj}}`;
+   428→   428→            try {
+   429→   429→              JSON.parse(wrapped);
+   430→   430→              return wrapped;
+   431→   431→            } catch {
+   432→   432→              // The design object alone might be valid
+   433→   433→              try {
+   434→   434→                JSON.parse(designObj);
+   435→   435→                return designObj;
+   436→   436→              } catch {
+   437→   437→                // continue
+   438→   438→              }
+   439→   439→            }
+   440→   440→          }
+   441→   441→        }
+   442→   442→      }
+   443→   443→    } catch {
+   444→   444→      // Give up
+   445→   445→    }
+   446→   446→
+   447→   447→    return null;
+   448→   448→  }
+   449→   449→}
+   450→   450→
+   451→   451→/**
+   452→   452→ * Try to parse JSON with aggressive error repair.
+   453→   453→ * Handles common LLM mistakes: unquoted keys, key="value", trailing commas,
+   454→   454→ * single quotes, JS comments, extra text around JSON.
+   455→   455→ */
+   456→   456→function tryParseJSON(text: string): unknown | null {
+   457→   457→  // First, try direct parse
+   458→   458→  try {
+   459→   459→    return JSON.parse(text);
+   460→   460→  } catch {
+   461→   461→    // continue to repair attempts
+   462→   462→  }
+   463→   463→
+   464→   464→  // Use the aggressive repair function
+   465→   465→  const repaired = repairLLMJson(text);
+   466→   466→  if (repaired !== null) {
+   467→   467→    try {
+   468→   468→      return JSON.parse(repaired);
+   469→   469→    } catch {
+   470→   470→      // continue
+   471→   471→    }
+   472→   472→  }
+   473→   473→
+   474→   474→  // Additional targeted fixes if repairLLMJson failed
+   475→   475→  let fixed = text;
+   476→   476→
+   477→   477→  // Fix 1: key="value" patterns (equals instead of colon)
+   478→   478→  fixed = fixed.replace(/([{,]\s*)([a-zA-Z_]\w*)\s*=\s*"/g, '$1"$2": "');
+   479→   479→  try { return JSON.parse(fixed); } catch { /* continue */ }
+   480→   480→
+   481→   481→  // Fix 2: Unquoted property names
+   482→   482→  fixed = fixed.replace(/([{,]\s*)([a-zA-Z_]\w*)\s*:/g, '$1"$2":');
+   483→   483→  try { return JSON.parse(fixed); } catch { /* continue */ }
+   484→   484→
+   485→   485→  // Fix 3: Trailing commas
+   486→   486→  fixed = fixed.replace(/,\s*([}\]])/g, '$1');
+   487→   487→  try { return JSON.parse(fixed); } catch { /* continue */ }
+   488→   488→
+   489→   489→  // Fix 4: Single quotes to double quotes
+   490→   490→  fixed = fixed.replace(/'/g, '"');
+   491→   491→  try { return JSON.parse(fixed); } catch { /* continue */ }
+   492→   492→
+   493→   493→  // Fix 5: Remove JS comments
+   494→   494→  fixed = fixed.replace(/\/\/.*$/gm, '');
+   495→   495→  fixed = fixed.replace(/\/\*[\s\S]*?\*\//g, '');
+   496→   496→  try { return JSON.parse(fixed); } catch { /* continue */ }
+   497→   497→
+   498→   498→  // Fix 6: Missing commas between properties
+   499→   499→  fixed = fixed.replace(/("\s*)(\n\s*"[a-zA-Z_]\w*"\s*:)/g, '$1,$2');
+   500→   500→  try { return JSON.parse(fixed); } catch { /* continue */ }
+   501→   501→
+   502→   502→  // Fix 7: Try balancing brackets
+   503→   503→  const ob = (fixed.match(/{/g) || []).length;
+   504→   504→  const cb = (fixed.match(/}/g) || []).length;
+   505→   505→  const obr = (fixed.match(/\[/g) || []).length;
+   506→   506→  const cbr = (fixed.match(/]/g) || []).length;
+   507→   507→  if (ob > cb) fixed += '}'.repeat(ob - cb);
+   508→   508→  if (obr > cbr) fixed += ']'.repeat(obr - cbr);
+   509→   509→  try { return JSON.parse(fixed); } catch { /* continue */ }
+   510→   510→
+   511→   511→  return null;
+   512→   512→}
+   513→   513→
+   514→   514→export function parseAIResponse(response: string): {
+   515→   515→  message: string;
+   516→   516→  design: unknown | null;
+   517→   517→  parseFailed?: boolean;
+   518→   518→} {
+   519→   519→  // Helper: extract design from parsed object
+   520→   520→  function extractDesign(parsed: Record<string, unknown>): { message: string; design: unknown | null } | null {
+   521→   521→    if (parsed.design || parsed.id || parsed.type || parsed.children) {
+   522→   522→      return {
+   523→   523→        message: (parsed.message as string) || 'Design generated successfully.',
+   524→   524→        design: parsed.design || parsed,
+   525→   525→      };
+   526→   526→    }
+   527→   527→    return null;
+   528→   528→  }
+   529→   529→
+   530→   530→  // 1. Try to parse the full response as JSON
+   531→   531→  const directParsed = tryParseJSON(response);
+   532→   532→  if (directParsed && typeof directParsed === 'object') {
+   533→   533→    const extracted = extractDesign(directParsed as Record<string, unknown>);
+   534→   534→    if (extracted) return extracted;
+   535→   535→  }
+   536→   536→
+   537→   537→  // 2. Try aggressive repair on the full response
+   538→   538→  const repaired = repairLLMJson(response);
+   539→   539→  if (repaired) {
+   540→   540→    try {
+   541→   541→      const repairedParsed = JSON.parse(repaired);
+   542→   542→      if (repairedParsed && typeof repairedParsed === 'object') {
+   543→   543→        const extracted = extractDesign(repairedParsed as Record<string, unknown>);
+   544→   544→        if (extracted) return extracted;
+   545→   545→      }
+   546→   546→    } catch {
+   547→   547→      // continue
+   548→   548→    }
+   549→   549→  }
+   550→   550→
+   551→   551→  // 3. Try to extract JSON from markdown code blocks (possibly multiple)
+   552→   552→  const codeBlockRegex = /```(?:json)?\s*\n?([\s\S]*?)\n?```/g;
+   553→   553→  let match;
+   554→   554→  while ((match = codeBlockRegex.exec(response)) !== null) {
+   555→   555→    const parsed = tryParseJSON(match[1]);
+   556→   556→    if (parsed && typeof parsed === 'object') {
+   557→   557→      const extracted = extractDesign(parsed as Record<string, unknown>);
+   558→   558→      if (extracted) {
+   559→   559→        // If there's text before the code block, use it as the message
+   560→   560→        const beforeCode = response.substring(0, match.index).trim();
+   561→   561→        if (beforeCode) {
+   562→   562→          extracted.message = beforeCode.replace(/^[^\w]*/, '').trim() || extracted.message;
+   563→   563→        }
+   564→   564→        return extracted;
+   565→   565→      }
+   566→   566→    }
+   567→   567→  }
+   568→   568→
+   569→   569→  // 4. Try to find the largest JSON object in the response
+   570→   570→  const objectMatches = response.match(/\{[\s\S]*"id"[\s\S]*\}/g);
+   571→   571→  if (objectMatches) {
+   572→   572→    // Try from largest to smallest
+   573→   573→    const sorted = objectMatches.sort((a, b) => b.length - a.length);
+   574→   574→    for (const objMatch of sorted) {
+   575→   575→      const parsed = tryParseJSON(objMatch);
+   576→   576→      if (parsed && typeof parsed === 'object') {
+   577→   577→        const extracted = extractDesign(parsed as Record<string, unknown>);
+   578→   578→        if (extracted) return extracted;
+   579→   579→      }
+   580→   580→    }
+   581→   581→  }
+   582→   582→
+   583→   583→  // 5. Try to find any JSON-like object with "id" (using unquoted key search too)
+   584→   584→  const looseObjectMatches = response.match(/\{[\s\S]*(?:["']?id["']?\s*[:=])[\s\S]*\}/g);
+   585→   585→  if (looseObjectMatches) {
+   586→   586→    const sorted = looseObjectMatches.sort((a, b) => b.length - a.length);
+   587→   587→    for (const objMatch of sorted) {
+   588→   588→      const parsed = tryParseJSON(objMatch);
+   589→   589→      if (parsed && typeof parsed === 'object') {
+   590→   590→        const extracted = extractDesign(parsed as Record<string, unknown>);
+   591→   591→        if (extracted) return extracted;
+   592→   592→      }
+   593→   593→    }
+   594→   594→  }
+   595→   595→
+   596→   596→  // 6. Return as plain text message (strip markdown code blocks for cleaner output)
+   597→   597→  const cleanedMessage = response
+   598→   598→    .replace(/```(?:json)?\s*\n?/g, '')
+   599→   599→    .replace(/\n?```/g, '')
+   600→   600→    .trim();
+   601→   601→  return { message: cleanedMessage || response, design: null, parseFailed: true };
+   602→   602→}
+   603→   603→
+   604→   604→// ============ Default Design Templates ============
+   605→   605→
+   606→   606→export function getDefaultDesignForType(projectType: string): Record<string, unknown> {
+   607→   607→  const baseDesign = {
+   608→   608→    id: 'root',
+   609→   609→    type: 'root',
+   610→   610→    tag: 'div',
+   611→   611→    style: {
+   612→   612→      display: 'flex',
+   613→   613→      flexDirection: 'column',
+   614→   614→      minHeight: '100vh',
+   615→   615→      width: '100%',
+   616→   616→      fontFamily: 'Inter, system-ui, sans-serif',
+   617→   617→    },
+   618→   618→    children: [] as unknown[],
+   619→   619→    meta: { name: 'root' },
+   620→   620→  };
+   621→   621→
+   622→   622→  switch (projectType) {
+   623→   623→    case 'LANDING_PAGE':
+   624→   624→      return {
+   625→   625→        ...baseDesign,
+   626→   626→        children: [
+   627→   627→          {
+   628→   628→            id: 'navbar',
+   629→   629→            type: 'nav',
+   630→   630→            tag: 'nav',
+   631→   631→            meta: { name: 'Navigation Bar' },
+   632→   632→            style: {
+   633→   633→              display: 'flex',
+   634→   634→              justifyContent: 'space-between',
+   635→   635→              alignItems: 'center',
+   636→   636→              padding: '16px 48px',
+   637→   637→              backgroundColor: '#ffffff',
+   638→   638→              borderBottom: '1px solid #e2e8f0',
+   639→   639→              position: 'sticky',
+   640→   640→              top: '0',
+   641→   641→              zIndex: 50,
+   642→   642→            },
+   643→   643→            children: [
+   644→   644→              { id: 'nav-logo', type: 'text', tag: 'span', content: 'Brand', style: { fontSize: '24px', fontWeight: '700', color: '#10b981' } },
+   645→   645→              {
+   646→   646→                id: 'nav-links',
+   647→   647→                type: 'flex',
+   648→   648→                tag: 'div',
+   649→   649→                style: { display: 'flex', gap: '32px', alignItems: 'center' },
+   650→   650→                children: [
+   651→   651→                  { id: 'nav-link-1', type: 'link', tag: 'a', content: 'Features', style: { color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   652→   652→                  { id: 'nav-link-2', type: 'link', tag: 'a', content: 'Pricing', style: { color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   653→   653→                  { id: 'nav-link-3', type: 'link', tag: 'a', content: 'About', style: { color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   654→   654→                  { id: 'nav-cta', type: 'button', tag: 'button', content: 'Get Started', style: { backgroundColor: '#10b981', color: '#ffffff', padding: '10px 24px', borderRadius: '8px', border: 'none', fontWeight: '600', cursor: 'pointer' } },
+   655→   655→                ],
+   656→   656→              },
+   657→   657→            ],
+   658→   658→          },
+   659→   659→        ],
+   660→   660→      };
+   661→   661→    case 'DASHBOARD':
+   662→   662→      return {
+   663→   663→        ...baseDesign,
+   664→   664→        style: { ...baseDesign.style, flexDirection: 'row' },
+   665→   665→        children: [
+   666→   666→          {
+   667→   667→            id: 'sidebar',
+   668→   668→            type: 'sidebar',
+   669→   669→            tag: 'aside',
+   670→   670→            meta: { name: 'Sidebar' },
+   671→   671→            style: { width: '260px', minHeight: '100vh', backgroundColor: '#0f172a', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '8px' },
+   672→   672→            children: [
+   673→   673→              { id: 'sidebar-logo', type: 'text', tag: 'span', content: 'Dashboard', style: { color: '#ffffff', fontSize: '20px', fontWeight: '700', padding: '8px' } },
+   674→   674→              { id: 'sidebar-divider', type: 'divider', tag: 'hr', style: { border: 'none', borderTop: '1px solid #1e293b', margin: '8px 0' } },
+   675→   675→              { id: 'sidebar-nav-1', type: 'link', tag: 'a', content: 'Overview', style: { color: '#34d399', padding: '10px 12px', borderRadius: '8px', backgroundColor: '#064e3b', textDecoration: 'none', fontWeight: '500', display: 'block' } },
+   676→   676→              { id: 'sidebar-nav-2', type: 'link', tag: 'a', content: 'Analytics', style: { color: '#94a3b8', padding: '10px 12px', borderRadius: '8px', textDecoration: 'none', display: 'block' } },
+   677→   677→              { id: 'sidebar-nav-3', type: 'link', tag: 'a', content: 'Settings', style: { color: '#94a3b8', padding: '10px 12px', borderRadius: '8px', textDecoration: 'none', display: 'block' } },
+   678→   678→            ],
+   679→   679→          },
+   680→   680→        ],
+   681→   681→      };
+   682→   682→    default:
+   683→   683→      return baseDesign;
+   684→   684→  }
+   685→   685→}
+   686→   686→

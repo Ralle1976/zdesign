@@ -1,0 +1,978 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orathai — Thai-Massage & Wellness in Wien</title>
+<meta name="description" content="Orathai — authentische Thai-Massage, Ölmassage und Kräuterstempeln in Wien. Gegründet von Orathai Sukhumvit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FBF6EA;
+  --surface: #F4ECD6;
+  --surface-2: #F4ECD8;
+  --primary: #2A2118;
+  --primary-soft: #5C4B38;
+  --accent: #B0892F;
+  --accent-soft: #D9B96A;
+  --text: #2A2118;
+  --text-muted: #6B5D49;
+  --border: #E7DCC4;
+  --border-soft: #F0E8D4;
+  --radius: 16px;
+  --radius-sm: 0px;
+  --radius-lg: 0px;
+  
+  --primary-rgb: 42, 33, 24;
+  --accent-rgb: 176, 137, 47;
+  --bg-rgb: 251, 246, 234;
+  
+  --shadow-img: 0 25px 50px -12px rgba(var(--primary-rgb), 0.15), 0 10px 15px -3px rgba(var(--primary-rgb), 0.05);
+  --shadow-card: 0 25px 50px -12px rgba(var(--primary-rgb), 0.25);
+  --ring: 0 0 0 1px rgba(var(--accent-rgb), 0.22);
+  
+  --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-body: "Mulish", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  position: relative;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.9'/></svg>");
+  mix-blend-mode: multiply;
+}
+
+.bg-lines {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.4;
+}
+.bg-lines svg {
+  width: 100%;
+  height: 100%;
+}
+.bg-lines path { stroke: var(--accent); }
+
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; line-height: 1.15; letter-spacing: -0.015em; }
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.italic { font-style: italic; font-weight: 400; }
+.underlined {
+  position: relative;
+  font-style: italic;
+  font-weight: 400;
+}
+.underlined::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0.04em;
+  height: 1px;
+  background: var(--accent);
+  opacity: 0.55;
+}
+
+.wrap { width: min(1240px, 92vw); margin: 0 auto; }
+section { padding: clamp(72px, 10vw, 140px) 0; position: relative; }
+
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(251, 246, 234, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+.brand { display: flex; align-items: center; gap: 12px; min-height: 44px; }
+.brand-mark { width: 34px; height: 34px; color: var(--accent); }
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.brand-name em { font-style: italic; color: var(--accent); }
+.nav-links { display: flex; gap: 36px; }
+.nav-links a {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color 0.3s;
+  position: relative;
+  padding: 12px 16px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-links a::after {
+  content: ""; position: absolute; left: 16px; right: 16px; bottom: 8px;
+  width: calc(100% - 32px); height: 1px; background: var(--accent);
+  transition: transform 0.3s; transform: scaleX(0); transform-origin: left;
+}
+.nav-links a:hover::after { transform: scaleX(1); }
+.nav-cta {
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--primary);
+  border: 1.5px solid var(--primary);
+  border-radius: 0px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: all 0.3s;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.nav-cta:hover { background: var(--primary); color: var(--bg); }
+@media (max-width: 820px) { .nav-links { display: none; } }
+
+.hero { padding-top: clamp(40px, 6vw, 80px); padding-bottom: 0; overflow: hidden; }
+.hero-glow {
+  position: absolute;
+  width: 700px; height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--accent-rgb),0.18), transparent 65%);
+  top: -200px; right: -200px;
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: clamp(40px, 6vw, 80px);
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+.hero-copy { padding: 20px 0 60px; }
+.hero h1 {
+  font-size: clamp(46px, 7.5vw, 96px);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  margin: 22px 0 28px;
+  font-weight: 600;
+}
+.hero p.lead {
+  font-size: clamp(16px, 1.4vw, 18px);
+  color: var(--text-muted);
+  max-width: 460px;
+  margin-bottom: 40px;
+  line-height: 1.7;
+}
+.hero-ctas { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 16px 32px;
+  background: transparent;
+  color: var(--primary);
+  border: 1.5px solid var(--primary);
+  border-radius: 0px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: all 0.3s;
+  min-height: 44px;
+}
+.btn-primary:hover { background: var(--primary); color: var(--bg); }
+.btn-primary svg { width: 14px; height: 14px; transition: transform 0.3s; }
+.btn-primary:hover svg { transform: translateX(4px); }
+.btn-ghost {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  padding: 16px 4px;
+  border-bottom: 1px solid var(--accent);
+  letter-spacing: 0.02em;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.hero-visual {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: 0px;
+  overflow: hidden;
+  box-shadow: var(--shadow-img);
+}
+.hero-visual img { width: 100%; height: 100%; object-fit: cover; }
+.hero-visual::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(var(--primary-rgb),0.25));
+}
+.hero-meta {
+  position: absolute;
+  bottom: 24px; left: 24px; right: 24px;
+  color: var(--bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  z-index: 2;
+}
+.hero-meta .small {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.3;
+  max-width: 200px;
+}
+.hero-meta .badge {
+  background: transparent;
+  color: var(--bg);
+  padding: 0;
+  border-radius: 0px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.soul-seal {
+  width: 110px;
+  height: 110px;
+  color: var(--bg);
+  opacity: 0.9;
+}
+.soul-seal svg {
+  width: 100%;
+  height: 100%;
+  animation: rotate 30s linear infinite;
+}
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.lotus-deco {
+  position: absolute;
+  width: 180px;
+  color: var(--accent);
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+}
+.lotus-deco.left { top: 40%; left: -60px; transform: rotate(-12deg); }
+@media (max-width: 880px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-copy { padding: 20px 0 0; order: 2; }
+  .hero-visual { order: 1; aspect-ratio: 3/4; }
+}
+
+.interlude {
+  padding: clamp(60px, 8vw, 110px) 0;
+  text-align: center;
+}
+.interlude blockquote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(26px, 4vw, 44px);
+  line-height: 1.35;
+  max-width: 860px;
+  margin: 0 auto;
+  color: var(--primary-soft);
+  position: relative;
+}
+.interlude .attrib {
+  margin-top: 28px;
+  font-family: var(--font-body);
+  font-style: normal;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.divider-lotus {
+  width: 40px; height: 40px;
+  margin: 0 auto 36px;
+  color: var(--accent);
+  opacity: 0.7;
+}
+
+.sec-head { margin-bottom: clamp(40px, 5vw, 64px); max-width: 680px; }
+.sec-head h2 {
+  font-size: clamp(34px, 5vw, 58px);
+  margin: 18px 0 0;
+  line-height: 1.08;
+  font-weight: 600;
+}
+.sec-head .intro {
+  margin-top: 20px;
+  color: var(--text-muted);
+  font-size: 16px;
+  max-width: 540px;
+}
+
+.services { background: linear-gradient(180deg, var(--bg), var(--surface-2)); }
+.editorial-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: clamp(40px, 6vw, 100px);
+}
+.editorial-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.service-item {
+  padding: 40px 0;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 30px;
+  transition: padding 0.4s ease;
+}
+.service-item:first-child { padding-top: 0; }
+.service-item:last-child { border-bottom: none; }
+.service-item:hover { padding-left: 20px; }
+.service-item .num {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+  display: block;
+}
+.service-item h3 {
+  font-size: clamp(28px, 3vw, 38px);
+  margin: 0 0 12px;
+  line-height: 1.1;
+  font-weight: 600;
+}
+.service-item p { font-size: 15px; color: var(--text-muted); line-height: 1.65; max-width: 480px; }
+.service-item .meta {
+  text-align: right;
+  border-left: 1px solid var(--border);
+  padding-left: 30px;
+}
+.service-item .meta .price { font-family: var(--font-display); font-size: 28px; color: var(--text); display: block; line-height: 1.1; }
+.service-item .meta .dur { color: var(--text-muted); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 6px; display: block;}
+
+.editorial-visual {
+  position: relative;
+  height: 100%;
+  min-height: 600px;
+  border-radius: 0px;
+  overflow: hidden;
+  box-shadow: var(--shadow-img);
+}
+.editorial-visual img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+.editorial-visual::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(var(--primary-rgb), 0.85));
+}
+.editorial-visual .visual-content {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 40px;
+  color: var(--bg);
+  z-index: 2;
+}
+.editorial-visual .visual-content h3 { color: var(--bg); font-size: 36px; margin-bottom: 12px; }
+.editorial-visual .visual-content p { color: rgba(var(--bg-rgb), 0.85); font-size: 15px; max-width: 400px; }
+
+@media (max-width: 880px) {
+  .editorial-grid { grid-template-columns: 1fr; }
+  .editorial-visual { min-height: 400px; order: -1; }
+  .service-item { grid-template-columns: 1fr; gap: 16px; }
+  .service-item .meta { text-align: left; border-left: none; padding-left: 0; border-top: 1px solid var(--border); padding-top: 16px; }
+}
+
+.philosophy { position: relative; }
+.phil-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: clamp(50px, 7vw, 100px);
+  align-items: center;
+}
+.phil-visual {
+  position: relative;
+  aspect-ratio: 4/5;
+  border-radius: 0px;
+  overflow: hidden;
+  box-shadow: var(--shadow-img);
+}
+.phil-visual img { width: 100%; height: 100%; object-fit: cover; }
+.phil-visual .tag {
+  position: absolute;
+  top: 24px; left: 24px;
+  background: var(--bg);
+  color: var(--text);
+  padding: 10px 16px;
+  border-radius: 0px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.phil-copy h2 {
+  font-size: clamp(32px, 4.5vw, 52px);
+  margin: 16px 0 28px;
+  line-height: 1.1;
+  font-weight: 600;
+}
+.phil-copy p {
+  color: var(--text-muted);
+  margin-bottom: 18px;
+  font-size: 16px;
+  line-height: 1.75;
+}
+.phil-sign {
+  margin-top: 36px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.phil-sign .sig {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 28px;
+  color: var(--primary);
+}
+.phil-sign .role {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-left: 1px solid var(--border);
+  padding-left: 18px;
+}
+@media (max-width: 880px) {
+  .phil-grid { grid-template-columns: 1fr; }
+}
+
+.prices { background: var(--surface-2); position: relative; overflow: hidden; }
+.prices-glow {
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb),0.12), transparent 60%);
+  bottom: -150px; left: -100px;
+  pointer-events: none;
+}
+.price-list {
+  position: relative;
+  list-style: none;
+  border-top: 1px solid var(--primary);
+}
+.price-row {
+  display: grid;
+  grid-template-columns: 1.2fr auto;
+  align-items: baseline;
+  gap: 40px;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s ease;
+}
+.price-row:hover { background: rgba(var(--accent-rgb), 0.03); }
+.price-row .name {
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 1.1;
+  font-weight: 600;
+}
+.price-row .dur { 
+  display: block;
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  letter-spacing: 0.04em;
+}
+.price-row .amount {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-align: right;
+}
+.price-row .amount .unit { font-size: 13px; color: var(--text-muted); font-family: var(--font-body); display: block; margin-top: 6px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 400; }
+
+@media (max-width: 880px) {
+  .price-row { grid-template-columns: 1fr; gap: 12px; padding: 28px 0; }
+  .price-row .amount { text-align: left; }
+}
+
+.contact { padding-bottom: clamp(80px, 10vw, 140px); }
+.contact-card {
+  background: var(--primary);
+  border-radius: var(--radius);
+  padding: clamp(40px, 6vw, 80px);
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(40px, 5vw, 80px);
+  box-shadow: var(--shadow-card);
+}
+.contact-card::before {
+  content: "";
+  position: absolute;
+  top: -200px; right: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb),0.28), transparent 60%);
+  pointer-events: none;
+}
+.contact-card::after {
+  content: "";
+  position: absolute;
+  bottom: -150px; left: -100px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb),0.12), transparent 60%);
+  pointer-events: none;
+}
+.contact-info { position: relative; z-index: 1; color: var(--bg); }
+.contact-info .eyebrow { color: var(--accent-soft); }
+.contact-info h2 {
+  color: var(--bg);
+  font-size: clamp(32px, 4.5vw, 52px);
+  margin: 18px 0 28px;
+  line-height: 1.08;
+  font-weight: 600;
+}
+.contact-info p { color: rgba(var(--bg-rgb),0.75); margin-bottom: 36px; max-width: 380px; }
+.contact-details { display: flex; flex-direction: column; gap: 22px; }
+.contact-detail {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding-bottom: 22px;
+  border-bottom: 1px solid rgba(var(--bg-rgb),0.1);
+}
+.contact-detail:last-child { border-bottom: none; padding-bottom: 0; }
+.contact-detail svg { width: 22px; height: 22px; color: var(--accent-soft); flex-shrink: 0; margin-top: 3px; }
+.contact-detail .label { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(var(--bg-rgb),0.5); margin-bottom: 4px; }
+.contact-detail .val { font-family: var(--font-display); font-size: 18px; font-style: italic; }
+
+.contact-form { position: relative; z-index: 1; }
+.form-row { margin-bottom: 22px; }
+.form-row.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-row label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(var(--bg-rgb),0.55);
+  margin-bottom: 8px;
+}
+.form-row input, .form-row select, .form-row textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(var(--bg-rgb),0.2);
+  padding: 10px 0;
+  color: var(--bg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  transition: border-color 0.3s;
+}
+.form-row input::placeholder, .form-row textarea::placeholder { color: rgba(var(--bg-rgb),0.35); }
+.form-row input:focus-visible, .form-row select:focus-visible, .form-row textarea:focus-visible {
+  outline: none;
+  border-bottom-color: var(--accent-soft);
+}
+.form-row select { -webkit-appearance: none; appearance: none; cursor: pointer; }
+.form-row select option { background: var(--primary); color: var(--bg); }
+.form-row textarea { resize: none; min-height: 60px; }
+.form-submit {
+  width: 100%;
+  margin-top: 16px;
+  padding: 16px;
+  background: transparent;
+  color: var(--bg);
+  border: 1.5px solid var(--bg);
+  border-radius: 0px;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  transition: all 0.3s;
+  min-height: 44px;
+}
+.form-submit:hover { background: var(--bg); color: var(--primary); }
+@media (max-width: 880px) {
+  .contact-card { grid-template-columns: 1fr; padding: 40px 28px; }
+  .form-row.two { grid-template-columns: 1fr; }
+}
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 48px 0 36px;
+  position: relative;
+  z-index: 2;
+}
+.foot-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.foot-inner .small { font-size: 13px; color: var(--text-muted); }
+.foot-inner .links { display: flex; gap: 24px; font-size: 13px; }
+.foot-inner .links a { 
+  color: var(--text-muted); 
+  transition: color 0.2s; 
+  padding: 12px 16px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.foot-inner .links a:hover { color: var(--accent); }
+
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.9s cubic-bezier(.2,.7,.3,1), transform 0.9s cubic-bezier(.2,.7,.3,1); }
+.reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+  html { scroll-behavior: auto; }
+}
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="bg-lines" aria-hidden="true">
+  <svg viewBox="0 0 1440 1024" preserveAspectRatio="none">
+    <path d="M-100,300 Q360,100 720,400 T1540,500" fill="none" stroke-width="1" opacity="0.5" />
+    <path d="M-100,800 Q360,600 720,900 T1540,800" fill="none" stroke-width="1.5" opacity="0.3" />
+    <path d="M-100,100 Q460,200 820,50 T1540,150" fill="none" stroke-width="1" opacity="0.4" />
+  </svg>
+</div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a href="#" class="brand">
+      <svg class="brand-mark" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M20 4 C 12 12, 12 20, 20 36 C 28 20, 28 12, 20 4 Z" />
+        <path d="M20 10 C 16 16, 16 22, 20 32 C 24 22, 24 16, 20 10 Z" />
+        <path d="M20 4 C 10 10, 4 18, 12 28" />
+        <path d="M20 4 C 30 10, 36 18, 28 28" />
+      </svg>
+      <span class="brand-name">Orathai <em>Sukhumvit</em></span>
+    </a>
+    <nav class="nav-links" aria-label="Hauptnavigation">
+      <a href="#rituale">Rituale</a>
+      <a href="#philosophie">Philosophie</a>
+      <a href="#preise">Preise</a>
+      <a href="#kontakt">Kontakt</a>
+    </nav>
+    <a href="#kontakt" class="nav-cta">Termin</a>
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="start">
+  <div class="hero-glow"></div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">Wien · Seit 2014</span>
+        <h1>Die Kunst der <span class="italic">tieferen</span> <br><span class="underlined">Beruhigung</span>.</h1>
+        <p class="lead">Authentische Thai-Massage, luxuriöse Ölanwendungen und traditionelle Kräuterstempel. Eine Oase der Ruhe, mitten in der Stadt.</p>
+        <div class="hero-ctas">
+          <a href="#rituale" class="btn-primary">
+            Rituale entdecken
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#kontakt" class="btn-ghost">Termin vereinbaren</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef" alt="Frau erhält eine sanfte Thai-Massage in warmer, atmosphärischer Beleuchtung">
+        <div class="hero-meta">
+          <p class="small">„Hände, die spüren, was der Körper flüstert.“</p>
+          <div class="badge">
+            <div class="soul-seal" aria-hidden="true">
+              <svg viewBox="0 0 100 100">
+                <defs>
+                  <path id="circle" d="M 50, 50 m -38, 0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0" />
+                </defs>
+                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" />
+                <circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" />
+                <text font-size="9.5" font-family="Mulish, sans-serif" letter-spacing="2" fill="currentColor" font-weight="600">
+                  <textPath href="#circle" startOffset="0%">100% HANDMADE · TRADITION THAI · SOUL · </textPath>
+                </text>
+                <path d="M40 50 Q50 35 60 50 Q50 65 40 50 Z M30 50 Q50 20 70 50 Q50 80 30 50 Z" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.8"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="interlude">
+  <div class="wrap">
+    <svg class="divider-lotus" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M20 4 C 12 12, 12 20, 20 36 C 28 20, 28 12, 20 4 Z" />
+      <path d="M20 4 C 10 10, 4 18, 12 28" />
+      <path d="M20 4 C 30 10, 36 18, 28 28" />
+    </svg>
+    <blockquote>
+      „Den Körper berühren heißt, der Seele zuhören. Jede Bewegung ist eine Rückkehr zur inneren Mitte.“
+    </blockquote>
+    <div class="attrib">— Orathai Sukhumvit, Gründerin</div>
+  </div>
+</section>
+
+<section class="services" id="rituale">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Unsere Rituale</span>
+      <h2>Behandlungen, die <span class="italic">tragen</span>.</h2>
+      <p class="intro">Jedes Ritual ist eine Komposition aus traditioneller Technik, natürlichen Ölen und purer Achtsamkeit.</p>
+    </div>
+    <div class="editorial-grid">
+      <div class="editorial-list reveal">
+        <div class="service-item">
+          <div>
+            <span class="num">01 — Traditionell</span>
+            <h3>Thai-Yoga-Massage</h3>
+            <p>Tiefengewebe-Druck und sanftes Stretchen entlang der Energielinien (Sen). Bringt Körper und Geist in Einklang.</p>
+          </div>
+          <div class="meta">
+            <span class="price">ab € 79</span>
+            <span class="dur">60 / 90 Min</span>
+          </div>
+        </div>
+        <div class="service-item">
+          <div>
+            <span class="num">02 — Harmonie</span>
+            <h3>Öl-Druck-Massage</h3>
+            <p>Fließende, wärmende Bewegungen mit reinem Jojoba- und Sesamöl. Löst tiefe Verspannungen und nährt die Haut.</p>
+          </div>
+          <div class="meta">
+            <span class="price">ab € 89</span>
+            <span class="dur">60 / 90 Min</span>
+          </div>
+        </div>
+        <div class="service-item">
+          <div>
+            <span class="num">03 — Erdung</span>
+            <h3>Kräuterstempel</h3>
+            <p>Warme Kräuterkompressen mit Zitronengras und Kurkuma. Die ätherischen Öle wirken tief entspannend und entgiftend.</p>
+          </div>
+          <div class="meta">
+            <span class="price">ab € 95</span>
+            <span class="dur">75 Min</span>
+          </div>
+        </div>
+      </div>
+      <div class="editorial-visual reveal">
+        <img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874" alt="Detailaufnahme einer Massage mit warmen Kräuterstempeln">
+        <div class="visual-content">
+          <h3>Pure Hingabe</h3>
+          <p>Unsere Rituale werden in ruhiger, warmer Atmosphäre von erfahrenen Therapeutinnen ausgeführt.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="philosophy" id="philosophie">
+  <div class="wrap">
+    <div class="phil-grid">
+      <div class="phil-visual reveal">
+        <span class="tag">Die Gründerin</span>
+        <img src="https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2" alt="Porträt von Orathai Sukhumvit in ihrem Studio">
+      </div>
+      <div class="phil-copy reveal">
+        <span class="eyebrow">Philosophie</span>
+        <h2>Ein Erbe an <span class="italic">Händen</span>.</h2>
+        <p>Orathai Sukhumvit wuchs in den Traditionen Nordthailands auf. Schon als Kind lernte sie die Kunst der Heilkräuter und der sanften Berührung von ihrer Großmutter.</p>
+        <p>Heute bringt sie diese jahrhundertealte Weisheit nach Wien – kombiniert mit einem tiefen Verständnis für modernen Stress und urbanen Lebensrhythmus.</p>
+        <div class="phil-sign">
+          <span class="sig">Orathai S.</span>
+          <span class="role">Zertifizierte Meisterin<br>der Thai-Massage</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="prices" id="preise">
+  <div class="prices-glow"></div>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Investition in Wohlbefinden</span>
+      <h2>Struktur & <span class="italic">Klarheit</span>.</h2>
+      <p class="intro">Transparente Preise für tiefgehende Entspannung. Jede Behandlung wird individuell auf Ihre Bedürfnisse abgestimmt.</p>
+    </div>
+    <ul class="price-list reveal">
+      <li class="price-row">
+        <div>
+          <span class="name">Thai-Yoga-Massage</span>
+          <span class="dur">60 Minuten · Klassisch & Intensiv</span>
+        </div>
+        <div class="amount">€ 79</div>
+      </li>
+      <li class="price-row">
+        <div>
+          <span class="name">Öl-Druck-Massage</span>
+          <span class="dur">90 Minuten · Mit warmem Sesamöl</span>
+        </div>
+        <div class="amount">€ 119</div>
+      </li>
+      <li class="price-row">
+        <div>
+          <span class="name">Kräuterstempel-Ritual</span>
+          <span class="dur">75 Minuten · Entgiftend & Wärmend</span>
+        </div>
+        <div class="amount">€ 95</div>
+      </li>
+      <li class="price-row">
+        <div>
+          <span class="name">Ganzheitliche Reise</span>
+          <span class="dur">120 Minuten · Thai, Öl & Stempel</span>
+        </div>
+        <div class="amount">€ 159</div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="contact" id="kontakt">
+  <div class="wrap">
+    <div class="contact-card reveal">
+      <div class="contact-info">
+        <span class="eyebrow">Termin & Anfahrt</span>
+        <h2>Besuchen Sie <span class="italic">unsere Oase</span>.</h2>
+        <p>Wir freuen uns auf Sie. Vereinbaren Sie bequem einen Termin oder besuchen Sie uns spontan in der Innenstadt.</p>
+        <div class="contact-details">
+          <div class="contact-detail">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+              <path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z" />
+              <circle cx="12" cy="9" r="2.5" />
+              <path d="M9 9 Q12 11 15 9" opacity="0.6" />
+            </svg>
+            <div>
+              <div class="label">Studio</div>
+              <div class="val">Mariahilfer Straße 45, 1060 Wien</div>
+            </div>
+          </div>
+          <div class="contact-detail">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
+            <div>
+              <div class="label">Telefon</div>
+              <div class="val">+43 1 585 12 34</div>
+            </div>
+          </div>
+          <div class="contact-detail">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <path d="M22 6l-10 7L2 6" />
+            </svg>
+            <div>
+              <div class="label">E-Mail</div>
+              <div class="val">willkommen@orathai.at</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <form class="contact-form" onsubmit="event.preventDefault();">
+        <div class="form-row two">
+          <div>
+            <label for="fname">Vorname</label>
+            <input type="text" id="fname" placeholder="Ihr Name">
+          </div>
+          <div>
+            <label for="fphone">Telefon</label>
+            <input type="tel" id="fphone" placeholder="+43...">
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="femail">E-Mail</label>
+          <input type="email" id="femail" placeholder="ihre@email.at">
+        </div>
+        <div class="form-row">
+          <label for="fselect">Behandlungswunsch</label>
+          <select id="fselect">
+            <option>Thai-Yoga-Massage (60 Min)</option>
+            <option>Öl-Druck-Massage (90 Min)</option>
+            <option>Kräuterstempel (75 Min)</option>
+            <option>Ganzheitliche Reise (120 Min)</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="fmsg">Nachricht</label>
+          <textarea id="fmsg" placeholder="Wann hätten Sie Zeit?"></textarea>
+        </div>
+        <button type="submit" class="form-submit">Anfrage senden</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <div class="small">© 2024 Orathai Sukhumvit · Wien</div>
+    <nav class="links" aria-label="Footer Navigation">
+      <a href="#">Impressum</a>
+      <a href="#">Datenschutz</a>
+      <a href="#">AGB</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  // Reveal animations on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>

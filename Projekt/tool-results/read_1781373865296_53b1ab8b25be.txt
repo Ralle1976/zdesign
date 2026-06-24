@@ -1,0 +1,1230 @@
+     1→'use client';
+     2→
+     3→import { useState, useRef, useCallback, useEffect } from 'react';
+     4→import { useZDesignStore } from '@/stores/zdesign-store';
+     5→import { useI18n } from '@/i18n';
+     6→import { useVoiceInput } from '@/hooks/useVoiceInput';
+     7→import type { ChatMessage, DesignQualityReport } from '@/types/design';
+     8→import { ScrollArea } from '@/components/ui/scroll-area';
+     9→import { Button } from '@/components/ui/button';
+    10→import { Textarea } from '@/components/ui/textarea';
+    11→import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+    12→import { Badge } from '@/components/ui/badge';
+    13→import { Separator } from '@/components/ui/separator';
+    14→import { Progress } from '@/components/ui/progress';
+    15→import {
+    16→  Tooltip,
+    17→  TooltipContent,
+    18→  TooltipTrigger,
+    19→} from '@/components/ui/tooltip';
+    20→import {
+    21→  Send,
+    22→  Mic,
+    23→  Paperclip,
+    24→  Trash2,
+    25→  Sparkles,
+    26→  LayoutDashboard,
+    27→  Smartphone,
+    28→  Presentation,
+    29→  Bot,
+    30→  User,
+    31→  ImageIcon,
+    32→  Search,
+    33→  CheckCircle2,
+    34→  Brain,
+    35→  Palette,
+    36→  Zap,
+    37→  Loader2,
+    38→  Wand2,
+    39→  AlertTriangle,
+    40→  RefreshCw,
+    41→} from 'lucide-react';
+    42→import ReactMarkdown from 'react-markdown';
+    43→import { motion, AnimatePresence } from 'framer-motion';
+    44→import { AIImageDialog } from './AIImageDialog';
+    45→import { ResearchDialog } from './ResearchDialog';
+    46→
+    47→const EXAMPLE_PROMPTS = [
+    48→  {
+    49→    icon: LayoutDashboard,
+    50→    key: 'landing' as const,
+    51→    gradient: 'from-emerald-500 to-teal-500',
+    52→  },
+    53→  {
+    54→    icon: LayoutDashboard,
+    55→    key: 'dashboard' as const,
+    56→    gradient: 'from-teal-500 to-cyan-500',
+    57→  },
+    58→  {
+    59→    icon: Smartphone,
+    60→    key: 'app' as const,
+    61→    gradient: 'from-cyan-500 to-emerald-500',
+    62→  },
+    63→  {
+    64→    icon: Presentation,
+    65→    key: 'slide' as const,
+    66→    gradient: 'from-emerald-500 to-green-500',
+    67→  },
+    68→];
+    69→
+    70→// ============ Step Progress in Chat ============
+    71→
+    72→function GenerationStepProgress() {
+    73→  const { locale } = useI18n();
+    74→  const generationProgress = useZDesignStore((s) => s.generationProgress);
+    75→  const creativeMode = useZDesignStore((s) => s.creativeMode);
+    76→  const isDe = locale === 'de';
+    77→
+    78→  const steps = [
+    79→    { id: 'analyzing', label: isDe ? 'Analysiere...' : 'Analyzing request...', icon: Brain },
+    80→    { id: 'generating', label: isDe ? 'Generiere Layout...' : 'Generating layout...', icon: Sparkles },
+    81→    { id: 'rendering', label: isDe ? 'Füge Stile hinzu...' : 'Adding styles...', icon: Palette },
+    82→    { id: 'evaluating', label: isDe ? 'Finalisiere...' : 'Finalizing design...', icon: CheckCircle2 },
+    83→  ];
+    84→
+    85→  const currentIdx = steps.findIndex((s) => s.id === generationProgress.stage);
+    86→
+    87→  return (
+    88→    <div className="px-4 py-2 space-y-2">
+    89→      {/* Main status line */}
+    90→      <div className="flex items-center gap-2">
+    91→        <Loader2 className="size-3.5 animate-spin text-emerald-500 shrink-0" />
+    92→        <span className="text-xs font-medium text-foreground">
+    93→          {isDe ? 'KI generiert Design...' : 'Generating design with AI...'}
+    94→        </span>
+    95→        {generationProgress.estimatedTimeLeft && generationProgress.estimatedTimeLeft > 0 && (
+    96→          <span className="text-[10px] text-muted-foreground ml-auto">
+    97→            ~{generationProgress.estimatedTimeLeft}s {isDe ? 'übrig' : 'remaining'}
+    98→          </span>
+    99→        )}
+   100→      </div>
+   101→
+   102→      {/* Progress bar */}
+   103→      <Progress value={generationProgress.percentage} className="h-1.5 [&>div]:bg-emerald-500" />
+   104→
+   105→      {/* Steps */}
+   106→      <div className="flex items-center gap-1">
+   107→        {steps.map((step, idx) => {
+   108→          const StepIcon = step.icon;
+   109→          const isActive = step.id === generationProgress.stage;
+   110→          const isDone = idx < currentIdx || generationProgress.stage === 'complete';
+   111→
+   112→          return (
+   113→            <div key={step.id} className="flex items-center gap-1 flex-1 min-w-0">
+   114→              <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium truncate ${
+   115→                isActive
+   116→                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+   117→                  : isDone
+   118→                    ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-500'
+   119→                    : 'bg-muted/50 text-muted-foreground'
+   120→              }`}>
+   121→                {isActive ? (
+   122→                  <Loader2 className="size-2.5 animate-spin shrink-0" />
+   123→                ) : isDone ? (
+   124→                  <CheckCircle2 className="size-2.5 shrink-0" />
+   125→                ) : (
+   126→                  <StepIcon className="size-2.5 shrink-0" />
+   127→                )}
+   128→                <span className="truncate">{step.label}</span>
+   129→              </div>
+   130→              {idx < steps.length - 1 && (
+   131→                <div className={`h-px flex-1 min-w-[8px] ${isDone ? 'bg-emerald-300 dark:bg-emerald-700' : 'bg-border'}`} />
+   132→              )}
+   133→            </div>
+   134→          );
+   135→        })}
+   136→      </div>
+   137→
+   138→      {/* Creative mode indicator */}
+   139→      {creativeMode && (
+   140→        <div className="flex items-center gap-1 text-[10px] text-amber-600 dark:text-amber-400">
+   141→          <Zap className="size-2.5" />
+   142→          <span className="font-medium">Creative Mode active</span>
+   143→        </div>
+   144→      )}
+   145→
+   146→      {/* Status message */}
+   147→      {generationProgress.message && (
+   148→        <p className="text-[10px] text-muted-foreground">{generationProgress.message}</p>
+   149→      )}
+   150→    </div>
+   151→  );
+   152→}
+   153→
+   154→function TypingIndicator() {
+   155→  return (
+   156→    <div className="flex items-start gap-3 px-4 py-3">
+   157→      <Avatar className="size-8 shrink-0">
+   158→        <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs font-bold">
+   159→          Z
+   160→        </AvatarFallback>
+   161→      </Avatar>
+   162→      <div className="flex items-center gap-1 bg-muted rounded-2xl rounded-tl-sm px-4 py-2.5">
+   163→        <motion.span
+   164→          className="size-2 rounded-full bg-emerald-500"
+   165→          animate={{ opacity: [0.4, 1, 0.4] }}
+   166→          transition={{ duration: 1.2, repeat: Infinity, delay: 0 }}
+   167→        />
+   168→        <motion.span
+   169→          className="size-2 rounded-full bg-emerald-500"
+   170→          animate={{ opacity: [0.4, 1, 0.4] }}
+   171→          transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }}
+   172→        />
+   173→        <motion.span
+   174→          className="size-2 rounded-full bg-emerald-500"
+   175→          animate={{ opacity: [0.4, 1, 0.4] }}
+   176→          transition={{ duration: 1.2, repeat: Infinity, delay: 0.4 }}
+   177→        />
+   178→      </div>
+   179→    </div>
+   180→  );
+   181→}
+   182→
+   183→function MessageBubble({ message, qualityReport, onEnhance, isEnhancing, onRetryParse }: {
+   184→  message: ChatMessage;
+   185→  qualityReport: DesignQualityReport | null;
+   186→  onEnhance: () => void;
+   187→  isEnhancing: boolean;
+   188→  onRetryParse?: (text: string) => void;
+   189→}) {
+   190→  // Hydration-safe: only render timestamp after mount
+   191→  const [mounted, setMounted] = useState(false);
+   192→  useEffect(() => { setMounted(true); }, []); // eslint-disable-line react-hooks/set-state-in-effect
+   193→
+   194→  if (message.role === 'system') {
+   195→    const retryText = message.metadata?.parseFailedRetryText;
+   196→    const isParseWarning = !!retryText;
+   197→
+   198→    if (isParseWarning) {
+   199→      return (
+   200→        <div className="flex justify-center px-4 py-1">
+   201→          <div className="flex items-center gap-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-3 py-2 rounded-lg max-w-[90%]">
+   202→            <AlertTriangle className="size-4 text-amber-500 shrink-0" />
+   203→            <span className="text-xs text-amber-700 dark:text-amber-400">{message.content}</span>
+   204→            <Button
+   205→              size="sm"
+   206→              variant="outline"
+   207→              className="h-6 text-[11px] px-2 gap-1 border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-400 dark:hover:bg-amber-900/30 shrink-0"
+   208→              onClick={() => { if (retryText) onRetryParse?.(retryText); }}
+   209→            >
+   210→              <RefreshCw className="size-3" />
+   211→              Retry
+   212→            </Button>
+   213→          </div>
+   214→        </div>
+   215→      );
+   216→    }
+   217→
+   218→    return (
+   219→      <div className="flex justify-center px-4 py-1">
+   220→        <span className="text-xs text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">
+   221→          {message.content}
+   222→        </span>
+   223→      </div>
+   224→    );
+   225→  }
+   226→
+   227→  const isUser = message.role === 'user';
+   228→  const hasDesign = message.role === 'assistant' && message.metadata?.designUpdate;
+   229→  const showQuality = hasDesign && qualityReport;
+   230→
+   231→  return (
+   232→    <motion.div
+   233→      initial={{ opacity: 0, y: 8 }}
+   234→      animate={{ opacity: 1, y: 0 }}
+   235→      transition={{ duration: 0.25, ease: 'easeOut' }}
+   236→      className={`flex items-start gap-3 px-4 py-3 ${isUser ? 'flex-row-reverse' : ''}`}
+   237→    >
+   238→      <Avatar className="size-8 shrink-0">
+   239→        <AvatarFallback
+   240→          className={
+   241→            isUser
+   242→              ? 'bg-secondary text-secondary-foreground text-xs'
+   243→              : 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs font-bold'
+   244→          }
+   245→        >
+   246→          {isUser ? <User className="size-4" /> : <Bot className="size-4" />}
+   247→        </AvatarFallback>
+   248→      </Avatar>
+   249→
+   250→      <div
+   251→        className={`max-w-[85%] space-y-1 ${isUser ? 'items-end' : 'items-start'}`}
+   252→      >
+   253→        <div
+   254→          className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+   255→            isUser
+   256→              ? 'bg-emerald-600 text-white rounded-tr-sm'
+   257→              : 'bg-muted rounded-tl-sm'
+   258→          }`}
+   259→        >
+   260→          {isUser ? (
+   261→            <p className="whitespace-pre-wrap">{message.content}</p>
+   262→          ) : (
+   263→            <div className="prose prose-sm dark:prose-invert max-w-none [&_p]:my-1 [&_ul]:my-1 [&_ol]:my-1 [&_li]:my-0.5 [&_code]:text-xs [&_code]:bg-black/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_pre]:bg-black/5 [&_pre]:rounded-md [&_pre]:p-2">
+   264→              <ReactMarkdown>{message.content}</ReactMarkdown>
+   265→            </div>
+   266→          )}
+   267→        </div>
+   268→        {/* Quality Score Badge for design messages */}
+   269→        {showQuality && (
+   270→          <motion.div
+   271→            initial={{ opacity: 0, y: 4 }}
+   272→            animate={{ opacity: 1, y: 0 }}
+   273→            transition={{ delay: 0.2 }}
+   274→            className="flex items-center gap-2 px-1"
+   275→          >
+   276→            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium ${
+   277→              qualityReport.overallScore >= 80
+   278→                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+   279→                : qualityReport.overallScore >= 60
+   280→                  ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+   281→                  : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+   282→            }`}>
+   283→              <CheckCircle2 className="size-3" />
+   284→              Quality: {qualityReport.overallScore}/100
+   285→              <div className="flex gap-0.5 ml-1">
+   286→                {[
+   287→                  { label: 'CSS', value: qualityReport.cssValid },
+   288→                  { label: 'Sem', value: qualityReport.semantics },
+   289→                  { label: 'Rsp', value: qualityReport.responsiveness },
+   290→                  { label: 'A11y', value: qualityReport.accessibility },
+   291→                ].map((s) => (
+   292→                  <span key={s.label} className={`text-[9px] px-1 rounded ${
+   293→                    s.value >= 80 ? 'bg-emerald-200/50 dark:bg-emerald-800/30' : s.value >= 60 ? 'bg-amber-200/50 dark:bg-amber-800/30' : 'bg-red-200/50 dark:bg-red-800/30'
+   294→                  }`}>
+   295→                    {s.label}:{s.value}
+   296→                  </span>
+   297→                ))}
+   298→              </div>
+   299→            </div>
+   300→            {/* Enhance button when quality < 80 */}
+   301→            {qualityReport.overallScore < 80 && (
+   302→              <Button
+   303→                size="sm"
+   304→                variant="outline"
+   305→                className="h-7 text-[11px] px-2.5 gap-1 border-amber-300 text-amber-700 hover:bg-amber-50 dark:border-amber-800 dark:text-amber-400 dark:hover:bg-amber-900/20"
+   306→                onClick={onEnhance}
+   307→                disabled={isEnhancing}
+   308→              >
+   309→                {isEnhancing ? (
+   310→                  <Loader2 className="size-3 animate-spin" />
+   311→                ) : (
+   312→                  <Wand2 className="size-3" />
+   313→                )}
+   314→                Enhance
+   315→              </Button>
+   316→            )}
+   317→          </motion.div>
+   318→        )}
+   319→        {mounted && (
+   320→          <p
+   321→            className={`text-[10px] text-muted-foreground px-1 ${isUser ? 'text-right' : ''}`}
+   322→          >
+   323→            {new Date(message.createdAt).toLocaleTimeString([], {
+   324→              hour: '2-digit',
+   325→              minute: '2-digit',
+   326→            })}
+   327→          </p>
+   328→        )}
+   329→      </div>
+   330→    </motion.div>
+   331→  );
+   332→}
+   333→
+   334→function WelcomeState({
+   335→  onExampleClick,
+   336→}: {
+   337→  onExampleClick: (prompt: string) => void;
+   338→}) {
+   339→  const { t } = useI18n();
+   340→
+   341→  return (
+   342→    <div className="flex flex-col items-center justify-center h-full px-6 py-8">
+   343→      <motion.div
+   344→        initial={{ opacity: 0, scale: 0.95 }}
+   345→        animate={{ opacity: 1, scale: 1 }}
+   346→        transition={{ duration: 0.4, ease: 'easeOut' }}
+   347→        className="text-center space-y-4 max-w-sm"
+   348→      >
+   349→        {/* Logo */}
+   350→        <div className="flex items-center justify-center size-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-2xl shadow-lg shadow-emerald-500/20 mx-auto">
+   351→          Z
+   352→        </div>
+   353→
+   354→        <div>
+   355→          <h2 className="text-lg font-semibold">{t.appName}</h2>
+   356→          <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+   357→            {t.chat.welcome}
+   358→          </p>
+   359→        </div>
+   360→
+   361→        {/* Example prompts */}
+   362→        <div className="grid grid-cols-1 gap-2 w-full mt-4">
+   363→          {EXAMPLE_PROMPTS.map((example) => (
+   364→            <motion.button
+   365→              key={example.key}
+   366→              initial={{ opacity: 0, y: 8 }}
+   367→              animate={{ opacity: 1, y: 0 }}
+   368→              transition={{ duration: 0.3, delay: 0.1 }}
+   369→              whileHover={{ scale: 1.02 }}
+   370→              whileTap={{ scale: 0.98 }}
+   371→              onClick={() => onExampleClick(t.chat.examples[example.key])}
+   372→              className="flex items-center gap-3 p-3 rounded-xl border bg-card hover:bg-accent/50 transition-colors text-left group"
+   373→            >
+   374→              <div
+   375→                className={`flex items-center justify-center size-9 rounded-lg bg-gradient-to-br ${example.gradient} text-white shrink-0`}
+   376→              >
+   377→                <example.icon className="size-4" />
+   378→              </div>
+   379→              <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+   380→                {t.chat.examples[example.key]}
+   381→              </span>
+   382→            </motion.button>
+   383→          ))}
+   384→        </div>
+   385→      </motion.div>
+   386→    </div>
+   387→  );
+   388→}
+   389→
+   390→export function ChatPanel() {
+   391→  const { t } = useI18n();
+   392→  const chatMessages = useZDesignStore((s) => s.chatMessages);
+   393→  const addChatMessage = useZDesignStore((s) => s.addChatMessage);
+   394→  const clearChat = useZDesignStore((s) => s.clearChat);
+   395→  const isGenerating = useZDesignStore((s) => s.isGenerating);
+   396→  const setIsGenerating = useZDesignStore((s) => s.setIsGenerating);
+   397→  const projectId = useZDesignStore((s) => s.projectId);
+   398→  const designTree = useZDesignStore((s) => s.designTree);
+   399→  const designSystem = useZDesignStore((s) => s.designSystem);
+   400→  const setDesignTree = useZDesignStore((s) => s.setDesignTree);
+   401→  const setGenerationProgress = useZDesignStore((s) => s.setGenerationProgress);
+   402→  const resetGenerationProgress = useZDesignStore((s) => s.resetGenerationProgress);
+   403→  const setQualityReport = useZDesignStore((s) => s.setQualityReport);
+   404→  const qualityReport = useZDesignStore((s) => s.qualityReport);
+   405→  const generationProgress = useZDesignStore((s) => s.generationProgress);
+   406→
+   407→  const [input, setInput] = useState('');
+   408→  const [isEnhancing, setIsEnhancing] = useState(false);
+   409→  const scrollRef = useRef<HTMLDivElement>(null);
+   410→  const textareaRef = useRef<HTMLTextAreaElement>(null);
+   411→
+   412→  // AI Image dialog
+   413→  const [aiImageOpen, setAiImageOpen] = useState(false);
+   414→
+   415→  // Research dialog
+   416→  const [researchOpen, setResearchOpen] = useState(false);
+   417→
+   418→  // === Refs for mutable state to avoid stale closures ===
+   419→  const projectIdRef = useRef(projectId);
+   420→  const isGeneratingRef = useRef(isGenerating);
+   421→  const chatMessagesRef = useRef(chatMessages);
+   422→  const designTreeRef = useRef(designTree);
+   423→  const designSystemRef = useRef(designSystem);
+   424→
+   425→  useEffect(() => { projectIdRef.current = projectId; }, [projectId]);
+   426→  useEffect(() => { isGeneratingRef.current = isGenerating; }, [isGenerating]);
+   427→  useEffect(() => { chatMessagesRef.current = chatMessages; }, [chatMessages]);
+   428→  useEffect(() => { designTreeRef.current = designTree; }, [designTree]);
+   429→  useEffect(() => { designSystemRef.current = designSystem; }, [designSystem]);
+   430→
+   431→  // Stable store action refs
+   432→  const addChatMessageRef = useRef(addChatMessage);
+   433→  const setIsGeneratingRef = useRef(setIsGenerating);
+   434→  const setDesignTreeRef = useRef(setDesignTree);
+   435→  const setGenerationProgressRef = useRef(setGenerationProgress);
+   436→  const resetGenerationProgressRef = useRef(resetGenerationProgress);
+   437→  const setQualityReportRef = useRef(setQualityReport);
+   438→  const tRef = useRef(t);
+   439→
+   440→  useEffect(() => { addChatMessageRef.current = addChatMessage; }, [addChatMessage]);
+   441→  useEffect(() => { setIsGeneratingRef.current = setIsGenerating; }, [setIsGenerating]);
+   442→  useEffect(() => { setDesignTreeRef.current = setDesignTree; }, [setDesignTree]);
+   443→  useEffect(() => { setGenerationProgressRef.current = setGenerationProgress; }, [setGenerationProgress]);
+   444→  useEffect(() => { resetGenerationProgressRef.current = resetGenerationProgress; }, [resetGenerationProgress]);
+   445→  useEffect(() => { setQualityReportRef.current = setQualityReport; }, [setQualityReport]);
+   446→  useEffect(() => { tRef.current = t; }, [t]);
+   447→
+   448→  // ============ Progress simulation ============
+   449→  // Simulates step-by-step progress while the API call is in flight
+   450→  // LLM takes ~60-90s, so we simulate progress over that duration
+   451→  const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+   452→
+   453→  const startProgressSimulation = useCallback(() => {
+   454→    // Only set up incremental percentage updates during the API call
+   455→    // Initial stage is already set by sendMessage
+   456→    const startTime = Date.now();
+   457→    const totalDuration = 80000; // 80 seconds estimated total for LLM generation
+   458→
+   459→    // Auto-advance stages on a timer
+   460→    // analyzing: 0-5s, generating: 5-55s, rendering: handled after API returns
+   461→    const stageTimers: Array<{ delay: number; stage: string; pct: number; msg: string }> = [
+   462→      { delay: 5000, stage: 'generating', pct: 25, msg: 'AI is creating your design...' },
+   463→      { delay: 20000, stage: 'generating', pct: 35, msg: 'Building layout structure...' },
+   464→      { delay: 40000, stage: 'generating', pct: 50, msg: 'Adding components and styles...' },
+   465→      { delay: 60000, stage: 'generating', pct: 60, msg: 'Polishing design details...' },
+   466→    ];
+   467→
+   468→    const stageTimeouts: Array<ReturnType<typeof setTimeout>> = [];
+   469→    for (const st of stageTimers) {
+   470→      stageTimeouts.push(setTimeout(() => {
+   471→        setGenerationProgressRef.current({
+   472→          stage: st.stage as 'analyzing' | 'generating' | 'rendering' | 'evaluating' | 'complete' | 'error' | 'idle',
+   473→          stageLabel: st.msg,
+   474→          percentage: st.pct,
+   475→          message: st.msg,
+   476→          estimatedTimeLeft: Math.max(0, Math.round((totalDuration - st.delay) / 1000)),
+   477→        });
+   478→      }, st.delay));
+   479→    }
+   480→
+   481→    progressTimerRef.current = setInterval(() => {
+   482→      const elapsed = Date.now() - startTime;
+   483→      const pct = Math.min(65, Math.round(20 + (elapsed / totalDuration) * 45)); // 20-65% range
+   484→      const timeLeft = Math.max(0, Math.round((totalDuration - elapsed) / 1000));
+   485→
+   486→      // Update percentage and time remaining
+   487→      setGenerationProgressRef.current({
+   488→        percentage: pct,
+   489→        estimatedTimeLeft: timeLeft,
+   490→      });
+   491→    }, 1000);
+   492→
+   493→    // Store stage timeouts for cleanup
+   494→    (progressTimerRef as React.MutableRefObject<ReturnType<typeof setInterval> | null & { stageTimeouts?: Array<ReturnType<typeof setTimeout>> }>).current = {
+   495→      ...progressTimerRef.current,
+   496→      stageTimeouts,
+   497→    } as unknown as ReturnType<typeof setInterval>;
+   498→  }, []);
+   499→
+   500→  const stopProgressSimulation = useCallback((success: boolean) => {
+   501→    if (progressTimerRef.current) {
+   502→      clearInterval(progressTimerRef.current);
+   503→      // Clean up stage timeouts
+   504→      const ref = progressTimerRef.current as unknown as { stageTimeouts?: Array<ReturnType<typeof setTimeout>> };
+   505→      if (ref.stageTimeouts) {
+   506→        ref.stageTimeouts.forEach(clearTimeout);
+   507→      }
+   508→      progressTimerRef.current = null;
+   509→    }
+   510→
+   511→    if (success) {
+   512→      // If we're still in evaluating stage from sendMessage, set complete
+   513→      // If we haven't reached evaluating yet, skip to complete
+   514→      setGenerationProgressRef.current({
+   515→        stage: 'complete',
+   516→        stageLabel: 'Complete!',
+   517→        percentage: 100,
+   518→        message: 'Design generated successfully!',
+   519→      });
+   520→
+   521→      // Reset after a short delay
+   522→      setTimeout(() => {
+   523→        resetGenerationProgressRef.current();
+   524→      }, 1500);
+   525→    } else {
+   526→      setGenerationProgressRef.current({
+   527→        stage: 'error',
+   528→        stageLabel: 'Error',
+   529→        percentage: 100,
+   530→        message: 'Generation failed',
+   531→      });
+   532→
+   533→      setTimeout(() => {
+   534→        resetGenerationProgressRef.current();
+   535→      }, 3000);
+   536→    }
+   537→  }, []);
+   538→
+   539→  // ============ Evaluate Design Quality ============
+   540→  const evaluateDesignQuality = useCallback((designTree: Record<string, unknown>) => {
+   541→    const report = {
+   542→      overallScore: 0,
+   543→      completeness: 0,
+   544→      cssValid: 0,
+   545→      semantics: 0,
+   546→      responsiveness: 0,
+   547→      accessibility: 0,
+   548→      issues: [] as Array<{
+   549→        severity: 'critical' | 'warning' | 'info';
+   550→        category: 'css' | 'semantics' | 'responsiveness' | 'accessibility' | 'completeness';
+   551→        message: string;
+   552→        autoFixable: boolean;
+   553→      }>,
+   554→      suggestions: [] as string[],
+   555→    };
+   556→
+   557→    // Check completeness
+   558→    const children = (designTree as { children?: unknown[] }).children;
+   559→    if (children && children.length > 0) {
+   560→      report.completeness = Math.min(100, children.length * 20);
+   561→      // Check for essential sections
+   562→      const hasNav = children.some((c: unknown) => {
+   563→        const node = c as { type?: string; tag?: string };
+   564→        return node.type === 'nav' || node.tag === 'nav' || node.type === 'header';
+   565→      });
+   566→      const hasFooter = children.some((c: unknown) => {
+   567→        const node = c as { type?: string; tag?: string };
+   568→        return node.type === 'footer' || node.tag === 'footer';
+   569→      });
+   570→      const hasContent = children.some((c: unknown) => {
+   571→        const node = c as { type?: string; tag?: string };
+   572→        return node.type === 'section' || node.tag === 'section' || node.type === 'main';
+   573→      });
+   574→
+   575→      if (!hasNav) {
+   576→        report.issues.push({
+   577→          severity: 'warning',
+   578→          category: 'completeness',
+   579→          message: 'No navigation section found',
+   580→          autoFixable: false,
+   581→        });
+   582→      }
+   583→      if (!hasFooter) {
+   584→        report.issues.push({
+   585→          severity: 'info',
+   586→          category: 'completeness',
+   587→          message: 'No footer section found',
+   588→          autoFixable: false,
+   589→        });
+   590→      }
+   591→      if (!hasContent) {
+   592→        report.issues.push({
+   593→          severity: 'warning',
+   594→          category: 'completeness',
+   595→          message: 'No main content section found',
+   596→          autoFixable: false,
+   597→        });
+   598→      }
+   599→
+   600→      if (hasNav && hasFooter && hasContent) {
+   601→        report.completeness = 100;
+   602→      }
+   603→    } else {
+   604→      report.issues.push({
+   605→        severity: 'critical',
+   606→        category: 'completeness',
+   607→        message: 'Design tree has no children',
+   608→        autoFixable: false,
+   609→      });
+   610→    }
+   611→
+   612→    // Check CSS validity (basic check)
+   613→    const styleStr = JSON.stringify(designTree);
+   614→    const hasTailwindShorthand = /\d+xl|text-md|p-lg|gap-md/.test(styleStr);
+   615→    if (hasTailwindShorthand) {
+   616→      report.cssValid = 50;
+   617→      report.issues.push({
+   618→        severity: 'critical',
+   619→        category: 'css',
+   620→        message: 'Found Tailwind shorthand in CSS values — should use real CSS (px, rem, %)',
+   621→        autoFixable: true,
+   622→      });
+   623→    } else {
+   624→      report.cssValid = 95;
+   625→    }
+   626→
+   627→    // Check semantics
+   628→    const semanticTags = ['header', 'nav', 'main', 'section', 'footer', 'article', 'aside'];
+   629→    const usedTags = new Set<string>();
+   630→    const findTags = (node: unknown) => {
+   631→      const n = node as { tag?: string; children?: unknown[] };
+   632→      if (n.tag) usedTags.add(n.tag);
+   633→      if (n.children) n.children.forEach(findTags);
+   634→    };
+   635→    findTags(designTree);
+   636→    const semanticCount = semanticTags.filter((tag) => usedTags.has(tag)).length;
+   637→    report.semantics = Math.min(100, Math.round((semanticCount / 3) * 100)); // 3+ semantic tags = good
+   638→
+   639→    // Check responsiveness
+   640→    const hasFlexOrGrid = /flex|grid/.test(styleStr);
+   641→    const hasPercentOrRelative = /%|rem|vh|vw/.test(styleStr);
+   642→    report.responsiveness = hasFlexOrGrid ? (hasPercentOrRelative ? 90 : 70) : 40;
+   643→
+   644→    // Check accessibility basics
+   645→    const hasHeadings = /"heading"|"h1"|"h2"|"h3"/.test(styleStr);
+   646→    const hasButtons = /"button"/.test(styleStr);
+   647→    report.accessibility = hasHeadings ? (hasButtons ? 80 : 60) : 40;
+   648→    if (!hasHeadings) {
+   649→      report.issues.push({
+   650→        severity: 'warning',
+   651→        category: 'accessibility',
+   652→        message: 'No heading elements found — important for screen readers',
+   653→        autoFixable: false,
+   654→      });
+   655→    }
+   656→
+   657→    // Suggestions
+   658→    if (report.responsiveness < 80) {
+   659→      report.suggestions.push('Consider using flexbox/grid layouts with relative units for better responsiveness');
+   660→    }
+   661→    if (report.semantics < 80) {
+   662→      report.suggestions.push('Use semantic HTML tags (header, nav, main, section, footer) for better structure');
+   663→    }
+   664→    if (report.accessibility < 80) {
+   665→      report.suggestions.push('Add proper heading hierarchy and ARIA labels for accessibility');
+   666→    }
+   667→
+   668→    // Overall score
+   669→    report.overallScore = Math.round(
+   670→      (report.completeness * 0.25 +
+   671→        report.cssValid * 0.2 +
+   672→        report.semantics * 0.2 +
+   673→        report.responsiveness * 0.2 +
+   674→        report.accessibility * 0.15)
+   675→    );
+   676→
+   677→    return report;
+   678→  }, []);
+   679→
+   680→  // === Handle Enhance Design ===
+   681→  const handleEnhance = useCallback(async () => {
+   682→    const currentDesignTree = designTreeRef.current;
+   683→    const currentQualityReport = useZDesignStore.getState().qualityReport;
+   684→
+   685→    if (!currentDesignTree || !currentDesignTree.children || currentDesignTree.children.length === 0) return;
+   686→
+   687→    setIsEnhancing(true);
+   688→    try {
+   689→      const res = await fetch('/api/design/enhance', {
+   690→        method: 'POST',
+   691→        headers: { 'Content-Type': 'application/json' },
+   692→        body: JSON.stringify({
+   693→          designTree: currentDesignTree,
+   694→          qualityReport: currentQualityReport,
+   695→        }),
+   696→      });
+   697→
+   698→      if (res.ok) {
+   699→        const data = await res.json();
+   700→        if (data.designTree) {
+   701→          setDesignTreeRef.current(data.designTree);
+   702→        }
+   703→        if (data.qualityReport) {
+   704→          setQualityReportRef.current(data.qualityReport);
+   705→        }
+   706→        // Add assistant message about enhancement
+   707→        const enhanceMessage: ChatMessage = {
+   708→          id: `ai-enhance-${Date.now()}`,
+   709→          projectId: projectIdRef.current || '',
+   710→          role: 'assistant',
+   711→          content: `I've enhanced your design! ${data.enhancementsApplied?.length ? 'Applied fixes: ' + data.enhancementsApplied.join(', ') + '.' : 'The quality has been improved.'}`,
+   712→          metadata: data.designTree ? { designUpdate: data.designTree } : undefined,
+   713→          createdAt: new Date(),
+   714→        };
+   715→        addChatMessageRef.current(enhanceMessage);
+   716→      }
+   717→    } catch {
+   718→      // Enhancement failed silently
+   719→    } finally {
+   720→      setIsEnhancing(false);
+   721→    }
+   722→  }, []);
+   723→
+   724→  // === sendMessage with progress tracking ===
+   725→  const sendMessage = useCallback(
+   726→    async (messageText: string) => {
+   727→      const currentProjectId = projectIdRef.current;
+   728→      const currentIsGenerating = isGeneratingRef.current;
+   729→
+   730→      if (!messageText.trim() || !currentProjectId || currentIsGenerating) return;
+   731→
+   732→      // Clean up any voice indicators from the message
+   733→      const cleanText = messageText.replace(/🎤/g, '').trim();
+   734→      if (!cleanText) return;
+   735→
+   736→      const userMessage: ChatMessage = {
+   737→        id: `user-${Date.now()}`,
+   738→        projectId: currentProjectId,
+   739→        role: 'user',
+   740→        content: cleanText,
+   741→        createdAt: new Date(),
+   742→      };
+   743→
+   744→      addChatMessageRef.current(userMessage);
+   745→      setInput('');
+   746→      setIsGeneratingRef.current(true);
+   747→
+   748→      // Start progress — set analyzing stage explicitly
+   749→      const progressStartTime = Date.now();
+   750→      setGenerationProgressRef.current({
+   751→        stage: 'analyzing',
+   752→        stageLabel: 'Analyzing request...',
+   753→        percentage: 10,
+   754→        message: 'Understanding your design request...',
+   755→        startedAt: progressStartTime,
+   756→        estimatedTimeLeft: 75,
+   757→      });
+   758→
+   759→      // Small delay for UX
+   760→      await new Promise((r) => setTimeout(r, 300));
+   761→
+   762→      // Move to generating stage
+   763→      setGenerationProgressRef.current({
+   764→        stage: 'generating',
+   765→        stageLabel: 'Generating design...',
+   766→        percentage: 30,
+   767→        message: 'Creating your design...',
+   768→        startedAt: progressStartTime,
+   769→      });
+   770→
+   771→      // Start progress simulation for incremental updates during API call
+   772→      startProgressSimulation();
+   773→
+   774→      try {
+   775→        const currentMessages = chatMessagesRef.current;
+   776→        const history = currentMessages.slice(-10).map((m) => ({
+   777→          role: m.role as 'user' | 'assistant',
+   778→          content: m.content,
+   779→        }));
+   780→
+   781→        const currentDesignTree = designTreeRef.current;
+   782→        const currentDesignSystem = designSystemRef.current;
+   783→
+   784→        const res = await fetch('/api/chat', {
+   785→          method: 'POST',
+   786→          headers: { 'Content-Type': 'application/json' },
+   787→          body: JSON.stringify({
+   788→            message: cleanText,
+   789→            projectId: currentProjectId,
+   790→            designTree: currentDesignTree.children && currentDesignTree.children.length > 0 ? currentDesignTree : undefined,
+   791→            designSystem: currentDesignSystem || undefined,
+   792→            history,
+   793→          }),
+   794→        });
+   795→
+   796→        if (res.ok) {
+   797→          const data = await res.json();
+   798→          const aiMessage: ChatMessage = {
+   799→            id: data.id || `ai-${Date.now()}`,
+   800→            projectId: currentProjectId,
+   801→            role: 'assistant',
+   802→            content: data.message || 'I processed your request.',
+   803→            metadata: data.design
+   804→              ? { designUpdate: data.design, usedFallback: data.usedFallback || false }
+   805→              : undefined,
+   806→            createdAt: new Date(data.createdAt || Date.now()),
+   807→          };
+   808→          addChatMessageRef.current(aiMessage);
+   809→
+   810→          // Show fallback warning if the AI was unavailable
+   811→          if (data.usedFallback) {
+   812→            const warningMessage: ChatMessage = {
+   813→              id: `fallback-warning-${Date.now()}`,
+   814→              projectId: currentProjectId,
+   815→              role: 'system',
+   816→              content: '⚠️ The AI service was slow to respond, so a template design was used instead. You can ask me to refine it or try again.',
+   817→              createdAt: new Date(),
+   818→            };
+   819→            addChatMessageRef.current(warningMessage);
+   820→          }
+   821→
+   822→          if (data.design) {
+   823→            setDesignTreeRef.current(data.design);
+   824→
+   825→            // Move to rendering stage
+   826→            setGenerationProgressRef.current({
+   827→              stage: 'rendering',
+   828→              stageLabel: 'Rendering preview...',
+   829→              percentage: 70,
+   830→              message: 'Preparing design preview...',
+   831→            });
+   832→
+   833→            // Small delay for UX
+   834→            await new Promise((r) => setTimeout(r, 300));
+   835→
+   836→            // Evaluate design quality via API
+   837→            setGenerationProgressRef.current({
+   838→              stage: 'evaluating',
+   839→              stageLabel: 'Evaluating quality...',
+   840→              percentage: 90,
+   841→              message: 'Checking design quality...',
+   842→            });
+   843→
+   844→            try {
+   845→              const evalRes = await fetch('/api/design/evaluate', {
+   846→                method: 'POST',
+   847→                headers: { 'Content-Type': 'application/json' },
+   848→                body: JSON.stringify({ designTree: data.design }),
+   849→              });
+   850→              if (evalRes.ok) {
+   851→                const qualityResult = await evalRes.json();
+   852→                setQualityReportRef.current(qualityResult);
+   853→              } else {
+   854→                // Fallback to client-side evaluation
+   855→                const clientReport = evaluateDesignQuality(data.design);
+   856→                setQualityReportRef.current(clientReport);
+   857→              }
+   858→            } catch {
+   859→              // Fallback to client-side evaluation
+   860→              const clientReport = evaluateDesignQuality(data.design);
+   861→              setQualityReportRef.current(clientReport);
+   862→            }
+   863→          }
+   864→
+   865→          // Show parse failure warning if AI output couldn't be parsed
+   866→          if (!data.design && data.parseFailed) {
+   867→            const parseWarningMessage: ChatMessage = {
+   868→              id: `parse-warning-${Date.now()}`,
+   869→              projectId: currentProjectId,
+   870→              role: 'system',
+   871→              content: `⚠️ The AI generated a design but it couldn't be parsed correctly. Please try again.`,
+   872→              metadata: { parseFailedRetryText: cleanText },
+   873→              createdAt: new Date(),
+   874→            };
+   875→            addChatMessageRef.current(parseWarningMessage);
+   876→          }
+   877→
+   878→          // Stop progress with success
+   879→          stopProgressSimulation(true);
+   880→        } else {
+   881→          const errorData = await res.json().catch(() => ({}));
+   882→          const errorMessage: ChatMessage = {
+   883→            id: `error-${Date.now()}`,
+   884→            projectId: currentProjectId,
+   885→            role: 'system',
+   886→            content: `${tRef.current.common.error}: ${errorData.error || 'Unknown error'}`,
+   887→            createdAt: new Date(),
+   888→          };
+   889→          addChatMessageRef.current(errorMessage);
+   890→          stopProgressSimulation(false);
+   891→        }
+   892→      } catch {
+   893→        const errorMessage: ChatMessage = {
+   894→          id: `error-${Date.now()}`,
+   895→          projectId: currentProjectId,
+   896→          role: 'system',
+   897→          content: tRef.current.common.error,
+   898→          createdAt: new Date(),
+   899→        };
+   900→        addChatMessageRef.current(errorMessage);
+   901→        stopProgressSimulation(false);
+   902→      } finally {
+   903→        setIsGeneratingRef.current(false);
+   904→      }
+   905→    },
+   906→    [startProgressSimulation, stopProgressSimulation, evaluateDesignQuality]
+   907→  );
+   908→
+   909→  // === Handle Retry Parse Failure ===
+   910→  const handleRetryParse = useCallback((retryText: string) => {
+   911→    if (retryText.trim()) {
+   912→      sendMessage(retryText.trim());
+   913→    }
+   914→  }, [sendMessage]);
+   915→
+   916→  // Voice input handlers
+   917→  const handleVoiceTranscript = useCallback(
+   918→    (transcript: string) => {
+   919→      if (transcript.trim()) {
+   920→        sendMessage(transcript.trim());
+   921→      }
+   922→    },
+   923→    [sendMessage]
+   924→  );
+   925→
+   926→  const handleVoiceInterim = useCallback((interim: string) => {
+   927→    setInput((prev) => {
+   928→      const base = prev.replace(/🎤.*$/, '');
+   929→      return interim ? `${base}🎤 ${interim}` : base;
+   930→    });
+   931→  }, []);
+   932→
+   933→  const {
+   934→    isListening,
+   935→    isSupported: voiceSupported,
+   936→    startListening,
+   937→    stopListening,
+   938→    error: voiceError,
+   939→  } = useVoiceInput({
+   940→    onTranscript: handleVoiceTranscript,
+   941→    onInterimTranscript: handleVoiceInterim,
+   942→  });
+   943→
+   944→  // Auto-scroll to bottom
+   945→  useEffect(() => {
+   946→    if (scrollRef.current) {
+   947→      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+   948→    }
+   949→  }, [chatMessages, isGenerating]);
+   950→
+   951→  const handleKeyDown = useCallback(
+   952→    (e: React.KeyboardEvent) => {
+   953→      if (e.key === 'Enter' && !e.shiftKey) {
+   954→        e.preventDefault();
+   955→        const cleanInput = input.replace(/🎤/g, '');
+   956→        sendMessage(cleanInput);
+   957→      }
+   958→    },
+   959→    [input, sendMessage]
+   960→  );
+   961→
+   962→  const handleExampleClick = useCallback(
+   963→    (prompt: string) => {
+   964→      sendMessage(prompt);
+   965→    },
+   966→    [sendMessage]
+   967→  );
+   968→
+   969→  const handleClear = useCallback(() => {
+   970→    clearChat();
+   971→  }, [clearChat]);
+   972→
+   973→  const handleVoiceToggle = useCallback(() => {
+   974→    if (isListening) {
+   975→      stopListening();
+   976→    } else {
+   977→      startListening();
+   978→    }
+   979→  }, [isListening, startListening, stopListening]);
+   980→
+   981→  const hasMessages = chatMessages.length > 0;
+   982→  const showProgress = isGenerating && generationProgress.stage !== 'idle';
+   983→
+   984→  return (
+   985→    <div className="flex flex-col h-full bg-background">
+   986→      {/* Header */}
+   987→      <div className="flex items-center justify-between px-4 h-11 border-b shrink-0">
+   988→        <div className="flex items-center gap-2">
+   989→          <Sparkles className="size-4 text-emerald-600" />
+   990→          <span className="text-sm font-medium">{t.chat.title}</span>
+   991→          {isGenerating && (
+   992→            <Badge
+   993→              variant="secondary"
+   994→              className="text-[10px] px-1.5 py-0 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+   995→            >
+   996→              {t.chat.thinking}
+   997→            </Badge>
+   998→          )}
+   999→        </div>
+  1000→        {hasMessages && (
+  1001→          <Tooltip>
+  1002→            <TooltipTrigger asChild>
+  1003→              <Button
+  1004→                variant="ghost"
+  1005→                size="icon"
+  1006→                className="size-7"
+  1007→                onClick={handleClear}
+  1008→              >
+  1009→                <Trash2 className="size-3.5 text-muted-foreground" />
+  1010→              </Button>
+  1011→            </TooltipTrigger>
+  1012→            <TooltipContent side="bottom">{t.chat.clearChat}</TooltipContent>
+  1013→          </Tooltip>
+  1014→        )}
+  1015→      </div>
+  1016→
+  1017→      {/* Messages or Welcome */}
+  1018→      {!hasMessages ? (
+  1019→        <WelcomeState onExampleClick={handleExampleClick} />
+  1020→      ) : (
+  1021→        <ScrollArea className="flex-1">
+  1022→          <div ref={scrollRef} className="py-2 space-y-1">
+  1023→            <AnimatePresence mode="popLayout">
+  1024→              {chatMessages.map((message) => (
+  1025→                <MessageBubble key={message.id} message={message} qualityReport={qualityReport} onEnhance={handleEnhance} isEnhancing={isEnhancing} onRetryParse={handleRetryParse} />
+  1026→              ))}
+  1027→            </AnimatePresence>
+  1028→            {isGenerating && !showProgress && <TypingIndicator />}
+  1029→          </div>
+  1030→        </ScrollArea>
+  1031→      )}
+  1032→
+  1033→      {/* Generation Step Progress */}
+  1034→      {showProgress && <GenerationStepProgress />}
+  1035→
+  1036→      <Separator />
+  1037→
+  1038→      {/* Input area */}
+  1039→      <div className="p-3 shrink-0">
+  1040→        <div className="relative flex items-end gap-2 bg-muted/50 rounded-xl border focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
+  1041→          {/* Attachment button */}
+  1042→          <Tooltip>
+  1043→            <TooltipTrigger asChild>
+  1044→              <Button
+  1045→                variant="ghost"
+  1046→                size="icon"
+  1047→                className="size-8 ml-2 mb-1.5 shrink-0 text-muted-foreground hover:text-foreground"
+  1048→              >
+  1049→                <Paperclip className="size-4" />
+  1050→              </Button>
+  1051→            </TooltipTrigger>
+  1052→            <TooltipContent side="top">Attach file</TooltipContent>
+  1053→          </Tooltip>
+  1054→
+  1055→          {/* Research button */}
+  1056→          <Tooltip>
+  1057→            <TooltipTrigger asChild>
+  1058→              <Button
+  1059→                variant="ghost"
+  1060→                size="icon"
+  1061→                className="size-8 mb-1.5 shrink-0 text-muted-foreground hover:text-emerald-600"
+  1062→                onClick={() => setResearchOpen(true)}
+  1063→              >
+  1064→                <Search className="size-4" />
+  1065→              </Button>
+  1066→            </TooltipTrigger>
+  1067→            <TooltipContent side="top">
+  1068→              {t.research?.button || 'Research'}
+  1069→            </TooltipContent>
+  1070→          </Tooltip>
+  1071→
+  1072→          {/* AI Image button */}
+  1073→          <Tooltip>
+  1074→            <TooltipTrigger asChild>
+  1075→              <Button
+  1076→                variant="ghost"
+  1077→                size="icon"
+  1078→                className="size-8 mb-1.5 shrink-0 text-muted-foreground hover:text-emerald-600"
+  1079→                onClick={() => setAiImageOpen(true)}
+  1080→              >
+  1081→                <ImageIcon className="size-4" />
+  1082→              </Button>
+  1083→            </TooltipTrigger>
+  1084→            <TooltipContent side="top">
+  1085→              {t.aiImage?.buttonText || 'AI Image'}
+  1086→            </TooltipContent>
+  1087→          </Tooltip>
+  1088→
+  1089→          <Textarea
+  1090→            ref={textareaRef}
+  1091→            value={input}
+  1092→            onChange={(e) => setInput(e.target.value)}
+  1093→            onKeyDown={handleKeyDown}
+  1094→            placeholder={
+  1095→              isListening
+  1096→                ? t.voice?.listening || 'Listening...'
+  1097→                : t.chat.placeholder
+  1098→            }
+  1099→            className={`min-h-[44px] max-h-[120px] resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:border-0 shadow-none text-sm py-2.5 px-0 placeholder:text-muted-foreground/60 ${
+  1100→              isListening ? 'placeholder:text-red-500/60' : ''
+  1101→            }`}
+  1102→            rows={1}
+  1103→            disabled={isGenerating}
+  1104→          />
+  1105→
+  1106→          <div className="flex items-center gap-0.5 mr-1.5 mb-1.5 shrink-0">
+  1107→            {/* Voice input button */}
+  1108→            {voiceSupported && (
+  1109→              <Tooltip>
+  1110→                <TooltipTrigger asChild>
+  1111→                  <Button
+  1112→                    variant="ghost"
+  1113→                    size="icon"
+  1114→                    className={`size-8 ${
+  1115→                      isListening
+  1116→                        ? 'text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-900/20'
+  1117→                        : 'text-muted-foreground hover:text-foreground'
+  1118→                    }`}
+  1119→                    onClick={handleVoiceToggle}
+  1120→                  >
+  1121→                    {isListening ? (
+  1122→                      <motion.div
+  1123→                        animate={{ scale: [1, 1.2, 1] }}
+  1124→                        transition={{ duration: 1, repeat: Infinity }}
+  1125→                      >
+  1126→                        <Mic className="size-4" />
+  1127→                      </motion.div>
+  1128→                    ) : (
+  1129→                      <Mic className="size-4" />
+  1130→                    )}
+  1131→                  </Button>
+  1132→                </TooltipTrigger>
+  1133→                <TooltipContent side="top">
+  1134→                  {isListening
+  1135→                    ? t.voice?.stopListening || 'Stop listening'
+  1136→                    : t.voice?.startListening || 'Start voice input'}
+  1137→                </TooltipContent>
+  1138→              </Tooltip>
+  1139→            )}
+  1140→
+  1141→            {/* Send button */}
+  1142→            <Tooltip>
+  1143→              <TooltipTrigger asChild>
+  1144→                <Button
+  1145→                  size="icon"
+  1146→                  className="size-8 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white"
+  1147→                  onClick={() => {
+  1148→                    const cleanInput = input.replace(/🎤/g, '');
+  1149→                    sendMessage(cleanInput);
+  1150→                  }}
+  1151→                  disabled={!input.replace(/🎤/g, '').trim() || isGenerating}
+  1152→                >
+  1153→                  <Send className="size-4" />
+  1154→                </Button>
+  1155→              </TooltipTrigger>
+  1156→              <TooltipContent side="top">
+  1157→                {t.chat.send} (Enter)
+  1158→              </TooltipContent>
+  1159→            </Tooltip>
+  1160→          </div>
+  1161→        </div>
+  1162→
+  1163→        {/* Voice error */}
+  1164→        {voiceError && (
+  1165→          <p className="text-[10px] text-red-500 mt-1 text-center">
+  1166→            {voiceError}
+  1167→          </p>
+  1168→        )}
+  1169→
+  1170→        {/* Listening indicator */}
+  1171→        {isListening && (
+  1172→          <div className="flex items-center justify-center gap-2 mt-1.5">
+  1173→            <motion.div
+  1174→              className="size-2 rounded-full bg-red-500"
+  1175→              animate={{ opacity: [1, 0.3, 1] }}
+  1176→              transition={{ duration: 1.2, repeat: Infinity }}
+  1177→            />
+  1178→            <span className="text-[10px] text-red-500 font-medium">
+  1179→              {t.voice?.listening || 'Listening...'}
+  1180→            </span>
+  1181→          </div>
+  1182→        )}
+  1183→
+  1184→        {!isListening && (
+  1185→          <p className="text-[10px] text-muted-foreground/50 mt-1.5 text-center">
+  1186→            Shift+Enter for new line
+  1187→          </p>
+  1188→        )}
+  1189→      </div>
+  1190→
+  1191→      {/* AI Image Dialog */}
+  1192→      <AIImageDialog open={aiImageOpen} onOpenChange={setAiImageOpen} />
+  1193→
+  1194→      {/* Research Dialog */}
+  1195→      <ResearchDialog
+  1196→        open={researchOpen}
+  1197→        onOpenChange={setResearchOpen}
+  1198→        onResults={(query, results) => {
+  1199→          // Add a user message showing what was searched
+  1200→          const userMessage: ChatMessage = {
+  1201→            id: `user-research-${Date.now()}`,
+  1202→            projectId: projectId || '',
+  1203→            role: 'user',
+  1204→            content: `🔍 ${t.research?.button || 'Research'}: ${query}`,
+  1205→            createdAt: new Date(),
+  1206→          };
+  1207→          addChatMessage(userMessage);
+  1208→
+  1209→          // Add an assistant message with the results
+  1210→          const resultLines = results
+  1211→            .map(
+  1212→              (r, i) =>
+  1213→                `${i + 1}. **[${r.title}](${r.url})**\n   ${r.description}\n   _${r.domain}${r.date ? ` · ${r.date}` : ''}_`
+  1214→            )
+  1215→            .join('\n\n');
+  1216→
+  1217→          const assistantMessage: ChatMessage = {
+  1218→            id: `ai-research-${Date.now()}`,
+  1219→            projectId: projectId || '',
+  1220→            role: 'assistant',
+  1221→            content: `${t.research?.results || 'Found inspiration!'} Here's what I found for "${query}":\n\n${resultLines}`,
+  1222→            createdAt: new Date(),
+  1223→          };
+  1224→          addChatMessage(assistantMessage);
+  1225→        }}
+  1226→      />
+  1227→    </div>
+  1228→  );
+  1229→}
+  1230→

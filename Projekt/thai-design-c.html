@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orathai — Tempel der Stille · Traditionelle Thai-Massage in Wien</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Mulish:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF6EA;
+  --surface:#F4ECD6;
+  --surface-2:#EFE6CE;
+  --primary:#2A2118;
+  --primary-soft:#5C4B38;
+  --accent:#B0892F;
+  --accent-dark:#856322; /* Refinement 11: Contrast fix */
+  --accent-soft:#D9B96A;
+  --text:#2A2118;
+  --text-muted:#4A3F31;
+  --border:#E7DCC4;
+  --border-soft:#F0E8D4;
+  --bg-glass:rgba(251,246,234,.85); /* Refinement 11: Slightly more opaque for contrast */
+  --text-on-dark:#F4ECD6;
+  --shadow-primary:42,33,24;
+  --accent-glow:176,137,47;
+  --radius:14px;
+  --radius-sm:8px;
+  --radius-lg:22px;
+  --shadow:0 1px 2px rgba(var(--shadow-primary),.04), 0 10px 30px rgba(var(--shadow-primary),.06), 0 30px 60px -20px rgba(var(--shadow-primary),.08);
+  --shadow-soft:0 20px 40px -24px rgba(var(--shadow-primary),.12);
+  --ring:0 0 0 1px rgba(var(--accent-glow),.22);
+  --font-display:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  --font-body:"Mulish",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-script:"Cormorant Garamond",Georgia,serif;
+  --font-kanji:"Noto Serif JP",serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:400;
+  line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:100;opacity:.04;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.7'/></svg>");
+}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:500;line-height:1.12;letter-spacing:-.015em}
+h2{font-weight:600;letter-spacing:.01em}
+em{font-style:italic;font-weight:400}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+
+:focus-visible{outline:2px solid var(--accent-dark);outline-offset:3px;border-radius:4px}
+
+.eyebrow{
+  font-family:var(--font-body);font-size:11px;font-weight:600;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--accent-dark);display:inline-flex;align-items:center;gap:14px; /* Refinement 11 */
+}
+.eyebrow::before{content:"";width:28px;height:1px;background:var(--accent-dark)}
+.gold{color:var(--accent-dark);font-style:italic;font-weight:500}
+.under{position:relative;white-space:nowrap}
+.under::after{
+  content:"";position:absolute;left:0;right:0;bottom:.05em;height:1px;background:var(--accent-dark);
+  transform-origin:left;transform:scaleX(0);transition:transform .6s cubic-bezier(.2,.7,.2,1) .2s;
+}
+.is-in .under::after{transform:scaleX(1)}
+
+/* NAV */
+header.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;padding:18px 0;
+  background:var(--bg-glass);backdrop-filter:blur(14px) saturate(120%);
+  border-bottom:1px solid transparent;transition:border-color .4s,padding .4s;
+}
+header.nav.scrolled{border-color:var(--border-soft);padding:12px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{display:flex;align-items:center;gap:14px;font-family:var(--font-display);font-size:22px;font-weight:500;letter-spacing:.02em}
+.brand-script{
+  font-family:var(--font-script);font-size:30px;font-weight:500;font-style:italic;
+  color:var(--primary);line-height:1;transform:rotate(-4deg) translateY(2px);
+  text-shadow:1px 1px 0 rgba(var(--shadow-primary),.05);
+}
+.brand small{display:block;font-family:var(--font-body);font-size:9px;font-weight:600;letter-spacing:.32em;color:var(--text-muted);text-transform:uppercase;margin-top:2px}
+.nav-links{display:flex;gap:30px;font-size:13px;font-weight:500;letter-spacing:.04em}
+.nav-links a{color:var(--primary);transition:color .3s;position:relative;padding:6px 0;min-height:44px;display:flex;align-items:center} /* Refinement 10 & 11 */
+.nav-links a:hover{color:var(--accent-dark)}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--accent-dark);transition:width .35s}
+.nav-links a:hover::after{width:100%}
+.nav-cta{
+  background:var(--primary);color:var(--bg);padding:11px 22px;border-radius:var(--radius-sm);
+  font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  transition:transform .25s,background .3s;display:inline-flex;align-items:center;min-height:44px;
+}
+.nav-cta:hover{background:var(--accent-dark);transform:translateY(-1px)}
+.burger{display:none;flex-direction:column;gap:5px;padding:12px;min-width:44px;min-height:44px;justify-content:center;align-items:center}
+.burger span{width:22px;height:1.5px;background:var(--primary);transition:.3s}
+.burger.active span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.burger.active span:nth-child(2){opacity:0}
+.burger.active span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+/* MOBILE MENU (Refinement 10) */
+.mobile-menu {
+  position: fixed; top: 0; right: 0; width: 100%; max-width: 360px; height: 100vh;
+  background: var(--surface); z-index: 49; padding: 120px 40px 40px;
+  transform: translateX(100%); transition: transform .5s cubic-bezier(.2,.7,.2,1);
+  box-shadow: -20px 0 60px rgba(0,0,0,.1); display: flex; flex-direction: column; gap: 15px;
+}
+.mobile-menu.active { transform: translateX(0); }
+.mobile-menu a {
+  font-family: var(--font-display); font-size: 28px; color: var(--primary);
+  border-bottom: 1px solid var(--border); padding: 15px 0; display: flex; align-items: center;
+  min-height: 44px; /* Touch target */
+}
+
+/* HERO */
+.hero{
+  position:relative;min-height:100vh;display:flex;align-items:center;
+  padding:140px 0 80px;overflow:hidden;
+  background:
+    radial-gradient(ellipse 60% 50% at 78% 28%,rgba(var(--accent-glow),.14),transparent 60%),
+    radial-gradient(ellipse 50% 40% at 12% 78%,rgba(var(--accent-glow),.07),transparent 60%),
+    linear-gradient(180deg,var(--bg),var(--surface-2));
+}
+.hero-kanji{
+  position:absolute;left:-5%;top:50%;transform:translateY(-50%);
+  font-family:var(--font-kanji);font-size:clamp(400px, 60vw, 800px);
+  color:var(--primary);opacity:.04;line-height:1;pointer-events:none;user-select:none;
+  z-index:0;
+}
+.hero-deco{position:absolute;right:-80px;top:8%;width:520px;opacity:.09;color:var(--accent);pointer-events:none;animation:float 14s ease-in-out infinite;z-index:1}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-18px) rotate(2deg)}}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:80px;align-items:center;position:relative;z-index:2} /* Refinement 5 */
+.hero h1{font-size:clamp(48px,7.2vw,104px);margin:26px 0 28px;font-weight:600} /* Refinement 2 */
+.hero h1 em{display:block;color:var(--accent-dark);font-weight:600} /* Refinement 2 */
+.hero-lead{font-size:17px;color:var(--text-muted);max-width:480px;margin-bottom:38px;line-height:1.75}
+.hero-cta{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.btn-primary{
+  background:var(--primary);color:var(--bg);padding:16px 30px;border-radius:var(--radius-sm);
+  font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  transition:transform .25s,box-shadow .3s,background .3s;
+  box-shadow:0 6px 24px rgba(var(--shadow-primary),.18); display:inline-flex; align-items:center; min-height:44px;
+}
+.btn-primary:hover{transform:translateY(-2px);background:var(--accent-dark);box-shadow:0 10px 30px rgba(var(--accent-glow),.3)}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:12px;font-size:12px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text);padding:14px 4px;transition:gap .3s,color .3s;min-height:44px;
+}
+.btn-ghost:hover{gap:18px;color:var(--accent-dark)}
+.btn-ghost svg{width:14px;height:14px;color:var(--accent-dark)}
+.hero-img-wrap{position:relative}
+.hero-img{
+  width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--radius-lg);
+  box-shadow:0 30px 80px -20px rgba(var(--shadow-primary),.4), 0 0 0 1px var(--border-soft);
+}
+.hero-badge{
+  position:absolute;bottom:-26px;left:-26px;
+  background:linear-gradient(135deg, var(--bg), var(--surface)); /* Refinement 3 */
+  padding:20px 26px;border-radius:var(--radius);box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:14px;max-width:280px;
+}
+.hero-badge .num{font-family:var(--font-display);font-size:42px;color:var(--accent-dark);line-height:1;font-weight:500}
+.hero-badge small{display:block;font-size:14px;color:var(--text-muted);line-height:1.4;margin-top:2px}
+.hero-badge .lab{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text);font-weight:600}
+.scroll-hint{
+  position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+  font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--text-muted);
+  display:flex;flex-direction:column;align-items:center;gap:10px;z-index:3;
+}
+.scroll-hint::after{content:"";width:1px;height:36px;background:linear-gradient(var(--accent-dark),transparent);animation:drop 2.4s ease-in-out infinite}
+@keyframes drop{0%,100%{transform:scaleY(.4);transform-origin:top;opacity:.4}50%{transform:scaleY(1);opacity:1}}
+
+/* PHILOSOPHY STRIPE */
+.stripe{
+  background:var(--primary);color:var(--bg);padding:130px 0;position:relative;overflow:hidden;
+}
+.stripe::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(var(--accent-glow),.18),transparent 70%);
+}
+.stripe .wrap{position:relative;z-index:2;max-width:920px;text-align:center}
+.stripe blockquote{
+  font-family:var(--font-display);font-size:clamp(28px,4vw,46px);font-style:italic;
+  font-weight:400;line-height:1.35;color:var(--text-on-dark);letter-spacing:-.005em;
+}
+.stripe blockquote em{color:var(--accent-soft);font-style:italic}
+.stripe cite{
+  display:block;margin-top:36px;font-style:normal;font-family:var(--font-body);
+  font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--accent-soft);font-weight:600;
+}
+.stripe .lotus-line{width:60px;height:1px;background:var(--accent);margin:0 auto 36px;opacity:.6}
+
+/* RITUALS - Editorial Layout (Refinement 1) */
+.rituals{padding:130px 0 100px;position:relative}
+.rituals::before{
+  content:"";position:absolute;top:10%;right:-10%;width:40%;height:60%;
+  background:radial-gradient(circle, rgba(var(--accent-glow),.06), transparent 70%);
+  pointer-events:none;
+}
+.section-head{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:end;margin-bottom:80px;position:relative;z-index:2} /* Refinement 5 */
+.section-head h2{font-size:clamp(38px,5vw,68px);font-weight:600}
+.section-head p{color:var(--text-muted);font-size:16px;max-width:440px;line-height:1.7}
+
+.editorial-layout { display: flex; flex-direction: column; gap: 100px; /* Refinement 1 & 5 */ }
+.editorial-item { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; } /* Refinement 1 */
+.editorial-item:nth-child(even) .ed-img { order: 2; }
+.editorial-item:nth-child(even) .ed-text { order: 1; }
+
+.ed-img { position: relative; }
+.ed-img img {
+  width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: var(--radius-lg);
+  box-shadow: 0 30px 80px -20px rgba(var(--shadow-primary),.4), 0 0 0 1px var(--border-soft);
+}
+.ed-img .deco-glyph {
+  position: absolute; bottom: -30px; right: -30px; width: 180px; height: 180px;
+  color: var(--accent); opacity: 0.15; z-index: -1;
+}
+.ed-text { padding: 20px 0; }
+.ed-text .num { font-family: var(--font-display); font-size: 14px; color: var(--accent-dark); letter-spacing: .1em; font-weight: 500; }
+.ed-text h3 { font-size: clamp(32px, 4vw, 48px); margin: 16px 0 24px; font-weight: 600; }
+.ed-text p { font-size: 17px; color: var(--text-muted); line-height: 1.8; margin-bottom: 32px; }
+.ed-meta { display: flex; gap: 40px; align-items: center; padding-top: 24px; border-top: 1px solid var(--border); }
+.ed-meta .price { font-family: var(--font-display); font-size: 32px; color: var(--primary); font-weight: 600; }
+.ed-meta .dur { color: var(--text-muted); font-size: 14px; letter-spacing: .06em; display: flex; align-items: center; gap: 8px; }
+.ed-meta .dur svg { width: 16px; height: 16px; color: var(--accent-dark); }
+
+/* PREISE / EDITORIAL */
+.prices{padding:120px 0;background:var(--surface-2);position:relative;overflow:hidden}
+.prices::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 15% 30%,rgba(var(--accent-glow),.06),transparent 50%);
+}
+.prices .wrap{position:relative;z-index:2}
+.price-editorial{
+  display:grid;grid-template-columns:0.8fr 1.2fr;gap:80px;margin-top:60px;align-items:start;
+}
+.price-img-wrap{position:relative;min-height:600px}
+.price-img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  border-radius:var(--radius-lg);
+  box-shadow:0 30px 80px -20px rgba(var(--shadow-primary),.4);
+}
+.price-img-caption{
+  position:absolute;bottom:24px;left:24px;right:24px;
+  background:var(--bg-glass);backdrop-filter:blur(10px);
+  padding:18px 24px;border-radius:var(--radius);
+  font-family:var(--font-display);font-style:italic;font-size:18px;color:var(--primary);
+}
+.price-lists{display:flex;flex-direction:column;gap:60px}
+.price-block{border-bottom:1px solid var(--border);padding-bottom:40px}
+.price-block:last-child{border-bottom:0}
+.price-block-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:28px;gap:20px}
+.price-block-head h3{font-size:32px;font-weight:500}
+.price-block-head .price-tag{font-family:var(--font-display);font-size:28px;color:var(--accent-dark);font-weight:500;white-space:nowrap} /* Refinement 11 */
+.price-items{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:16px 40px}
+.price-items li{
+  display:flex;align-items:center;gap:12px;font-size:16px;color:var(--text-muted);padding:6px 0;
+}
+.price-items li::before{content:"";width:14px;height:1px;background:var(--accent-dark);flex-shrink:0}
+.price-note{margin-top:40px;font-size:14px;color:var(--text-muted);font-style:italic;font-family:var(--font-display)}
+
+/* ÜBER / MOOD */
+.mood{padding:130px 0;background:var(--bg);position:relative;overflow:hidden}
+.mood-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.mood-imgs{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.mood-imgs img{width:100%;border-radius:var(--radius);object-fit:cover;box-shadow:var(--shadow)}
+.mood-imgs img:first-child{aspect-ratio:3/4;margin-top:40px}
+.mood-imgs img:last-child{aspect-ratio:4/5}
+.mood-imgs .deco-circle{
+  position:absolute;left:-30px;bottom:-30px;width:120px;height:120px;
+  border:1px solid var(--accent-dark);border-radius:50%;opacity:.4;
+}
+.mood-text h2{font-size:clamp(36px,4.6vw,60px);margin:24px 0 28px;font-weight:600}
+.mood-text p{color:var(--text-muted);font-size:16px;line-height:1.85;margin-bottom:20px}
+.mood-text p em{color:var(--text);font-family:var(--font-display);font-size:1.08em}
+.founder{
+  display:flex;align-items:center;gap:18px;margin-top:36px;padding-top:32px;border-top:1px solid var(--border);
+}
+.founder-img{width:62px;height:62px;border-radius:50%;object-fit:cover;border:1px solid var(--border)}
+.founder .name{font-family:var(--font-display);font-size:20px;font-weight:500}
+.founder .role{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-dark);font-weight:600}
+
+/* KONTAKT / BOOKING */
+.contact{
+  padding:130px 0;background:var(--primary);color:var(--bg);position:relative;overflow:hidden;
+}
+.contact::before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 50% 60% at 20% 30%,rgba(var(--accent-glow),.18),transparent 60%),
+    radial-gradient(ellipse 40% 50% at 85% 80%,rgba(var(--accent-glow),.1),transparent 60%);
+}
+.contact .wrap{position:relative;z-index:2}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+.contact h2{font-size:clamp(40px,5vw,72px);color:var(--bg);margin:24px 0 28px;font-weight:600}
+.contact h2 em{color:var(--accent-soft)}
+.contact .lead{color:var(--text-on-dark);opacity:.8;font-size:16px;line-height:1.8;max-width:440px;margin-bottom:40px}
+.contact-info{display:flex;flex-direction:column;gap:22px;margin-top:40px}
+.info-row{display:flex;gap:18px;align-items:flex-start;padding-bottom:22px;border-bottom:1px solid rgba(var(--accent-glow),.3)}
+.info-row svg{width:20px;height:20px;color:var(--accent-soft);flex-shrink:0;margin-top:2px}
+.info-row .label{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent-soft);font-weight:600;margin-bottom:4px}
+.info-row .val{font-family:var(--font-display);font-size:18px;color:var(--bg)}
+.book-form{
+  background:linear-gradient(135deg, rgba(var(--accent-glow),.08), rgba(var(--accent-glow),.02)); /* Refinement 3 */
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(var(--accent-glow),.4);border-radius:var(--radius-lg);padding:44px;
+  box-shadow: 0 30px 60px -20px rgba(0,0,0,.3);
+}
+.book-form h3{font-size:28px;color:var(--bg);margin-bottom:8px;font-weight:500}
+.book-form .sub{font-size:14px;color:var(--text-on-dark);opacity:.7;margin-bottom:32px}
+.field{margin-bottom:22px}
+.field label{display:block;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent-soft);font-weight:600;margin-bottom:10px}
+.field input,.field select,.field textarea{
+  width:100%;background:transparent;border:0;border-bottom:1px solid rgba(var(--accent-glow),.55);
+  padding:10px 0;color:var(--bg);font-family:var(--font-body);font-size:16px;
+  transition:border-color .3s;border-radius:0;
+}
+.field input::placeholder,.field textarea::placeholder{color:rgba(244,236,214,.65)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent-soft)}
+.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible { /* Refinement 12 */
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 4px;
+  border-bottom-color: var(--accent-soft);
+}
+.field select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%23D9B96A' fill='none' stroke-width='1.5'/></svg>");background-repeat:no-repeat;background-position:right 4px center;padding-right:24px}
+.field select option{background:var(--primary);color:var(--bg)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.book-form button{
+  width:100%;margin-top:14px;background:var(--accent);color:var(--primary);
+  padding:18px;border-radius:var(--radius-sm);font-size:12px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;transition:transform .25s,background .3s; min-height:44px;
+}
+.book-form button:hover{background:var(--accent-soft);transform:translateY(-2px)}
+.form-note{font-size:14px;color:var(--text-on-dark);opacity:.6;margin-top:18px;text-align:center;letter-spacing:.04em}
+
+/* FOOTER */
+footer{background:var(--primary);color:var(--text-on-dark);padding:60px 0 36px;border-top:1px solid rgba(var(--accent-glow),.2)}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.foot-grid h4{font-family:var(--font-body);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent-soft);font-weight:600;margin-bottom:18px}
+.foot-grid ul{list-style:none}
+.foot-grid li{padding:6px 0;font-size:14px}
+.foot-grid li a{display:inline-block;min-height:44px;display:flex;align-items:center;transition:color .3s}
+.foot-grid li a:hover{color:var(--accent-soft)}
+.foot-brand p{font-size:14px;line-height:1.7;margin-top:14px;max-width:300px;opacity:.7}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid rgba(var(--accent-glow),.15);font-size:12px;letter-spacing:.04em}
+.foot-bottom .lotus-mini{width:24px;height:24px;color:var(--accent);opacity:.6}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+.reveal.is-in{opacity:1;transform:none}
+
+/* MOBILE */
+@media(max-width:920px){
+  .nav-links{display:none}
+  .burger{display:flex}
+  .hero-grid,.mood-grid,.contact-grid,.price-editorial{grid-template-columns:1fr;gap:48px}
+  .hero{padding:120px 0 60px;min-height:auto}
+  .hero-deco{width:300px;right:-100px;top:2%}
+  .price-img-wrap{min-height:400px}
+  .section-head{grid-template-columns:1fr;gap:24px}
+  
+  .editorial-item { grid-template-columns: 1fr; gap: 40px; } /* Refinement 1 mobile */
+  .editorial-item:nth-child(even) .ed-img { order: 1; }
+  .editorial-item:nth-child(even) .ed-text { order: 2; }
+  
+  .price-items{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:32px}
+  .foot-bottom{flex-direction:column;gap:14px;text-align:center}
+  .field-row{grid-template-columns:1fr}
+  .hero-badge{left:0;bottom:-20px;padding:14px 18px}
+  .hero-badge .num{font-size:32px}
+  .stripe{padding:80px 0}
+  .mood-imgs .deco-circle{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="#" class="brand">
+      <span class="brand-script">O</span>
+      <div>
+        Orathai
+        <small>Tempel der Stille</small>
+      </div>
+    </a>
+    <nav class="nav-links">
+      <a href="#rituals">Rituale</a>
+      <a href="#prices">Preise</a>
+      <a href="#about">Über uns</a>
+      <a href="#contact">Kontakt</a>
+    </nav>
+    <a href="#contact" class="nav-cta">Termin buchen</a>
+    <button class="burger" id="burger" aria-label="Menü öffnen" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#rituals">Rituale</a>
+  <a href="#prices">Preise</a>
+  <a href="#about">Über uns</a>
+  <a href="#contact">Kontakt</a>
+  <a href="#contact" style="color: var(--accent-dark); font-weight: 600;">Termin buchen</a>
+</div>
+
+<section class="hero" id="hero">
+  <div class="hero-kanji">静</div>
+  
+  <!-- Refinement 4: Brushstroke SVG -->
+  <svg class="hero-deco" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M200 20 C 250 100, 350 120, 380 200 C 350 280, 250 300, 200 380 C 150 300, 50 280, 20 200 C 50 120, 150 100, 200 20 Z" stroke="currentColor" stroke-width="1.5" stroke-dasharray="8 4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="200" cy="200" r="5" fill="currentColor" />
+    <path d="M180 180 Q 200 150 220 180 T 180 180" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+  </svg>
+
+  <div class="wrap hero-grid">
+    <div class="hero-text reveal">
+      <span class="eyebrow">Traditionelle Thai-Massage · Wien</span>
+      <h1>Ein Ort der <em>stillen</em> Entschleunigung.</h1>
+      <p class="hero-lead">Tauchen Sie ein in eine jahrhundertealte Praxis der Achtsamkeit und manuellen Heilung. Losgelöst vom städtischen Rhythmus finden Sie hier Raum, um Körper und Geist vollständig zu regenerieren.</p>
+      <div class="hero-cta">
+        <a href="#contact" class="btn-primary">Behandlung reservieren</a>
+        <a href="#rituals" class="btn-ghost">
+          Unsere Rituale entdecken
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="hero-img-wrap reveal">
+      <img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874" alt="Frau erhält eine sanfte Thai-Massage in warmer, atmosphärischer Umgebung" class="hero-img">
+      <div class="hero-badge">
+        <span class="num">15+</span>
+        <div>
+          <span class="lab">Jahre Erfahrung</span>
+          <small>Authentische Techniken aus dem Norden Thailands.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">Scrollen</div>
+</section>
+
+<section class="stripe">
+  <div class="wrap">
+    <div class="lotus-line"></div>
+    <blockquote>
+      "Der Körper ist ein Tempel. Nur wenn er <em>rein und ruhig</em> ist, kann die Seele ihn vollkommen erleuchten."
+    </blockquote>
+    <cite>— Philosophie der traditionellen Thai-Medizin</cite>
+  </div>
+</section>
+
+<section class="rituals" id="rituals">
+  <div class="wrap">
+    <div class="section-head reveal">
+     <div>
+        <span class="eyebrow">Unsere Behandlungen</span>
+        <h2>Rituale der <span class="under">Regeneration</span></h2>
+      </div>
+      <p>Jede Behandlung ist eine Komposition aus manueller Druckpunkttechnik, sanfter Dehnung und meditativer Atmung. Wir verwenden ausschließlich hochwertige, warme Öle und natürliche Kräuter.</p>
+    </div>
+
+    <div class="editorial-layout">
+      <!-- Item 1 -->
+      <article class="editorial-item reveal">
+        <div class="ed-text">
+          <span class="num">01 · Klassisch</span>
+          <h3>Die Ursprüngliche</h3>
+          <p>Die traditionelle Thai-Massage (Nuad Boran) wird in bequemer Kleidung auf einer Matte am Boden praktiziert. Rhythmisches Drücken entlang der Energielinien (Sen) und sanfte Dehnungen lösen tiefe Verspannungen und bringen den Energiefluss ins Gleichgewicht.</p>
+          <div class="ed-meta">
+            <span class="price">89 €</span>
+            <span class="dur">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              60 Minuten
+            </span>
+          </div>
+        </div>
+        <div class="ed-img">
+          <img src="https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2" alt="Traditionelle Thai-Massage Dehnung in warmer Atmosphäre">
+          <!-- Refinement 4: Brushstroke SVG -->
+          <svg class="deco-glyph" viewBox="0 0 200 200" fill="none">
+             <path d="M100 20 C 60 60, 60 140, 100 180 C 140 140, 140 60, 100 20" stroke="currentColor" stroke-width="2" stroke-dasharray="10 5" stroke-linecap="round"/>
+             <circle cx="100" cy="100" r="4" fill="currentColor"/>
+          </svg>
+        </div>
+      </article>
+
+      <!-- Item 2 -->
+      <article class="editorial-item reveal">
+        <div class="ed-text">
+          <span class="num">02 · Öl & Kräuter</span>
+          <h3>Die Fließende</h3>
+          <p>Eine sanfte, fließende Ölmassage, die den Körper erwärmt und die Sinne beruhigt. Warmes Sesam- oder Kokosnussöl wird mit langsamen, meditativen Bewegungen aufgetragen. Ideal, um den Geist zu beruhigen und tiefe Entspannung zu finden.</p>
+          <div class="ed-meta">
+            <span class="price">95 €</span>
+            <span class="dur">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              70 Minuten
+            </span>
+          </div>
+        </div>
+        <div class="ed-img">
+          <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef" alt="Sanfte Ölmassage mit warmem Licht">
+        </div>
+      </article>
+
+      <!-- Item 3 -->
+      <article class="editorial-item reveal">
+        <div class="ed-text">
+          <span class="num">03 · Spezial</span>
+          <h3>Die Tiefenwirksame</h3>
+          <p>Fokussierte, tiefengewebige Massagetechniken, die spezifische Blockaden und chronische Verspannungen adressieren. Durch gezielten Druck und manuelle Entspannung wird die Durchblutung gefördert und die Regeneration der Muskulatur unterstützt.</p>
+          <div class="ed-meta">
+            <span class="price">110 €</span>
+            <span class="dur">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              90 Minuten
+            </span>
+          </div>
+        </div>
+        <div class="ed-img">
+          <img src="https://images.unsplash.com/photo-1584516811-9a35a7614d6c" alt="Detailaufnahme einer professionellen Massagetechnik">
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="prices" id="prices">
+  <div class="wrap">
+    <div class="section-head reveal" style="margin-bottom: 0;">
+      <div>
+        <span class="eyebrow">Investition in Ihr Wohlbefinden</span>
+        <h2>Behandlungs-<span class="under">Übersicht</span></h2>
+      </div>
+      <p>Transparente Preise für tiefgreifende Erholung. Alle Behandlungen beinhalten eine persönliche Konsultation, Teezeremonie und Nachruhe.</p>
+    </div>
+
+    <div class="price-editorial reveal">
+      <div class="price-img-wrap">
+        <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef" alt="Atmosphäre eines ruhigen Spa-Raumes mit warmen Licht" class="price-img">
+        <div class="price-img-caption">"Wahre Entspannung ist das Resultat von Achtsamkeit in jedem Detail."</div>
+      </div>
+
+      <div class="price-lists">
+        <div class="price-block">
+          <div class="price-block-head">
+            <h3>Einzelrituale</h3>
+            <span class="price-tag">ab 89 €</span>
+          </div>
+          <ul class="price-items">
+            <li>Klassische Thai-Massage (60 Min)</li>
+            <li>Traditionelle Öl-Massage (70 Min)</li>
+            <li>Tiefengewebe-Spezial (90 Min)</li>
+            <li>Rücken- & Nacken-Fokus (45 Min)</li>
+            <li>Kräuter-Stempel-Behandlung (75 Min)</li>
+            <li>Face & Head Renewal (30 Min)</li>
+          </ul>
+        </div>
+
+        <div class="price-block">
+          <div class="price-block-head">
+            <h3>Pakete & Paare</h3>
+            <span class="price-tag">ab 160 €</span>
+          </div>
+          <ul class="price-items">
+            <li>Shared Serenity – Paar-Ritual (90 Min)</li>
+            <li>Ganzheitlicher Reset (120 Min)</li>
+            <li>Vital-Wochenende (2 Personen)</li>
+            <li>Privates Tagesretreat (Ganztägig)</li>
+          </ul>
+        </div>
+
+        <p class="price-note">Alle Preise inkl. 20% MwSt. Gutscheine für besondere Anlässe sind in der Praxis erhältlich.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mood" id="about">
+  <div class="wrap mood-grid">
+    <div class="mood-imgs reveal">
+      <img src="https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2" alt="Hände einer Masseurin bei der Vorbereitung">
+      <img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874" alt="Sanftes Licht fällt auf eine entspannte Frau">
+      <div class="deco-circle"></div>
+    </div>
+    <div class="mood-text reveal">
+      <span class="eyebrow">Über uns</span>
+      <h2>Handwerk aus <em>Leidenschaft</em> und Tradition.</h2>
+      <p>Orathai wurde mit dem Wunsch gegründet, einen authentischen Raum der Ruhe mitten in Wien zu schaffen. Unsere Wurzeln liegen in der alten Tradition der <em>Wat Po</em> Medizinschule in Bangkok, wo die Kunst der manuellen Heilung über Jahrhunderte verfeinert wurde.</p>
+      <p>Wir behandeln jeden Gast individuell. Nicht die Technik steht im Vordergrund, sondern der Mensch. Mit Wärme, Achtsamkeit und tiefem Verständnis für die körperlichen Energien schaffen wir Momente wahrer Regeneration.</p>
+      
+      <div class="founder">
+        <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2" alt="Porträt von Orathai, der Gründerin" class="founder-img">
+        <div>
+          <div class="name">Orathai Suriya</div>
+          <div class="role">Gründerin & Senior Therapeutin</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <div class="contact-grid">
+      <div class="contact-info-wrap reveal">
+        <span class="eyebrow" style="color: var(--accent-soft);">Reservierung</span>
+        <h2>Beginnen Sie Ihre <em>Reise</em> zur Ruhe.</h2>
+        <p class="lead">Wir freuen uns auf Ihren Besuch. Bitte zögern Sie nicht, uns bei Fragen zu kontaktieren oder Ihren Wunschtermin direkt über das Formular zu sichern.</p>
+
+        <div class="contact-info">
+          <div class="info-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div>
+              <div class="label">Praxis</div>
+              <div class="val">Mariahilfer Straße 104, 1070 Wien</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div>
+              <div class="label">Telefon</div>
+              <div class="val">+43 1 123 456 7</div>
+            </div>
+          </div>
+          <div class="info-row" style="border-bottom: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 6l-10 7L2 6"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
+            <div>
+              <div class="label">E-Mail</div>
+              <div class="val">willkommen@orathai.wien</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-form reveal">
+        <h3>Termin anfragen</h3>
+        <p class="sub">Wir bestätigen Ihre Buchung innerhalb von 24 Stunden per E-Mail.</p>
+        <form onsubmit="event.preventDefault(); alert('Vielen Dank! Wir haben Ihre Anfrage erhalten und melden uns in Kürze.');">
+          <div class="field">
+            <label for="name">Name</label>
+            <input type="text" id="name" placeholder="Ihr vollständiger Name" required>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="email">E-Mail</label>
+              <input type="email" id="email" placeholder="ihre@email.at" required>
+            </div>
+            <div class="field">
+              <label for="phone">Telefon</label>
+              <input type="tel" id="phone" placeholder="+43 ...">
+            </div>
+          </div>
+          <div class="field">
+            <label for="treatment">Behandlungswunsch</label>
+            <select id="treatment">
+              <option>Bitte wählen...</option>
+              <option>Die Ursprüngliche (Klassisch)</option>
+              <option>Die Fließende (Öl & Kräuter)</option>
+              <option>Die Tiefenwirksame (Spezial)</option>
+              <option>Shared Serenity – Paar-Ritual</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="date">Datum</label>
+              <input type="date" id="date">
+            </div>
+            <div class="field">
+              <label for="time">Uhrzeit</label>
+              <input type="time" id="time">
+            </div>
+          </div>
+          <div class="field">
+            <label for="msg">Anmerkung (optional)</label>
+            <textarea id="msg" rows="3" placeholder="Besondere Wünsche oder gesundheitliche Hinweise..."></textarea>
+          </div>
+          <button type="submit">Reservierung senden</button>
+          <p class="form-note">Mit dem Senden akzeptieren Sie unsere Datenschutzerklärung.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#" class="brand" style="color: var(--bg);">
+          <span class="brand-script" style="color: var(--accent-soft);">O</span>
+          <div>
+            Orathai
+            <small style="color: var(--accent-soft);">Tempel der Stille</small>
+          </div>
+        </a>
+        <p>Ihr Zufluchtsort für traditionelle Thai-Massage und tiefgreifende Entspannung im Herzen Wiens.</p>
+      </div>
+      <div>
+        <h4>Rituale</h4>
+        <ul>
+          <li><a href="#rituals">Klassisch</a></li>
+          <li><a href="#rituals">Öl & Kräuter</a></li>
+          <li><a href="#rituals">Tiefengewebe</a></li>
+          <li><a href="#prices">Paar-Pakete</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Praxis</h4>
+        <ul>
+          <li><a href="#about">Über uns</a></li>
+          <li><a href="#">Gutscheine</a></li>
+          <li><a href="#">Ausbildung</a></li>
+          <li><a href="#contact">Kontakt</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Rechtliches</h4>
+        <ul>
+          <li><a href="#">Impressum</a></li>
+          <li><a href="#">Datenschutz</a></li>
+          <li><a href="#">AGB</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>© 2024 Orathai – Tempel der Stille. Alle Rechte vorbehalten.</div>
+      <!-- Refinement 4: Brushstroke SVG -->
+      <svg class="lotus-mini" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2 C 8 8, 8 16, 12 22 C 16 16, 16 8, 12 2 Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 2"/>
+        <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+      </svg>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Sticky Nav Background
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+  });
+
+  // Intersection Observer for Reveal Animations
+  const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Mobile Menu Toggle (Refinement 10)
+  const burger = document.getElementById('burger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  
+  function toggleMenu(state) {
+    const isActive = state !== undefined ? state : !mobileMenu.classList.contains('active');
+    mobileMenu.classList.toggle('active
+</script>
+</body>
+</html>

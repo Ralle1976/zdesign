@@ -1,0 +1,774 @@
+     1→     1→// Z.Design - Chat API Route
+     2→     2→// Uses Z.ai LLM for intelligent design generation with conversation context
+     3→     3→
+     4→     4→import { NextRequest, NextResponse } from 'next/server';
+     5→     5→import ZAI from 'z-ai-web-dev-sdk';
+     6→     6→import { db } from '@/lib/db';
+     7→     7→import { parseAIResponse, repairLLMJson } from '@/lib/ai-prompts';
+     8→     8→
+     9→     9→// ============ ZAI Singleton ============
+    10→    10→
+    11→    11→let zaiInstance: ZAI | null = null;
+    12→    12→
+    13→    13→async function getZAI(): Promise<ZAI> {
+    14→    14→  if (!zaiInstance) {
+    15→    15→    zaiInstance = await ZAI.create();
+    16→    16→  }
+    17→    17→  return zaiInstance;
+    18→    18→}
+    19→    19→
+    20→    20→// ============ Types ============
+    21→    21→
+    22→    22→interface ChatRequestBody {
+    23→    23→  message: string;
+    24→    24→  projectId: string;
+    25→    25→  designTree?: Record<string, unknown>;
+    26→    26→  designSystem?: Record<string, unknown>;
+    27→    27→  history?: Array<{ role: 'user' | 'assistant'; content: string }>;
+    28→    28→  creativeMode?: boolean;
+    29→    29→}
+    30→    30→
+    31→    31→// ============ Fallback Design Generator ============
+    32→    32→// Used when Z.ai LLM is unavailable so the app still works
+    33→    33→
+    34→    34→function generateFallbackDesign(userMessage: string, creativeMode?: boolean): string {
+    35→    35→  const msg = userMessage.toLowerCase();
+    36→    36→
+    37→    37→  if (msg.includes('landing') || msg.includes('hero') || msg.includes('page') || msg.includes('website') || msg.includes('saas')) {
+    38→    38→    return JSON.stringify({
+    39→    39→      message: 'I created a landing page with a navigation bar, hero section, features grid, testimonials, and call-to-action. You can customize it by telling me what to change!',
+    40→    40→      design: {
+    41→    41→        id: 'root', type: 'root', tag: 'div',
+    42→    42→        style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#ffffff' },
+    43→    43→        meta: { name: 'Landing Page' },
+    44→    44→        children: [
+    45→    45→          { id: 'nav-1', type: 'nav', tag: 'nav', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 32px', backgroundColor: '#ffffff', borderBottom: '1px solid #e2e8f0', position: 'sticky', top: '0', zIndex: '50' }, meta: { name: 'Navigation' }, children: [
+    46→    46→            { id: 'logo-1', type: 'text', tag: 'span', content: 'Z.Design', style: { fontSize: '20px', fontWeight: '700', color: '#10b981' } },
+    47→    47→            { id: 'nav-links', type: 'flex', tag: 'div', style: { display: 'flex', gap: '24px', alignItems: 'center' }, children: [
+    48→    48→              { id: 'nl1', type: 'link', tag: 'a', content: 'Features', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+    49→    49→              { id: 'nl2', type: 'link', tag: 'a', content: 'Pricing', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+    50→    50→              { id: 'nl3', type: 'link', tag: 'a', content: 'About', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+    51→    51→              { id: 'nb1', type: 'button', tag: 'button', content: 'Get Started', style: { padding: '10px 24px', backgroundColor: '#10b981', color: '#ffffff', borderRadius: '8px', fontSize: '14px', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 2px 8px rgba(16,185,129,0.25)' } }
+    52→    52→            ]}
+    53→    53→          ]},
+    54→    54→          { id: 'hero-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 32px 80px', textAlign: 'center', backgroundColor: '#f8fafc', backgroundImage: 'radial-gradient(circle at 30% 50%, rgba(16,185,129,0.08) 0%, transparent 50%)' }, meta: { name: 'Hero' }, children: [
+    55→    55→            { id: 'hb1', type: 'badge', tag: 'span', content: 'AI-Powered Design', style: { padding: '6px 16px', backgroundColor: '#d1fae5', color: '#065f46', borderRadius: '20px', fontSize: '13px', fontWeight: '500', marginBottom: '24px', display: 'inline-block' } },
+    56→    56→            { id: 'hh1', type: 'heading', tag: 'h1', content: creativeMode ? 'Imagine. Create. Inspire.' : 'Design Beautiful Websites With AI', style: { fontSize: '52px', fontWeight: '800', lineHeight: '1.1', color: '#0f172a', maxWidth: '720px', marginBottom: '20px', letterSpacing: '-0.02em' } },
+    57→    57→            { id: 'hp1', type: 'text', tag: 'p', content: creativeMode ? 'Break free from templates. Our AI understands your vision and crafts unique, boundary-pushing designs that stand out.' : 'Create stunning designs, prototypes, and websites through natural conversation. Powered by Z.ai.', style: { fontSize: '18px', color: '#475569', maxWidth: '540px', lineHeight: '1.7', marginBottom: '36px' } },
+    58→    58→            { id: 'hbtns', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }, children: [
+    59→    59→              { id: 'hb2', type: 'button', tag: 'button', content: 'Start Designing', style: { padding: '14px 32px', backgroundColor: '#10b981', color: '#ffffff', borderRadius: '10px', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 4px 16px rgba(16,185,129,0.3)', transition: 'all 0.2s ease' } },
+    60→    60→              { id: 'hb3', type: 'button', tag: 'button', content: 'View Templates', style: { padding: '14px 32px', backgroundColor: '#ffffff', color: '#475569', borderRadius: '10px', fontSize: '16px', fontWeight: '500', border: '1px solid #e2e8f0', cursor: 'pointer', transition: 'all 0.2s ease' } }
+    61→    61→            ]}
+    62→    62→          ]},
+    63→    63→          { id: 'logos-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '48px 32px', backgroundColor: '#ffffff', borderBottom: '1px solid #f1f5f9' }, meta: { name: 'Trusted By' }, children: [
+    64→    64→            { id: 'lt1', type: 'text', tag: 'p', content: 'Trusted by teams at', style: { fontSize: '13px', color: '#94a3b8', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '24px' } },
+    65→    65→            { id: 'lrow', type: 'flex', tag: 'div', style: { display: 'flex', gap: '48px', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }, children: [
+    66→    66→              { id: 'lg1', type: 'text', tag: 'span', content: 'Acme Corp', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } },
+    67→    67→              { id: 'lg2', type: 'text', tag: 'span', content: 'TechFlow', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } },
+    68→    68→              { id: 'lg3', type: 'text', tag: 'span', content: 'Innovate', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } },
+    69→    69→              { id: 'lg4', type: 'text', tag: 'span', content: 'Quantum', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } },
+    70→    70→              { id: 'lg5', type: 'text', tag: 'span', content: 'Nebula', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } }
+    71→    71→            ]}
+    72→    72→          ]},
+    73→    73→          { id: 'feat-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '96px 32px', backgroundColor: '#ffffff' }, meta: { name: 'Features' }, children: [
+    74→    74→            { id: 'flabel', type: 'badge', tag: 'span', content: 'FEATURES', style: { padding: '4px 12px', backgroundColor: '#d1fae5', color: '#065f46', borderRadius: '16px', fontSize: '12px', fontWeight: '600', letterSpacing: '0.05em', marginBottom: '16px' } },
+    75→    75→            { id: 'fh2', type: 'heading', tag: 'h2', content: 'Everything you need to design faster', style: { fontSize: '36px', fontWeight: '700', color: '#0f172a', marginBottom: '16px', letterSpacing: '-0.01em' } },
+    76→    76→            { id: 'fsub', type: 'text', tag: 'p', content: 'Powerful features that help you go from idea to production in minutes.', style: { fontSize: '18px', color: '#475569', maxWidth: '520px', textAlign: 'center', marginBottom: '56px', lineHeight: '1.6' } },
+    77→    77→            { id: 'fgrid', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '28px', maxWidth: '1020px', width: '100%' }, children: [
+    78→    78→              { id: 'fc1', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', transition: 'box-shadow 0.2s ease' }, meta: { name: 'Feature Card 1' }, children: [
+    79→    79→                { id: 'fi1', type: 'text', tag: 'div', content: '🎨', style: { fontSize: '32px', marginBottom: '16px' } },
+    80→    80→                { id: 'fh3a', type: 'heading', tag: 'h3', content: 'AI Design Engine', style: { fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+    81→    81→                { id: 'fp1', type: 'text', tag: 'p', content: 'Generate complete designs from natural language descriptions. Just describe what you want.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+    82→    82→              ]},
+    83→    83→              { id: 'fc2', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', transition: 'box-shadow 0.2s ease' }, meta: { name: 'Feature Card 2' }, children: [
+    84→    84→                { id: 'fi2', type: 'text', tag: 'div', content: '🎤', style: { fontSize: '32px', marginBottom: '16px' } },
+    85→    85→                { id: 'fh3b', type: 'heading', tag: 'h3', content: 'Voice Control', style: { fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+    86→    86→                { id: 'fp2', type: 'text', tag: 'p', content: 'Design with your voice — speak and see changes in real-time. Hands-free creativity.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+    87→    87→              ]},
+    88→    88→              { id: 'fc3', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', transition: 'box-shadow 0.2s ease' }, meta: { name: 'Feature Card 3' }, children: [
+    89→    89→                { id: 'fi3', type: 'text', tag: 'div', content: '👥', style: { fontSize: '32px', marginBottom: '16px' } },
+    90→    90→                { id: 'fh3c', type: 'heading', tag: 'h3', content: 'Real-time Collab', style: { fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+    91→    91→                { id: 'fp3', type: 'text', tag: 'p', content: 'Work together with your team in real-time. See changes instantly across all devices.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+    92→    92→              ]},
+    93→    93→              { id: 'fc4', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', transition: 'box-shadow 0.2s ease' }, meta: { name: 'Feature Card 4' }, children: [
+    94→    94→                { id: 'fi4', type: 'text', tag: 'div', content: '⚡', style: { fontSize: '32px', marginBottom: '16px' } },
+    95→    95→                { id: 'fh3d', type: 'heading', tag: 'h3', content: 'Instant Export', style: { fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+    96→    96→                { id: 'fp4', type: 'text', tag: 'p', content: 'Export your designs as production-ready code. React, HTML/CSS, or your framework of choice.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+    97→    97→              ]},
+    98→    98→              { id: 'fc5', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', transition: 'box-shadow 0.2s ease' }, meta: { name: 'Feature Card 5' }, children: [
+    99→    99→                { id: 'fi5', type: 'text', tag: 'div', content: '🔒', style: { fontSize: '32px', marginBottom: '16px' } },
+   100→   100→                { id: 'fh3e', type: 'heading', tag: 'h3', content: 'Enterprise Security', style: { fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+   101→   101→                { id: 'fp5', type: 'text', tag: 'p', content: 'SOC 2 compliant with end-to-end encryption. Your designs stay private and secure.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+   102→   102→              ]},
+   103→   103→              { id: 'fc6', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', transition: 'box-shadow 0.2s ease' }, meta: { name: 'Feature Card 6' }, children: [
+   104→   104→                { id: 'fi6', type: 'text', tag: 'div', content: '🧩', style: { fontSize: '32px', marginBottom: '16px' } },
+   105→   105→                { id: 'fh3f', type: 'heading', tag: 'h3', content: 'Design Systems', style: { fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+   106→   106→                { id: 'fp6', type: 'text', tag: 'p', content: 'Create and manage design tokens, components, and patterns in one unified system.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+   107→   107→              ]}
+   108→   108→            ]}
+   109→   109→          ]},
+   110→   110→          { id: 'testimonials-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '96px 32px', backgroundColor: '#f8fafc' }, meta: { name: 'Testimonials' }, children: [
+   111→   111→            { id: 'th2', type: 'heading', tag: 'h2', content: 'Loved by designers everywhere', style: { fontSize: '36px', fontWeight: '700', color: '#0f172a', marginBottom: '56px', letterSpacing: '-0.01em' } },
+   112→   112→            { id: 'tgrid', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', maxWidth: '1020px', width: '100%' }, children: [
+   113→   113→              { id: 'tc1', type: 'card', tag: 'div', style: { padding: '28px', borderRadius: '16px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }, children: [
+   114→   114→                { id: 'tq1', type: 'text', tag: 'p', content: '"Z.Design cut our design time by 80%. We went from weeks to hours for new landing pages."', style: { fontSize: '15px', color: '#0f172a', lineHeight: '1.6', marginBottom: '20px', fontStyle: 'italic' } },
+   115→   115→                { id: 'ta1', type: 'flex', tag: 'div', style: { display: 'flex', alignItems: 'center', gap: '12px' }, children: [
+   116→   116→                  { id: 'tav1', type: 'avatar', tag: 'div', content: 'SK', style: { width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#d1fae5', color: '#065f46', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600' } },
+   117→   117→                  { id: 'tn1', type: 'text', tag: 'div', content: 'Sarah Kim', style: { fontSize: '14px', fontWeight: '600', color: '#0f172a' } },
+   118→   118→                  { id: 'tr1', type: 'text', tag: 'span', content: 'Head of Design, Acme Corp', style: { fontSize: '13px', color: '#94a3b8' } }
+   119→   119→                ]}
+   120→   120→              ]},
+   121→   121→              { id: 'tc2', type: 'card', tag: 'div', style: { padding: '28px', borderRadius: '16px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }, children: [
+   122→   122→                { id: 'tq2', type: 'text', tag: 'p', content: '"The AI understands exactly what I want. It feels like having a senior designer on call 24/7."', style: { fontSize: '15px', color: '#0f172a', lineHeight: '1.6', marginBottom: '20px', fontStyle: 'italic' } },
+   123→   123→                { id: 'ta2', type: 'flex', tag: 'div', style: { display: 'flex', alignItems: 'center', gap: '12px' }, children: [
+   124→   124→                  { id: 'tav2', type: 'avatar', tag: 'div', content: 'MR', style: { width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#dbeafe', color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600' } },
+   125→   125→                  { id: 'tn2', type: 'text', tag: 'div', content: 'Marcus Rivera', style: { fontSize: '14px', fontWeight: '600', color: '#0f172a' } },
+   126→   126→                  { id: 'tr2', type: 'text', tag: 'span', content: 'CTO, TechFlow', style: { fontSize: '13px', color: '#94a3b8' } }
+   127→   127→                ]}
+   128→   128→              ]},
+   129→   129→              { id: 'tc3', type: 'card', tag: 'div', style: { padding: '28px', borderRadius: '16px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }, children: [
+   130→   130→                { id: 'tq3', type: 'text', tag: 'p', content: '"We replaced three design tools with Z.Design. Everything we need is now in one place."', style: { fontSize: '15px', color: '#0f172a', lineHeight: '1.6', marginBottom: '20px', fontStyle: 'italic' } },
+   131→   131→                { id: 'ta3', type: 'flex', tag: 'div', style: { display: 'flex', alignItems: 'center', gap: '12px' }, children: [
+   132→   132→                  { id: 'tav3', type: 'avatar', tag: 'div', content: 'JL', style: { width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#fce7f3', color: '#9d174d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600' } },
+   133→   133→                  { id: 'tn3', type: 'text', tag: 'div', content: 'Julia Lee', style: { fontSize: '14px', fontWeight: '600', color: '#0f172a' } },
+   134→   134→                  { id: 'tr3', type: 'text', tag: 'span', content: 'Product Lead, Innovate', style: { fontSize: '13px', color: '#94a3b8' } }
+   135→   135→                ]}
+   136→   136→              ]}
+   137→   137→            ]}
+   138→   138→          ]},
+   139→   139→          { id: 'cta-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '96px 32px', background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)' }, meta: { name: 'Call to Action' }, children: [
+   140→   140→            { id: 'ch2', type: 'heading', tag: 'h2', content: 'Ready to Start Designing?', style: { fontSize: '40px', fontWeight: '700', color: '#ffffff', marginBottom: '16px', letterSpacing: '-0.01em' } },
+   141→   141→            { id: 'cp1', type: 'text', tag: 'p', content: 'Join thousands of designers who use Z.Design to create faster. Free to start, no credit card required.', style: { fontSize: '18px', color: '#d1fae5', maxWidth: '500px', textAlign: 'center', marginBottom: '32px', lineHeight: '1.6' } },
+   142→   142→            { id: 'cbtns', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }, children: [
+   143→   143→              { id: 'cb1', type: 'button', tag: 'button', content: 'Get Started Free', style: { padding: '14px 32px', backgroundColor: '#ffffff', color: '#059669', borderRadius: '10px', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 4px 16px rgba(0,0,0,0.15)' } },
+   144→   144→              { id: 'cb2', type: 'button', tag: 'button', content: 'Schedule Demo', style: { padding: '14px 32px', backgroundColor: 'transparent', color: '#ffffff', borderRadius: '10px', fontSize: '16px', fontWeight: '500', border: '2px solid rgba(255,255,255,0.4)', cursor: 'pointer' } }
+   145→   145→            ]}
+   146→   146→          ]},
+   147→   147→          { id: 'footer-1', type: 'footer', tag: 'footer', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '64px 48px 32px', backgroundColor: '#0f172a' }, meta: { name: 'Footer' }, children: [
+   148→   148→            { id: 'fcol1', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', maxWidth: '280px' }, children: [
+   149→   149→              { id: 'flogo', type: 'text', tag: 'span', content: 'Z.Design', style: { fontSize: '20px', fontWeight: '700', color: '#34d399', marginBottom: '16px' } },
+   150→   150→              { id: 'fdesc', type: 'text', tag: 'p', content: 'AI-powered visual design platform. Create stunning websites through natural conversation.', style: { fontSize: '14px', color: '#94a3b8', lineHeight: '1.6', marginBottom: '20px' } }
+   151→   151→            ]},
+   152→   152→            { id: 'fcol2', type: 'container', tag: 'div', style: { display: 'flex', gap: '64px' }, children: [
+   153→   153→              { id: 'flinks1', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', gap: '12px' }, children: [
+   154→   154→                { id: 'flt1', type: 'text', tag: 'span', content: 'Product', style: { fontSize: '14px', fontWeight: '600', color: '#ffffff', marginBottom: '4px' } },
+   155→   155→                { id: 'fl1', type: 'link', tag: 'a', content: 'Features', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   156→   156→                { id: 'fl2', type: 'link', tag: 'a', content: 'Pricing', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   157→   157→                { id: 'fl3', type: 'link', tag: 'a', content: 'Changelog', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } }
+   158→   158→              ]},
+   159→   159→              { id: 'flinks2', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', gap: '12px' }, children: [
+   160→   160→                { id: 'flt2', type: 'text', tag: 'span', content: 'Company', style: { fontSize: '14px', fontWeight: '600', color: '#ffffff', marginBottom: '4px' } },
+   161→   161→                { id: 'fl4', type: 'link', tag: 'a', content: 'About', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   162→   162→                { id: 'fl5', type: 'link', tag: 'a', content: 'Blog', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   163→   163→                { id: 'fl6', type: 'link', tag: 'a', content: 'Careers', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } }
+   164→   164→              ]},
+   165→   165→              { id: 'flinks3', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', gap: '12px' }, children: [
+   166→   166→                { id: 'flt3', type: 'text', tag: 'span', content: 'Legal', style: { fontSize: '14px', fontWeight: '600', color: '#ffffff', marginBottom: '4px' } },
+   167→   167→                { id: 'fl7', type: 'link', tag: 'a', content: 'Privacy', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   168→   168→                { id: 'fl8', type: 'link', tag: 'a', content: 'Terms', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } }
+   169→   169→              ]}
+   170→   170→            ]}
+   171→   171→          ]},
+   172→   172→          { id: 'footer-bottom', type: 'container', tag: 'div', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 48px', backgroundColor: '#0f172a', borderTop: '1px solid #1e293b' }, children: [
+   173→   173→            { id: 'fcopy', type: 'text', tag: 'p', content: '© 2026 Z.Design. All rights reserved.', style: { color: '#64748b', fontSize: '13px' } }
+   174→   174→          ]}
+   175→   175→        ]
+   176→   176→      }
+   177→   177→    });
+   178→   178→  }
+   179→   179→
+   180→   180→  if (msg.includes('dashboard') || msg.includes('analytics') || msg.includes('admin')) {
+   181→   181→    return JSON.stringify({
+   182→   182→      message: 'I created a comprehensive dashboard layout with a sidebar, metric cards, activity feed, and chart area. Tell me what data you want to display!',
+   183→   183→      design: {
+   184→   184→        id: 'root', type: 'root', tag: 'div',
+   185→   185→        style: { display: 'flex', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#f8fafc' },
+   186→   186→        meta: { name: 'Dashboard' },
+   187→   187→        children: [
+   188→   188→          { id: 'sb1', type: 'sidebar', tag: 'aside', style: { width: '260px', minHeight: '100vh', backgroundColor: '#0f172a', padding: '24px 16px', display: 'flex', flexDirection: 'column', flexShrink: '0' }, meta: { name: 'Sidebar' }, children: [
+   189→   189→            { id: 'sbl', type: 'text', tag: 'div', content: '📊 Dashboard', style: { fontSize: '18px', fontWeight: '700', color: '#34d399', marginBottom: '32px', padding: '0 8px' } },
+   190→   190→            { id: 'sbi1', type: 'text', tag: 'div', content: '📈 Overview', style: { padding: '10px 12px', borderRadius: '8px', backgroundColor: '#064e3b', color: '#34d399', fontSize: '14px', marginBottom: '4px', cursor: 'pointer' } },
+   191→   191→            { id: 'sbi2', type: 'text', tag: 'div', content: '📋 Projects', style: { padding: '10px 12px', borderRadius: '8px', color: '#94a3b8', fontSize: '14px', marginBottom: '4px', cursor: 'pointer' } },
+   192→   192→            { id: 'sbi3', type: 'text', tag: 'div', content: '👥 Team', style: { padding: '10px 12px', borderRadius: '8px', color: '#94a3b8', fontSize: '14px', marginBottom: '4px', cursor: 'pointer' } },
+   193→   193→            { id: 'sbi4', type: 'text', tag: 'div', content: '📊 Analytics', style: { padding: '10px 12px', borderRadius: '8px', color: '#94a3b8', fontSize: '14px', marginBottom: '4px', cursor: 'pointer' } },
+   194→   194→            { id: 'sbi5', type: 'text', tag: 'div', content: '⚙️ Settings', style: { padding: '10px 12px', borderRadius: '8px', color: '#94a3b8', fontSize: '14px', cursor: 'pointer' } }
+   195→   195→          ]},
+   196→   196→          { id: 'main1', type: 'container', tag: 'main', style: { flex: '1', padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px' }, meta: { name: 'Main Content' }, children: [
+   197→   197→            { id: 'mheader', type: 'flex', tag: 'div', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }, children: [
+   198→   198→              { id: 'mh1', type: 'heading', tag: 'h1', content: 'Dashboard Overview', style: { fontSize: '24px', fontWeight: '700', color: '#0f172a' } },
+   199→   199→              { id: 'mhb1', type: 'button', tag: 'button', content: '+ New Report', style: { padding: '8px 20px', backgroundColor: '#10b981', color: '#ffffff', borderRadius: '8px', fontSize: '14px', fontWeight: '500', border: 'none', cursor: 'pointer' } }
+   200→   200→            ]},
+   201→   201→            { id: 'mgrid', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }, children: [
+   202→   202→              { id: 'mc1', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }, meta: { name: 'Metric: Users' }, children: [
+   203→   203→                { id: 'ml1', type: 'text', tag: 'p', content: 'Total Users', style: { fontSize: '13px', color: '#64748b', marginBottom: '8px', fontWeight: '500' } },
+   204→   204→                { id: 'mv1', type: 'heading', tag: 'h3', content: '12,345', style: { fontSize: '32px', fontWeight: '700', color: '#0f172a', marginBottom: '4px' } },
+   205→   205→                { id: 'mc1c', type: 'text', tag: 'span', content: '↑ 12.5% from last month', style: { fontSize: '13px', color: '#10b981', fontWeight: '500' } }
+   206→   206→              ]},
+   207→   207→              { id: 'mc2', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }, meta: { name: 'Metric: Revenue' }, children: [
+   208→   208→                { id: 'ml2', type: 'text', tag: 'p', content: 'Revenue', style: { fontSize: '13px', color: '#64748b', marginBottom: '8px', fontWeight: '500' } },
+   209→   209→                { id: 'mv2', type: 'heading', tag: 'h3', content: '$48.2K', style: { fontSize: '32px', fontWeight: '700', color: '#0f172a', marginBottom: '4px' } },
+   210→   210→                { id: 'mc2c', type: 'text', tag: 'span', content: '↑ 8.1% from last month', style: { fontSize: '13px', color: '#10b981', fontWeight: '500' } }
+   211→   211→              ]},
+   212→   212→              { id: 'mc3', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }, meta: { name: 'Metric: Active' }, children: [
+   213→   213→                { id: 'ml3', type: 'text', tag: 'p', content: 'Active Now', style: { fontSize: '13px', color: '#64748b', marginBottom: '8px', fontWeight: '500' } },
+   214→   214→                { id: 'mv3', type: 'heading', tag: 'h3', content: '573', style: { fontSize: '32px', fontWeight: '700', color: '#0f172a', marginBottom: '4px' } },
+   215→   215→                { id: 'mc3c', type: 'text', tag: 'span', content: '↑ 2.4% from last hour', style: { fontSize: '13px', color: '#10b981', fontWeight: '500' } }
+   216→   216→              ]},
+   217→   217→              { id: 'mc4', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }, meta: { name: 'Metric: Conversion' }, children: [
+   218→   218→                { id: 'ml4', type: 'text', tag: 'p', content: 'Conversion', style: { fontSize: '13px', color: '#64748b', marginBottom: '8px', fontWeight: '500' } },
+   219→   219→                { id: 'mv4', type: 'heading', tag: 'h3', content: '3.2%', style: { fontSize: '32px', fontWeight: '700', color: '#0f172a', marginBottom: '4px' } },
+   220→   220→                { id: 'mc4c', type: 'text', tag: 'span', content: '↓ 0.4% from last month', style: { fontSize: '13px', color: '#ef4444', fontWeight: '500' } }
+   221→   221→              ]}
+   222→   222→            ]},
+   223→   223→            { id: 'mcontent-grid', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }, children: [
+   224→   224→              { id: 'chart1', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }, meta: { name: 'Revenue Chart' }, children: [
+   225→   225→                { id: 'cht1', type: 'heading', tag: 'h3', content: 'Revenue Over Time', style: { fontSize: '16px', fontWeight: '600', color: '#0f172a', marginBottom: '16px' } },
+   226→   226→                { id: 'chp1', type: 'text', tag: 'p', content: '📊 Interactive chart area — Ask me to add specific visualizations!', style: { color: '#94a3b8', fontSize: '15px', padding: '40px 0', textAlign: 'center' } }
+   227→   227→              ]},
+   228→   228→              { id: 'activity1', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }, meta: { name: 'Recent Activity' }, children: [
+   229→   229→                { id: 'act1', type: 'heading', tag: 'h3', content: 'Recent Activity', style: { fontSize: '16px', fontWeight: '600', color: '#0f172a', marginBottom: '16px' } },
+   230→   230→                { id: 'ai1', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '16px' }, children: [
+   231→   231→                  { id: 'ai1d', type: 'avatar', tag: 'div', content: 'SK', style: { width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#d1fae5', color: '#065f46', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '600', flexShrink: '0' } },
+   232→   232→                  { id: 'ai1t', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column' }, children: [
+   233→   233→                    { id: 'ai1m', type: 'text', tag: 'p', content: 'Sarah updated the landing page design', style: { fontSize: '14px', color: '#0f172a', lineHeight: '1.4' } },
+   234→   234→                    { id: 'ai1tm', type: 'text', tag: 'span', content: '2 min ago', style: { fontSize: '12px', color: '#94a3b8' } }
+   235→   235→                  ]}
+   236→   236→                ]},
+   237→   237→                { id: 'ai2', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '16px' }, children: [
+   238→   238→                  { id: 'ai2d', type: 'avatar', tag: 'div', content: 'MR', style: { width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#dbeafe', color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '600', flexShrink: '0' } },
+   239→   239→                  { id: 'ai2t', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column' }, children: [
+   240→   240→                    { id: 'ai2m', type: 'text', tag: 'p', content: 'Marcus published the Q4 report', style: { fontSize: '14px', color: '#0f172a', lineHeight: '1.4' } },
+   241→   241→                    { id: 'ai2tm', type: 'text', tag: 'span', content: '15 min ago', style: { fontSize: '12px', color: '#94a3b8' } }
+   242→   242→                  ]}
+   243→   243→                ]},
+   244→   244→                { id: 'ai3', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px', alignItems: 'flex-start' }, children: [
+   245→   245→                  { id: 'ai3d', type: 'avatar', tag: 'div', content: 'JL', style: { width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#fce7f3', color: '#9d174d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '600', flexShrink: '0' } },
+   246→   246→                  { id: 'ai3t', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column' }, children: [
+   247→   247→                    { id: 'ai3m', type: 'text', tag: 'p', content: 'Julia added 3 new team members', style: { fontSize: '14px', color: '#0f172a', lineHeight: '1.4' } },
+   248→   248→                    { id: 'ai3tm', type: 'text', tag: 'span', content: '1 hour ago', style: { fontSize: '12px', color: '#94a3b8' } }
+   249→   249→                  ]}
+   250→   250→                ]}
+   251→   251→              ]}
+   252→   252→            ]}
+   253→   253→          ]}
+   254→   254→        ]
+   255→   255→      }
+   256→   256→    });
+   257→   257→  }
+   258→   258→
+   259→   259→  // Portfolio / creative design
+   260→   260→  if (msg.includes('portfolio') || msg.includes('gallery') || msg.includes('showcase')) {
+   261→   261→    return JSON.stringify({
+   262→   262→      message: 'I created a stunning portfolio layout with a hero section, project gallery grid, and contact section. Let me know how to customize it!',
+   263→   263→      design: {
+   264→   264→        id: 'root', type: 'root', tag: 'div',
+   265→   265→        style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#0f172a' },
+   266→   266→        meta: { name: 'Portfolio' },
+   267→   267→        children: [
+   268→   268→          { id: 'nav-1', type: 'nav', tag: 'nav', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 48px' }, meta: { name: 'Navigation' }, children: [
+   269→   269→            { id: 'logo-1', type: 'text', tag: 'span', content: 'Portfolio', style: { fontSize: '18px', fontWeight: '700', color: '#ffffff' } },
+   270→   270→            { id: 'nav-links', type: 'flex', tag: 'div', style: { display: 'flex', gap: '32px', alignItems: 'center' }, children: [
+   271→   271→              { id: 'nl1', type: 'link', tag: 'a', content: 'Work', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none', fontWeight: '500' } },
+   272→   272→              { id: 'nl2', type: 'link', tag: 'a', content: 'About', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none', fontWeight: '500' } },
+   273→   273→              { id: 'nl3', type: 'link', tag: 'a', content: 'Contact', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none', fontWeight: '500' } }
+   274→   274→            ]}
+   275→   275→          ]},
+   276→   276→          { id: 'hero-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '120px 48px 80px', minHeight: '80vh' }, meta: { name: 'Hero' }, children: [
+   277→   277→            { id: 'hl1', type: 'text', tag: 'p', content: 'Creative Designer & Developer', style: { fontSize: '16px', color: '#34d399', fontWeight: '500', marginBottom: '24px', letterSpacing: '0.05em', textTransform: 'uppercase' } },
+   278→   278→            { id: 'hh1', type: 'heading', tag: 'h1', content: 'I craft digital experiences that inspire and delight', style: { fontSize: '56px', fontWeight: '800', lineHeight: '1.1', color: '#ffffff', maxWidth: '700px', letterSpacing: '-0.02em' } },
+   279→   279→            { id: 'hp1', type: 'text', tag: 'p', content: 'Designing for the web, mobile, and beyond. Currently available for freelance projects.', style: { fontSize: '18px', color: '#94a3b8', maxWidth: '480px', lineHeight: '1.7', marginTop: '24px' } }
+   280→   280→          ]},
+   281→   281→          { id: 'projects-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', padding: '80px 48px' }, meta: { name: 'Projects' }, children: [
+   282→   282→            { id: 'ph2', type: 'heading', tag: 'h2', content: 'Selected Work', style: { fontSize: '32px', fontWeight: '700', color: '#ffffff', marginBottom: '48px' } },
+   283→   283→            { id: 'pgrid', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }, children: [
+   284→   284→              { id: 'pc1', type: 'card', tag: 'div', style: { borderRadius: '16px', overflow: 'hidden', backgroundColor: '#1e293b' }, meta: { name: 'Project 1' }, children: [
+   285→   285→                { id: 'pimg1', type: 'image', tag: 'img', content: 'https://placehold.co/600x400/10b981/ffffff?text=Project+1', style: { width: '100%', height: '280px', objectFit: 'cover' } },
+   286→   286→                { id: 'pc1info', type: 'container', tag: 'div', style: { padding: '24px' }, children: [
+   287→   287→                  { id: 'pc1t', type: 'heading', tag: 'h3', content: 'E-Commerce Redesign', style: { fontSize: '18px', fontWeight: '600', color: '#ffffff', marginBottom: '8px' } },
+   288→   288→                  { id: 'pc1d', type: 'text', tag: 'p', content: 'UX/UI Design • Web Development', style: { fontSize: '14px', color: '#94a3b8' } }
+   289→   289→                ]}
+   290→   290→              ]},
+   291→   291→              { id: 'pc2', type: 'card', tag: 'div', style: { borderRadius: '16px', overflow: 'hidden', backgroundColor: '#1e293b' }, meta: { name: 'Project 2' }, children: [
+   292→   292→                { id: 'pimg2', type: 'image', tag: 'img', content: 'https://placehold.co/600x400/06b6d4/ffffff?text=Project+2', style: { width: '100%', height: '280px', objectFit: 'cover' } },
+   293→   293→                { id: 'pc2info', type: 'container', tag: 'div', style: { padding: '24px' }, children: [
+   294→   294→                  { id: 'pc2t', type: 'heading', tag: 'h3', content: 'Finance Dashboard', style: { fontSize: '18px', fontWeight: '600', color: '#ffffff', marginBottom: '8px' } },
+   295→   295→                  { id: 'pc2d', type: 'text', tag: 'p', content: 'Product Design • Data Visualization', style: { fontSize: '14px', color: '#94a3b8' } }
+   296→   296→                ]}
+   297→   297→              ]},
+   298→   298→              { id: 'pc3', type: 'card', tag: 'div', style: { borderRadius: '16px', overflow: 'hidden', backgroundColor: '#1e293b' }, meta: { name: 'Project 3' }, children: [
+   299→   299→                { id: 'pimg3', type: 'image', tag: 'img', content: 'https://placehold.co/600x400/8b5cf6/ffffff?text=Project+3', style: { width: '100%', height: '280px', objectFit: 'cover' } },
+   300→   300→                { id: 'pc3info', type: 'container', tag: 'div', style: { padding: '24px' }, children: [
+   301→   301→                  { id: 'pc3t', type: 'heading', tag: 'h3', content: 'Mobile Banking App', style: { fontSize: '18px', fontWeight: '600', color: '#ffffff', marginBottom: '8px' } },
+   302→   302→                  { id: 'pc3d', type: 'text', tag: 'p', content: 'Mobile Design • iOS/Android', style: { fontSize: '14px', color: '#94a3b8' } }
+   303→   303→                ]}
+   304→   304→              ]},
+   305→   305→              { id: 'pc4', type: 'card', tag: 'div', style: { borderRadius: '16px', overflow: 'hidden', backgroundColor: '#1e293b' }, meta: { name: 'Project 4' }, children: [
+   306→   306→                { id: 'pimg4', type: 'image', tag: 'img', content: 'https://placehold.co/600x400/f59e0b/ffffff?text=Project+4', style: { width: '100%', height: '280px', objectFit: 'cover' } },
+   307→   307→                { id: 'pc4info', type: 'container', tag: 'div', style: { padding: '24px' }, children: [
+   308→   308→                  { id: 'pc4t', type: 'heading', tag: 'h3', content: 'Brand Identity System', style: { fontSize: '18px', fontWeight: '600', color: '#ffffff', marginBottom: '8px' } },
+   309→   309→                  { id: 'pc4d', type: 'text', tag: 'p', content: 'Branding • Visual Identity', style: { fontSize: '14px', color: '#94a3b8' } }
+   310→   310→                ]}
+   311→   311→              ]}
+   312→   312→            ]}
+   313→   313→          ]},
+   314→   314→          { id: 'footer-1', type: 'footer', tag: 'footer', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '32px 48px', borderTop: '1px solid #1e293b' }, meta: { name: 'Footer' }, children: [
+   315→   315→            { id: 'ft1', type: 'text', tag: 'p', content: '© 2026 Portfolio. All rights reserved.', style: { color: '#64748b', fontSize: '14px' } },
+   316→   316→            { id: 'flinks', type: 'flex', tag: 'div', style: { display: 'flex', gap: '24px' }, children: [
+   317→   317→              { id: 'fl1', type: 'link', tag: 'a', content: 'Twitter', style: { color: '#94a3b8', textDecoration: 'none', fontSize: '14px' } },
+   318→   318→              { id: 'fl2', type: 'link', tag: 'a', content: 'LinkedIn', style: { color: '#94a3b8', textDecoration: 'none', fontSize: '14px' } },
+   319→   319→              { id: 'fl3', type: 'link', tag: 'a', content: 'GitHub', style: { color: '#94a3b8', textDecoration: 'none', fontSize: '14px' } }
+   320→   320→            ]}
+   321→   321→          ]}
+   322→   322→        ]
+   323→   323→      }
+   324→   324→    });
+   325→   325→  }
+   326→   326→
+   327→   327→  // Mobile app onboarding flow
+   328→   328→  if (msg.includes('mobile') || msg.includes('app') || msg.includes('onboarding') || msg.includes('ios') || msg.includes('android')) {
+   329→   329→    return JSON.stringify({
+   330→   330→      message: 'I created a mobile app onboarding flow with welcome screens and a sign-up interface. You can tell me to adjust the steps, colors, or content!',
+   331→   331→      design: {
+   332→   332→        id: 'root', type: 'root', tag: 'div',
+   333→   333→        style: { display: 'flex', justifyContent: 'center', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#f0f0f0' },
+   334→   334→        meta: { name: 'Mobile App Onboarding' },
+   335→   335→        children: [
+   336→   336→          { id: 'phone-frame', type: 'container', tag: 'div', style: { width: '375px', minHeight: '812px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', borderRadius: '40px', overflow: 'hidden' }, children: [
+   337→   337→            { id: 'status-bar', type: 'container', tag: 'div', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 24px', backgroundColor: '#ffffff' }, children: [
+   338→   338→              { id: 'time', type: 'text', tag: 'span', content: '9:41', style: { fontSize: '14px', fontWeight: '600', color: '#0f172a' } },
+   339→   339→              { id: 'icons', type: 'text', tag: 'span', content: '📶 🔋', style: { fontSize: '14px' } }
+   340→   340→            ]},
+   341→   341→            { id: 'onboard-content', type: 'container', tag: 'div', style: { flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 32px', textAlign: 'center' }, children: [
+   342→   342→              { id: 'ob-illustration', type: 'image', tag: 'img', content: 'https://placehold.co/280x280/10b981/ffffff?text=🎯', style: { width: '280px', height: '280px', marginBottom: '40px', borderRadius: '20px' } },
+   343→   343→              { id: 'ob-title', type: 'heading', tag: 'h2', content: 'Achieve Your Goals', style: { fontSize: '28px', fontWeight: '700', color: '#0f172a', marginBottom: '16px' } },
+   344→   344→              { id: 'ob-desc', type: 'text', tag: 'p', content: 'Track your progress, set reminders, and stay motivated with personalized insights.', style: { fontSize: '16px', color: '#475569', lineHeight: '1.6', marginBottom: '48px' } },
+   345→   345→              { id: 'ob-dots', type: 'flex', tag: 'div', style: { display: 'flex', gap: '8px', marginBottom: '32px' }, children: [
+   346→   346→                { id: 'dot1', type: 'container', tag: 'div', style: { width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#d1d5db' } },
+   347→   347→                { id: 'dot2', type: 'container', tag: 'div', style: { width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#d1d5db' } },
+   348→   348→                { id: 'dot3', type: 'container', tag: 'div', style: { width: '24px', height: '8px', borderRadius: '4px', backgroundColor: '#10b981' } }
+   349→   349→              ]}
+   350→   350→            ]},
+   351→   351→            { id: 'ob-actions', type: 'container', tag: 'div', style: { padding: '24px 32px 48px' }, children: [
+   352→   352→              { id: 'ob-btn', type: 'button', tag: 'button', content: 'Get Started', style: { width: '100%', padding: '16px', backgroundColor: '#10b981', color: '#ffffff', borderRadius: '14px', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer', marginBottom: '16px' } },
+   353→   353→              { id: 'ob-skip', type: 'button', tag: 'button', content: 'Already have an account? Sign In', style: { width: '100%', padding: '12px', backgroundColor: 'transparent', color: '#475569', borderRadius: '14px', fontSize: '14px', fontWeight: '500', border: 'none', cursor: 'pointer' } }
+   354→   354→            ]}
+   355→   355→          ]}
+   356→   356→        ]
+   357→   357→      }
+   358→   358→    });
+   359→   359→  }
+   360→   360→
+   361→   361→  // Pitch deck / slide deck
+   362→   362→  if (msg.includes('pitch') || msg.includes('deck') || msg.includes('slide') || msg.includes('presentation')) {
+   363→   363→    return JSON.stringify({
+   364→   364→      message: 'I created a pitch deck with title, problem, solution, and market slides. Tell me to add more slides or adjust the content!',
+   365→   365→      design: {
+   366→   366→        id: 'root', type: 'root', tag: 'div',
+   367→   367→        style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#0f172a' },
+   368→   368→        meta: { name: 'Pitch Deck' },
+   369→   369→        children: [
+   370→   370→          { id: 'slide-title', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '80px', textAlign: 'center' }, meta: { name: 'Title Slide' }, children: [
+   371→   371→            { id: 'st-badge', type: 'badge', tag: 'span', content: 'Seed Round 2026', style: { padding: '8px 20px', backgroundColor: '#064e3b', color: '#34d399', borderRadius: '24px', fontSize: '14px', fontWeight: '500', marginBottom: '40px' } },
+   372→   372→            { id: 'st-h1', type: 'heading', tag: 'h1', content: 'Revolutionizing Design with AI', style: { fontSize: '64px', fontWeight: '800', color: '#ffffff', letterSpacing: '-0.03em', lineHeight: '1.1', marginBottom: '32px', maxWidth: '900px' } },
+   373→   373→            { id: 'st-sub', type: 'text', tag: 'p', content: 'Z.Design — The future of visual design is conversational', style: { fontSize: '20px', color: '#94a3b8', lineHeight: '1.5' } }
+   374→   374→          ]},
+   375→   375→          { id: 'slide-problem', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', padding: '80px', backgroundColor: '#1e293b' }, meta: { name: 'Problem' }, children: [
+   376→   376→            { id: 'sp-label', type: 'text', tag: 'p', content: 'THE PROBLEM', style: { fontSize: '14px', fontWeight: '600', color: '#34d399', letterSpacing: '0.1em', marginBottom: '24px' } },
+   377→   377→            { id: 'sp-h2', type: 'heading', tag: 'h2', content: 'Design tools are too complex and slow', style: { fontSize: '48px', fontWeight: '700', color: '#ffffff', maxWidth: '800px', lineHeight: '1.2', marginBottom: '40px' } },
+   378→   378→            { id: 'sp-stats', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', maxWidth: '800px' }, children: [
+   379→   379→              { id: 'sps1', type: 'container', tag: 'div', children: [
+   380→   380→                { id: 'sps1n', type: 'heading', tag: 'h3', content: '72%', style: { fontSize: '48px', fontWeight: '700', color: '#10b981' } },
+   381→   381→                { id: 'sps1d', type: 'text', tag: 'p', content: 'of designers spend more time on tools than designing', style: { fontSize: '16px', color: '#94a3b8', lineHeight: '1.5' } }
+   382→   382→              ]},
+   383→   383→              { id: 'sps2', type: 'container', tag: 'div', children: [
+   384→   384→                { id: 'sps2n', type: 'heading', tag: 'h3', content: '3.2h', style: { fontSize: '48px', fontWeight: '700', color: '#10b981' } },
+   385→   385→                { id: 'sps2d', type: 'text', tag: 'p', content: 'average time to create a single landing page', style: { fontSize: '16px', color: '#94a3b8', lineHeight: '1.5' } }
+   386→   386→              ]},
+   387→   387→              { id: 'sps3', type: 'container', tag: 'div', children: [
+   388→   388→                { id: 'sps3n', type: 'heading', tag: 'h3', content: '$50K+', style: { fontSize: '48px', fontWeight: '700', color: '#10b981' } },
+   389→   389→                { id: 'sps3d', type: 'text', tag: 'p', content: 'annual cost for a full design team per project', style: { fontSize: '16px', color: '#94a3b8', lineHeight: '1.5' } }
+   390→   390→              ]}
+   391→   391→            ]}
+   392→   392→          ]},
+   393→   393→          { id: 'slide-solution', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', padding: '80px' }, meta: { name: 'Solution' }, children: [
+   394→   394→            { id: 'ss-label', type: 'text', tag: 'p', content: 'OUR SOLUTION', style: { fontSize: '14px', fontWeight: '600', color: '#34d399', letterSpacing: '0.1em', marginBottom: '24px' } },
+   395→   395→            { id: 'ss-h2', type: 'heading', tag: 'h2', content: 'Just describe it. AI builds it.', style: { fontSize: '48px', fontWeight: '700', color: '#ffffff', maxWidth: '700px', lineHeight: '1.2', marginBottom: '40px' } },
+   396→   396→            { id: 'ss-feats', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', maxWidth: '700px' }, children: [
+   397→   397→              { id: 'ssf1', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#1e293b', border: '1px solid #334155' }, children: [
+   398→   398→                { id: 'ssf1i', type: 'text', tag: 'div', content: '💬', style: { fontSize: '28px', marginBottom: '12px' } },
+   399→   399→                { id: 'ssf1t', type: 'heading', tag: 'h4', content: 'Natural Language', style: { fontSize: '16px', fontWeight: '600', color: '#ffffff', marginBottom: '8px' } },
+   400→   400→                { id: 'ssf1d', type: 'text', tag: 'p', content: 'Describe your vision in plain English', style: { fontSize: '14px', color: '#94a3b8' } }
+   401→   401→              ]},
+   402→   402→              { id: 'ssf2', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#1e293b', border: '1px solid #334155' }, children: [
+   403→   403→                { id: 'ssf2i', type: 'text', tag: 'div', content: '⚡', style: { fontSize: '28px', marginBottom: '12px' } },
+   404→   404→                { id: 'ssf2t', type: 'heading', tag: 'h4', content: 'Instant Results', style: { fontSize: '16px', fontWeight: '600', color: '#ffffff', marginBottom: '8px' } },
+   405→   405→                { id: 'ssf2d', type: 'text', tag: 'p', content: 'Production-ready designs in seconds', style: { fontSize: '14px', color: '#94a3b8' } }
+   406→   406→              ]},
+   407→   407→              { id: 'ssf3', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#1e293b', border: '1px solid #334155' }, children: [
+   408→   408→                { id: 'ssf3i', type: 'text', tag: 'div', content: '🔄', style: { fontSize: '28px', marginBottom: '12px' } },
+   409→   409→                { id: 'ssf3t', type: 'heading', tag: 'h4', content: 'Iterate Fast', style: { fontSize: '16px', fontWeight: '600', color: '#ffffff', marginBottom: '8px' } },
+   410→   410→                { id: 'ssf3d', type: 'text', tag: 'p', content: 'Refine with conversational feedback', style: { fontSize: '14px', color: '#94a3b8' } }
+   411→   411→              ]},
+   412→   412→              { id: 'ssf4', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#1e293b', border: '1px solid #334155' }, children: [
+   413→   413→                { id: 'ssf4i', type: 'text', tag: 'div', content: '📦', style: { fontSize: '28px', marginBottom: '12px' } },
+   414→   414→                { id: 'ssf4t', type: 'heading', tag: 'h4', content: 'Export Anywhere', style: { fontSize: '16px', fontWeight: '600', color: '#ffffff', marginBottom: '8px' } },
+   415→   415→                { id: 'ssf4d', type: 'text', tag: 'p', content: 'React, Vue, HTML, or Figma', style: { fontSize: '14px', color: '#94a3b8' } }
+   416→   416→              ]}
+   417→   417→            ]}
+   418→   418→          ]}
+   419→   419→        ]
+   420→   420→      }
+   421→   421→    });
+   422→   422→  }
+   423→   423→
+   424→   424→  // Pricing page
+   425→   425→  if (msg.includes('pricing') || msg.includes('plan') || msg.includes('subscription') || msg.includes('tier')) {
+   426→   426→    return JSON.stringify({
+   427→   427→      message: 'I created a pricing page with three plan tiers and a comparison section. Tell me to adjust the prices, features, or add a FAQ section!',
+   428→   428→      design: {
+   429→   429→        id: 'root', type: 'root', tag: 'div',
+   430→   430→        style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#ffffff' },
+   431→   431→        meta: { name: 'Pricing Page' },
+   432→   432→        children: [
+   433→   433→          { id: 'nav-1', type: 'nav', tag: 'nav', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 48px', backgroundColor: '#ffffff', borderBottom: '1px solid #e2e8f0' }, meta: { name: 'Navigation' }, children: [
+   434→   434→            { id: 'logo', type: 'text', tag: 'span', content: 'BrandName', style: { fontSize: '20px', fontWeight: '700', color: '#10b981' } },
+   435→   435→            { id: 'nav-r', type: 'flex', tag: 'div', style: { display: 'flex', gap: '24px', alignItems: 'center' }, children: [
+   436→   436→              { id: 'nl1', type: 'link', tag: 'a', content: 'Features', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   437→   437→              { id: 'nl2', type: 'link', tag: 'a', content: 'Pricing', style: { fontSize: '14px', color: '#10b981', textDecoration: 'none', fontWeight: '600' } },
+   438→   438→              { id: 'nl3', type: 'link', tag: 'a', content: 'Docs', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } }
+   439→   439→            ]}
+   440→   440→          ]},
+   441→   441→          { id: 'pricing-hero', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px 32px 48px', textAlign: 'center' }, meta: { name: 'Pricing Header' }, children: [
+   442→   442→            { id: 'ph1', type: 'heading', tag: 'h1', content: 'Simple, transparent pricing', style: { fontSize: '48px', fontWeight: '800', color: '#0f172a', marginBottom: '16px', letterSpacing: '-0.02em' } },
+   443→   443→            { id: 'pp1', type: 'text', tag: 'p', content: 'Choose the plan that works best for you and your team. No hidden fees.', style: { fontSize: '18px', color: '#475569', maxWidth: '500px', lineHeight: '1.7' } }
+   444→   444→          ]},
+   445→   445→          { id: 'pricing-grid', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', maxWidth: '1020px', width: '100%', margin: '0 auto', padding: '32px' }, children: [
+   446→   446→            { id: 'plan-free', type: 'card', tag: 'div', style: { padding: '36px', borderRadius: '16px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }, meta: { name: 'Free Plan' }, children: [
+   447→   447→              { id: 'pf-name', type: 'text', tag: 'h3', content: 'Free', style: { fontSize: '20px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+   448→   448→              { id: 'pf-price', type: 'heading', tag: 'div', content: '$0', style: { fontSize: '48px', fontWeight: '800', color: '#0f172a', marginBottom: '4px' } },
+   449→   449→              { id: 'pf-period', type: 'text', tag: 'span', content: 'forever', style: { fontSize: '14px', color: '#94a3b8', marginBottom: '24px', display: 'block' } },
+   450→   450→              { id: 'pf-btn', type: 'button', tag: 'button', content: 'Get Started Free', style: { width: '100%', padding: '12px', backgroundColor: '#ffffff', color: '#0f172a', borderRadius: '10px', fontSize: '14px', fontWeight: '600', border: '1px solid #e2e8f0', cursor: 'pointer', marginBottom: '24px' } },
+   451→   451→              { id: 'pf-feats', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', gap: '12px' }, children: [
+   452→   452→                { id: 'pf-f1', type: 'text', tag: 'div', content: '✓ 3 projects', style: { fontSize: '14px', color: '#475569' } },
+   453→   453→                { id: 'pf-f2', type: 'text', tag: 'div', content: '✓ Basic templates', style: { fontSize: '14px', color: '#475569' } },
+   454→   454→                { id: 'pf-f3', type: 'text', tag: 'div', content: '✓ Community support', style: { fontSize: '14px', color: '#475569' } },
+   455→   455→                { id: 'pf-f4', type: 'text', tag: 'div', content: '✗ Export to code', style: { fontSize: '14px', color: '#cbd5e1' } }
+   456→   456→              ]}
+   457→   457→            ]},
+   458→   458→            { id: 'plan-pro', type: 'card', tag: 'div', style: { padding: '36px', borderRadius: '16px', backgroundColor: '#0f172a', border: '2px solid #10b981', position: 'relative' }, meta: { name: 'Pro Plan' }, children: [
+   459→   459→              { id: 'pp-badge', type: 'badge', tag: 'span', content: 'Most Popular', style: { position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', padding: '4px 16px', backgroundColor: '#10b981', color: '#ffffff', borderRadius: '20px', fontSize: '12px', fontWeight: '600' } },
+   460→   460→              { id: 'pp-name', type: 'text', tag: 'h3', content: 'Pro', style: { fontSize: '20px', fontWeight: '600', color: '#ffffff', marginBottom: '8px' } },
+   461→   461→              { id: 'pp-price', type: 'heading', tag: 'div', content: '$19', style: { fontSize: '48px', fontWeight: '800', color: '#ffffff', marginBottom: '4px' } },
+   462→   462→              { id: 'pp-period', type: 'text', tag: 'span', content: 'per month', style: { fontSize: '14px', color: '#94a3b8', marginBottom: '24px', display: 'block' } },
+   463→   463→              { id: 'pp-btn', type: 'button', tag: 'button', content: 'Start Free Trial', style: { width: '100%', padding: '12px', backgroundColor: '#10b981', color: '#ffffff', borderRadius: '10px', fontSize: '14px', fontWeight: '600', border: 'none', cursor: 'pointer', marginBottom: '24px' } },
+   464→   464→              { id: 'pp-feats', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', gap: '12px' }, children: [
+   465→   465→                { id: 'pp-f1', type: 'text', tag: 'div', content: '✓ Unlimited projects', style: { fontSize: '14px', color: '#e2e8f0' } },
+   466→   466→                { id: 'pp-f2', type: 'text', tag: 'div', content: '✓ All templates', style: { fontSize: '14px', color: '#e2e8f0' } },
+   467→   467→                { id: 'pp-f3', type: 'text', tag: 'div', content: '✓ Priority support', style: { fontSize: '14px', color: '#e2e8f0' } },
+   468→   468→                { id: 'pp-f4', type: 'text', tag: 'div', content: '✓ Export to code', style: { fontSize: '14px', color: '#e2e8f0' } }
+   469→   469→              ]}
+   470→   470→            ]},
+   471→   471→            { id: 'plan-team', type: 'card', tag: 'div', style: { padding: '36px', borderRadius: '16px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }, meta: { name: 'Team Plan' }, children: [
+   472→   472→              { id: 'pt-name', type: 'text', tag: 'h3', content: 'Team', style: { fontSize: '20px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+   473→   473→              { id: 'pt-price', type: 'heading', tag: 'div', content: '$49', style: { fontSize: '48px', fontWeight: '800', color: '#0f172a', marginBottom: '4px' } },
+   474→   474→              { id: 'pt-period', type: 'text', tag: 'span', content: 'per month', style: { fontSize: '14px', color: '#94a3b8', marginBottom: '24px', display: 'block' } },
+   475→   475→              { id: 'pt-btn', type: 'button', tag: 'button', content: 'Contact Sales', style: { width: '100%', padding: '12px', backgroundColor: '#ffffff', color: '#0f172a', borderRadius: '10px', fontSize: '14px', fontWeight: '600', border: '1px solid #e2e8f0', cursor: 'pointer', marginBottom: '24px' } },
+   476→   476→              { id: 'pt-feats', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', gap: '12px' }, children: [
+   477→   477→                { id: 'pt-f1', type: 'text', tag: 'div', content: '✓ Everything in Pro', style: { fontSize: '14px', color: '#475569' } },
+   478→   478→                { id: 'pt-f2', type: 'text', tag: 'div', content: '✓ Team collaboration', style: { fontSize: '14px', color: '#475569' } },
+   479→   479→                { id: 'pt-f3', type: 'text', tag: 'div', content: '✓ Custom branding', style: { fontSize: '14px', color: '#475569' } },
+   480→   480→                { id: 'pt-f4', type: 'text', tag: 'div', content: '✓ SSO & audit logs', style: { fontSize: '14px', color: '#475569' } }
+   481→   481→              ]}
+   482→   482→            ]}
+   483→   483→          ]},
+   484→   484→          { id: 'pricing-faq', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px 32px', backgroundColor: '#f8fafc' }, meta: { name: 'FAQ' }, children: [
+   485→   485→            { id: 'faq-h2', type: 'heading', tag: 'h2', content: 'Frequently Asked Questions', style: { fontSize: '32px', fontWeight: '700', color: '#0f172a', marginBottom: '48px' } },
+   486→   486→            { id: 'faq-list', type: 'container', tag: 'div', style: { maxWidth: '700px', width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }, children: [
+   487→   487→              { id: 'faq1', type: 'card', tag: 'div', style: { padding: '20px 24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }, children: [
+   488→   488→                { id: 'faq1q', type: 'text', tag: 'h4', content: 'Can I change plans later?', style: { fontSize: '16px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+   489→   489→                { id: 'faq1a', type: 'text', tag: 'p', content: 'Yes, you can upgrade or downgrade your plan at any time. Changes take effect at the next billing cycle.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+   490→   490→              ]},
+   491→   491→              { id: 'faq2', type: 'card', tag: 'div', style: { padding: '20px 24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }, children: [
+   492→   492→                { id: 'faq2q', type: 'text', tag: 'h4', content: 'Is there a free trial?', style: { fontSize: '16px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+   493→   493→                { id: 'faq2a', type: 'text', tag: 'p', content: 'Yes! All paid plans include a 14-day free trial. No credit card required to start.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+   494→   494→              ]},
+   495→   495→              { id: 'faq3', type: 'card', tag: 'div', style: { padding: '20px 24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }, children: [
+   496→   496→                { id: 'faq3q', type: 'text', tag: 'h4', content: 'What payment methods do you accept?', style: { fontSize: '16px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+   497→   497→                { id: 'faq3a', type: 'text', tag: 'p', content: 'We accept all major credit cards, PayPal, and wire transfer for annual plans.', style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+   498→   498→              ]}
+   499→   499→            ]}
+   500→   500→          ]},
+   501→   501→          { id: 'footer-1', type: 'footer', tag: 'footer', style: { display: 'flex', justifyContent: 'center', padding: '32px', backgroundColor: '#ffffff', borderTop: '1px solid #e2e8f0' }, meta: { name: 'Footer' }, children: [
+   502→   502→            { id: 'ft1', type: 'text', tag: 'p', content: '© 2026 BrandName. All rights reserved.', style: { color: '#94a3b8', fontSize: '14px' } }
+   503→   503→          ]}
+   504→   504→        ]
+   505→   505→      }
+   506→   506→    });
+   507→   507→  }
+   508→   508→
+   509→   509→  // Default design for any other request
+   510→   510→  return JSON.stringify({
+   511→   511→    message: 'I created a design based on your request. Tell me what to change — for example: "Make it darker", "Add a contact form", or "Change the layout"!',
+   512→   512→    design: {
+   513→   513→      id: 'root', type: 'root', tag: 'div',
+   514→   514→      style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#ffffff' },
+   515→   515→      meta: { name: 'Custom Design' },
+   516→   516→      children: [
+   517→   517→        { id: 'nav-1', type: 'nav', tag: 'nav', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 32px', borderBottom: '1px solid #e2e8f0', backgroundColor: '#ffffff' }, meta: { name: 'Navigation' }, children: [
+   518→   518→          { id: 'hl1', type: 'text', tag: 'span', content: 'Z.Design', style: { fontSize: '20px', fontWeight: '700', color: '#10b981' } },
+   519→   519→          { id: 'nav-r', type: 'flex', tag: 'div', style: { display: 'flex', gap: '20px', alignItems: 'center' }, children: [
+   520→   520→            { id: 'nl1', type: 'link', tag: 'a', content: 'Home', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   521→   521→            { id: 'nl2', type: 'link', tag: 'a', content: 'About', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   522→   522→            { id: 'nl3', type: 'link', tag: 'a', content: 'Contact', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   523→   523→            { id: 'hb1', type: 'button', tag: 'button', content: 'Get Started', style: { padding: '8px 20px', backgroundColor: '#10b981', color: '#ffffff', borderRadius: '8px', fontSize: '14px', fontWeight: '600', border: 'none', cursor: 'pointer' } }
+   524→   524→          ]}
+   525→   525→        ]},
+   526→   526→        { id: 'hero-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: '1', padding: '100px 32px', textAlign: 'center', background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)' }, meta: { name: 'Hero' }, children: [
+   527→   527→          { id: 'hb1', type: 'badge', tag: 'span', content: '✨ AI-Powered', style: { padding: '6px 16px', backgroundColor: '#d1fae5', color: '#065f46', borderRadius: '20px', fontSize: '13px', fontWeight: '500', marginBottom: '24px', display: 'inline-block' } },
+   528→   528→          { id: 'sh1', type: 'heading', tag: 'h1', content: 'Your Design Starts Here', style: { fontSize: '48px', fontWeight: '800', color: '#0f172a', marginBottom: '20px', letterSpacing: '-0.02em' } },
+   529→   529→          { id: 'sp1', type: 'text', tag: 'p', content: 'Tell me more about what you want and I\'ll create a custom design for you. Try things like "Make a portfolio" or "Add a pricing section"!', style: { fontSize: '18px', color: '#475569', maxWidth: '540px', lineHeight: '1.7', marginBottom: '32px' } },
+   530→   530→          { id: 'sbtns', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }, children: [
+   531→   531→            { id: 'sb1', type: 'button', tag: 'button', content: 'Start Creating', style: { padding: '14px 32px', backgroundColor: '#10b981', color: '#ffffff', borderRadius: '10px', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' } },
+   532→   532→            { id: 'sb2', type: 'button', tag: 'button', content: 'See Examples', style: { padding: '14px 32px', backgroundColor: '#ffffff', color: '#475569', borderRadius: '10px', fontSize: '16px', fontWeight: '500', border: '1px solid #e2e8f0', cursor: 'pointer' } }
+   533→   533→          ]}
+   534→   534→        ]},
+   535→   535→        { id: 'ftr1', type: 'footer', tag: 'footer', style: { display: 'flex', justifyContent: 'center', padding: '32px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0' }, meta: { name: 'Footer' }, children: [
+   536→   536→          { id: 'ft1', type: 'text', tag: 'p', content: '© 2026 Z.Design — AI-Powered Visual Design Platform', style: { color: '#94a3b8', fontSize: '14px' } }
+   537→   537→        ]}
+   538→   538→      ]
+   539→   539→    }
+   540→   540→  });
+   541→   541→}
+   542→   542→
+   543→   543→// ============ POST Handler ============
+   544→   544→
+   545→   545→export async function POST(request: NextRequest) {
+   546→   546→  try {
+   547→   547→    const body: ChatRequestBody = await request.json();
+   548→   548→    const { message, projectId, designTree, designSystem, history, creativeMode } = body;
+   549→   549→
+   550→   550→    if (!message || !projectId) {
+   551→   551→      return NextResponse.json({ error: 'message and projectId are required' }, { status: 400 });
+   552→   552→    }
+   553→   553→
+   554→   554→    const project = await db.project.findUnique({ where: { id: projectId } });
+   555→   555→    if (!project) {
+   556→   556→      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+   557→   557→    }
+   558→   558→
+   559→   559→    // Store user message
+   560→   560→    await db.chatMessage.create({
+   561→   561→      data: { projectId, role: 'user', content: message },
+   562→   562→    });
+   563→   563→
+   564→   564→    // Build a concise system prompt for chat (full prompt is too large for this environment)
+   565→   565→    const conciseSystemPrompt = `You are Z.Design AI, an expert visual design assistant. You generate designs as structured JSON.
+   566→   566→
+   567→   567→CRITICAL JSON FORMAT RULES:
+   568→   568→1. ALL property names MUST be in double quotes: "id", "type", "style", "content"
+   569→   569→2. EVERY property name MUST have a colon after the closing quote: "id": "nav-1" (NOT "id": or "id=)
+   570→   570→3. The "content" field MUST be INSIDE the node object, NOT after it
+   571→   571→4. ALL style values MUST be quoted strings: "boxShadow": "0 4px 6px rgba(0,0,0,0.1)"
+   572→   572→5. Use rgba without spaces in commas: "rgba(0,0,0,0.1)" NOT "rgba(0, 0, 0, 0.1)"
+   573→   573→6. Return raw JSON only - no markdown code blocks
+   574→   574→
+   575→   575→CORRECT EXAMPLE:
+   576→   576→{"message": "Created a landing page", "design": {"id": "root", "type": "root", "tag": "div", "style": {"minHeight": "100vh", "fontFamily": "Inter, system-ui, sans-serif", "backgroundColor": "#ffffff"}, "children": [{"id": "nav-1", "type": "nav", "tag": "nav", "style": {"display": "flex", "justifyContent": "space-between", "padding": "16px 32px", "backgroundColor": "#ffffff", "borderBottom": "1px solid #e2e8f0"}, "children": [{"id": "logo", "type": "text", "tag": "span", "content": "BrandName", "style": {"fontSize": "20px", "fontWeight": "700", "color": "#10b981"}}, {"id": "nav-btn", "type": "button", "tag": "button", "content": "Get Started", "style": {"padding": "10px 24px", "backgroundColor": "#10b981", "color": "#ffffff", "borderRadius": "8px", "border": "none", "fontWeight": "600", "cursor": "pointer"}}]}, {"id": "hero", "type": "section", "tag": "section", "style": {"display": "flex", "flexDirection": "column", "alignItems": "center", "padding": "80px 32px", "textAlign": "center", "backgroundColor": "#f8fafc"}, "children": [{"id": "hero-h1", "type": "heading", "tag": "h1", "content": "Welcome to Our Platform", "style": {"fontSize": "48px", "fontWeight": "800", "color": "#0f172a", "marginBottom": "16px"}}, {"id": "hero-p", "type": "text", "tag": "p", "content": "Build amazing things with AI", "style": {"fontSize": "18px", "color": "#475569", "maxWidth": "540px", "lineHeight": "1.7"}}]}]}}
+   577→   577→
+   578→   578→NOTICE HOW:
+   579→   579→- "content": "BrandName" is INSIDE each node object
+   580→   580→- Every property name has quotes AND a colon: "fontSize": "20px"
+   581→   581→- CSS values are all quoted strings
+   582→   582→- No spaces in rgba() values
+   583→   583→- No trailing commas
+   584→   584→
+   585→   585→COLORS: Primary #10b981, PrimaryDark #059669, Text #0f172a, TextSecondary #475569, Muted #94a3b8, BG #ffffff, Surface #f8fafc, Border #e2e8f0
+   586→   586→LAYOUT: Nav→Hero→Features→CTA→Footer (landing pages), Sidebar→Header→Stats→Charts (dashboards)
+   587→   587→
+   588→   588→DESIGN PRINCIPLES: Modern, clean, generous whitespace, rounded corners, responsive flexbox/grid layouts, proper heading hierarchy, complete sections with real content.
+   589→   589→
+   590→   590→RULES:
+   591→   591→1. Every node needs unique "id" (e.g., "hero-section", "nav-logo")
+   592→   592→2. Use semantic HTML tags (header, nav, main, section, footer)
+   593→   593→3. Make designs COMPLETE and POLISHED
+   594→   594→4. Images: use "https://placehold.co/WxH/10b981/ffffff?text=Label"
+   595→   595→5. For landing pages: Nav → Hero → Features → CTA → Footer
+   596→   596→6. For dashboards: Sidebar → Header → Stats → Charts
+   597→   597→7. NEVER use Tailwind shorthand - always use real CSS values: "32px" not "4xl"
+   598→   598→8. Double-check your JSON is valid before returning`;
+   599→   599→
+   600→   600→    let systemPrompt = conciseSystemPrompt;
+   601→   601→    if (designSystem && Object.keys(designSystem).length > 0) {
+   602→   602→      systemPrompt += `\n\nUSER'S DESIGN SYSTEM: ${JSON.stringify(designSystem)}`;
+   603→   603→    }
+   604→   604→
+   605→   605→    // Add Creative Mode to system prompt
+   606→   606→    if (creativeMode) {
+   607→   607→      systemPrompt += `\n\nCREATIVE MODE: Be bold and experimental! Try unique layouts, unconventional color combinations, creative typography, asymmetric layouts, and innovative design patterns. Push boundaries while maintaining usability. Generate at least 2-3 different section variations within the design.`;
+   608→   608→    }
+   609→   609→
+   610→   610→    // Build the user message content, adding context about existing design if present
+   611→   611→    let userContent = message;
+   612→   612→    if (designTree && (designTree as { children?: unknown[] }).children?.length as number > 0) {
+   613→   613→      const childrenCount = (designTree as { children: unknown[] }).children.length;
+   614→   614→      userContent = `[Current design exists with ${childrenCount} top-level sections. The user wants to modify it.]\n\nUser request: ${message}\n\nReturn the COMPLETE updated design tree (not just the changes).`;
+   615→   615→    }
+   616→   616→
+   617→   617→    // Build conversation messages from history (up to 4 most recent to save tokens)
+   618→   618→    const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+   619→   619→      { role: 'system', content: systemPrompt },
+   620→   620→    ];
+   621→   621→
+   622→   622→    if (history && history.length > 0) {
+   623→   623→      const recentHistory = history.slice(-4);
+   624→   624→      for (const msg of recentHistory) {
+   625→   625→        messages.push({ role: msg.role, content: msg.content });
+   626→   626→      }
+   627→   627→    }
+   628→   628→
+   629→   629→    messages.push({ role: 'user', content: userContent });
+   630→   630→
+   631→   631→    // Call Z.ai LLM with timeout and retry logic
+   632→   632→    let rawResponse: string | null = null;
+   633→   633→    let tokensUsed = 0;
+   634→   634→    let usedFallback = false;
+   635→   635→
+   636→   636→    // Timeout strategy: LLM takes ~60-90s to generate a full design, so we need generous timeouts
+   637→   637→    // First attempt gets 120s, subsequent attempts get 90s — the LLM is slow but reliable
+   638→   638→    const LLM_TIMEOUT_FIRST = 120000; // 120s for first attempt (LLM takes ~74s on average)
+   639→   639→    const LLM_TIMEOUT_RETRY = 90000; // 90s for retries
+   640→   640→    const maxRetries = 2; // 2 retries (3 total attempts) — the LLM is slow but reliable
+   641→   641→
+   642→   642→    // ALWAYS try the LLM first — it produces much better designs than fallbacks
+   643→   643→    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+   644→   644→      try {
+   645→   645→        const zai = await getZAI();
+   646→   646→        const timeoutMs = attempt === 0 ? LLM_TIMEOUT_FIRST : LLM_TIMEOUT_RETRY;
+   647→   647→
+   648→   648→        // Race the LLM call against a timeout
+   649→   649→        const completionPromise = zai.chat.completions.create({
+   650→   650→          messages,
+   651→   651→          thinking: { type: 'disabled' },
+   652→   652→        });
+   653→   653→
+   654→   654→        const timeoutPromise = new Promise<never>((_, reject) =>
+   655→   655→          setTimeout(() => reject(new Error('LLM timeout')), timeoutMs)
+   656→   656→        );
+   657→   657→
+   658→   658→        const completion = await Promise.race([completionPromise, timeoutPromise]);
+   659→   659→        rawResponse = completion.choices[0]?.message?.content || null;
+   660→   660→        tokensUsed = completion.usage?.total_tokens || 0;
+   661→   661→        break; // Success, exit retry loop
+   662→   662→      } catch (llmError) {
+   663→   663→        console.warn(`[Chat API] Z.ai LLM attempt ${attempt + 1} failed:`, llmError instanceof Error ? llmError.message : llmError);
+   664→   664→        if (attempt < maxRetries) {
+   665→   665→          await new Promise((resolve) => setTimeout(resolve, 500));
+   666→   666→        } else {
+   667→   667→          console.error('[Chat API] Z.ai LLM attempts failed, using fallback');
+   668→   668→          usedFallback = true;
+   669→   669→        }
+   670→   670→      }
+   671→   671→    }
+   672→   672→
+   673→   673→    // Parse response: use LLM output or fallback
+   674→   674→    let parsed: { message: string; design: unknown | null };
+   675→   675→
+   676→   676→    if (rawResponse) {
+   677→   677→      parsed = parseAIResponse(rawResponse);
+   678→   678→      if (!parsed.design) {
+   679→   679→        console.warn('[Chat API] LLM response parsed but no design extracted. Raw length:', rawResponse.length, 'First 200:', rawResponse.substring(0, 200));
+   680→   680→        // Try repairLLMJson directly
+   681→   681→        const repaired = repairLLMJson(rawResponse);
+   682→   682→        if (repaired) {
+   683→   683→          try {
+   684→   684→            const repairedParsed = JSON.parse(repaired);
+   685→   685→            if (repairedParsed && typeof repairedParsed === 'object') {
+   686→   686→              const rp = repairedParsed as Record<string, unknown>;
+   687→   687→              if (rp.design || rp.id || rp.type || rp.children) {
+   688→   688→                parsed = {
+   689→   689→                  message: (rp.message as string) || parsed.message,
+   690→   690→                  design: rp.design || rp,
+   691→   691→                };
+   692→   692→                console.log('[Chat API] Design recovered via repairLLMJson!');
+   693→   693→              }
+   694→   694→            }
+   695→   695→          } catch (repairError) {
+   696→   696→            const errMsg = repairError instanceof Error ? repairError.message : String(repairError);
+   697→   697→            const posMatch = errMsg.match(/position (\d+)/);
+   698→   698→            const pos = posMatch ? parseInt(posMatch[1]) : 0;
+   699→   699→            console.warn('[Chat API] repairLLMJson also failed:', errMsg.substring(0, 100));
+   700→   700→            if (pos > 0) {
+   701→   701→              console.warn('[Chat API] Error context (pos', pos, '):', repaired.substring(Math.max(0, pos - 80), pos + 80));
+   702→   702→            }
+   703→   703→
+   704→   704→          }
+   705→   705→        } else {
+   706→   706→          console.warn('[Chat API] repairLLMJson returned null - unable to repair');
+   707→   707→        }
+   708→   708→      } else {
+   709→   709→        console.log('[Chat API] Design parsed successfully!');
+   710→   710→      }
+   711→   711→    } else {
+   712→   712→      // Fallback to hardcoded design generation
+   713→   713→      const fallbackRaw = generateFallbackDesign(message, creativeMode);
+   714→   714→      parsed = parseAIResponse(fallbackRaw);
+   715→   715→    }
+   716→   716→
+   717→   717→    // Store assistant message
+   718→   718→    const assistantMessage = await db.chatMessage.create({
+   719→   719→      data: {
+   720→   720→        projectId,
+   721→   721→        role: 'assistant',
+   722→   722→        content: parsed.message || 'I generated a design for you!',
+   723→   723→        metadata: JSON.stringify({
+   724→   724→          designUpdate: parsed.design || null,
+   725→   725→          tokensUsed,
+   726→   726→          usedFallback,
+   727→   727→          creativeMode: creativeMode || false,
+   728→   728→        }),
+   729→   729→      },
+   730→   730→    });
+   731→   731→
+   732→   732→    // Update project if design was generated
+   733→   733→    if (parsed.design) {
+   734→   734→      await db.project.update({
+   735→   735→        where: { id: projectId },
+   736→   736→        data: { designJSON: JSON.stringify(parsed.design), status: 'IN_PROGRESS' },
+   737→   737→      });
+   738→   738→    }
+   739→   739→
+   740→   740→    return NextResponse.json({
+   741→   741→      id: assistantMessage.id,
+   742→   742→      message: parsed.message || 'I generated a design for you!',
+   743→   743→      design: parsed.design,
+   744→   744→      projectId,
+   745→   745→      createdAt: assistantMessage.createdAt,
+   746→   746→      usedFallback,
+   747→   747→      parseFailed: parsed.parseFailed || false,
+   748→   748→    });
+   749→   749→  } catch (error) {
+   750→   750→    console.error('[Chat API] Error:', error);
+   751→   751→    return NextResponse.json(
+   752→   752→      { error: 'Failed to process chat message', details: error instanceof Error ? error.message : 'Unknown error' },
+   753→   753→      { status: 500 }
+   754→   754→    );
+   755→   755→  }
+   756→   756→}
+   757→   757→
+   758→   758→// ============ GET Handler ============
+   759→   759→
+   760→   760→export async function GET(request: NextRequest) {
+   761→   761→  try {
+   762→   762→    const { searchParams } = new URL(request.url);
+   763→   763→    const projectId = searchParams.get('projectId');
+   764→   764→    if (!projectId) {
+   765→   765→      return NextResponse.json({ error: 'projectId is required' }, { status: 400 });
+   766→   766→    }
+   767→   767→    const messages = await db.chatMessage.findMany({ where: { projectId }, orderBy: { createdAt: 'asc' } });
+   768→   768→    return NextResponse.json({ messages });
+   769→   769→  } catch (error) {
+   770→   770→    console.error('[Chat API] GET Error:', error);
+   771→   771→    return NextResponse.json({ error: 'Failed to retrieve chat history' }, { status: 500 });
+   772→   772→  }
+   773→   773→}
+   774→   774→

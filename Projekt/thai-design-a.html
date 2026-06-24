@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Studio Orathai — Thai-Massage &amp; Wellness in Wien</title>
+<meta name="description" content="Studio Orathai — ein ruhiges Refugium für traditionelle Thai-Massage, Ölanwendungen und asiatische Wellness-Rituale.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#FBF6EA;--surface:#FFFFFF;--surface-2:#F4ECD8;--primary:#2A2118;--primary-soft:#5C4B38;
+--accent:#B0892F;--accent-soft:#D9B96A;--text:#2A2118;--text-muted:#6B5D49;
+--border:#E7DCC4;--border-soft:#F0E8D4;--radius:14px;--radius-sm:8px;--radius-lg:22px;
+--shadow:0 1px 2px rgba(42,33,24,.04),0 8px 30px rgba(42,33,24,.06);
+--ring:0 0 0 1px rgba(176,137,47,.22);
+--font-display:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+--font-body:"Mulish",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+font-family:var(--font-body);background:var(--bg);color:var(--text);
+line-height:1.65;font-weight:400;-webkit-font-smoothing:antialiased;
+overflow-x:hidden;position:relative;
+}
+body::before{
+content:"";position:fixed;inset:0;pointer-events:none;z-index:1000;opacity:.05;
+background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/></svg>");
+mix-blend-mode:multiply;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+:focus-visible{outline:none;box-shadow:var(--ring);border-radius:4px}
+
+.wrap{width:min(1240px,92vw);margin-inline:auto}
+.eyebrow{
+font-family:var(--font-body);font-size:11px;font-weight:600;letter-spacing:.28em;
+text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:14px;
+}
+.eyebrow::before{content:"";width:28px;height:1px;background:var(--accent);opacity:.6}
+.serif-em{font-style:italic;font-weight:500;color:var(--primary-soft);position:relative;padding-bottom:2px}
+.serif-em::after{
+content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--accent);opacity:.4;
+}
+
+/* ===== NAV ===== */
+header.nav{
+position:sticky;top:0;z-index:50;background:rgba(251,246,234,.82);
+backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+border-bottom:1px solid var(--border-soft);
+}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 0;gap:24px}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--font-display);font-size:22px;font-weight:500;letter-spacing:.01em}
+.brand-mark{width:34px;height:34px;color:var(--accent)}
+.brand small{display:block;font-family:var(--font-body);font-size:9px;letter-spacing:.32em;text-transform:uppercase;color:var(--text-muted);font-weight:600;margin-top:-2px}
+.nav-links{display:flex;gap:34px;list-style:none;font-size:13.5px;font-weight:500;color:var(--primary-soft)}
+.nav-links a{position:relative;padding:6px 0;transition:color .3s}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--accent);transition:width .35s ease}
+.nav-links a:hover{color:var(--text)}.nav-links a:hover::after{width:100%}
+.nav-cta{
+background:var(--primary);color:var(--bg);padding:11px 22px;border-radius:var(--radius-sm);
+font-size:13px;font-weight:600;letter-spacing:.02em;transition:transform .15s,background .3s;
+}
+.nav-cta:hover{transform:translateY(-1px);background:var(--primary-soft)}
+.menu-btn{display:none;font-size:13px;font-weight:600;letter-spacing:.04em;padding:8px}
+
+/* ===== HERO ===== */
+.hero{position:relative;padding:80px 0 110px;overflow:hidden}
+.hero::before{
+content:"";position:absolute;top:-20%;right:-10%;width:60%;height:90%;
+background:radial-gradient(circle,rgba(176,137,47,.10),transparent 65%);
+pointer-events:none;z-index:0;
+}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr 1fr;gap:70px;align-items:center}
+.hero-copy h1{
+font-family:var(--font-display);font-weight:500;line-height:1.04;
+font-size:clamp(46px,7vw,86px);letter-spacing:-.018em;color:var(--primary);margin:26px 0 28px;
+}
+.hero-copy h1 em{font-style:italic;font-weight:500;color:var(--primary-soft)}
+.hero-lead{font-size:17px;line-height:1.7;color:var(--text-muted);max-width:480px;margin-bottom:38px;font-weight:300}
+.hero-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.btn-primary{
+background:var(--primary);color:var(--bg);padding:15px 30px;border-radius:var(--radius-sm);
+font-size:13.5px;font-weight:600;letter-spacing:.04em;display:inline-flex;align-items:center;gap:10px;
+transition:transform .15s,box-shadow .3s;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(42,33,24,.18)}
+.btn-primary:active{transform:translateY(0)}
+.btn-ghost{
+padding:15px 4px;font-size:13.5px;font-weight:600;letter-spacing:.04em;color:var(--primary);
+border-bottom:1px solid var(--accent);transition:color .3s;
+}
+.btn-ghost:hover{color:var(--accent)}
+.hero-meta{display:flex;gap:34px;margin-top:54px;padding-top:30px;border-top:1px solid var(--border)}
+.hero-meta div{font-size:12px;color:var(--text-muted);font-weight:500;letter-spacing:.02em}
+.hero-meta strong{display:block;font-family:var(--font-display);font-size:30px;font-weight:500;color:var(--primary);margin-bottom:2px;letter-spacing:-.01em}
+
+.hero-visual{position:relative}
+.hero-img-wrap{
+position:relative;border-radius:var(--radius-lg);overflow:hidden;
+box-shadow:0 30px 70px -25px rgba(42,33,24,.35);aspect-ratio:4/5;
+}
+.hero-img-wrap img{width:100%;height:100%;object-fit:cover}
+.hero-img-wrap::after{
+content:"";position:absolute;inset:0;
+background:linear-gradient(180deg,transparent 55%,rgba(42,33,24,.32));
+}
+.hero-badge{
+position:absolute;bottom:24px;left:24px;right:24px;color:var(--bg);
+font-family:var(--font-display);font-style:italic;font-size:18px;line-height:1.4;
+text-shadow:0 1px 12px rgba(0,0,0,.4);z-index:2;
+}
+.lotus-deco{position:absolute;color:var(--accent);opacity:.18;pointer-events:none;z-index:0}
+.lotus-deco.ld-1{top:-30px;left:-40px;width:140px;transform:rotate(-12deg)}
+.lotus-deco.ld-2{bottom:-50px;right:-30px;width:110px;opacity:.12;transform:rotate(20deg)}
+
+/* ===== INTERLUDE QUOTE ===== */
+.interlude{padding:90px 0;border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft);position:relative}
+.interlude::before{
+content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+width:600px;height:400px;background:radial-gradient(circle,rgba(176,137,47,.06),transparent 70%);pointer-events:none;
+}
+blockquote{
+position:relative;max-width:880px;margin:0 auto;text-align:center;
+font-family:var(--font-display);font-style:italic;font-weight:400;
+font-size:clamp(26px,3.6vw,42px);line-height:1.32;color:var(--primary);letter-spacing:-.005em;
+}
+blockquote::before,blockquote::after{
+content:"";display:block;width:50px;height:1px;background:var(--accent);margin:30px auto;opacity:.5;
+}
+blockquote cite{display:block;font-family:var(--font-body);font-style:normal;font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);margin-top:8px}
+
+/* ===== RITUALS / BENTO ===== */
+.rituals{padding:110px 0 90px}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:54px;flex-wrap:wrap}
+.section-head h2{
+font-family:var(--font-display);font-weight:500;font-size:clamp(34px,4.5vw,56px);
+line-height:1.08;letter-spacing:-.015em;color:var(--primary);max-width:620px;margin-top:18px;
+}
+.section-head h2 em{font-style:italic;color:var(--primary-soft)}
+.section-head p{max-width:340px;color:var(--text-muted);font-size:15px;line-height:1.7;font-weight:300}
+
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+.card{
+background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);
+padding:30px;transition:transform .4s cubic-bezier(.2,.7,.2,1),box-shadow .4s,border-color .4s;
+position:relative;overflow:hidden;
+}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--border)}
+.card-num{font-family:var(--font-display);font-size:13px;font-style:italic;color:var(--accent);letter-spacing:.05em}
+.card h3{
+font-family:var(--font-display);font-weight:500;font-size:26px;line-height:1.15;
+color:var(--primary);margin:14px 0 12px;letter-spacing:-.01em;
+}
+.card p{font-size:14px;color:var(--text-muted);line-height:1.65;font-weight:300}
+.card-foot{display:flex;justify-content:space-between;align-items:center;margin-top:22px;padding-top:18px;border-top:1px solid var(--border-soft)}
+.card-foot .price{font-family:var(--font-display);font-size:20px;color:var(--primary);font-weight:500}
+.card-foot .price span{font-size:12px;color:var(--text-muted);font-family:var(--font-body);font-weight:400}
+.card-foot .dur{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);font-weight:600}
+
+.c-1{grid-column:span 3}
+.c-2{grid-column:span 3}
+.c-3{grid-column:span 2}
+.c-4{grid-column:span 2}
+.c-5{grid-column:span 2}
+
+/* dark inverted card */
+.card-dark{
+grid-column:span 6;background:var(--primary);color:var(--bg);border-color:transparent;
+display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0;overflow:hidden;
+}
+.card-dark .cd-copy{padding:54px}
+.card-dark .cd-num{color:var(--accent-soft)}
+.card-dark h3{color:var(--bg);font-size:34px}
+.card-dark p{color:rgba(251,246,234,.7);max-width:380px}
+.card-dark .card-foot{border-color:rgba(217,185,106,.18)}
+.card-dark .card-foot .price{color:var(--bg)}
+.card-dark .card-foot .price span{color:rgba(251,246,234,.55)}
+.card-dark .cd-img{position:relative;min-height:340px}
+.card-dark .cd-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85}
+.card-dark .cd-img::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(42,33,24,.45),transparent 30%)}
+
+/* ===== PHILOSOPHY ===== */
+.philo{padding:120px 0;position:relative;overflow:hidden}
+.philo::before{
+content:"";position:absolute;top:30%;left:-15%;width:55%;height:80%;
+background:radial-gradient(circle,rgba(176,137,47,.08),transparent 65%);pointer-events:none;
+}
+.philo-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:80px;align-items:center;position:relative;z-index:1}
+.philo-imgs{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:end}
+.philo-imgs .pi{border-radius:var(--radius);overflow:hidden;box-shadow:0 20px 50px -20px rgba(42,33,24,.25)}
+.philo-imgs .pi img{width:100%;height:100%;object-fit:cover}
+.philo-imgs .pi:first-child{aspect-ratio:3/4;margin-bottom:50px}
+.philo-imgs .pi:last-child{aspect-ratio:3/4}
+.philo-copy h2{font-family:var(--font-display);font-weight:500;font-size:clamp(32px,4vw,50px);line-height:1.1;letter-spacing:-.015em;color:var(--primary);margin:18px 0 30px}
+.philo-copy h2 em{font-style:italic;color:var(--primary-soft)}
+.philo-copy p{font-size:16px;color:var(--text-muted);line-height:1.75;margin-bottom:20px;font-weight:300;max-width:520px}
+.philo-copy p .serif-em{color:var(--primary)}
+.founder{
+display:flex;align-items:center;gap:18px;margin-top:36px;padding-top:30px;border-top:1px solid var(--border);max-width:520px;
+}
+.founder-img{width:64px;height:64px;border-radius:50%;overflow:hidden;flex-shrink:0;box-shadow:0 6px 18px rgba(42,33,24,.15)}
+.founder-img img{width:100%;height:100%;object-fit:cover}
+.founder-name{font-family:var(--font-display);font-size:20px;font-weight:500;color:var(--primary)}
+.founder-role{font-size:12px;color:var(--text-muted);letter-spacing:.04em}
+
+/* ===== PREISE ===== */
+.preise{padding:110px 0;background:var(--surface-2);position:relative}
+.preise::before{
+content:"";position:absolute;inset:0;
+background-image:
+radial-gradient(circle at 15% 20%,rgba(176,137,47,.05),transparent 40%),
+radial-gradient(circle at 85% 80%,rgba(176,137,47,.04),transparent 40%);
+pointer-events:none;
+}
+.preise-inner{position:relative;z-index:1}
+.preise-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:54px}
+.tier{
+background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);
+padding:38px 32px;transition:transform .35s,box-shadow .35s,border-color .35s;
+}
+.tier:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--border)}
+.tier-name{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.tier h3{font-family:var(--font-display);font-size:30px;font-weight:500;color:var(--primary);margin:14px 0 8px;letter-spacing:-.01em}
+.tier-desc{font-size:13.5px;color:var(--text-muted);line-height:1.6;font-weight:300;min-height:42px;margin-bottom:24px}
+.tier-price{font-family:var(--font-display);font-size:48px;font-weight:500;color:var(--primary);letter-spacing:-.02em;line-height:1}
+.tier-price small{font-family:var(--font-body);font-size:13px;color:var(--text-muted);font-weight:400;letter-spacing:0}
+.tier-list{list-style:none;margin:26px 0 30px;padding-top:24px;border-top:1px solid var(--border-soft)}
+.tier-list li{font-size:14px;color:var(--primary-soft);padding:9px 0;display:flex;gap:12px;align-items:flex-start;line-height:1.5;font-weight:400}
+.tier-list li::before{content:"";width:14px;height:1px;background:var(--accent);margin-top:11px;flex-shrink:0}
+.tier-cta{
+display:block;text-align:center;padding:13px;border-radius:var(--radius-sm);
+font-size:13px;font-weight:600;letter-spacing:.04em;border:1px solid var(--border);
+color:var(--primary);transition:all .3s;
+}
+.tier-cta:hover{background:var(--primary);color:var(--bg);border-color:var(--primary)}
+.tier.featured{background:var(--primary);color:var(--bg);border-color:transparent;position:relative}
+.tier.featured::before{
+content:"Empfohlen";position:absolute;top:24px;right:24px;
+font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--primary);
+background:var(--accent-soft);padding:5px 10px;border-radius:20px;font-weight:700;
+}
+.tier.featured .tier-name{color:var(--accent-soft)}
+.tier.featured h3{color:var(--bg)}
+.tier.featured .tier-desc{color:rgba(251,246,234,.65)}
+.tier.featured .tier-price{color:var(--bg)}
+.tier.featured .tier-price small{color:rgba(251,246,234,.55)}
+.tier.featured .tier-list{border-color:rgba(217,185,106,.18)}
+.tier.featured .tier-list li{color:rgba(251,246,234,.85)}
+.tier.featured .tier-list li::before{background:var(--accent-soft)}
+.tier.featured .tier-cta{background:var(--accent);color:var(--primary);border-color:var(--accent);font-weight:700}
+.tier.featured .tier-cta:hover{background:var(--accent-soft);border-color:var(--accent-soft)}
+
+/* ===== KONTAKT / BOOKING ===== */
+.kontakt{padding:120px 0;position:relative;overflow:hidden}
+.kontakt::before{
+content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+width:900px;height:700px;
+background:radial-gradient(ellipse,rgba(176,137,47,.12),transparent 60%);
+pointer-events:none;
+}
+.booking{
+background:var(--primary);color:var(--bg);border-radius:var(--radius-lg);
+padding:70px;display:grid;grid-template-columns:1fr 1fr;gap:60px;
+position:relative;overflow:hidden;box-shadow:0 40px 90px -30px rgba(42,33,24,.5);
+}
+.booking::before{
+content:"";position:absolute;top:-30%;right:-20%;width:60%;height:140%;
+background:radial-gradient(circle,rgba(176,137,47,.22),transparent 60%);pointer-events:none;
+}
+.booking-copy{position:relative;z-index:2}
+.booking-copy .eyebrow{color:var(--accent-soft)}
+.booking-copy .eyebrow::before{background:var(--accent-soft)}
+.booking-copy h2{font-family:var(--font-display);font-weight:500;font-size:clamp(34px,4.2vw,52px);line-height:1.08;letter-spacing:-.015em;color:var(--bg);margin:20px 0 22px}
+.booking-copy h2 em{font-style:italic;color:var(--accent-soft)}
+.booking-copy p{font-size:15px;color:rgba(251,246,234,.7);line-height:1.7;margin-bottom:34px;font-weight:300;max-width:380px}
+.k-info{display:flex;flex-direction:column;gap:18px;font-size:14px;color:rgba(251,246,234,.85)}
+.k-info div{display:flex;gap:14px;align-items:baseline}
+.k-info strong{font-family:var(--font-display);font-size:16px;font-weight:500;color:var(--bg);min-width:90px}
+.k-info span{color:rgba(251,246,234,.7);font-weight:300}
+
+.booking-form{position:relative;z-index:2;display:flex;flex-direction:column;gap:18px}
+.bf-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-soft);font-weight:600}
+.field input,.field select{
+background:transparent;border:0;border-bottom:1px solid rgba(217,185,106,.3);
+color:var(--bg);font-family:var(--font-body);font-size:15px;padding:10px 0;border-radius:0;
+transition:border-color .3s;font-weight:400;
+}
+.field input::placeholder{color:rgba(251,246,234,.4)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--accent-soft)}
+.field select option{background:var(--primary);color:var(--bg)}
+.bf-submit{
+margin-top:14px;background:var(--accent);color:var(--primary);padding:16px 28px;
+border-radius:var(--radius-sm);font-size:13.5px;font-weight:700;letter-spacing:.05em;
+transition:transform .15s,background .3s;display:inline-flex;align-items:center;justify-content:center;gap:10px;
+}
+.bf-submit:hover{background:var(--accent-soft);transform:translateY(-1px)}
+.bf-submit:active{transform:translateY(0)}
+.bf-hint{font-size:11px;color:rgba(251,246,234,.5);text-align:center;letter-spacing:.02em;margin-top:-4px}
+
+/* ===== FOOTER ===== */
+footer{padding:60px 0 40px;border-top:1px solid var(--border-soft)}
+.foot-grid{display:flex;justify-content:space-between;align-items:center;gap:30px;flex-wrap:wrap}
+.foot-brand{display:flex;align-items:center;gap:12px;font-family:var(--font-display);font-size:18px;color:var(--primary)}
+.foot-brand svg{width:26px;height:26px;color:var(--accent)}
+.foot-meta{font-size:12px;color:var(--text-muted);letter-spacing:.02em}
+.foot-links{display:flex;gap:24px;font-size:13px;color:var(--primary-soft)}
+.foot-links a{transition:color .3s}.foot-links a:hover{color:var(--accent)}
+
+/* ===== REVEAL ===== */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:980px){
+.hero{padding:60px 0 80px}
+.hero-grid{grid-template-columns:1fr;gap:50px}
+.hero-visual{max-width:480px;margin:0 auto;width:100%}
+.philo-grid{grid-template-columns:1fr;gap:50px}
+.philo-imgs{max-width:480px;margin:0 auto}
+.bento{grid-template-columns:repeat(2,1fr)}
+.c-1,.c-2,.c-3,.c-4,.c-5{grid-column:span 2}
+.card-dark{grid-column:span 2;grid-template-columns:1fr}
+.card-dark .cd-img{min-height:240px;order:-1}
+.booking{grid-template-columns:1fr;padding:44px;gap:40px}
+.preise-grid{grid-template-columns:1fr;max-width:480px;margin-inline:auto}
+.nav-links{display:none}
+.menu-btn{display:block}
+.section-head{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:560px){
+.bento{grid-template-columns:1fr}
+.c-1,.c-2,.c-3,.c-4,.c-5,.card-dark{grid-column:span 1}
+.bf-row{grid-template-columns:1fr}
+.hero-meta{flex-direction:column;gap:18px}
+.booking{padding:32px 24px}
+.card-dark .cd-copy{padding:32px}
+}
+@media(prefers-reduced-motion:reduce){
+*{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+.reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<header class="nav">
+<div class="wrap nav-inner">
+<a href="#" class="brand" aria-label="Studio Orathai — Startseite">
+<svg class="brand-mark" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
+<circle cx="20" cy="20" r="18.5" opacity=".35"/>
+<path d="M20 7c-3 4-3 8 0 12 3-4 3-8 0-12zM20 33c-3-4-3-8 0-12 3 4 3 8 0 12zM7 20c4-3 8-3 12 0-4 3-8 3-12 0zM33 20c-4 3-8 3-12 0 4-3 8-3 12 0z"/>
+<path d="M20 14c-1.6 2-1.6 4 0 6 1.6-2 1.6-4 0-6zM20 20c-2-1.6-4-1.6-6 0 2 1.6 4 1.6 6 0zM20 20c2 1.6 4 1.6 6 0-2-1.6-4-1.6-6 0z" opacity=".7"/>
+</svg>
+<span>Studio Orathai<small>Thai · Wellness · Wien</small></span>
+</a>
+<nav>
+<ul class="nav-links">
+<li><a href="#rituale">Rituale</a></li>
+<li><a href="#philosophie">Philosophie</a></li>
+<li><a href="#preise">Preise</a></li>
+<li><a href="#kontakt">Kontakt</a></li>
+</ul>
+</nav>
+<a href="#kontakt" class="nav-cta">Termin anfragen</a>
+<button class="menu-btn" aria-label="Menü öffnen">Menü</button>
+</div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+<svg class="lotus-deco ld-1" viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true">
+<path d="M60 15c-6 10-6 20 0 30 6-10 6-20 0-30zM60 105c-6-10-6-20 0-30 6 10 6 20 0 30zM15 60c10-6 20-6 30 0-10 6-20 6-30 0zM105 60c-10 6-20 6-30 0 10-6 20-6 30 0z"/>
+<path d="M60 35c-4 6-4 12 0 18 4-6 4-12 0-18zM60 85c-4-6-4-12 0-18 4 6 4 12 0 18zM35 60c6-4 12-4 18 0-6 4-12 4-18 0zM85 60c-6 4-12 4-18 0 6-4 12-4 18 0z" opacity=".6"/>
+<circle cx="60" cy="60" r="3" fill="currentColor"/>
+</svg>
+<div class="wrap hero-grid">
+<div class="hero-copy reveal">
+<span class="eyebrow">Studio Orathai · seit 2009</span>
+<h1>Stille, die der <em>Körper</em><br>sich erinnert.</h1>
+<p class="hero-lead">Im Herzen Wiens öffnen wir jeden Tag ein stilles Zimmer. Hier arbeitet die Hand, was der Tag angespannt hat — nach der Überlieferung nördlich-thailändischer Heilkunst, ohne Eile, ohne Schema.</p>
+<div class="hero-actions">
+<a href="#kontakt" class="btn-primary">Termin reservieren
+<svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1 5h12M9 1l4 4-4 4"/></svg>
+</a>
+<a href="#rituale" class="btn-ghost">Rituale ansehen</a>
+</div>
+<div class="hero-meta">
+<div><strong>14</strong>Jahre Praxis</div>
+<div><strong>7</strong>Therapeut:innen</div>
+<div><strong>4.9</strong>über 600 Stimmen</div>
+</div>
+</div>
+<div class="hero-visual reveal">
+<div class="hero-img-wrap">
+<img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=900&q=80" alt="Hände einer Masseurin bei einer sanften Thai-Massage in warmem Licht" loading="eager">
+<p class="hero-badge">„Die Tür fällt leiser zu, als die Welt draußen atmet.“</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ===== INTERLUDE ===== -->
+<section class="interlude">
+<div class="wrap">
+<blockquote class="reveal">
+„Eine gute Massage erzählt keine Geschichte.<br>
+Sie <span class="serif-em">löscht</span> sie — sanft, vom Rand her, bis nur noch der Atem bleibt.“
+<cite>— Khun Orathai Suphaphon, Gründerin</cite>
+</blockquote>
+</div>
+</section>
+
+<!-- ===== RITUALS / BENTO ===== -->
+<section class="rituals" id="rituale">
+<div class="wrap">
+<div class="section-head reveal">
+<div>
+<span class="eyebrow">Die Rituale</span>
+<h2>Vier Wege, zur Ruhe zu <em>kommen</em>.</h2>
+</div>
+<p>Jede Anwendung folgt einem überlieferten Ablauf — und doch keiner Routine. Wir lesen Ihren Körper, bevor wir ihn berühren.</p>
+</div>
+
+<div class="bento">
+<article class="card c-1 reveal">
+<span class="card-num">No. 01 · Traditionell</span>
+<h3>Nuad Thai — die Original-<br>Überlieferung</h3>
+<p>Akupressur entlang der Sen-Energie­linien, gefolgt von sanften Dehnungen. Kleidung bleibt an. Die älteste Form, noch immer die tiefste.</p>
+<div class="card-foot">
+<div class="price">€ 89 <span>/ 60 Min.</span></div>
+<div class="dur">Ganzkörper</div>
+</div>
+</article>
+
+<article class="card c-2 reveal">
+<span class="card-num">No. 02 · Öl &amp; Wärme</span>
+<h3>Aroma-Öl-Massage<br>mit warmem Balsam</h3>
+<p>Warmer Kräuterbalsam auf Jojoba-Basis, in langsamen, langen Strichen geführt. Löst Verspannungen im Rücken und beruhigt das Nervensystem.</p>
+<div class="card-foot">
+<div class="price">€ 95 <span>/ 75 Min.</span></div>
+<div class="dur">Rücken · Aroma</div>
+</div>
+</article>
+
+<article class="card c-3 reveal">
+<span class="card-num">No. 03</span>
+<h3>Kräuter-Stempel</h3>
+<p>Gedämpfte Kräuter­säckchen auf den Meridian­punkten.</p>
+<div class="card-foot">
+<div class="price">€ 79 <span>/ 50 Min.</span></div>
+<div class="dur">Lokal</div>
+</div>
+</article>
+
+<article class="card c-4 reveal">
+<span class="card-num">No. 04</span>
+<h3>Fuß-Reflexzono</h3>
+<p>Druckpunkte der Fußsohle, die den ganzen Körper ansprechen.</p>
+<div class="card-foot">
+<div class="price">€ 59 <span>/ 40 Min.</span></div>
+<div class="dur">Füße</div>
+</div>
+</article>
+
+<article class="card c-5 reveal">
+<span class="card-num">No. 05</span>
+<h3>Kopf &amp; Schultern</h3>
+<p>Löst den Kopf frei — bei Über­lastung, Bildschirm-Müdigkeit.</p>
+<div class="card-foot">
+<div class="price">€ 49 <span>/ 30 Min.</span></div>
+<div class="dur">Oben</div>
+</div>
+</article>
+
+<article class="card card-dark reveal">
+<div class="cd-copy">
+<span class="card-num cd-num">No. 06 · Das Erlebnis</span>
+<h3>Lanna-Ritual —<br>2½ Stunden Stille.</h3>
+<p>Ein Nachmittag in drei Gängen: Fußbad mit Bergsalz, Nuad Thai in Seidenkleidung, warmer Kräuterbalsam zum Abschluss. Serviert mit Jasmin-Tee im Ruheraum. Unser tiefstes Angebot — für Tage, an denen man wirklich ankommen möchte.</p>
+<div class="card-foot">
+<div class="price">€ 189 <span>/ 150 Min.</span></div>
+<div class="dur">Premium-Ritual</div>
+</div>
+</div>
+<div class="cd-img">
+<img src="https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?auto=format&fit=crop&w=800&q=80" alt="Mit warmen Steinen und Kräutern arrangierte Spa-Oberfläche in sanftem Licht" loading="lazy">
+</div>
+</article>
+</div>
+</div>
+</section>
+
+<!-- ===== PHILOSOPHY ===== -->
+<section class="philo" id="philosophie">
+<div class="wrap philo-grid">
+<div class="philo-imgs reveal">
+<div class="pi"><img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80" alt="Eine Therapeutin in traditioneller Kleidung bereitet Kräuter vor" loading="lazy"></div>
+<div class="pi"><img src="https://images.unsplash.com/photo-1591343395082-e120087004b4?auto=format&fit=crop&w=600&q=80" alt="Hände beim Mörsern von frischen Kräutern in einem Steingefäß" loading="lazy"></div>
+</div>
+<div class="philo-copy reveal">
+<span class="eyebrow">Die Gründerin</span>
+<h2>Khun Orathai — eine Hand, die <em>weiß</em>, wohin sie gehört.</h2>
+<p>Aufgewachsen in Chiang Mai, im Haus der Großmutter, die noch behandelte, was die Ärzte nicht reachten. Mit siebzehn das erste Mal im Wat Pho-Tempel in Bangkok, später vier Jahre Ausbildung am renommierten <span class="serif-em">Old Medicine Hospital</span>.</p>
+<p>Seit 2009 lebt und arbeitet sie in Wien — mit einem Team aus sieben Therapeut:innen, die sie selbst ausgebildet hat. Jede Behandlung im Studio trägt ihre Handschrift, auch wenn ihre Hände ruhen.</p>
+<div class="founder">
+<div class="founder-img"><img src="https://images.unsplash.com/photo-1614608682850-e0fbf9f27885?auto=format&fit=crop&w=200&q=80" alt="Porträt von Khun Orathai Suphaphon" loading="lazy"></div>
+<div>
+<div class="founder-name">Orathai Suphaphon</div>
+<div class="founder-role">Zertifizierte Nuad-Thai-Meisterin · Wat Pho-Lineage</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ===== PREISE ===== -->
+<section class="preise" id="preise">
+<div class="wrap preise-inner">
+<div class="section-head reveal">
+<div>
+<span class="eyebrow">Angebote</span>
+<h2>Drei Wege, öfter <em>zu kommen</em>.</h2>
+</div>
+<p>Mitglieder genießen bevorzugte Termine, festen Therapeuten und eine Stunde gratis zum Geburtstag.</p>
+</div>
+
+<div class="preise-grid">
+<div class="tier reveal">
+<div class="tier-name">Einzelbesuch</div>
+<h3>Offene Stunde</h3>
+<p class="tier-desc">Flexibel buchen, jederzeit kommen — kein Vertrag, keine Bindung.</p>
+<div class="tier-price">€ 89<small> / ab 60 Min.</small></div>
+<ul class="tier-list">
+<li>Alle Rituale einzeln wählbar</li>
+<li>Online-Termin 24 h im Voraus</li>
+<li>Jasmin-Tee &amp; Ruheraum inklusive</li>
+<li>Keine Anzahlung, Storno 12 h frei</li>
+</ul>
+<a href="#kontakt" class="tier-cta">Einzelnen Termin buchen</a>
+</div>
+
+<div class="tier featured reveal">
+<div class="tier-name">Monatskarte</div>
+<h3>Orathai-Kreis</h3>
+<p class="tier-desc">Vier Anwendungen pro Monat — für alle, die Stille zur Gewohnheit machen.</p>
+<div class="tier-price">€ 299<small> / Monat</small></div>
+<ul class="tier-list">
+<li>4 Rituale nach Wahl, übertragbar</li>
+<li>Fester Therapeut nach Wunsch</li>
+<li>Vorzugstermine ab 8:00 Uhr</li>
+<li>1 zusätzliche Stunde geschenkt</li>
+<li>10 % auf alle Add-ons</li>
+</ul>
+<a href="#kontakt" class="tier-cta">Mitglied werden</a>
+</div>
+
+<div class="tier reveal">
+<div class="tier-name">Jahrespass</div>
+<h3>Lanna-Jahr</h3>
+<p class="tier-desc">Das ganze Studio für ein Jahr — die tiefste Ersparnis, das tiefste Ankommen.</p>
+<div class="tier-price">€ 2.880<small> / Jahr</small></div>
+<ul class="tier-list">
+<li>48 Anwendungen, frei verteilbar</li>
+<li>2× Lanna-Ritual inklusive</li>
+<li>Pauschalpreis, 2 Monate gespart</li>
+<li>Priorisierte Warteliste</li>
+</ul>
+<a href="#kontakt" class="tier-cta">Anfrage senden</a>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ===== KONTAKT ===== -->
+<section class="kontakt" id="kontakt">
+<div class="wrap">
+<div class="booking reveal">
+<div class="booking-copy">
+<span class="eyebrow">Reservierung</span>
+<h2>Ein stiller Raum<br>wartet auf <em>Sie</em>.</h2>
+<p>Wir nehmen Anfragen für die kommenden 14 Tage entgegen. Bestätigung erfolgt persönlich per Telefon — wir melden uns innerhalb eines Werktages.</p>
+<div class="k-info">
+<div><strong>Adresse</strong><span>Lindengasse 18, 1070 Wien</span></div>
+<div><strong>Telefon</strong><span>+43 1 524 88 19</span></div>
+<div><strong>Öffnungs­zeiten</strong><span>Di–Sa · 9:00 – 20:00 Uhr</span></div>
+<div><strong>E-Mail</strong><span>willkommen@orathai-studio.at</span></div>
+</div>
+</div>
+<form class="booking-form" onsubmit="event.preventDefault();this.querySelector('.bf-submit').textContent='Wir melden uns ✓';">
+<div class="bf-row">
+<div class="field">
+<label for="vn">Vorname</label>
+<input id="vn" type="text" placeholder="Ihr Name" required>
+</div>
+<div class="field">
+<label for="tel">Telefon</label>
+<input id="tel" type="tel" placeholder="+43 …" required>
+</div>
+</div>
+<div class="field">
+<label for="rit">Wunsch-Ritual</label>
+<select id="rit">
+<option>Nuad Thai · 60 Min · € 89</option>
+<option>Aroma-Öl-Massage · 75 Min · € 95</option>
+<option>Kräuter-Stempel · 50 Min · € 79</option>
+<option>Fuß-Reflexzono · 40 Min · € 59</option>
+<option>Lanna-Ritual · 150 Min · € 189</option>
+<option>Noch unentschieden — beraten mich</option>
+</select>
+</div>
+<div class="bf-row">
+<div class="field">
+<label for="tag">Wunsch-Tag</label>
+<input id="tag" type="date">
+</div>
+<div class="field">
+<label for="zeit">Zeit</label>
+<input id="zeit" type="time">
+</div>
+</div>
+<button type="submit" class="bf-submit">Anfrage absenden
+<svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M1 5h12M9 1l4 4-4 4"/></svg>
+</button>
+<p class="bf-hint">Mit dem Absenden stimmen Sie der Verarbeitung Ihrer Daten zur Termin­anfrage zu.</p>
+</form>
+</div>
+</div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+<div class="wrap foot-grid">
+<div class="foot-brand">
+<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
+<circle cx="20" cy="20" r="18.5" opacity=".35"/>
+<path d="M20 7c-3 4-3 8 0 12 3-4 3-8 0-12zM20 33c-3-4-3-8 0-12 3 4 3 8 0 12zM7 20c4-3 8-3 12 0-4 3-8 3-12 0zM33 20c-4 3-8 3-12 0 4-3 8-3 12 0z"/>
+</svg>
+Studio Orathai
+</div>
+<nav class="foot-links">
+<a href="#rituale">Rituale</a>
+<a href="#philosophie">Studio</a>
+<a href="#preise">Preise</a>
+<a href="#kontakt">Kontakt</a>
+<a href="#">Impressum</a>
+<a href="#">Datenschutz</a>
+</nav>
+<div class="foot-meta">© 2024 Studio Orathai · Lindengasse 18, 1070 Wien</div>
+</div>
+</footer>
+
+<script>
+// Reveal on scroll
+const io=new IntersectionObserver((es)=>{
+es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
+},{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach((el,i)=>{
+el.style.transitionDelay=(i%4*0.08)+'s';
+io.observe(el);
+});
+// Mobile menu toggle
+const mb=document.querySelector('.menu-btn');
+const nl=document.querySelector('.nav-links');
+if(mb&&nl){mb.addEventListener('click',()=>{
+const o=nl.style.display==='flex';
+nl.style.display=o?'':'flex';
+nl.style.flexDirection='column';
+nl.style.position='absolute';
+nl.style.top='70px';
+nl.style.left='0';
+nl.style.right='0';
+nl.style.background='var(--bg)';
+nl.style.padding='24px 8vw';
+nl.style.borderBottom='1px solid var(--border)';
+nl.style.gap='18px';
+});}
+</script>
+</body>
+</html>

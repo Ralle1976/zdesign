@@ -1,0 +1,453 @@
+     1→---
+     2→Task ID: 3b
+     3→Agent: Full-Stack Developer - Smart Contextual Fallbacks
+     4→Task: Implement smart contextual fallbacks for broken LLM JSON responses
+     5→
+     6→Work Log:
+     7→
+     8→### 1. Added `generateContextualFallback` function in `/src/app/api/chat/route.ts`
+     9→
+    10→New function that generates HIGH-QUALITY, topic-aware fallback designs when LLM returns a response but both JSON parsing AND repairLLMJson fail. Key features:
+    11→- **8 topic templates**: Fitness (FitPulse), Restaurant (Saveur), Crypto/Web3 (ChainVault), Education (LearnHub), E-Commerce (StyleMart), Blog (InkWell), Portfolio (CreativeFolio), Travel (WanderPath)
+    12→- Each template has: brand name, custom primary/accent colors, hero emoji, 6 contextual feature cards (with emojis), CTA text, testimonial, footer description
+    13→- **Keyword matching**: Scans both user message AND extracted LLM message text for topic keywords with partial matching
+    14→- Generates full landing page designs with 7 sections: Navigation, Hero, Trusted By, Features (6 cards via `.map()`), Testimonials (3 cards), CTA, Footer
+    15→- Supports Creative Mode (alternative hero text)
+    16→- Topic-aware color scheme: each template uses its own primaryColor, primaryDark, and accentLight throughout
+    17→
+    18→### 2. Updated POST handler fallback logic in `/src/app/api/chat/route.ts`
+    19→
+    20→- After `repairLLMJson` also fails and `rawResponse` exists, the handler now:
+    21→  1. Extracts the LLM's message text via regex: `"message"\s*:\s*"([^"]+)"`
+    22→  2. Calls `generateContextualFallback(message, llmMessage, creativeMode)` with both the user's original message AND the LLM's description
+    23→  3. Parses the contextual fallback as the response
+    24→  4. Sets `templateUsed = true` to flag this as a template-based design
+    25→- Added `templateUsed` flag to the API response JSON (alongside existing `usedFallback`)
+    26→- Changed `parseFailed` to be `!parsed.design` (true only when no design at all could be generated)
+    27→- When LLM is completely unavailable (rawResponse is null), the existing `generateFallbackDesign` is still used with `usedFallback = true`
+    28→
+    29→### 3. Added `templateUsed` to `ChatMessageMeta` type in `/src/types/design.ts`
+    30→
+    31→- Added `templateUsed?: boolean` field to the `ChatMessageMeta` interface
+    32→
+    33→### 4. Updated ChatPanel for positive UX in `/src/components/zdesign/ChatPanel.tsx`
+    34→
+    35→**Removed:**
+    36→- `onRetryParse` prop from `MessageBubble` component
+    37→- `handleRetryParse` callback function
+    38→- Amber warning banner with AlertTriangle icon and "Retry" button for parse failures
+    39→- `AlertTriangle` and `RefreshCw` imports from lucide-react
+    40→
+    41→**Added:**
+    42→- `isTemplateUsed` flag in MessageBubble: detects when `message.metadata?.templateUsed` is true
+    43→- Blue info text below assistant messages when template was used: "✨ AI-guided template — You can customize this design by telling me what to change!" (sky-600/sky-400 color, Sparkles icon, animated entrance)
+    44→- Positive framing: Changed `usedFallback` system message from amber warning to positive info text with ✨ emoji
+    45→- Parse failure fallback (edge case when even contextual fallback fails): Changed from amber warning with Retry button to simple system message: "I had trouble generating your design. Please try describing what you'd like again!"
+    46→- AI message metadata now includes `templateUsed` from API response
+    47→
+    48→### Verification
+    49→- ESLint passes cleanly with no errors
+    50→- All changes are backward-compatible — existing functionality preserved
+    51→
+    52→Work Log:
+    53→- Added new TypeScript types for AIProviderConfig, AIModelConfig, GenerationProgress, DesignQualityReport, QualityIssue
+    54→- Updated Zustand store with provider settings state (activeProviderId, activeModelId, providerApiKey, hasCapability, getActiveProvider, getActiveModel)
+    55→- Added Creative Mode state (creativeMode, setCreativeMode)
+    56→- Added Generation Progress state (generationProgress, setGenerationProgress, resetGenerationProgress)
+    57→- Added Design Quality state (qualityReport, setQualityReport)
+    58→- Created ProviderSettings component with 3 tabs (Providers, Capabilities, API Keys)
+    59→- Implemented model capability validation with capability badges and feature requirement checking
+    60→- Updated CanvasArea with step-by-step generation progress indicator (analyzing → generating → rendering → evaluating → complete)
+    61→- Added design quality scoring overlay on canvas
+    62→- Updated ChatPanel with progress simulation during generation and quality evaluation after design is generated
+    63→- Updated TopToolbar with Providers button and Creative Mode toggle
+    64→- Added i18n translations for all new features (English + German)
+    65→- Fixed CSS property mapping bug (borderBottom → border-bottom warning)
+    66→- Fixed missing creativeMode implementation in store
+    67→- Fixed Z.ai model missing 'image' capability
+    68→
+    69→Stage Summary:
+    70→- Provider Settings UI: Complete with 4 providers (Z.ai, OpenAI, Anthropic, Google AI), capability badges, model selection, API key management
+    71→- Progress Indicator: 4-step progress (analyzing, generating, rendering, evaluating) with percentage and time estimates
+    72→- Creative Mode: Optional toggle with amber visual indicator
+    73→- Design Quality: Client-side quality evaluation scoring (completeness, CSS validity, semantics, responsiveness, accessibility)
+    74→- All features verified working via Agent Browser testing
+    75→
+    76→---
+    77→Task ID: 2
+    78→Agent: Full-Stack Developer - Core API Fixes
+    79→Task: Fix Chat API and build Quality Evaluation system
+    80→
+    81→Work Log:
+    82→
+    83→### 1. Fixed Chat API (`/src/app/api/chat/route.ts`)
+    84→- **Increased LLM timeout**: `LLM_TIMEOUT_MS` changed from 12000ms (12s) to 30000ms (30s)
+    85→- **Removed shouldTryLLM check**: Previously, messages longer than 100 characters would skip the LLM entirely and go straight to fallback. This was a critical bug — now the LLM is ALWAYS tried first.
+    86→- **Increased retries**: `maxRetries` changed from 1 to 2, giving 3 total attempts
+    87→- **Added Creative Mode support**: New `creativeMode` field in request body; when true, appends a creative prompt encouraging bold/experimental designs with unique layouts, unconventional colors, and innovative patterns
+    88→- **Improved fallback designs**: Significantly enhanced all fallback design templates:
+    89→  - Landing page: Added trusted-by logos section, 6 feature cards (was 3), testimonials section with avatar cards, gradient CTA section, multi-column footer with links, and footer bottom bar
+    90→  - Dashboard: Added activity feed with avatar cards, 2-column layout (chart + activity), better metric cards with more descriptive change indicators
+    91→  - **New**: Portfolio/showcase design with dark theme, project gallery grid, and clean navigation
+    92→  - Default: Added badge, gradient background, dual CTA buttons, and navigation links
+    93→- **Creative Mode in fallbacks**: Landing page fallback now adapts heading text when creativeMode is enabled
+    94→- **Metadata tracking**: Assistant message metadata now includes `creativeMode` flag
+    95→
+    96→### 2. Created Quality Evaluation API (`/src/app/api/design/evaluate/route.ts`)
+    97→- Pure rule-based evaluation (NO LLM calls needed)
+    98→- **5 evaluation dimensions** with weighted scoring:
+    99→  - Completeness (25%): Checks for nav, footer, sections, headings, buttons, text, node count
+   100→  - CSS Validity (20%): Detects Tailwind shorthand values, empty/invalid values, missing font-family
+   101→  - Semantics (20%): Checks for div-itis, missing meta.name on sections, heading hierarchy
+   102→  - Responsiveness (20%): Detects fixed widths on containers, missing flex/grid layouts, hardcoded font sizes
+   103→  - Accessibility (15%): Checks image alt text, button labels, link content, input labels, heading hierarchy, color contrast
+   104→- Returns comprehensive `QualityReport` with: overallScore, individual dimension scores, sorted issues (critical→warning→info), and actionable suggestions
+   105→- Auto-fixable flag on issues to guide the Enhancement API
+   106→
+   107→### 3. Created Enhancement API (`/src/app/api/design/enhance/route.ts`)
+   108→- Tries LLM enhancement first (25s timeout), falls back to rule-based
+   109→- **LLM enhancement**: Sends design + quality report issues to LLM with a specialized system prompt
+   110→- **Rule-based enhancement fallback**:
+   111→  - Adds missing fontFamily, minHeight, width, display to root
+   112→  - Adds meta.name to unnamed sections
+   113→  - Prepends nav and appends footer when completeness is low
+   114→  - Fixes Tailwind shorthand values → real CSS values (xs→12px, sm→14px, md→16px, etc.)
+   115→  - Removes empty/undefined/null CSS values
+   116→- Returns `enhancedDesign` + `method` (llm or rules)
+   117→
+   118→### 4. Created Provider Verification API (`/src/app/api/providers/verify/route.ts`)
+   119→- Verifies AI provider connectivity and capabilities
+   120→- **Z.ai**: Makes a quick test call to verify the built-in provider works; returns all capabilities as true
+   121→- **OpenAI**: Calls `/v1/models` endpoint, parses available models to determine text/vision/image/code capabilities
+   122→- **Anthropic**: Calls `/v1/models` with API key header, checks for Claude models
+   123→- **Google AI**: Calls Gemini models endpoint with API key, checks for Gemini models
+   124→- Returns proper error states: 'no_key', 'error', 'unverified'
+   125→- All external API calls have 8-10s timeouts to prevent hanging
+   126→
+   127→### Verification
+   128→- ESLint passes cleanly with no errors
+   129→- All 4 API routes compile and are ready for use
+   130→
+   131→---
+   132→Task ID: 3
+   133→Agent: Full-Stack Developer - UI Quality Improvements
+   134→Task: Improve Provider Settings UI, add Quality Report display, and fix UI issues
+   135→
+   136→Work Log:
+   137→
+   138→### 1. Created API Routes
+   139→
+   140→**`/src/app/api/providers/verify/route.ts`** - Provider verification endpoint
+   141→- POST endpoint accepting providerId, apiKey, modelId
+   142→- Z.ai provider: Makes actual LLM test call to verify connectivity, returns capabilities
+   143→- Third-party providers: Validates API key format (prefix check + length check), returns expected capabilities
+   144→- Returns success/failure with capabilities list and human-readable message
+   145→
+   146→**`/src/app/api/design/evaluate/route.ts`** - Server-side design quality evaluation
+   147→- POST endpoint accepting designTree
+   148→- 5 evaluation dimensions: Completeness (25%), CSS Validity (20%), Semantics (20%), Responsiveness (20%), Accessibility (15%)
+   149→- Checks for missing nav/footer/content sections, Tailwind shorthand in CSS, semantic HTML tags, responsive layouts, heading hierarchy, image alt text
+   150→- Returns QualityIssue array with severity levels and autoFixable flags
+   151→- Returns actionable suggestions for improvement
+   152→
+   153→**`/src/app/api/design/enhance/route.ts`** - Design auto-enhancement endpoint
+   154→- POST endpoint accepting designTree and optional qualityReport
+   155→- Adds missing navigation section with logo and links
+   156→- Adds missing footer section
+   157→- Upgrades generic containers to semantic sections
+   158→- Adds max-width to wide sections for responsiveness
+   159→- Adds alt text labels to images
+   160→- Adds heading hierarchy (h1) when missing
+   161→- Re-evaluates enhanced design and returns new quality report
+   162→- Returns list of applied enhancements
+   163→
+   164→### 2. Updated ProviderSettings (`/src/components/zdesign/ProviderSettings.tsx`)
+   165→- Added `VerificationResult` interface for type safety
+   166→- Updated `ProviderCard` component to accept `verificationState` and `onVerify` props
+   167→- Added "Verify" button on active provider cards with loading spinner state
+   168→- Shows green "Verified" badge when verification succeeds, red "Failed" badge when it fails
+   169→- Displays verified capabilities (from API) instead of declared ones when available
+   170→- Shows verification message below capabilities
+   171→- Added `handleVerifyProvider` function that calls `/api/providers/verify` API
+   172→- Verification state tracked per-provider with `verificationStates` Record
+   173→
+   174→### 3. Updated ChatPanel (`/src/components/zdesign/ChatPanel.tsx`)
+   175→- Added `DesignQualityReport` type import
+   176→- Added `Wand2` icon import for enhance button
+   177→- Added `qualityReport` from store subscription
+   178→- Added `isEnhancing` state for enhance button loading
+   179→- Updated `MessageBubble` to accept `qualityReport`, `onEnhance`, `isEnhancing` props
+   180→- Added quality score display below assistant messages that contain designs:
+   181→  - Color-coded badge (green ≥80, amber ≥60, red <60)
+   182→  - Mini scores for CSS, Semantics, Rsp, A11y
+   183→  - "Enhance" button appears when quality score < 80
+   184→- Added `handleEnhance` function that calls `/api/design/enhance` API
+   185→  - Updates design tree with enhanced version
+   186→  - Updates quality report with new scores
+   187→  - Adds assistant chat message about applied enhancements
+   188→- Updated `sendMessage` to call `/api/design/evaluate` API after design generation
+   189→  - Falls back to client-side evaluation if API call fails
+   190→  - Properly stages through rendering → evaluating → complete
+   191→
+   192→### 4. Fixed Generation Progress Timing
+   193→- Changed from interval-based stage simulation to explicit stage management
+   194→- sendMessage now explicitly sets progress stages with proper timing:
+   195→  - 'analyzing' at 10% → 300ms delay → 'generating' at 30% → API call → 'rendering' at 70% → 300ms delay → 'evaluating' at 90% → evaluate → 'complete' at 100%
+   196→- startProgressSimulation now only handles incremental percentage updates (30-65% range)
+   197→- stopProgressSimulation goes directly to 'complete' stage
+   198→- Progress resets after 1500ms (was 2000ms)
+   199→
+   200→### 5. Updated CanvasArea QualityBadge (`/src/components/zdesign/CanvasArea.tsx`)
+   201→- Added `useState`, `useCallback`, `Button`, `Wand2`, `ChevronDown`, `ChevronUp`, `XCircle`, `AlertTriangle` imports
+   202→- Completely replaced simple badge with expandable QualityBadge component:
+   203→  - Click to expand/collapse with chevron indicator
+   204→  - Color-coded collapsed badge (green/amber/red based on score)
+   205→  - Expanded panel with:
+   206→    - Overall score with color-coded progress bar
+   207→    - Individual score bars (Completeness, CSS Validity, Semantics, Responsiveness, Accessibility)
+   208→    - Top 3 issues with severity icons (critical=XCircle, warning=AlertTriangle, info=AlertCircle)
+   209→    - Top 3 suggestions with Zap icons
+   210→    - "Auto-Enhance Design" button when score < 80
+   211→  - handleAutoEnhance calls `/api/design/enhance` API
+   212→  - Animated expand/collapse with framer-motion
+   213→
+   214→### 6. Updated TopToolbar (`/src/components/zdesign/TopToolbar.tsx`)
+   215→- Added `Wand2`, `Loader2` icon imports
+   216→- Added store subscriptions: qualityReport, designTree, setDesignTree, setQualityReport, isGenerating
+   217→- Added `isEnhancing` state and `handleEnhance` callback
+   218→- Added "✨ Enhance" button next to Creative Mode toggle:
+   219→  - Shows loading spinner when enhancing
+   220→  - Disabled when no design exists or when generating
+   221→  - Amber styling when quality < 80
+   222→  - Tooltip shows quality score context
+   223→  - Bilingual labels (English/German)
+   224→
+   225→### Verification
+   226→- ESLint passes cleanly with no errors
+   227→- TypeScript compiles without errors in changed files
+   228→- All API routes and components compile and are ready for use
+   229→
+   230→---
+   231→Task ID: 4
+   232→Agent: Main Agent - Quality Assurance & Browser Verification
+   233→Task: Comprehensive QA audit, fix LLM timeout strategy, browser-based end-to-end verification
+   234→
+   235→Work Log:
+   236→- Conducted full audit of codebase: identified LLM timeout (was 12s, increased to 30s then optimized to 20s/15s), removed shouldTryLLM skip for long messages, verified Creative Mode is optional and functional
+   237→- Fixed LLM timeout strategy: 20s first attempt + 15s retry (max ~35s total vs 90s before)
+   238→- Verified all 3 new API endpoints compile and work: /api/design/evaluate (101ms response), /api/design/enhance, /api/providers/verify
+   239→- Browser-tested: Landing page generation works (quality score 95/100), fallback designs are comprehensive
+   240→- Browser-tested: Provider Settings dialog with Verify button (correctly shows "Failed" when Z.ai is slow)
+   241→- Browser-tested: Template Hub with 8 categories, Import tab, Search functionality
+   242→- Browser-tested: Quality Badge on Canvas (clickable, shows issues + suggestions + Auto-Enhance)
+   243→- Browser-tested: Enhance button in TopToolbar (appears next to Creative Mode toggle)
+   244→- Browser-tested: Language switching (EN↔DE works correctly for all new UI elements)
+   245→- Browser-tested: A11y Score in PropsPanel (shows accessibility score and issues)
+   246→- Verified Creative Mode toggle works (sends creativeMode flag to chat API)
+   247→
+   248→Stage Summary:
+   249→- Quality Score: 95/100 achieved on fallback landing page design
+   250→- All core features verified working via Agent Browser
+   251→- LLM timeout optimized from 90s max to ~35s max
+   252→- Creative Mode is OPTIONAL (off by default) with amber visual indicator
+   253→- Quality Evaluation API: Pure rule-based, no LLM needed, 5 dimensions with weighted scoring
+   254→- Enhancement API: LLM-first with rule-based fallback
+   255→- Provider Verification: Real API connectivity testing for all 4 providers
+   256→
+   257→---
+   258→Task ID: 6
+   259→Agent: Full-Stack Developer - Template & Source Ingestion
+   260→Task: Build Template/Source Ingestion system
+   261→
+   262→Work Log:
+   263→
+   264→### 1. Created Design Import API (`/src/app/api/design/import/route.ts`)
+   265→- POST endpoint accepting `{ source, data, projectId? }` where source is 'url' | 'json' | 'image' | 'figma'
+   266→- **URL import**: Fetches webpage with 10s timeout, extracts title, meta description, colors from inline styles, heading texts; builds a complete design tree with header/content/footer sections
+   267→- **JSON import**: Parses JSON string with smart detection:
+   268→  - Figma-like JSON (has `document` or `nodes` field) → converts via `convertFigmaLikeToDesignTree()`
+   269→  - Z.Design JSON (has `id` + `type`) → uses directly
+   270→  - Wrapped design (has `design.id`) → unwraps
+   271→  - Invalid format → clear error message
+   272→- **Figma URL import**: Extracts Figma file key from URL, creates a dark-themed placeholder design tree with Figma branding, includes guidance to use chat for refinement
+   273→- **Image import**: Returns placeholder design with guidance to use VLM chat for image analysis
+   274→- **Project integration**: If `projectId` is provided, updates the project's `designJSON` and status to `IN_PROGRESS` (non-blocking — doesn't fail the whole request if DB update fails)
+   275→
+   276→### 2. Updated TemplateHub Import Tab (`/src/components/zdesign/TemplateHub.tsx`)
+   277→- Added new icon imports: `Figma`, `Image as ImageIcon`, `Sparkles`
+   278→- Added new state: `importFigmaUrl`, `importSuccess`, changed `importing` from boolean to `string | null` (tracks which import type is in progress: 'json' | 'url' | 'figma')
+   279→- **New `applyImportedDesign` helper**: Shared logic for all import types — creates a project via `/api/projects`, sets design tree in store, closes dialog, shows toast
+   280→- **Updated `handleImportJson`**: Now calls `/api/design/import` with `source: 'json'` instead of parsing locally; properly handles figma-json source type
+   281→- **Updated `handleImportUrl`**: Now calls `/api/design/import` with `source: 'url'` instead of `/api/design/research`; extracts hostname for the success label
+   282→- **New `handleImportFigma`**: Calls `/api/design/import` with `source: 'figma'`
+   283→- **Updated `handleFileUpload`**: Clears error and shows success message after file load
+   284→- **Completely redesigned Import tab UI**:
+   285→  - URL Import section (first, with Globe icon, violet color, Enter key support, full "Import URL" button)
+   286→  - Figma Import section (with Figma icon, purple Beta badge, purple-themed outline button)
+   287→  - JSON Import section (combined file upload + paste textarea + "Import JSON Design" button)
+   288→  - Each section in a card container with border and padding
+   289→  - Success message banner (green) for file upload confirmation
+   290→  - Error message banner (red) preserved
+   291→  - Updated Supported Sources grid (6 items including Figma URLs and Image via chat)
+   292→  - All buttons disabled with `importing !== null` to prevent concurrent imports
+   293→
+   294→### Verification
+   295→- ESLint passes cleanly with no errors
+   296→- Dev server compiles without errors
+   297→
+   298→---
+   299→Task ID: 2
+   300→Agent: full-stack-developer
+   301→Task: Fix LLM timeout and improve chat progress indicators
+   302→
+   303→Work Log:
+   304→- Fixed `/src/app/api/chat/route.ts`: Changed `LLM_TIMEOUT_FIRST` from 20000 to 120000 (120s), `LLM_TIMEOUT_RETRY` from 15000 to 90000 (90s), `maxRetries` from 1 to 2 (3 total attempts). Added `usedFallback` boolean to the response JSON so the frontend knows when a template was used instead of AI.
+   305→- Fixed `/src/app/api/design/enhance/route.ts`: Increased LLM timeout from 25000 (25s) to 120000 (120s) to match the chat API timeout strategy.
+   306→- Fixed `/src/app/api/design/generate/route.ts`: Added timeout logic entirely (it had NO timeout before — the LLM call could hang forever). Added `Promise.race` with 120s first attempt / 90s retry timeouts, and 2 retries (3 total attempts). Added `usedFallback` tracking.
+   307→- Updated `/src/components/zdesign/ChatPanel.tsx`:
+   308→  - `GenerationStepProgress` now shows "Generating design with AI..." with an animated spinner and estimated time remaining
+   309→  - Step labels updated: "Analyzing request..." → "Generating layout..." → "Adding styles..." → "Finalizing design..."
+   310→  - Progress simulation now estimates 80s total duration (matching real LLM generation time) instead of 15s
+   311→  - Auto-advance stage messages on timers: "AI is creating your design..." → "Building layout structure..." → "Adding components and styles..." → "Polishing design details..."
+   312→  - Added fallback warning: When `usedFallback: true` is in the response, a system message warns "⚠️ The AI service was slow to respond, so a template design was used instead"
+   313→  - Initial estimated time set to 75s (was 15s)
+   314→  - Stage timeouts are properly cleaned up on stop
+   315→  - Textarea stays disabled during generation (already had `disabled={isGenerating}`)
+   316→- Updated `/src/components/zdesign/CanvasArea.tsx`:
+   317→  - `GenerationProgressIndicator` now shows animated `Loader2` spinner instead of static `Sparkles` icon during generation
+   318→  - Status text changed from "Generating your design..." to "AI is creating your design..."
+   319→  - Step labels updated: "Generating design..." → "Generating layout...", "Rendering preview..." → "Adding styles...", "Evaluating quality..." → "Finalizing design..."
+   320→  - Added auto-advancing step indicators: steps advance every 15 seconds on a timer during long LLM waits
+   321→  - Added "Cancel" button to abort generation (calls `resetGenerationProgress` + `setIsGenerating(false)`)
+   322→  - Shows estimated time remaining with localized "remaining" / "übrig" text
+   323→  - Added `X` icon import from lucide-react for cancel button
+   324→  - Added `useEffect` and `useRef` imports for timer management
+   325→
+   326→Stage Summary:
+   327→- **Root cause fixed**: LLM timeout was only 20s but LLM takes ~74s to generate. All 3 API routes now have 120s/90s timeouts.
+   328→- **`/api/chat/route.ts`**: 120s first attempt, 90s retries, 3 total attempts, `usedFallback` in response
+   329→- **`/api/design/enhance/route.ts`**: 120s timeout (was 25s)
+   330→- **`/api/design/generate/route.ts`**: Added timeout logic (had NONE before), 120s/90s with retries
+   331→- **ChatPanel progress**: 80s estimated duration, auto-advancing step messages, fallback warning shown to users
+   332→- **CanvasArea progress**: Animated spinner, auto-advancing steps (15s intervals), Cancel button, time remaining display
+   333→- All changes pass ESLint cleanly
+   334→
+   335→---
+   336→Task ID: 2b
+   337→Agent: Full-Stack Developer - Robust JSON Parsing & Parse Failure UX
+   338→Task: Improve LLM JSON parsing robustness and handle parse failures in the UI
+   339→
+   340→Work Log:
+   341→
+   342→### 1. Improved JSON Repair in `/src/lib/ai-prompts.ts`
+   343→
+   344→**New `repairLLMJson(text: string): string | null` function** — aggressive JSON repair for malformed LLM output:
+   345→- Removes markdown code block wrappers (\`\`\`json ... \`\`\`)
+   346→- Removes JavaScript-style comments (// single-line and /* multi-line */)
+   347→- Strips extra text before first `{` and after last `}`
+   348→- Fixes `key="value"` patterns → `"key": "value"` (equals sign instead of colon)
+   349→- Fixes `key='value'` patterns → `"key": "value"`
+   350→- Fixes unquoted property names (`{display: "flex"}` → `{"display": "flex"}`)
+   351→- Converts single quotes to double quotes
+   352→- Removes trailing commas before `}` or `]`
+   353→- Adds missing commas between properties (heuristic: `"value"\n"key":` → `"value",\n"key":`)
+   354→- Balances mismatched brackets/braces by appending closing characters
+   355→- Progressive truncation fallback: tries progressively shorter substrings to find valid JSON
+   356→- Returns repaired string or null if unrepairable
+   357→
+   358→**Updated `tryParseJSON(text: string): unknown | null`** — now uses repair-first strategy:
+   359→1. Try direct `JSON.parse`
+   360→2. Try `repairLLMJson` + parse
+   361→3. Apply 7 additional targeted fixes sequentially (equals→colon, unquoted keys, trailing commas, single quotes, JS comments, missing commas, bracket balancing)
+   362→4. Each fix is attempted independently with its own `JSON.parse`
+   363→
+   364→**Updated `parseAIResponse(response: string)`** — added:
+   365→- `parseFailed?: boolean` in return type — set to `true` when all repair attempts fail
+   366→- Step 2: Try `repairLLMJson` on full response before falling back to code block extraction
+   367→- Step 5: New loose JSON object matching with unquoted key patterns (`["']?id["']?\s*[:=]`)
+   368→- Returns `parseFailed: true` when design is null (step 6 fallback)
+   369→
+   370→### 2. Updated System Prompt in `/src/app/api/chat/route.ts`
+   371→
+   372→**Added stronger JSON validity emphasis as the FIRST rule:**
+   373→```
+   374→1. CRITICAL: Your output MUST be 100% valid JSON. Double-check every property name has quotes, every key has a colon (not equals sign), and there are no trailing commas. Example of correct syntax: {"id": "nav-1", "type": "nav", "style": {"display": "flex"}}
+   375→```
+   376→This rule is now the first and most prominent rule in the RULES section of `conciseSystemPrompt`.
+   377→
+   378→**Added `parseFailed` field to API response:**
+   379→- The `/api/chat` endpoint now returns `parseFailed: boolean` in the response JSON
+   380→- Frontend can detect when AI output was generated but couldn't be parsed into a design
+   381→
+   382→### 3. Updated ChatPanel for Parse Failure UX (`/src/components/zdesign/ChatPanel.tsx`)
+   383→
+   384→**New imports:** `AlertTriangle`, `RefreshCw` icons from lucide-react
+   385→
+   386→**Updated `MessageBubble` component:**
+   387→- Added `onRetryParse?: (text: string) => void` prop
+   388→- System messages with `parseFailedRetryText` metadata render as an amber warning banner:
+   389→  - Yellow/amber background with border
+   390→  - `AlertTriangle` icon
+   391→  - Warning text: "⚠️ The AI generated a design but it couldn't be parsed correctly. Please try again."
+   392→  - "Retry" button with `RefreshCw` icon that calls `onRetryParse` with the original message text
+   393→
+   394→**New `handleRetryParse` callback:**
+   395→- Takes the original message text from the failed parse
+   396→- Calls `sendMessage` to re-send the same message to the AI
+   397→
+   398→**Updated API response handling in `sendMessage`:**
+   399→- After receiving API response, if `!data.design && data.parseFailed`, adds a system message with `parseFailedRetryText: cleanText` in metadata
+   400→- This triggers the warning banner with retry button in the chat
+   401→
+   402→### 4. Updated Types (`/src/types/design.ts`)
+   403→
+   404→**Extended `ChatMessageMeta` interface:**
+   405→- Added `usedFallback?: boolean` — tracks when a template was used instead of AI
+   406→- Added `parseFailedRetryText?: string` — stores the original user message for retry when parsing fails
+   407→
+   408→### Verification
+   409→- ESLint passes cleanly with no errors
+   410→- Dev server compiles without errors
+   411→- Page loads successfully (HTTP 200)
+   412→
+   413→---
+   414→Task ID: 3
+   415→Agent: Code Agent
+   416→Task: Fix LLM JSON structural errors — improve system prompt, fallback designs, JSON repair, and cleanup debug code
+   417→Date: 2026-03-04
+   418→
+   419→### Changes Made
+   420→
+   421→#### 1. Updated System Prompt in `/src/app/api/chat/route.ts`
+   422→- Replaced the `conciseSystemPrompt` variable with a much more explicit version
+   423→- Added "CRITICAL JSON FORMAT RULES" section with 6 specific rules targeting the most common LLM JSON errors
+   424→- Included a COMPLETE correct JSON example showing exact format (with `"content"` inside nodes, quoted CSS values, no spaces in rgba)
+   425→- Added "NOTICE HOW" section that explicitly calls out what the LLM typically gets wrong
+   426→- Added rule: "Double-check your JSON is valid before returning"
+   427→- This is the most impactful change — by showing the exact correct format, the LLM should produce valid JSON in the first place
+   428→
+   429→#### 2. Improved Fallback Designs in `/src/app/api/chat/route.ts`
+   430→Added three new fallback design types to `generateFallbackDesign`:
+   431→- **Mobile App Onboarding** — triggers on keywords: mobile, app, onboarding, ios, android. Creates a phone-frame mockup with onboarding screens, dot indicators, and CTA buttons
+   432→- **Pitch Deck / Slide Deck** — triggers on keywords: pitch, deck, slide, presentation. Creates dark-themed slides with title, problem (with stats), and solution sections
+   433→- **Pricing Page** — triggers on keywords: pricing, plan, subscription, tier. Creates three-tier pricing cards (Free/Pro/Team) with FAQ section
+   434→
+   435→Existing fallbacks (Landing Page, Dashboard, Portfolio, Default) were preserved.
+   436→
+   437→#### 3. Improved `repairLLMJson` in `/src/lib/ai-prompts.ts`
+   438→Added three new repair steps:
+   439→- **7c: Fix spaces in rgba/hsl functions** — Converts `rgba(0, 0, 0, 0.1)` to `rgba(0,0,0,0.1)`, and similar for hsl/hsla
+   440→- **7d: Fix unquoted CSS values** — Detects CSS property names (boxShadow, transform, filter, etc.) followed by unquoted values and wraps them in quotes. E.g., `"boxShadow": 0 4px 6px rgba(0,0,0,0.1)` → `"boxShadow": "0 4px 6px rgba(0,0,0,0.1)"`
+   441→- **12: Last resort design extraction** — When all other repairs fail, finds the `"design"` key in the JSON and attempts to extract the largest valid balanced design object by tracking brace depth. Wraps it in a response object for recovery.
+   442→
+   443→#### 4. Cleaned Up Debug Code in `/src/app/api/chat/route.ts`
+   444→- Removed `fs.writeFile` call that saved raw LLM response to `debug-llm-response.json` (lines 681-685)
+   445→- Removed `fs.writeFile` call that saved repaired response to `debug-repaired-response.json` (lines 710-714)
+   446→- Kept all `console.warn`/`console.log` debugging statements for server-side visibility
+   447→- Removed the now-unnecessary `import('fs/promises')` calls
+   448→
+   449→### Verification
+   450→- ESLint passes cleanly with no errors
+   451→- Dev server compiles and runs without errors
+   452→- All changes are backward-compatible — existing functionality preserved
+   453→

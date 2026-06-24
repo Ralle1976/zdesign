@@ -1,0 +1,853 @@
+     1→// Z.Design - Template Seed API Route
+     2→// POST: Seed the database with built-in templates
+     3→
+     4→import { NextResponse } from 'next/server';
+     5→import { db } from '@/lib/db';
+     6→
+     7→const BUILT_IN_TEMPLATES = [
+     8→  // 1. SaaS Landing Page
+     9→  {
+    10→    name: 'SaaS Landing Page',
+    11→    description: 'A modern SaaS landing page with hero section, feature grid, pricing table, and call-to-action. Perfect for software product launches.',
+    12→    category: 'SaaS',
+    13→    thumbnail: null,
+    14→    tags: ['saas', 'landing', 'pricing', 'hero', 'startup'],
+    15→    downloads: 2847,
+    16→    rating: 4.8,
+    17→    designJSON: JSON.stringify({
+    18→      id: 'root',
+    19→      type: 'root',
+    20→      tag: 'div',
+    21→      style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#ffffff' },
+    22→      children: [
+    23→        {
+    24→          id: 'nav',
+    25→          type: 'nav',
+    26→          tag: 'nav',
+    27→          style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 48px', borderBottom: '1px solid #e2e8f0', backgroundColor: '#ffffff', position: 'sticky', top: '0', zIndex: 50 },
+    28→          children: [
+    29→            { id: 'logo', type: 'text', tag: 'span', content: 'FlowSync', style: { fontSize: '24px', fontWeight: '800', background: 'linear-gradient(135deg, #10b981, #14b8a6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' } },
+    30→            { id: 'nav-links', type: 'flex', tag: 'div', style: { display: 'flex', gap: '32px', alignItems: 'center' },
+    31→              children: [
+    32→                { id: 'nl1', type: 'link', tag: 'a', content: 'Features', style: { fontSize: '15px', color: '#475569', textDecoration: 'none' } },
+    33→                { id: 'nl2', type: 'link', tag: 'a', content: 'Pricing', style: { fontSize: '15px', color: '#475569', textDecoration: 'none' } },
+    34→                { id: 'nl3', type: 'link', tag: 'a', content: 'About', style: { fontSize: '15px', color: '#475569', textDecoration: 'none' } },
+    35→                { id: 'cta-btn', type: 'button', tag: 'button', content: 'Get Started', style: { backgroundColor: '#10b981', color: '#ffffff', padding: '10px 24px', borderRadius: '8px', fontSize: '14px', fontWeight: '600', border: 'none', cursor: 'pointer' } },
+    36→              ]
+    37→            }
+    38→          ]
+    39→        },
+    40→        {
+    41→          id: 'hero',
+    42→          type: 'section',
+    43→          tag: 'section',
+    44→          style: { display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '80px 48px 60px', background: 'linear-gradient(180deg, #ecfdf5 0%, #ffffff 100%)' },
+    45→          children: [
+    46→            { id: 'badge', type: 'badge', tag: 'span', content: '🚀 Now in Beta — Try Free', style: { backgroundColor: '#ecfdf5', color: '#059669', padding: '6px 16px', borderRadius: '9999px', fontSize: '13px', fontWeight: '600', marginBottom: '24px' } },
+    47→            { id: 'hero-title', type: 'heading', tag: 'h1', content: 'Streamline Your\nWorkflow with AI', style: { fontSize: '64px', fontWeight: '800', lineHeight: '1.1', color: '#0f172a', maxWidth: '800px', letterSpacing: '-0.02em', whiteSpace: 'pre-line' } },
+    48→            { id: 'hero-sub', type: 'text', tag: 'p', content: 'The all-in-one platform that helps teams collaborate, automate, and deliver faster. Powered by intelligent automation.', style: { fontSize: '20px', color: '#64748b', maxWidth: '600px', marginTop: '24px', lineHeight: '1.6' } },
+    49→            { id: 'hero-cta', type: 'flex', tag: 'div', style: { display: 'flex', gap: '16px', marginTop: '40px', alignItems: 'center' },
+    50→              children: [
+    51→                { id: 'cta1', type: 'button', tag: 'button', content: 'Start Free Trial', style: { backgroundColor: '#10b981', color: '#ffffff', padding: '14px 32px', borderRadius: '10px', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(16,185,129,0.4)' } },
+    52→                { id: 'cta2', type: 'button', tag: 'button', content: 'Watch Demo →', style: { backgroundColor: 'transparent', color: '#0f172a', padding: '14px 32px', borderRadius: '10px', fontSize: '16px', fontWeight: '600', border: '1px solid #e2e8f0', cursor: 'pointer' } },
+    53→              ]
+    54→            },
+    55→          ]
+    56→        },
+    57→        {
+    58→          id: 'features',
+    59→          type: 'section',
+    60→          tag: 'section',
+    61→          style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px 48px' },
+    62→          children: [
+    63→            { id: 'feat-label', type: 'text', tag: 'p', content: 'FEATURES', style: { fontSize: '13px', fontWeight: '700', color: '#10b981', letterSpacing: '0.1em', textTransform: 'uppercase' } },
+    64→            { id: 'feat-title', type: 'heading', tag: 'h2', content: 'Everything you need to ship faster', style: { fontSize: '40px', fontWeight: '700', color: '#0f172a', marginTop: '12px', textAlign: 'center' } },
+    65→            {
+    66→              id: 'feat-grid',
+    67→              type: 'grid',
+    68→              tag: 'div',
+    69→              style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', marginTop: '48px', maxWidth: '1100px', width: '100%' },
+    70→              children: [
+    71→                { id: 'f1', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff' },
+    72→                  children: [
+    73→                    { id: 'f1-icon', type: 'icon', tag: 'div', content: '⚡', style: { fontSize: '32px', marginBottom: '16px' } },
+    74→                    { id: 'f1-title', type: 'heading', tag: 'h3', content: 'Lightning Fast', style: { fontSize: '20px', fontWeight: '600', color: '#0f172a' } },
+    75→                    { id: 'f1-desc', type: 'text', tag: 'p', content: 'Deploy in seconds with our optimized build pipeline and global CDN.', style: { fontSize: '15px', color: '#64748b', marginTop: '8px', lineHeight: '1.5' } },
+    76→                  ]
+    77→                },
+    78→                { id: 'f2', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff' },
+    79→                  children: [
+    80→                    { id: 'f2-icon', type: 'icon', tag: 'div', content: '🤖', style: { fontSize: '32px', marginBottom: '16px' } },
+    81→                    { id: 'f2-title', type: 'heading', tag: 'h3', content: 'AI-Powered', style: { fontSize: '20px', fontWeight: '600', color: '#0f172a' } },
+    82→                    { id: 'f2-desc', type: 'text', tag: 'p', content: 'Smart automation that learns from your workflow and suggests optimizations.', style: { fontSize: '15px', color: '#64748b', marginTop: '8px', lineHeight: '1.5' } },
+    83→                  ]
+    84→                },
+    85→                { id: 'f3', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff' },
+    86→                  children: [
+    87→                    { id: 'f3-icon', type: 'icon', tag: 'div', content: '🔒', style: { fontSize: '32px', marginBottom: '16px' } },
+    88→                    { id: 'f3-title', type: 'heading', tag: 'h3', content: 'Enterprise Security', style: { fontSize: '20px', fontWeight: '600', color: '#0f172a' } },
+    89→                    { id: 'f3-desc', type: 'text', tag: 'p', content: 'SOC 2 compliant with end-to-end encryption and role-based access.', style: { fontSize: '15px', color: '#64748b', marginTop: '8px', lineHeight: '1.5' } },
+    90→                  ]
+    91→                },
+    92→              ]
+    93→            }
+    94→          ]
+    95→        },
+    96→        {
+    97→          id: 'pricing',
+    98→          type: 'section',
+    99→          tag: 'section',
+   100→          style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px 48px', backgroundColor: '#f8fafc' },
+   101→          children: [
+   102→            { id: 'pr-label', type: 'text', tag: 'p', content: 'PRICING', style: { fontSize: '13px', fontWeight: '700', color: '#10b981', letterSpacing: '0.1em', textTransform: 'uppercase' } },
+   103→            { id: 'pr-title', type: 'heading', tag: 'h2', content: 'Simple, transparent pricing', style: { fontSize: '40px', fontWeight: '700', color: '#0f172a', marginTop: '12px' } },
+   104→            {
+   105→              id: 'pr-grid',
+   106→              type: 'grid',
+   107→              tag: 'div',
+   108→              style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginTop: '48px', maxWidth: '1000px', width: '100%' },
+   109→              children: [
+   110→                { id: 'plan1', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', textAlign: 'center' },
+   111→                  children: [
+   112→                    { id: 'p1-name', type: 'text', tag: 'p', content: 'Starter', style: { fontSize: '14px', fontWeight: '600', color: '#64748b', textTransform: 'uppercase' } },
+   113→                    { id: 'p1-price', type: 'heading', tag: 'div', content: '$0', style: { fontSize: '48px', fontWeight: '800', color: '#0f172a', marginTop: '8px' } },
+   114→                    { id: 'p1-period', type: 'text', tag: 'span', content: '/month', style: { fontSize: '14px', color: '#94a3b8' } },
+   115→                    { id: 'p1-btn', type: 'button', tag: 'button', content: 'Get Started', style: { width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', color: '#0f172a', fontWeight: '600', fontSize: '14px', marginTop: '24px', cursor: 'pointer' } },
+   116→                  ]
+   117→                },
+   118→                { id: 'plan2', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '2px solid #10b981', backgroundColor: '#ffffff', textAlign: 'center', boxShadow: '0 4px 14px rgba(16,185,129,0.15)' },
+   119→                  children: [
+   120→                    { id: 'p2-popular', type: 'badge', tag: 'span', content: 'Most Popular', style: { backgroundColor: '#ecfdf5', color: '#059669', padding: '4px 12px', borderRadius: '9999px', fontSize: '12px', fontWeight: '600' } },
+   121→                    { id: 'p2-name', type: 'text', tag: 'p', content: 'Pro', style: { fontSize: '14px', fontWeight: '600', color: '#64748b', textTransform: 'uppercase', marginTop: '8px' } },
+   122→                    { id: 'p2-price', type: 'heading', tag: 'div', content: '$29', style: { fontSize: '48px', fontWeight: '800', color: '#0f172a', marginTop: '8px' } },
+   123→                    { id: 'p2-period', type: 'text', tag: 'span', content: '/month', style: { fontSize: '14px', color: '#94a3b8' } },
+   124→                    { id: 'p2-btn', type: 'button', tag: 'button', content: 'Start Free Trial', style: { width: '100%', padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: '#10b981', color: '#ffffff', fontWeight: '600', fontSize: '14px', marginTop: '24px', cursor: 'pointer', boxShadow: '0 4px 14px rgba(16,185,129,0.4)' } },
+   125→                  ]
+   126→                },
+   127→                { id: 'plan3', type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', textAlign: 'center' },
+   128→                  children: [
+   129→                    { id: 'p3-name', type: 'text', tag: 'p', content: 'Enterprise', style: { fontSize: '14px', fontWeight: '600', color: '#64748b', textTransform: 'uppercase' } },
+   130→                    { id: 'p3-price', type: 'heading', tag: 'div', content: '$99', style: { fontSize: '48px', fontWeight: '800', color: '#0f172a', marginTop: '8px' } },
+   131→                    { id: 'p3-period', type: 'text', tag: 'span', content: '/month', style: { fontSize: '14px', color: '#94a3b8' } },
+   132→                    { id: 'p3-btn', type: 'button', tag: 'button', content: 'Contact Sales', style: { width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', color: '#0f172a', fontWeight: '600', fontSize: '14px', marginTop: '24px', cursor: 'pointer' } },
+   133→                  ]
+   134→                },
+   135→              ]
+   136→            }
+   137→          ]
+   138→        },
+   139→        {
+   140→          id: 'footer',
+   141→          type: 'footer',
+   142→          tag: 'footer',
+   143→          style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 48px', borderTop: '1px solid #e2e8f0', backgroundColor: '#ffffff' },
+   144→          children: [
+   145→            { id: 'foot-logo', type: 'text', tag: 'span', content: 'FlowSync', style: { fontSize: '18px', fontWeight: '700', color: '#0f172a' } },
+   146→            { id: 'foot-copy', type: 'text', tag: 'p', content: '© 2026 FlowSync. All rights reserved.', style: { fontSize: '13px', color: '#94a3b8' } },
+   147→          ]
+   148→        }
+   149→      ]
+   150→    }),
+   151→  },
+   152→
+   153→  // 2. Analytics Dashboard
+   154→  {
+   155→    name: 'Analytics Dashboard',
+   156→    description: 'A comprehensive analytics dashboard with sidebar navigation, metric cards, chart areas, and data table. Ideal for data-driven applications.',
+   157→    category: 'Dashboard',
+   158→    thumbnail: null,
+   159→    tags: ['dashboard', 'analytics', 'metrics', 'charts', 'admin'],
+   160→    downloads: 2156,
+   161→    rating: 4.7,
+   162→    designJSON: JSON.stringify({
+   163→      id: 'root',
+   164→      type: 'root',
+   165→      tag: 'div',
+   166→      style: { display: 'flex', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#f1f5f9' },
+   167→      children: [
+   168→        {
+   169→          id: 'sidebar',
+   170→          type: 'sidebar',
+   171→          tag: 'aside',
+   172→          style: { display: 'flex', flexDirection: 'column', width: '240px', backgroundColor: '#0f172a', padding: '24px 16px', minHeight: '100vh', flexShrink: 0 },
+   173→          children: [
+   174→            { id: 'sb-logo', type: 'text', tag: 'span', content: '📊 Analytics', style: { fontSize: '20px', fontWeight: '700', color: '#ffffff', padding: '0 8px 24px' } },
+   175→            { id: 'sb-nav', type: 'nav', tag: 'nav', style: { display: 'flex', flexDirection: 'column', gap: '4px' },
+   176→              children: [
+   177→                { id: 'sn1', type: 'link', tag: 'a', content: '📈 Dashboard', style: { display: 'block', padding: '10px 12px', borderRadius: '8px', color: '#ffffff', fontSize: '14px', backgroundColor: '#1e293b', fontWeight: '500', textDecoration: 'none' } },
+   178→                { id: 'sn2', type: 'link', tag: 'a', content: '👥 Users', style: { display: 'block', padding: '10px 12px', borderRadius: '8px', color: '#94a3b8', fontSize: '14px', textDecoration: 'none' } },
+   179→                { id: 'sn3', type: 'link', tag: 'a', content: '💰 Revenue', style: { display: 'block', padding: '10px 12px', borderRadius: '8px', color: '#94a3b8', fontSize: '14px', textDecoration: 'none' } },
+   180→                { id: 'sn4', type: 'link', tag: 'a', content: '📦 Products', style: { display: 'block', padding: '10px 12px', borderRadius: '8px', color: '#94a3b8', fontSize: '14px', textDecoration: 'none' } },
+   181→                { id: 'sn5', type: 'link', tag: 'a', content: '⚙️ Settings', style: { display: 'block', padding: '10px 12px', borderRadius: '8px', color: '#94a3b8', fontSize: '14px', textDecoration: 'none' } },
+   182→              ]
+   183→            }
+   184→          ]
+   185→        },
+   186→        {
+   187→          id: 'main',
+   188→          type: 'container',
+   189→          tag: 'main',
+   190→          style: { display: 'flex', flexDirection: 'column', flex: 1, padding: '32px', gap: '24px', overflow: 'auto' },
+   191→          children: [
+   192→            {
+   193→              id: 'top-bar',
+   194→              type: 'flex',
+   195→              tag: 'div',
+   196→              style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+   197→              children: [
+   198→                { id: 'page-title', type: 'heading', tag: 'h1', content: 'Dashboard', style: { fontSize: '28px', fontWeight: '700', color: '#0f172a' } },
+   199→                { id: 'date-range', type: 'button', tag: 'button', content: 'Last 30 days ↓', style: { padding: '8px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', fontSize: '14px', color: '#475569', cursor: 'pointer' } },
+   200→              ]
+   201→            },
+   202→            {
+   203→              id: 'metric-cards',
+   204→              type: 'grid',
+   205→              tag: 'div',
+   206→              style: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' },
+   207→              children: [
+   208→                { id: 'mc1', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' },
+   209→                  children: [
+   210→                    { id: 'mc1-label', type: 'text', tag: 'p', content: 'Total Revenue', style: { fontSize: '13px', color: '#64748b', fontWeight: '500' } },
+   211→                    { id: 'mc1-val', type: 'heading', tag: 'div', content: '$45,231', style: { fontSize: '32px', fontWeight: '700', color: '#0f172a', marginTop: '4px' } },
+   212→                    { id: 'mc1-change', type: 'text', tag: 'span', content: '+20.1%', style: { fontSize: '13px', color: '#10b981', fontWeight: '600' } },
+   213→                  ]
+   214→                },
+   215→                { id: 'mc2', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' },
+   216→                  children: [
+   217→                    { id: 'mc2-label', type: 'text', tag: 'p', content: 'Active Users', style: { fontSize: '13px', color: '#64748b', fontWeight: '500' } },
+   218→                    { id: 'mc2-val', type: 'heading', tag: 'div', content: '2,350', style: { fontSize: '32px', fontWeight: '700', color: '#0f172a', marginTop: '4px' } },
+   219→                    { id: 'mc2-change', type: 'text', tag: 'span', content: '+15.3%', style: { fontSize: '13px', color: '#10b981', fontWeight: '600' } },
+   220→                  ]
+   221→                },
+   222→                { id: 'mc3', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' },
+   223→                  children: [
+   224→                    { id: 'mc3-label', type: 'text', tag: 'p', content: 'Conversion Rate', style: { fontSize: '13px', color: '#64748b', fontWeight: '500' } },
+   225→                    { id: 'mc3-val', type: 'heading', tag: 'div', content: '3.2%', style: { fontSize: '32px', fontWeight: '700', color: '#0f172a', marginTop: '4px' } },
+   226→                    { id: 'mc3-change', type: 'text', tag: 'span', content: '+2.1%', style: { fontSize: '13px', color: '#10b981', fontWeight: '600' } },
+   227→                  ]
+   228→                },
+   229→                { id: 'mc4', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' },
+   230→                  children: [
+   231→                    { id: 'mc4-label', type: 'text', tag: 'p', content: 'Avg. Session', style: { fontSize: '13px', color: '#64748b', fontWeight: '500' } },
+   232→                    { id: 'mc4-val', type: 'heading', tag: 'div', content: '4m 32s', style: { fontSize: '32px', fontWeight: '700', color: '#0f172a', marginTop: '4px' } },
+   233→                    { id: 'mc4-change', type: 'text', tag: 'span', content: '-0.4%', style: { fontSize: '13px', color: '#ef4444', fontWeight: '600' } },
+   234→                  ]
+   235→                },
+   236→              ]
+   237→            },
+   238→            {
+   239→              id: 'charts-row',
+   240→              type: 'grid',
+   241→              tag: 'div',
+   242→              style: { display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' },
+   243→              children: [
+   244→                { id: 'chart1', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' },
+   245→                  children: [
+   246→                    { id: 'ch1-title', type: 'heading', tag: 'h3', content: 'Revenue Overview', style: { fontSize: '16px', fontWeight: '600', color: '#0f172a' } },
+   247→                    { id: 'ch1-area', type: 'chart', tag: 'div', style: { height: '240px', marginTop: '16px', backgroundColor: '#f8fafc', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+   248→                      children: [
+   249→                        { id: 'ch1-ph', type: 'text', tag: 'span', content: '📈 Chart Area', style: { color: '#94a3b8', fontSize: '14px' } },
+   250→                      ]
+   251→                    },
+   252→                  ]
+   253→                },
+   254→                { id: 'chart2', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' },
+   255→                  children: [
+   256→                    { id: 'ch2-title', type: 'heading', tag: 'h3', content: 'Traffic Sources', style: { fontSize: '16px', fontWeight: '600', color: '#0f172a' } },
+   257→                    { id: 'ch2-area', type: 'chart', tag: 'div', style: { height: '240px', marginTop: '16px', backgroundColor: '#f8fafc', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+   258→                      children: [
+   259→                        { id: 'ch2-ph', type: 'text', tag: 'span', content: '🍩 Donut Chart', style: { color: '#94a3b8', fontSize: '14px' } },
+   260→                      ]
+   261→                    },
+   262→                  ]
+   263→                },
+   264→              ]
+   265→            },
+   266→          ]
+   267→        }
+   268→      ]
+   269→    }),
+   270→  },
+   271→
+   272→  // 3. Mobile App Onboarding
+   273→  {
+   274→    name: 'Mobile App Onboarding',
+   275→    description: 'A beautiful 4-screen mobile onboarding flow with illustrations, progress indicators, and smooth transitions. Great for app first-run experience.',
+   276→    category: 'App UI',
+   277→    thumbnail: null,
+   278→    tags: ['mobile', 'onboarding', 'app', 'tutorial', 'flow'],
+   279→    downloads: 1834,
+   280→    rating: 4.6,
+   281→    designJSON: JSON.stringify({
+   282→      id: 'root',
+   283→      type: 'root',
+   284→      tag: 'div',
+   285→      style: { display: 'flex', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#ffffff', justifyContent: 'center', alignItems: 'center' },
+   286→      children: [
+   287→        {
+   288→          id: 'phone-frame',
+   289→          type: 'container',
+   290→          tag: 'div',
+   291→          style: { width: '375px', minHeight: '812px', display: 'flex', flexDirection: 'column', position: 'relative', borderRadius: '40px', overflow: 'hidden', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', border: '8px solid #1e293b' },
+   292→          children: [
+   293→            {
+   294→              id: 'screen1',
+   295→              type: 'section',
+   296→              tag: 'section',
+   297→              style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 32px 40px', flex: 1, background: 'linear-gradient(180deg, #ecfdf5 0%, #ffffff 60%)' },
+   298→              children: [
+   299→                { id: 's1-dots', type: 'flex', tag: 'div', style: { display: 'flex', gap: '8px', marginBottom: '48px' },
+   300→                  children: [
+   301→                    { id: 'd1', type: 'icon', tag: 'div', content: '', style: { width: '24px', height: '6px', borderRadius: '3px', backgroundColor: '#10b981' } },
+   302→                    { id: 'd2', type: 'icon', tag: 'div', content: '', style: { width: '6px', height: '6px', borderRadius: '3px', backgroundColor: '#d1d5db' } },
+   303→                    { id: 'd3', type: 'icon', tag: 'div', content: '', style: { width: '6px', height: '6px', borderRadius: '3px', backgroundColor: '#d1d5db' } },
+   304→                    { id: 'd4', type: 'icon', tag: 'div', content: '', style: { width: '6px', height: '6px', borderRadius: '3px', backgroundColor: '#d1d5db' } },
+   305→                  ]
+   306→                },
+   307→                { id: 's1-illust', type: 'image', tag: 'div', style: { width: '240px', height: '240px', borderRadius: '24px', background: 'linear-gradient(135deg, #10b981, #14b8a6)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '40px' },
+   308→                  children: [
+   309→                    { id: 's1-ph', type: 'text', tag: 'span', content: '🚀', style: { fontSize: '80px' } },
+   310→                  ]
+   311→                },
+   312→                { id: 's1-title', type: 'heading', tag: 'h2', content: 'Welcome to FitTrack', style: { fontSize: '28px', fontWeight: '700', color: '#0f172a', textAlign: 'center' } },
+   313→                { id: 's1-desc', type: 'text', tag: 'p', content: 'Your personal fitness companion that helps you build healthy habits one step at a time.', style: { fontSize: '16px', color: '#64748b', textAlign: 'center', marginTop: '12px', lineHeight: '1.5' } },
+   314→              ]
+   315→            },
+   316→            {
+   317→              id: 's1-bottom',
+   318→              type: 'flex',
+   319→              tag: 'div',
+   320→              style: { display: 'flex', flexDirection: 'column', padding: '24px 32px 48px', gap: '16px' },
+   321→              children: [
+   322→                { id: 's1-btn', type: 'button', tag: 'button', content: 'Get Started', style: { width: '100%', padding: '16px', borderRadius: '14px', backgroundColor: '#10b981', color: '#ffffff', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(16,185,129,0.4)' } },
+   323→                { id: 's1-skip', type: 'link', tag: 'a', content: 'Skip for now', style: { textAlign: 'center', fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   324→              ]
+   325→            }
+   326→          ]
+   327→        }
+   328→      ]
+   329→    }),
+   330→  },
+   331→
+   332→  // 4. E-Commerce Product Page
+   333→  {
+   334→    name: 'E-Commerce Product Page',
+   335→    description: 'A product detail page with image gallery, pricing, variant selector, reviews section, and add-to-cart functionality. Perfect for online stores.',
+   336→    category: 'E-Commerce',
+   337→    thumbnail: null,
+   338→    tags: ['ecommerce', 'product', 'shop', 'store', 'retail'],
+   339→    downloads: 3012,
+   340→    rating: 4.9,
+   341→    designJSON: JSON.stringify({
+   342→      id: 'root',
+   343→      type: 'root',
+   344→      tag: 'div',
+   345→      style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#ffffff' },
+   346→      children: [
+   347→        {
+   348→          id: 'top-nav',
+   349→          type: 'nav',
+   350→          tag: 'nav',
+   351→          style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 48px', borderBottom: '1px solid #e2e8f0' },
+   352→          children: [
+   353→            { id: 'nav-logo', type: 'text', tag: 'span', content: 'MODA', style: { fontSize: '22px', fontWeight: '800', letterSpacing: '0.15em', color: '#0f172a' } },
+   354→            { id: 'nav-icons', type: 'flex', tag: 'div', style: { display: 'flex', gap: '20px', alignItems: 'center' },
+   355→              children: [
+   356→                { id: 'ni1', type: 'link', tag: 'a', content: '🔍', style: { fontSize: '18px', textDecoration: 'none' } },
+   357→                { id: 'ni2', type: 'link', tag: 'a', content: '🛒', style: { fontSize: '18px', textDecoration: 'none' } },
+   358→                { id: 'ni3', type: 'link', tag: 'a', content: '👤', style: { fontSize: '18px', textDecoration: 'none' } },
+   359→              ]
+   360→            }
+   361→          ]
+   362→        },
+   363→        {
+   364→          id: 'product-section',
+   365→          type: 'section',
+   366→          tag: 'section',
+   367→          style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', padding: '48px', maxWidth: '1200px', margin: '0 auto', width: '100%' },
+   368→          children: [
+   369→            {
+   370→              id: 'product-image',
+   371→              type: 'container',
+   372→              tag: 'div',
+   373→              style: { display: 'flex', flexDirection: 'column', gap: '16px' },
+   374→              children: [
+   375→                { id: 'main-img', type: 'image', tag: 'div', style: { width: '100%', height: '500px', borderRadius: '16px', background: 'linear-gradient(135deg, #ecfdf5, #f0fdfa)', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+   376→                  children: [
+   377→                    { id: 'img-ph', type: 'text', tag: 'span', content: '👟', style: { fontSize: '120px' } },
+   378→                  ]
+   379→                },
+   380→                { id: 'thumb-row', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px' },
+   381→                  children: [
+   382→                    { id: 'th1', type: 'image', tag: 'div', style: { width: '80px', height: '80px', borderRadius: '10px', border: '2px solid #10b981', backgroundColor: '#ecfdf5' } },
+   383→                    { id: 'th2', type: 'image', tag: 'div', style: { width: '80px', height: '80px', borderRadius: '10px', border: '1px solid #e2e8f0', backgroundColor: '#f8fafc' } },
+   384→                    { id: 'th3', type: 'image', tag: 'div', style: { width: '80px', height: '80px', borderRadius: '10px', border: '1px solid #e2e8f0', backgroundColor: '#f8fafc' } },
+   385→                  ]
+   386→                }
+   387→              ]
+   388→            },
+   389→            {
+   390→              id: 'product-info',
+   391→              type: 'container',
+   392→              tag: 'div',
+   393→              style: { display: 'flex', flexDirection: 'column', gap: '20px' },
+   394→              children: [
+   395→                { id: 'pi-brand', type: 'text', tag: 'p', content: 'MODA SPORTS', style: { fontSize: '13px', fontWeight: '600', color: '#10b981', letterSpacing: '0.1em', textTransform: 'uppercase' } },
+   396→                { id: 'pi-name', type: 'heading', tag: 'h1', content: 'Ultra Comfort Running Shoe', style: { fontSize: '32px', fontWeight: '700', color: '#0f172a' } },
+   397→                { id: 'pi-rating', type: 'flex', tag: 'div', style: { display: 'flex', gap: '8px', alignItems: 'center' },
+   398→                  children: [
+   399→                    { id: 'stars', type: 'text', tag: 'span', content: '★★★★★', style: { color: '#f59e0b', fontSize: '16px' } },
+   400→                    { id: 'rev-count', type: 'text', tag: 'span', content: '(2,847 reviews)', style: { color: '#94a3b8', fontSize: '14px' } },
+   401→                  ]
+   402→                },
+   403→                { id: 'pi-price', type: 'heading', tag: 'div', content: '$129.00', style: { fontSize: '36px', fontWeight: '700', color: '#0f172a' } },
+   404→                { id: 'pi-desc', type: 'text', tag: 'p', content: 'Experience unmatched comfort with our signature cloud-foam technology. Designed for runners who demand both performance and style.', style: { fontSize: '16px', color: '#64748b', lineHeight: '1.6' } },
+   405→                { id: 'pi-divider', type: 'divider', tag: 'hr', style: { border: 'none', borderTop: '1px solid #e2e8f0', margin: '4px 0' } },
+   406→                { id: 'pi-size-label', type: 'text', tag: 'p', content: 'Size', style: { fontSize: '14px', fontWeight: '600', color: '#0f172a' } },
+   407→                { id: 'pi-sizes', type: 'flex', tag: 'div', style: { display: 'flex', gap: '10px' },
+   408→                  children: [
+   409→                    { id: 'sz1', type: 'button', tag: 'button', content: '7', style: { width: '48px', height: '48px', borderRadius: '10px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', fontSize: '14px', fontWeight: '500', cursor: 'pointer' } },
+   410→                    { id: 'sz2', type: 'button', tag: 'button', content: '8', style: { width: '48px', height: '48px', borderRadius: '10px', border: '2px solid #10b981', backgroundColor: '#ecfdf5', fontSize: '14px', fontWeight: '600', cursor: 'pointer', color: '#059669' } },
+   411→                    { id: 'sz3', type: 'button', tag: 'button', content: '9', style: { width: '48px', height: '48px', borderRadius: '10px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', fontSize: '14px', fontWeight: '500', cursor: 'pointer' } },
+   412→                    { id: 'sz4', type: 'button', tag: 'button', content: '10', style: { width: '48px', height: '48px', borderRadius: '10px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', fontSize: '14px', fontWeight: '500', cursor: 'pointer' } },
+   413→                  ]
+   414→                },
+   415→                { id: 'pi-cart-btn', type: 'button', tag: 'button', content: 'Add to Cart — $129.00', style: { width: '100%', padding: '16px', borderRadius: '12px', backgroundColor: '#10b981', color: '#ffffff', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer', marginTop: '8px', boxShadow: '0 4px 14px rgba(16,185,129,0.4)' } },
+   416→              ]
+   417→            }
+   418→          ]
+   419→        }
+   420→      ]
+   421→    }),
+   422→  },
+   423→
+   424→  // 5. Portfolio Website
+   425→  {
+   426→    name: 'Portfolio Website',
+   427→    description: 'A creative portfolio website with hero section, project grid, about area, and contact form. Showcase your best work beautifully.',
+   428→    category: 'Portfolio',
+   429→    thumbnail: null,
+   430→    tags: ['portfolio', 'creative', 'personal', 'showcase', 'projects'],
+   431→    downloads: 2567,
+   432→    rating: 4.5,
+   433→    designJSON: JSON.stringify({
+   434→      id: 'root',
+   435→      type: 'root',
+   436→      tag: 'div',
+   437→      style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#0f172a', color: '#ffffff' },
+   438→      children: [
+   439→        {
+   440→          id: 'nav',
+   441→          type: 'nav',
+   442→          tag: 'nav',
+   443→          style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 48px' },
+   444→          children: [
+   445→            { id: 'logo', type: 'text', tag: 'span', content: 'Alex.design', style: { fontSize: '20px', fontWeight: '700', color: '#ffffff' } },
+   446→            { id: 'nav-links', type: 'flex', tag: 'div', style: { display: 'flex', gap: '32px' },
+   447→              children: [
+   448→                { id: 'nl1', type: 'link', tag: 'a', content: 'Work', style: { color: '#94a3b8', fontSize: '14px', textDecoration: 'none' } },
+   449→                { id: 'nl2', type: 'link', tag: 'a', content: 'About', style: { color: '#94a3b8', fontSize: '14px', textDecoration: 'none' } },
+   450→                { id: 'nl3', type: 'link', tag: 'a', content: 'Contact', style: { color: '#94a3b8', fontSize: '14px', textDecoration: 'none' } },
+   451→              ]
+   452→            }
+   453→          ]
+   454→        },
+   455→        {
+   456→          id: 'hero',
+   457→          type: 'section',
+   458→          tag: 'section',
+   459→          style: { display: 'flex', flexDirection: 'column', padding: '120px 48px 80px' },
+   460→          children: [
+   461→            { id: 'hero-label', type: 'text', tag: 'p', content: 'Creative Designer & Developer', style: { fontSize: '14px', fontWeight: '600', color: '#10b981', letterSpacing: '0.05em' } },
+   462→            { id: 'hero-title', type: 'heading', tag: 'h1', content: 'I craft digital\nexperiences that\ninspire.', style: { fontSize: '72px', fontWeight: '800', lineHeight: '1.05', marginTop: '24px', letterSpacing: '-0.03em', whiteSpace: 'pre-line' } },
+   463→            { id: 'hero-cta', type: 'button', tag: 'button', content: 'View My Work →', style: { marginTop: '40px', padding: '14px 32px', borderRadius: '10px', backgroundColor: '#10b981', color: '#ffffff', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer' } },
+   464→          ]
+   465→        },
+   466→        {
+   467→          id: 'projects',
+   468→          type: 'section',
+   469→          tag: 'section',
+   470→          style: { display: 'flex', flexDirection: 'column', padding: '80px 48px' },
+   471→          children: [
+   472→            { id: 'proj-title', type: 'heading', tag: 'h2', content: 'Selected Work', style: { fontSize: '36px', fontWeight: '700', marginBottom: '48px' } },
+   473→            {
+   474→              id: 'proj-grid',
+   475→              type: 'grid',
+   476→              tag: 'div',
+   477→              style: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '32px' },
+   478→              children: [
+   479→                { id: 'p1', type: 'card', tag: 'div', style: { borderRadius: '16px', overflow: 'hidden', backgroundColor: '#1e293b' },
+   480→                  children: [
+   481→                    { id: 'p1-img', type: 'image', tag: 'div', style: { height: '280px', background: 'linear-gradient(135deg, #10b981, #0d9488)', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+   482→                      children: [
+   483→                        { id: 'p1-ph', type: 'text', tag: 'span', content: '🎨', style: { fontSize: '64px' } },
+   484→                      ]
+   485→                    },
+   486→                    { id: 'p1-info', type: 'container', tag: 'div', style: { padding: '24px' },
+   487→                      children: [
+   488→                        { id: 'p1-name', type: 'heading', tag: 'h3', content: 'Brand Identity System', style: { fontSize: '20px', fontWeight: '600' } },
+   489→                        { id: 'p1-cat', type: 'text', tag: 'p', content: 'Branding • Design System', style: { fontSize: '14px', color: '#94a3b8', marginTop: '4px' } },
+   490→                      ]
+   491→                    }
+   492→                  ]
+   493→                },
+   494→                { id: 'p2', type: 'card', tag: 'div', style: { borderRadius: '16px', overflow: 'hidden', backgroundColor: '#1e293b' },
+   495→                  children: [
+   496→                    { id: 'p2-img', type: 'image', tag: 'div', style: { height: '280px', background: 'linear-gradient(135deg, #f59e0b, #ef4444)', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+   497→                      children: [
+   498→                        { id: 'p2-ph', type: 'text', tag: 'span', content: '📱', style: { fontSize: '64px' } },
+   499→                      ]
+   500→                    },
+   501→                    { id: 'p2-info', type: 'container', tag: 'div', style: { padding: '24px' },
+   502→                      children: [
+   503→                        { id: 'p2-name', type: 'heading', tag: 'h3', content: 'Mobile Banking App', style: { fontSize: '20px', fontWeight: '600' } },
+   504→                        { id: 'p2-cat', type: 'text', tag: 'p', content: 'Mobile • Fintech', style: { fontSize: '14px', color: '#94a3b8', marginTop: '4px' } },
+   505→                      ]
+   506→                    }
+   507→                  ]
+   508→                },
+   509→              ]
+   510→            }
+   511→          ]
+   512→        },
+   513→        {
+   514→          id: 'contact',
+   515→          type: 'section',
+   516→          tag: 'section',
+   517→          style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px 48px', textAlign: 'center' },
+   518→          children: [
+   519→            { id: 'c-title', type: 'heading', tag: 'h2', content: "Let's work together", style: { fontSize: '40px', fontWeight: '700' } },
+   520→            { id: 'c-email', type: 'link', tag: 'a', content: 'hello@alex.design', style: { fontSize: '20px', color: '#10b981', marginTop: '16px', textDecoration: 'none' } },
+   521→          ]
+   522→        }
+   523→      ]
+   524→    }),
+   525→  },
+   526→
+   527→  // 6. Marketing Campaign
+   528→  {
+   529→    name: 'Marketing Campaign',
+   530→    description: 'An email-style marketing layout with bold hero, feature highlights, testimonials, and strong call-to-action sections. Drive conversions.',
+   531→    category: 'Marketing',
+   532→    thumbnail: null,
+   533→    tags: ['marketing', 'campaign', 'email', 'newsletter', 'cta'],
+   534→    downloads: 1456,
+   535→    rating: 4.4,
+   536→    designJSON: JSON.stringify({
+   537→      id: 'root',
+   538→      type: 'root',
+   539→      tag: 'div',
+   540→      style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#ffffff', alignItems: 'center' },
+   541→      children: [
+   542→        {
+   543→          id: 'email-wrapper',
+   544→          type: 'container',
+   545→          tag: 'div',
+   546→          style: { maxWidth: '600px', width: '100%', margin: '0 auto' },
+   547→          children: [
+   548→            {
+   549→              id: 'm-hero',
+   550→              type: 'section',
+   551→              tag: 'section',
+   552→              style: { padding: '60px 40px', textAlign: 'center', background: 'linear-gradient(135deg, #10b981, #0d9488)', borderRadius: '0 0 24px 24px' },
+   553→              children: [
+   554→                { id: 'mh-logo', type: 'text', tag: 'span', content: 'GREENGROW', style: { fontSize: '14px', fontWeight: '700', color: '#ffffff', letterSpacing: '0.15em', opacity: 0.9 } },
+   555→                { id: 'mh-title', type: 'heading', tag: 'h1', content: '🌱 Spring Sale is Here!', style: { fontSize: '36px', fontWeight: '800', color: '#ffffff', marginTop: '24px', lineHeight: '1.2' } },
+   556→                { id: 'mh-sub', type: 'text', tag: 'p', content: 'Up to 50% off on all organic products. Limited time offer.', style: { fontSize: '18px', color: '#d1fae5', marginTop: '16px', lineHeight: '1.5' } },
+   557→                { id: 'mh-btn', type: 'button', tag: 'button', content: 'Shop Now →', style: { marginTop: '32px', padding: '14px 40px', borderRadius: '10px', backgroundColor: '#ffffff', color: '#059669', fontSize: '16px', fontWeight: '700', border: 'none', cursor: 'pointer' } },
+   558→              ]
+   559→            },
+   560→            {
+   561→              id: 'm-features',
+   562→              type: 'section',
+   563→              tag: 'section',
+   564→              style: { padding: '40px' },
+   565→              children: [
+   566→                { id: 'mf-title', type: 'heading', tag: 'h2', content: 'What makes us different', style: { fontSize: '24px', fontWeight: '700', color: '#0f172a', textAlign: 'center' } },
+   567→                {
+   568→                  id: 'mf-list',
+   569→                  type: 'flex',
+   570→                  tag: 'div',
+   571→                  style: { display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '32px' },
+   572→                  children: [
+   573→                    { id: 'mf1', type: 'card', tag: 'div', style: { display: 'flex', gap: '16px', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' },
+   574→                      children: [
+   575→                        { id: 'mf1-icon', type: 'icon', tag: 'div', content: '🌿', style: { fontSize: '28px', flexShrink: 0 } },
+   576→                        { id: 'mf1-text', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column' },
+   577→                          children: [
+   578→                            { id: 'mf1-t', type: 'heading', tag: 'h3', content: '100% Organic', style: { fontSize: '16px', fontWeight: '600', color: '#0f172a' } },
+   579→                            { id: 'mf1-d', type: 'text', tag: 'p', content: 'All products sourced from certified organic farms.', style: { fontSize: '14px', color: '#64748b', marginTop: '4px' } },
+   580→                          ]
+   581→                        }
+   582→                      ]
+   583→                    },
+   584→                    { id: 'mf2', type: 'card', tag: 'div', style: { display: 'flex', gap: '16px', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' },
+   585→                      children: [
+   586→                        { id: 'mf2-icon', type: 'icon', tag: 'div', content: '🚚', style: { fontSize: '28px', flexShrink: 0 } },
+   587→                        { id: 'mf2-text', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column' },
+   588→                          children: [
+   589→                            { id: 'mf2-t', type: 'heading', tag: 'h3', content: 'Free Shipping', style: { fontSize: '16px', fontWeight: '600', color: '#0f172a' } },
+   590→                            { id: 'mf2-d', type: 'text', tag: 'p', content: 'Free delivery on orders over $30. No hidden fees.', style: { fontSize: '14px', color: '#64748b', marginTop: '4px' } },
+   591→                          ]
+   592→                        }
+   593→                      ]
+   594→                    },
+   595→                  ]
+   596→                }
+   597→              ]
+   598→            },
+   599→            {
+   600→              id: 'm-cta',
+   601→              type: 'section',
+   602→              tag: 'section',
+   603→              style: { padding: '48px 40px', textAlign: 'center', backgroundColor: '#f0fdf4', borderRadius: '16px', margin: '0 40px 40px' },
+   604→              children: [
+   605→                { id: 'cta-text', type: 'heading', tag: 'h2', content: 'Ready to go green?', style: { fontSize: '28px', fontWeight: '700', color: '#0f172a' } },
+   606→                { id: 'cta-sub', type: 'text', tag: 'p', content: 'Join 50,000+ happy customers', style: { fontSize: '16px', color: '#64748b', marginTop: '8px' } },
+   607→                { id: 'cta-btn', type: 'button', tag: 'button', content: 'Get 50% Off', style: { marginTop: '24px', padding: '14px 40px', borderRadius: '10px', backgroundColor: '#10b981', color: '#ffffff', fontSize: '16px', fontWeight: '700', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(16,185,129,0.4)' } },
+   608→              ]
+   609→            }
+   610→          ]
+   611→        }
+   612→      ]
+   613→    }),
+   614→  },
+   615→
+   616→  // 7. Admin Panel
+   617→  {
+   618→    name: 'Admin Panel',
+   619→    description: 'A powerful admin panel with sidebar navigation, data table, action buttons, and status indicators. Build management interfaces quickly.',
+   620→    category: 'Dashboard',
+   621→    thumbnail: null,
+   622→    tags: ['admin', 'panel', 'table', 'management', 'crud'],
+   623→    downloads: 1923,
+   624→    rating: 4.6,
+   625→    designJSON: JSON.stringify({
+   626→      id: 'root',
+   627→      type: 'root',
+   628→      tag: 'div',
+   629→      style: { display: 'flex', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#f1f5f9' },
+   630→      children: [
+   631→        {
+   632→          id: 'sidebar',
+   633→          type: 'sidebar',
+   634→          tag: 'aside',
+   635→          style: { display: 'flex', flexDirection: 'column', width: '260px', backgroundColor: '#ffffff', borderRight: '1px solid #e2e8f0', padding: '24px 16px', minHeight: '100vh', flexShrink: 0 },
+   636→          children: [
+   637→            { id: 'sb-logo', type: 'flex', tag: 'div', style: { display: 'flex', alignItems: 'center', gap: '10px', padding: '0 8px 24px' },
+   638→              children: [
+   639→                { id: 'sb-icon', type: 'icon', tag: 'div', content: '', style: { width: '32px', height: '32px', borderRadius: '8px', background: 'linear-gradient(135deg, #10b981, #14b8a6)', flexShrink: 0 } },
+   640→                { id: 'sb-name', type: 'text', tag: 'span', content: 'AdminHub', style: { fontSize: '18px', fontWeight: '700', color: '#0f172a' } },
+   641→              ]
+   642→            },
+   643→            { id: 'sb-section-label', type: 'text', tag: 'p', content: 'MAIN', style: { fontSize: '11px', fontWeight: '700', color: '#94a3b8', letterSpacing: '0.1em', padding: '0 12px', marginTop: '8px' } },
+   644→            { id: 'sb-nav', type: 'nav', tag: 'nav', style: { display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '8px' },
+   645→              children: [
+   646→                { id: 'sn1', type: 'link', tag: 'a', content: '📊 Dashboard', style: { display: 'block', padding: '10px 12px', borderRadius: '8px', color: '#10b981', fontSize: '14px', backgroundColor: '#ecfdf5', fontWeight: '600', textDecoration: 'none' } },
+   647→                { id: 'sn2', type: 'link', tag: 'a', content: '👥 Users', style: { display: 'block', padding: '10px 12px', borderRadius: '8px', color: '#64748b', fontSize: '14px', textDecoration: 'none' } },
+   648→                { id: 'sn3', type: 'link', tag: 'a', content: '📝 Posts', style: { display: 'block', padding: '10px 12px', borderRadius: '8px', color: '#64748b', fontSize: '14px', textDecoration: 'none' } },
+   649→                { id: 'sn4', type: 'link', tag: 'a', content: '💬 Comments', style: { display: 'block', padding: '10px 12px', borderRadius: '8px', color: '#64748b', fontSize: '14px', textDecoration: 'none' } },
+   650→              ]
+   651→            }
+   652→          ]
+   653→        },
+   654→        {
+   655→          id: 'main',
+   656→          type: 'container',
+   657→          tag: 'main',
+   658→          style: { display: 'flex', flexDirection: 'column', flex: 1, padding: '32px', gap: '24px', overflow: 'auto' },
+   659→          children: [
+   660→            {
+   661→              id: 'top-bar',
+   662→              type: 'flex',
+   663→              tag: 'div',
+   664→              style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+   665→              children: [
+   666→                { id: 'page-title', type: 'heading', tag: 'h1', content: 'Users', style: { fontSize: '28px', fontWeight: '700', color: '#0f172a' } },
+   667→                { id: 'add-btn', type: 'button', tag: 'button', content: '+ Add User', style: { padding: '10px 20px', borderRadius: '8px', backgroundColor: '#10b981', color: '#ffffff', fontSize: '14px', fontWeight: '600', border: 'none', cursor: 'pointer' } },
+   668→              ]
+   669→            },
+   670→            {
+   671→              id: 'data-table',
+   672→              type: 'card',
+   673→              tag: 'div',
+   674→              style: { borderRadius: '12px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', overflow: 'hidden' },
+   675→              children: [
+   676→                {
+   677→                  id: 'table-header',
+   678→                  type: 'flex',
+   679→                  tag: 'div',
+   680→                  style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 120px', padding: '12px 20px', backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', fontSize: '13px', fontWeight: '600', color: '#64748b' },
+   681→                  children: [
+   682→                    { id: 'th1', type: 'text', tag: 'span', content: 'Name' },
+   683→                    { id: 'th2', type: 'text', tag: 'span', content: 'Email' },
+   684→                    { id: 'th3', type: 'text', tag: 'span', content: 'Role' },
+   685→                    { id: 'th4', type: 'text', tag: 'span', content: 'Status' },
+   686→                  ]
+   687→                },
+   688→                {
+   689→                  id: 'row1',
+   690→                  type: 'flex',
+   691→                  tag: 'div',
+   692→                  style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 120px', padding: '14px 20px', borderBottom: '1px solid #f1f5f9', alignItems: 'center', fontSize: '14px' },
+   693→                  children: [
+   694→                    { id: 'r1-name', type: 'text', tag: 'span', content: 'Sarah Chen', style: { fontWeight: '500', color: '#0f172a' } },
+   695→                    { id: 'r1-email', type: 'text', tag: 'span', content: 'sarah@example.com', style: { color: '#64748b' } },
+   696→                    { id: 'r1-role', type: 'text', tag: 'span', content: 'Admin', style: { color: '#0f172a' } },
+   697→                    { id: 'r1-status', type: 'badge', tag: 'span', content: 'Active', style: { backgroundColor: '#ecfdf5', color: '#059669', padding: '4px 10px', borderRadius: '9999px', fontSize: '12px', fontWeight: '600' } },
+   698→                  ]
+   699→                },
+   700→                {
+   701→                  id: 'row2',
+   702→                  type: 'flex',
+   703→                  tag: 'div',
+   704→                  style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 120px', padding: '14px 20px', borderBottom: '1px solid #f1f5f9', alignItems: 'center', fontSize: '14px' },
+   705→                  children: [
+   706→                    { id: 'r2-name', type: 'text', tag: 'span', content: 'Mike Johnson', style: { fontWeight: '500', color: '#0f172a' } },
+   707→                    { id: 'r2-email', type: 'text', tag: 'span', content: 'mike@example.com', style: { color: '#64748b' } },
+   708→                    { id: 'r2-role', type: 'text', tag: 'span', content: 'Editor', style: { color: '#0f172a' } },
+   709→                    { id: 'r2-status', type: 'badge', tag: 'span', content: 'Active', style: { backgroundColor: '#ecfdf5', color: '#059669', padding: '4px 10px', borderRadius: '9999px', fontSize: '12px', fontWeight: '600' } },
+   710→                  ]
+   711→                },
+   712→                {
+   713→                  id: 'row3',
+   714→                  type: 'flex',
+   715→                  tag: 'div',
+   716→                  style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 120px', padding: '14px 20px', alignItems: 'center', fontSize: '14px' },
+   717→                  children: [
+   718→                    { id: 'r3-name', type: 'text', tag: 'span', content: 'Lisa Park', style: { fontWeight: '500', color: '#0f172a' } },
+   719→                    { id: 'r3-email', type: 'text', tag: 'span', content: 'lisa@example.com', style: { color: '#64748b' } },
+   720→                    { id: 'r3-role', type: 'text', tag: 'span', content: 'Viewer', style: { color: '#0f172a' } },
+   721→                    { id: 'r3-status', type: 'badge', tag: 'span', content: 'Inactive', style: { backgroundColor: '#fef2f2', color: '#dc2626', padding: '4px 10px', borderRadius: '9999px', fontSize: '12px', fontWeight: '600' } },
+   722→                  ]
+   723→                },
+   724→              ]
+   725→            }
+   726→          ]
+   727→        }
+   728→      ]
+   729→    }),
+   730→  },
+   731→
+   732→  // 8. Startup Pitch Deck
+   733→  {
+   734→    name: 'Startup Pitch Deck',
+   735→    description: 'A 6-slide startup pitch deck with problem/solution, market size, business model, team, and ask slides. Present your startup with confidence.',
+   736→    category: 'Landing Pages',
+   737→    thumbnail: null,
+   738→    tags: ['pitch', 'deck', 'startup', 'presentation', 'investor'],
+   739→    downloads: 1678,
+   740→    rating: 4.5,
+   741→    designJSON: JSON.stringify({
+   742→      id: 'root',
+   743→      type: 'root',
+   744→      tag: 'div',
+   745→      style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#0f172a', color: '#ffffff' },
+   746→      children: [
+   747→        {
+   748→          id: 'slide1',
+   749→          type: 'section',
+   750→          tag: 'section',
+   751→          style: { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '80px', textAlign: 'center', background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)' },
+   752→          children: [
+   753→            { id: 's1-label', type: 'badge', tag: 'span', content: 'SEED ROUND 2026', style: { backgroundColor: '#10b981', color: '#ffffff', padding: '6px 16px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700', letterSpacing: '0.05em' } },
+   754→            { id: 's1-title', type: 'heading', tag: 'h1', content: 'GreenTech', style: { fontSize: '80px', fontWeight: '800', marginTop: '32px', letterSpacing: '-0.03em', background: 'linear-gradient(135deg, #10b981, #14b8a6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' } },
+   755→            { id: 's1-sub', type: 'text', tag: 'p', content: 'AI-Powered Sustainable Energy Management', style: { fontSize: '24px', color: '#94a3b8', marginTop: '16px' } },
+   756→            { id: 's1-founder', type: 'text', tag: 'p', content: 'Presented by Jane Doe, CEO', style: { fontSize: '16px', color: '#64748b', marginTop: '40px' } },
+   757→          ]
+   758→        },
+   759→        {
+   760→          id: 'slide2',
+   761→          type: 'section',
+   762→          tag: 'section',
+   763→          style: { display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', padding: '80px', background: '#0f172a' },
+   764→          children: [
+   765→            { id: 's2-label', type: 'text', tag: 'p', content: 'THE PROBLEM', style: { fontSize: '13px', fontWeight: '700', color: '#10b981', letterSpacing: '0.1em' } },
+   766→            { id: 's2-title', type: 'heading', tag: 'h2', content: 'Energy waste costs businesses $200B+ annually', style: { fontSize: '48px', fontWeight: '700', marginTop: '16px', lineHeight: '1.15', maxWidth: '800px' } },
+   767→            { id: 's2-stats', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', marginTop: '48px', maxWidth: '900px' },
+   768→              children: [
+   769→                { id: 'st1', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', border: '1px solid #1e293b', backgroundColor: '#1e293b' },
+   770→                  children: [
+   771→                    { id: 'st1-val', type: 'heading', tag: 'div', content: '40%', style: { fontSize: '40px', fontWeight: '800', color: '#10b981' } },
+   772→                    { id: 'st1-label', type: 'text', tag: 'p', content: 'of commercial energy is wasted', style: { fontSize: '14px', color: '#94a3b8', marginTop: '8px' } },
+   773→                  ]
+   774→                },
+   775→                { id: 'st2', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', border: '1px solid #1e293b', backgroundColor: '#1e293b' },
+   776→                  children: [
+   777→                    { id: 'st2-val', type: 'heading', tag: 'div', content: '$200B', style: { fontSize: '40px', fontWeight: '800', color: '#10b981' } },
+   778→                    { id: 'st2-label', type: 'text', tag: 'p', content: 'annual waste in the US alone', style: { fontSize: '14px', color: '#94a3b8', marginTop: '8px' } },
+   779→                  ]
+   780→                },
+   781→                { id: 'st3', type: 'card', tag: 'div', style: { padding: '24px', borderRadius: '12px', border: '1px solid #1e293b', backgroundColor: '#1e293b' },
+   782→                  children: [
+   783→                    { id: 'st3-val', type: 'heading', tag: 'div', content: '8.5Gt', style: { fontSize: '40px', fontWeight: '800', color: '#10b981' } },
+   784→                    { id: 'st3-label', type: 'text', tag: 'p', content: 'CO₂ emissions from waste', style: { fontSize: '14px', color: '#94a3b8', marginTop: '8px' } },
+   785→                  ]
+   786→                },
+   787→              ]
+   788→            },
+   789→          ]
+   790→        },
+   791→        {
+   792→          id: 'slide3',
+   793→          type: 'section',
+   794→          tag: 'section',
+   795→          style: { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '80px', textAlign: 'center', background: '#0f172a' },
+   796→          children: [
+   797→            { id: 's3-label', type: 'text', tag: 'p', content: 'OUR SOLUTION', style: { fontSize: '13px', fontWeight: '700', color: '#10b981', letterSpacing: '0.1em' } },
+   798→            { id: 's3-title', type: 'heading', tag: 'h2', content: 'AI that optimizes energy usage in real-time', style: { fontSize: '48px', fontWeight: '700', marginTop: '16px', lineHeight: '1.15' } },
+   799→            { id: 's3-desc', type: 'text', tag: 'p', content: 'Our platform uses machine learning to analyze building systems, predict usage patterns, and automatically reduce waste — saving 30% on average.', style: { fontSize: '20px', color: '#94a3b8', marginTop: '24px', maxWidth: '700px', lineHeight: '1.5' } },
+   800→            { id: 's3-btn', type: 'button', tag: 'button', content: 'See How It Works →', style: { marginTop: '40px', padding: '14px 32px', borderRadius: '10px', backgroundColor: '#10b981', color: '#ffffff', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer' } },
+   801→          ]
+   802→        },
+   803→      ]
+   804→    }),
+   805→  },
+   806→];
+   807→
+   808→export async function POST() {
+   809→  try {
+   810→    // Check if templates already exist
+   811→    const existingCount = await db.template.count();
+   812→
+   813→    if (existingCount > 0) {
+   814→      return NextResponse.json({
+   815→        message: 'Templates already seeded',
+   816→        count: existingCount,
+   817→        skipped: true,
+   818→      });
+   819→    }
+   820→
+   821→    // Seed all built-in templates
+   822→    const created = [];
+   823→    for (const template of BUILT_IN_TEMPLATES) {
+   824→      const record = await db.template.create({
+   825→        data: {
+   826→          name: template.name,
+   827→          description: template.description,
+   828→          category: template.category,
+   829→          designJSON: template.designJSON,
+   830→          thumbnail: template.thumbnail,
+   831→          tags: JSON.stringify(template.tags),
+   832→          downloads: template.downloads,
+   833→          rating: template.rating,
+   834→          isPublic: true,
+   835→        },
+   836→      });
+   837→      created.push(record);
+   838→    }
+   839→
+   840→    return NextResponse.json({
+   841→      message: 'Templates seeded successfully',
+   842→      count: created.length,
+   843→      skipped: false,
+   844→    });
+   845→  } catch (error) {
+   846→    console.error('[Template Seed API] Error:', error);
+   847→    return NextResponse.json(
+   848→      { error: 'Failed to seed templates' },
+   849→      { status: 500 }
+   850→    );
+   851→  }
+   852→}
+   853→

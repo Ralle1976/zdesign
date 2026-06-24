@@ -1,0 +1,397 @@
+   760→function generateContextualFallback(userMessage: string, llmMessage: string, creativeMode?: boolean): string {
+   761→  const msg = (userMessage + ' ' + llmMessage).toLowerCase();
+   762→
+   763→  // Try to find a matching topic template
+   764→  let bestTemplate = TOPIC_TEMPLATES[0];
+   765→  let bestScore = 0;
+   766→
+   767→  for (const template of TOPIC_TEMPLATES) {
+   768→    let score = 0;
+   769→    for (const kw of template.keywords) {
+   770→      if (msg.includes(kw)) score += 2;
+   771→      // Partial match for compound words
+   772→      if (kw.length > 4 && msg.includes(kw.substring(0, 4))) score += 1;
+   773→    }
+   774→    if (score > bestScore) {
+   775→      bestScore = score;
+   776→      bestTemplate = template;
+   777→    }
+   778→  }
+   779→
+   780→  const t = bestTemplate;
+   781→
+   782→  // Generate the contextual fallback design
+   783→  return JSON.stringify({
+   784→    message: `I created a ${t.brandName}-style design based on your request! You can customize it by telling me what to change.`,
+   785→    design: {
+   786→      id: 'root', type: 'root', tag: 'div',
+   787→      style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: '#ffffff' },
+   788→      meta: { name: `${t.brandName} Design` },
+   789→      children: [
+   790→        // Navigation
+   791→        { id: 'nav-1', type: 'nav', tag: 'nav', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 32px', backgroundColor: '#ffffff', borderBottom: '1px solid #e2e8f0', position: 'sticky', top: '0', zIndex: '50' }, meta: { name: 'Navigation' }, children: [
+   792→          { id: 'logo-1', type: 'text', tag: 'span', content: t.brandName, style: { fontSize: '22px', fontWeight: '700', color: t.primaryColor } },
+   793→          { id: 'nav-links', type: 'flex', tag: 'div', style: { display: 'flex', gap: '24px', alignItems: 'center' }, children: [
+   794→            { id: 'nl1', type: 'link', tag: 'a', content: 'Features', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   795→            { id: 'nl2', type: 'link', tag: 'a', content: 'Pricing', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   796→            { id: 'nl3', type: 'link', tag: 'a', content: 'About', style: { fontSize: '14px', color: '#475569', textDecoration: 'none', fontWeight: '500' } },
+   797→            { id: 'nb1', type: 'button', tag: 'button', content: 'Get Started', style: { padding: '10px 24px', backgroundColor: t.primaryColor, color: '#ffffff', borderRadius: '8px', fontSize: '14px', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: `0 2px 8px ${t.primaryColor}40` } }
+   798→          ]}
+   799→        ]},
+   800→        // Hero Section
+   801→        { id: 'hero-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 32px 80px', textAlign: 'center', backgroundColor: '#f8fafc', backgroundImage: `radial-gradient(circle at 30% 50%, ${t.primaryColor}14 0%, transparent 50%)` }, meta: { name: 'Hero' }, children: [
+   802→          { id: 'hb1', type: 'badge', tag: 'span', content: `${t.heroEmoji} Powered by AI`, style: { padding: '6px 16px', backgroundColor: t.accentLight, color: t.primaryDark, borderRadius: '20px', fontSize: '13px', fontWeight: '500', marginBottom: '24px', display: 'inline-block' } },
+   803→          { id: 'hh1', type: 'heading', tag: 'h1', content: creativeMode ? `Reimagine. ${t.heroEmoji} Create.` : t.heroTitle, style: { fontSize: '52px', fontWeight: '800', lineHeight: '1.1', color: '#0f172a', maxWidth: '720px', marginBottom: '20px', letterSpacing: '-0.02em' } },
+   804→          { id: 'hp1', type: 'text', tag: 'p', content: t.heroSubtitle, style: { fontSize: '18px', color: '#475569', maxWidth: '540px', lineHeight: '1.7', marginBottom: '36px' } },
+   805→          { id: 'hbtns', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }, children: [
+   806→            { id: 'hb2', type: 'button', tag: 'button', content: 'Get Started', style: { padding: '14px 32px', backgroundColor: t.primaryColor, color: '#ffffff', borderRadius: '10px', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: `0 4px 16px ${t.primaryColor}4D`, transition: 'all 0.2s ease' } },
+   807→            { id: 'hb3', type: 'button', tag: 'button', content: 'Learn More', style: { padding: '14px 32px', backgroundColor: '#ffffff', color: '#475569', borderRadius: '10px', fontSize: '16px', fontWeight: '500', border: '1px solid #e2e8f0', cursor: 'pointer', transition: 'all 0.2s ease' } }
+   808→          ]}
+   809→        ]},
+   810→        // Trusted By / Social Proof
+   811→        { id: 'logos-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '48px 32px', backgroundColor: '#ffffff', borderBottom: '1px solid #f1f5f9' }, meta: { name: 'Trusted By' }, children: [
+   812→          { id: 'lt1', type: 'text', tag: 'p', content: 'Trusted by teams at', style: { fontSize: '13px', color: '#94a3b8', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '24px' } },
+   813→          { id: 'lrow', type: 'flex', tag: 'div', style: { display: 'flex', gap: '48px', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }, children: [
+   814→            { id: 'lg1', type: 'text', tag: 'span', content: 'Acme Corp', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } },
+   815→            { id: 'lg2', type: 'text', tag: 'span', content: 'TechFlow', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } },
+   816→            { id: 'lg3', type: 'text', tag: 'span', content: 'Innovate', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } },
+   817→            { id: 'lg4', type: 'text', tag: 'span', content: 'Quantum', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } },
+   818→            { id: 'lg5', type: 'text', tag: 'span', content: 'Nebula', style: { fontSize: '18px', fontWeight: '700', color: '#cbd5e1' } }
+   819→          ]}
+   820→        ]},
+   821→        // Features Section
+   822→        { id: 'feat-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '96px 32px', backgroundColor: '#ffffff' }, meta: { name: 'Features' }, children: [
+   823→          { id: 'flabel', type: 'badge', tag: 'span', content: 'FEATURES', style: { padding: '4px 12px', backgroundColor: t.accentLight, color: t.primaryDark, borderRadius: '16px', fontSize: '12px', fontWeight: '600', letterSpacing: '0.05em', marginBottom: '16px' } },
+   824→          { id: 'fh2', type: 'heading', tag: 'h2', content: 'Everything you need to succeed', style: { fontSize: '36px', fontWeight: '700', color: '#0f172a', marginBottom: '16px', letterSpacing: '-0.01em' } },
+   825→          { id: 'fsub', type: 'text', tag: 'p', content: `Powerful features designed to help you get the most out of ${t.brandName}.`, style: { fontSize: '18px', color: '#475569', maxWidth: '520px', textAlign: 'center', marginBottom: '56px', lineHeight: '1.6' } },
+   826→          { id: 'fgrid', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '28px', maxWidth: '1020px', width: '100%' }, children: t.features.map((f, i) => ({
+   827→            id: `fc${i + 1}`, type: 'card', tag: 'div', style: { padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', transition: 'box-shadow 0.2s ease' }, meta: { name: `Feature Card ${i + 1}` }, children: [
+   828→              { id: `fi${i + 1}`, type: 'text', tag: 'div', content: f.icon, style: { fontSize: '32px', marginBottom: '16px' } },
+   829→              { id: `fh3${String.fromCharCode(97 + i)}`, type: 'heading', tag: 'h3', content: f.title, style: { fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' } },
+   830→              { id: `fp${i + 1}`, type: 'text', tag: 'p', content: f.desc, style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' } }
+   831→            ]
+   832→          })) }
+   833→        ]},
+   834→        // Testimonial Section
+   835→        { id: 'testimonials-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '96px 32px', backgroundColor: '#f8fafc' }, meta: { name: 'Testimonials' }, children: [
+   836→          { id: 'th2', type: 'heading', tag: 'h2', content: 'What people are saying', style: { fontSize: '36px', fontWeight: '700', color: '#0f172a', marginBottom: '56px', letterSpacing: '-0.01em' } },
+   837→          { id: 'tgrid', type: 'grid', tag: 'div', style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', maxWidth: '1020px', width: '100%' }, children: [
+   838→            { id: 'tc1', type: 'card', tag: 'div', style: { padding: '28px', borderRadius: '16px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }, children: [
+   839→              { id: 'tq1', type: 'text', tag: 'p', content: t.testimonial, style: { fontSize: '15px', color: '#0f172a', lineHeight: '1.6', marginBottom: '20px', fontStyle: 'italic' } },
+   840→              { id: 'ta1', type: 'flex', tag: 'div', style: { display: 'flex', alignItems: 'center', gap: '12px' }, children: [
+   841→                { id: 'tav1', type: 'avatar', tag: 'div', content: t.testimonialAuthor.split(' ').map((n: string) => n[0]).join(''), style: { width: '40px', height: '40px', borderRadius: '50%', backgroundColor: t.accentLight, color: t.primaryDark, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600' } },
+   842→                { id: 'tn1', type: 'text', tag: 'div', content: t.testimonialAuthor, style: { fontSize: '14px', fontWeight: '600', color: '#0f172a' } },
+   843→                { id: 'tr1', type: 'text', tag: 'span', content: t.testimonialRole, style: { fontSize: '13px', color: '#94a3b8' } }
+   844→              ]}
+   845→            ]},
+   846→            { id: 'tc2', type: 'card', tag: 'div', style: { padding: '28px', borderRadius: '16px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }, children: [
+   847→              { id: 'tq2', type: 'text', tag: 'p', content: `"The interface is incredibly intuitive. I was up and running in under 5 minutes. Highly recommended for anyone serious about their craft."`, style: { fontSize: '15px', color: '#0f172a', lineHeight: '1.6', marginBottom: '20px', fontStyle: 'italic' } },
+   848→              { id: 'ta2', type: 'flex', tag: 'div', style: { display: 'flex', alignItems: 'center', gap: '12px' }, children: [
+   849→                { id: 'tav2', type: 'avatar', tag: 'div', content: 'MR', style: { width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#dbeafe', color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600' } },
+   850→                { id: 'tn2', type: 'text', tag: 'div', content: 'Marcus Rivera', style: { fontSize: '14px', fontWeight: '600', color: '#0f172a' } },
+   851→                { id: 'tr2', type: 'text', tag: 'span', content: 'Product Lead, TechFlow', style: { fontSize: '13px', color: '#94a3b8' } }
+   852→              ]}
+   853→            ]},
+   854→            { id: 'tc3', type: 'card', tag: 'div', style: { padding: '28px', borderRadius: '16px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }, children: [
+   855→              { id: 'tq3', type: 'text', tag: 'p', content: `"We've tried many platforms but this one stands out. The attention to detail and user experience is second to none."`, style: { fontSize: '15px', color: '#0f172a', lineHeight: '1.6', marginBottom: '20px', fontStyle: 'italic' } },
+   856→              { id: 'ta3', type: 'flex', tag: 'div', style: { display: 'flex', alignItems: 'center', gap: '12px' }, children: [
+   857→                { id: 'tav3', type: 'avatar', tag: 'div', content: 'JL', style: { width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#fce7f3', color: '#9d174d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600' } },
+   858→                { id: 'tn3', type: 'text', tag: 'div', content: 'Julia Lee', style: { fontSize: '14px', fontWeight: '600', color: '#0f172a' } },
+   859→                { id: 'tr3', type: 'text', tag: 'span', content: 'CTO, Innovate', style: { fontSize: '13px', color: '#94a3b8' } }
+   860→              ]}
+   861→            ]}
+   862→          ]}
+   863→        ]},
+   864→        // CTA Section
+   865→        { id: 'cta-1', type: 'section', tag: 'section', style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '96px 32px', background: `linear-gradient(135deg, ${t.primaryDark} 0%, ${t.primaryColor} 50%, ${t.primaryColor}99 100%)` }, meta: { name: 'Call to Action' }, children: [
+   866→          { id: 'ch2', type: 'heading', tag: 'h2', content: t.ctaTitle, style: { fontSize: '40px', fontWeight: '700', color: '#ffffff', marginBottom: '16px', letterSpacing: '-0.01em' } },
+   867→          { id: 'cp1', type: 'text', tag: 'p', content: t.ctaSubtitle, style: { fontSize: '18px', color: `${t.accentLight}`, maxWidth: '500px', textAlign: 'center', marginBottom: '32px', lineHeight: '1.6' } },
+   868→          { id: 'cbtns', type: 'flex', tag: 'div', style: { display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }, children: [
+   869→            { id: 'cb1', type: 'button', tag: 'button', content: 'Get Started Free', style: { padding: '14px 32px', backgroundColor: '#ffffff', color: t.primaryDark, borderRadius: '10px', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 4px 16px rgba(0,0,0,0.15)' } },
+   870→            { id: 'cb2', type: 'button', tag: 'button', content: 'Schedule Demo', style: { padding: '14px 32px', backgroundColor: 'transparent', color: '#ffffff', borderRadius: '10px', fontSize: '16px', fontWeight: '500', border: '2px solid rgba(255,255,255,0.4)', cursor: 'pointer' } }
+   871→          ]}
+   872→        ]},
+   873→        // Footer
+   874→        { id: 'footer-1', type: 'footer', tag: 'footer', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '64px 48px 32px', backgroundColor: '#0f172a' }, meta: { name: 'Footer' }, children: [
+   875→          { id: 'fcol1', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', maxWidth: '280px' }, children: [
+   876→            { id: 'flogo', type: 'text', tag: 'span', content: t.brandName, style: { fontSize: '20px', fontWeight: '700', color: t.primaryColor, marginBottom: '16px' } },
+   877→            { id: 'fdesc', type: 'text', tag: 'p', content: t.footerDesc, style: { fontSize: '14px', color: '#94a3b8', lineHeight: '1.6', marginBottom: '20px' } }
+   878→          ]},
+   879→          { id: 'fcol2', type: 'container', tag: 'div', style: { display: 'flex', gap: '64px' }, children: [
+   880→            { id: 'flinks1', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', gap: '12px' }, children: [
+   881→              { id: 'flt1', type: 'text', tag: 'span', content: 'Product', style: { fontSize: '14px', fontWeight: '600', color: '#ffffff', marginBottom: '4px' } },
+   882→              { id: 'fl1', type: 'link', tag: 'a', content: 'Features', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   883→              { id: 'fl2', type: 'link', tag: 'a', content: 'Pricing', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   884→              { id: 'fl3', type: 'link', tag: 'a', content: 'Changelog', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } }
+   885→            ]},
+   886→            { id: 'flinks2', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', gap: '12px' }, children: [
+   887→              { id: 'flt2', type: 'text', tag: 'span', content: 'Company', style: { fontSize: '14px', fontWeight: '600', color: '#ffffff', marginBottom: '4px' } },
+   888→              { id: 'fl4', type: 'link', tag: 'a', content: 'About', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   889→              { id: 'fl5', type: 'link', tag: 'a', content: 'Blog', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   890→              { id: 'fl6', type: 'link', tag: 'a', content: 'Careers', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } }
+   891→            ]},
+   892→            { id: 'flinks3', type: 'container', tag: 'div', style: { display: 'flex', flexDirection: 'column', gap: '12px' }, children: [
+   893→              { id: 'flt3', type: 'text', tag: 'span', content: 'Legal', style: { fontSize: '14px', fontWeight: '600', color: '#ffffff', marginBottom: '4px' } },
+   894→              { id: 'fl7', type: 'link', tag: 'a', content: 'Privacy', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } },
+   895→              { id: 'fl8', type: 'link', tag: 'a', content: 'Terms', style: { fontSize: '14px', color: '#94a3b8', textDecoration: 'none' } }
+   896→            ]}
+   897→          ]}
+   898→        ]},
+   899→        { id: 'footer-bottom', type: 'container', tag: 'div', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 48px', backgroundColor: '#0f172a', borderTop: '1px solid #1e293b' }, children: [
+   900→          { id: 'fcopy', type: 'text', tag: 'p', content: `© 2026 ${t.brandName}. All rights reserved.`, style: { color: '#64748b', fontSize: '13px' } }
+   901→        ]}
+   902→      ]
+   903→    }
+   904→  });
+   905→}
+   906→
+   907→// ============ POST Handler ============
+   908→
+   909→export async function POST(request: NextRequest) {
+   910→  try {
+   911→    const body: ChatRequestBody = await request.json();
+   912→    const { message, projectId, designTree, designSystem, history, creativeMode } = body;
+   913→
+   914→    if (!message || !projectId) {
+   915→      return NextResponse.json({ error: 'message and projectId are required' }, { status: 400 });
+   916→    }
+   917→
+   918→    const project = await db.project.findUnique({ where: { id: projectId } });
+   919→    if (!project) {
+   920→      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+   921→    }
+   922→
+   923→    // Store user message
+   924→    await db.chatMessage.create({
+   925→      data: { projectId, role: 'user', content: message },
+   926→    });
+   927→
+   928→    // Build a concise system prompt for chat (full prompt is too large for this environment)
+   929→    const conciseSystemPrompt = `You are Z.Design AI, an expert visual design assistant. You generate designs as structured JSON.
+   930→
+   931→CRITICAL JSON FORMAT RULES:
+   932→1. ALL property names MUST be in double quotes: "id", "type", "style", "content"
+   933→2. EVERY property name MUST have a colon after the closing quote: "id": "nav-1" (NOT "id": or "id=)
+   934→3. The "content" field MUST be INSIDE the node object, NOT after it
+   935→4. ALL style values MUST be quoted strings: "boxShadow": "0 4px 6px rgba(0,0,0,0.1)"
+   936→5. Use rgba without spaces in commas: "rgba(0,0,0,0.1)" NOT "rgba(0, 0, 0, 0.1)"
+   937→6. Return raw JSON only - no markdown code blocks
+   938→
+   939→CORRECT EXAMPLE:
+   940→{"message": "Created a landing page", "design": {"id": "root", "type": "root", "tag": "div", "style": {"minHeight": "100vh", "fontFamily": "Inter, system-ui, sans-serif", "backgroundColor": "#ffffff"}, "children": [{"id": "nav-1", "type": "nav", "tag": "nav", "style": {"display": "flex", "justifyContent": "space-between", "padding": "16px 32px", "backgroundColor": "#ffffff", "borderBottom": "1px solid #e2e8f0"}, "children": [{"id": "logo", "type": "text", "tag": "span", "content": "BrandName", "style": {"fontSize": "20px", "fontWeight": "700", "color": "#10b981"}}, {"id": "nav-btn", "type": "button", "tag": "button", "content": "Get Started", "style": {"padding": "10px 24px", "backgroundColor": "#10b981", "color": "#ffffff", "borderRadius": "8px", "border": "none", "fontWeight": "600", "cursor": "pointer"}}]}, {"id": "hero", "type": "section", "tag": "section", "style": {"display": "flex", "flexDirection": "column", "alignItems": "center", "padding": "80px 32px", "textAlign": "center", "backgroundColor": "#f8fafc"}, "children": [{"id": "hero-h1", "type": "heading", "tag": "h1", "content": "Welcome to Our Platform", "style": {"fontSize": "48px", "fontWeight": "800", "color": "#0f172a", "marginBottom": "16px"}}, {"id": "hero-p", "type": "text", "tag": "p", "content": "Build amazing things with AI", "style": {"fontSize": "18px", "color": "#475569", "maxWidth": "540px", "lineHeight": "1.7"}}]}]}}
+   941→
+   942→NOTICE HOW:
+   943→- "content": "BrandName" is INSIDE each node object
+   944→- Every property name has quotes AND a colon: "fontSize": "20px"
+   945→- CSS values are all quoted strings
+   946→- No spaces in rgba() values
+   947→- No trailing commas
+   948→
+   949→COLORS: Primary #10b981, PrimaryDark #059669, Text #0f172a, TextSecondary #475569, Muted #94a3b8, BG #ffffff, Surface #f8fafc, Border #e2e8f0
+   950→LAYOUT: Nav→Hero→Features→CTA→Footer (landing pages), Sidebar→Header→Stats→Charts (dashboards)
+   951→
+   952→DESIGN PRINCIPLES: Modern, clean, generous whitespace, rounded corners, responsive flexbox/grid layouts, proper heading hierarchy, complete sections with real content.
+   953→
+   954→RULES:
+   955→1. Every node needs unique "id" (e.g., "hero-section", "nav-logo")
+   956→2. Use semantic HTML tags (header, nav, main, section, footer)
+   957→3. Make designs COMPLETE and POLISHED
+   958→4. Images: use "https://placehold.co/WxH/10b981/ffffff?text=Label"
+   959→5. For landing pages: Nav → Hero → Features → CTA → Footer
+   960→6. For dashboards: Sidebar → Header → Stats → Charts
+   961→7. NEVER use Tailwind shorthand - always use real CSS values: "32px" not "4xl"
+   962→8. Double-check your JSON is valid before returning`;
+   963→
+   964→    let systemPrompt = conciseSystemPrompt;
+   965→    if (designSystem && Object.keys(designSystem).length > 0) {
+   966→      systemPrompt += `\n\nUSER'S DESIGN SYSTEM: ${JSON.stringify(designSystem)}`;
+   967→    }
+   968→
+   969→    // Add Creative Mode to system prompt
+   970→    if (creativeMode) {
+   971→      systemPrompt += `\n\nCREATIVE MODE: Be bold and experimental! Try unique layouts, unconventional color combinations, creative typography, asymmetric layouts, and innovative design patterns. Push boundaries while maintaining usability. Generate at least 2-3 different section variations within the design.`;
+   972→    }
+   973→
+   974→    // Build the user message content, adding context about existing design if present
+   975→    let userContent = message;
+   976→    if (designTree && (designTree as { children?: unknown[] }).children?.length as number > 0) {
+   977→      const childrenCount = (designTree as { children: unknown[] }).children.length;
+   978→      userContent = `[Current design exists with ${childrenCount} top-level sections. The user wants to modify it.]\n\nUser request: ${message}\n\nReturn the COMPLETE updated design tree (not just the changes).`;
+   979→    }
+   980→
+   981→    // Build conversation messages from history (up to 4 most recent to save tokens)
+   982→    const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+   983→      { role: 'system', content: systemPrompt },
+   984→    ];
+   985→
+   986→    if (history && history.length > 0) {
+   987→      const recentHistory = history.slice(-4);
+   988→      for (const msg of recentHistory) {
+   989→        messages.push({ role: msg.role, content: msg.content });
+   990→      }
+   991→    }
+   992→
+   993→    messages.push({ role: 'user', content: userContent });
+   994→
+   995→    // Call Z.ai LLM with timeout and retry logic
+   996→    let rawResponse: string | null = null;
+   997→    let tokensUsed = 0;
+   998→    let usedFallback = false;
+   999→
+  1000→    // Timeout strategy: LLM takes ~60-90s to generate a full design, so we need generous timeouts
+  1001→    // First attempt gets 120s, subsequent attempts get 90s — the LLM is slow but reliable
+  1002→    const LLM_TIMEOUT_FIRST = 120000; // 120s for first attempt (LLM takes ~74s on average)
+  1003→    const LLM_TIMEOUT_RETRY = 90000; // 90s for retries
+  1004→    const maxRetries = 2; // 2 retries (3 total attempts) — the LLM is slow but reliable
+  1005→
+  1006→    // ALWAYS try the LLM first — it produces much better designs than fallbacks
+  1007→    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+  1008→      try {
+  1009→        const zai = await getZAI();
+  1010→        const timeoutMs = attempt === 0 ? LLM_TIMEOUT_FIRST : LLM_TIMEOUT_RETRY;
+  1011→
+  1012→        // Race the LLM call against a timeout
+  1013→        const completionPromise = zai.chat.completions.create({
+  1014→          messages,
+  1015→          thinking: { type: 'disabled' },
+  1016→        });
+  1017→
+  1018→        const timeoutPromise = new Promise<never>((_, reject) =>
+  1019→          setTimeout(() => reject(new Error('LLM timeout')), timeoutMs)
+  1020→        );
+  1021→
+  1022→        const completion = await Promise.race([completionPromise, timeoutPromise]);
+  1023→        rawResponse = completion.choices[0]?.message?.content || null;
+  1024→        tokensUsed = completion.usage?.total_tokens || 0;
+  1025→        break; // Success, exit retry loop
+  1026→      } catch (llmError) {
+  1027→        console.warn(`[Chat API] Z.ai LLM attempt ${attempt + 1} failed:`, llmError instanceof Error ? llmError.message : llmError);
+  1028→        if (attempt < maxRetries) {
+  1029→          await new Promise((resolve) => setTimeout(resolve, 500));
+  1030→        } else {
+  1031→          console.error('[Chat API] Z.ai LLM attempts failed, using fallback');
+  1032→          usedFallback = true;
+  1033→        }
+  1034→      }
+  1035→    }
+  1036→
+  1037→    // Parse response: use LLM output or fallback
+  1038→    let parsed: { message: string; design: unknown | null; parseFailed?: boolean };
+  1039→    let templateUsed = false;
+  1040→
+  1041→    if (rawResponse) {
+  1042→      parsed = parseAIResponse(rawResponse);
+  1043→      if (!parsed.design) {
+  1044→        console.warn('[Chat API] LLM response parsed but no design extracted. Raw length:', rawResponse.length, 'First 200:', rawResponse.substring(0, 200));
+  1045→        // Try repairLLMJson directly
+  1046→        const repaired = repairLLMJson(rawResponse);
+  1047→        if (repaired) {
+  1048→          try {
+  1049→            const repairedParsed = JSON.parse(repaired);
+  1050→            if (repairedParsed && typeof repairedParsed === 'object') {
+  1051→              const rp = repairedParsed as Record<string, unknown>;
+  1052→              if (rp.design || rp.id || rp.type || rp.children) {
+  1053→                parsed = {
+  1054→                  message: (rp.message as string) || parsed.message,
+  1055→                  design: rp.design || rp,
+  1056→                };
+  1057→                console.log('[Chat API] Design recovered via repairLLMJson!');
+  1058→              }
+  1059→            }
+  1060→          } catch (repairError) {
+  1061→            const errMsg = repairError instanceof Error ? repairError.message : String(repairError);
+  1062→            const posMatch = errMsg.match(/position (\d+)/);
+  1063→            const pos = posMatch ? parseInt(posMatch[1]) : 0;
+  1064→            console.warn('[Chat API] repairLLMJson also failed:', errMsg.substring(0, 100));
+  1065→            if (pos > 0) {
+  1066→              console.warn('[Chat API] Error context (pos', pos, '):', repaired.substring(Math.max(0, pos - 80), pos + 80));
+  1067→            }
+  1068→          }
+  1069→        } else {
+  1070→          console.warn('[Chat API] repairLLMJson returned null - unable to repair');
+  1071→        }
+  1072→
+  1073→        // After repairLLMJson also fails, use smart contextual fallback
+  1074→        if (!parsed.design && rawResponse) {
+  1075→          // Extract the message from the LLM response to understand intent
+  1076→          const messageMatch = rawResponse.match(/"message"\s*:\s*"([^"]+)"/);
+  1077→          const llmMessage = messageMatch ? messageMatch[1] : '';
+  1078→
+  1079→          console.log('[Chat API] Using smart contextual fallback. User message:', message.substring(0, 60), 'LLM message:', llmMessage.substring(0, 60));
+  1080→
+  1081→          // Generate a contextual fallback based on the user's message AND the LLM's description
+  1082→          const contextualFallback = generateContextualFallback(message, llmMessage, creativeMode);
+  1083→          parsed = parseAIResponse(contextualFallback);
+  1084→
+  1085→          // Mark this as a template-based design
+  1086→          templateUsed = true;
+  1087→        }
+  1088→      } else {
+  1089→        console.log('[Chat API] Design parsed successfully!');
+  1090→      }
+  1091→    } else {
+  1092→      // Fallback to hardcoded design generation (LLM was completely unavailable)
+  1093→      const fallbackRaw = generateFallbackDesign(message, creativeMode);
+  1094→      parsed = parseAIResponse(fallbackRaw);
+  1095→      usedFallback = true;
+  1096→    }
+  1097→
+  1098→    // Store assistant message
+  1099→    const assistantMessage = await db.chatMessage.create({
+  1100→      data: {
+  1101→        projectId,
+  1102→        role: 'assistant',
+  1103→        content: parsed.message || 'I generated a design for you!',
+  1104→        metadata: JSON.stringify({
+  1105→          designUpdate: parsed.design || null,
+  1106→          tokensUsed,
+  1107→          usedFallback,
+  1108→          creativeMode: creativeMode || false,
+  1109→        }),
+  1110→      },
+  1111→    });
+  1112→
+  1113→    // Update project if design was generated
+  1114→    if (parsed.design) {
+  1115→      await db.project.update({
+  1116→        where: { id: projectId },
+  1117→        data: { designJSON: JSON.stringify(parsed.design), status: 'IN_PROGRESS' },
+  1118→      });
+  1119→    }
+  1120→
+  1121→    return NextResponse.json({
+  1122→      id: assistantMessage.id,
+  1123→      message: parsed.message || 'I generated a design for you!',
+  1124→      design: parsed.design,
+  1125→      projectId,
+  1126→      createdAt: assistantMessage.createdAt,
+  1127→      usedFallback,
+  1128→      templateUsed,
+  1129→      parseFailed: !parsed.design,
+  1130→    });
+  1131→  } catch (error) {
+  1132→    console.error('[Chat API] Error:', error);
+  1133→    return NextResponse.json(
+  1134→      { error: 'Failed to process chat message', details: error instanceof Error ? error.message : 'Unknown error' },
+  1135→      { status: 500 }
+  1136→    );
+  1137→  }
+  1138→}
+  1139→
+  1140→// ============ GET Handler ============
+  1141→
+  1142→export async function GET(request: NextRequest) {
+  1143→  try {
+  1144→    const { searchParams } = new URL(request.url);
+  1145→    const projectId = searchParams.get('projectId');
+  1146→    if (!projectId) {
+  1147→      return NextResponse.json({ error: 'projectId is required' }, { status: 400 });
+  1148→    }
+  1149→    const messages = await db.chatMessage.findMany({ where: { projectId }, orderBy: { createdAt: 'asc' } });
+  1150→    return NextResponse.json({ messages });
+  1151→  } catch (error) {
+  1152→    console.error('[Chat API] GET Error:', error);
+  1153→    return NextResponse.json({ error: 'Failed to retrieve chat history' }, { status: 500 });
+  1154→  }
+  1155→}
+  1156→

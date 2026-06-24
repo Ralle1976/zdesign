@@ -1,0 +1,40 @@
+# Secrets / Environment
+.env
+.env.*
+!.env.example
+
+# Database
+*.db
+*.db-journal
+
+# Build / Cache
+.next/
+node_modules/
+out/
+dist/
+
+# Logs
+logs/
+*.log
+
+# Claude Code (private dev)
+.claude/
+CLAUDE.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime data
+data/
+uploads/
+
+# Demo / temp files (not part of the project source)
+orathai-spa-konzept/
+orathai-fusion-html*
+phase*-orathai*
+agent-orathai*
+zdesign-agent-canvas*
+thai30-*
+wow-thai-*
+shot-*

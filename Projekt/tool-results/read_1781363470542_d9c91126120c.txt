@@ -1,0 +1,1010 @@
+     1→'use client';
+     2→
+     3→import { useState, useRef, useCallback, useEffect } from 'react';
+     4→import { useZDesignStore } from '@/stores/zdesign-store';
+     5→import { useI18n } from '@/i18n';
+     6→import { useVoiceInput } from '@/hooks/useVoiceInput';
+     7→import type { ChatMessage } from '@/types/design';
+     8→import { ScrollArea } from '@/components/ui/scroll-area';
+     9→import { Button } from '@/components/ui/button';
+    10→import { Textarea } from '@/components/ui/textarea';
+    11→import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+    12→import { Badge } from '@/components/ui/badge';
+    13→import { Separator } from '@/components/ui/separator';
+    14→import { Progress } from '@/components/ui/progress';
+    15→import {
+    16→  Tooltip,
+    17→  TooltipContent,
+    18→  TooltipTrigger,
+    19→} from '@/components/ui/tooltip';
+    20→import {
+    21→  Send,
+    22→  Mic,
+    23→  Paperclip,
+    24→  Trash2,
+    25→  Sparkles,
+    26→  LayoutDashboard,
+    27→  Smartphone,
+    28→  Presentation,
+    29→  Bot,
+    30→  User,
+    31→  ImageIcon,
+    32→  Search,
+    33→  CheckCircle2,
+    34→  Brain,
+    35→  Palette,
+    36→  Zap,
+    37→  Loader2,
+    38→} from 'lucide-react';
+    39→import ReactMarkdown from 'react-markdown';
+    40→import { motion, AnimatePresence } from 'framer-motion';
+    41→import { AIImageDialog } from './AIImageDialog';
+    42→import { ResearchDialog } from './ResearchDialog';
+    43→
+    44→const EXAMPLE_PROMPTS = [
+    45→  {
+    46→    icon: LayoutDashboard,
+    47→    key: 'landing' as const,
+    48→    gradient: 'from-emerald-500 to-teal-500',
+    49→  },
+    50→  {
+    51→    icon: LayoutDashboard,
+    52→    key: 'dashboard' as const,
+    53→    gradient: 'from-teal-500 to-cyan-500',
+    54→  },
+    55→  {
+    56→    icon: Smartphone,
+    57→    key: 'app' as const,
+    58→    gradient: 'from-cyan-500 to-emerald-500',
+    59→  },
+    60→  {
+    61→    icon: Presentation,
+    62→    key: 'slide' as const,
+    63→    gradient: 'from-emerald-500 to-green-500',
+    64→  },
+    65→];
+    66→
+    67→// ============ Step Progress in Chat ============
+    68→
+    69→function GenerationStepProgress() {
+    70→  const { locale } = useI18n();
+    71→  const generationProgress = useZDesignStore((s) => s.generationProgress);
+    72→  const creativeMode = useZDesignStore((s) => s.creativeMode);
+    73→  const isDe = locale === 'de';
+    74→
+    75→  const steps = [
+    76→    { id: 'analyzing', label: isDe ? 'Analysiere...' : 'Analyzing...', icon: Brain },
+    77→    { id: 'generating', label: isDe ? 'Generiere...' : 'Generating...', icon: Sparkles },
+    78→    { id: 'rendering', label: isDe ? 'Rendere...' : 'Rendering...', icon: Palette },
+    79→    { id: 'evaluating', label: isDe ? 'Bewerte...' : 'Evaluating...', icon: CheckCircle2 },
+    80→  ];
+    81→
+    82→  const currentIdx = steps.findIndex((s) => s.id === generationProgress.stage);
+    83→  const stageOrder = ['idle', 'analyzing', 'generating', 'rendering', 'evaluating', 'complete', 'error'];
+    84→  const stageIdx = stageOrder.indexOf(generationProgress.stage);
+    85→
+    86→  return (
+    87→    <div className="px-4 py-2 space-y-2">
+    88→      {/* Progress bar */}
+    89→      <Progress value={generationProgress.percentage} className="h-1.5 [&>div]:bg-emerald-500" />
+    90→
+    91→      {/* Steps */}
+    92→      <div className="flex items-center gap-1">
+    93→        {steps.map((step, idx) => {
+    94→          const StepIcon = step.icon;
+    95→          const isActive = step.id === generationProgress.stage;
+    96→          const isDone = idx < currentIdx || generationProgress.stage === 'complete';
+    97→
+    98→          return (
+    99→            <div key={step.id} className="flex items-center gap-1 flex-1 min-w-0">
+   100→              <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium truncate ${
+   101→                isActive
+   102→                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+   103→                  : isDone
+   104→                    ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-500'
+   105→                    : 'bg-muted/50 text-muted-foreground'
+   106→              }`}>
+   107→                {isActive ? (
+   108→                  <Loader2 className="size-2.5 animate-spin shrink-0" />
+   109→                ) : isDone ? (
+   110→                  <CheckCircle2 className="size-2.5 shrink-0" />
+   111→                ) : (
+   112→                  <StepIcon className="size-2.5 shrink-0" />
+   113→                )}
+   114→                <span className="truncate">{step.label}</span>
+   115→              </div>
+   116→              {idx < steps.length - 1 && (
+   117→                <div className={`h-px flex-1 min-w-[8px] ${isDone ? 'bg-emerald-300 dark:bg-emerald-700' : 'bg-border'}`} />
+   118→              )}
+   119→            </div>
+   120→          );
+   121→        })}
+   122→      </div>
+   123→
+   124→      {/* Creative mode indicator */}
+   125→      {creativeMode && (
+   126→        <div className="flex items-center gap-1 text-[10px] text-amber-600 dark:text-amber-400">
+   127→          <Zap className="size-2.5" />
+   128→          <span className="font-medium">Creative Mode active</span>
+   129→        </div>
+   130→      )}
+   131→
+   132→      {/* Status message */}
+   133→      {generationProgress.message && (
+   134→        <p className="text-[10px] text-muted-foreground">{generationProgress.message}</p>
+   135→      )}
+   136→    </div>
+   137→  );
+   138→}
+   139→
+   140→function TypingIndicator() {
+   141→  return (
+   142→    <div className="flex items-start gap-3 px-4 py-3">
+   143→      <Avatar className="size-8 shrink-0">
+   144→        <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs font-bold">
+   145→          Z
+   146→        </AvatarFallback>
+   147→      </Avatar>
+   148→      <div className="flex items-center gap-1 bg-muted rounded-2xl rounded-tl-sm px-4 py-2.5">
+   149→        <motion.span
+   150→          className="size-2 rounded-full bg-emerald-500"
+   151→          animate={{ opacity: [0.4, 1, 0.4] }}
+   152→          transition={{ duration: 1.2, repeat: Infinity, delay: 0 }}
+   153→        />
+   154→        <motion.span
+   155→          className="size-2 rounded-full bg-emerald-500"
+   156→          animate={{ opacity: [0.4, 1, 0.4] }}
+   157→          transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }}
+   158→        />
+   159→        <motion.span
+   160→          className="size-2 rounded-full bg-emerald-500"
+   161→          animate={{ opacity: [0.4, 1, 0.4] }}
+   162→          transition={{ duration: 1.2, repeat: Infinity, delay: 0.4 }}
+   163→        />
+   164→      </div>
+   165→    </div>
+   166→  );
+   167→}
+   168→
+   169→function MessageBubble({ message }: { message: ChatMessage }) {
+   170→  // Hydration-safe: only render timestamp after mount
+   171→  const [mounted, setMounted] = useState(false);
+   172→  useEffect(() => { setMounted(true); }, []); // eslint-disable-line react-hooks/set-state-in-effect
+   173→
+   174→  if (message.role === 'system') {
+   175→    return (
+   176→      <div className="flex justify-center px-4 py-1">
+   177→        <span className="text-xs text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">
+   178→          {message.content}
+   179→        </span>
+   180→      </div>
+   181→    );
+   182→  }
+   183→
+   184→  const isUser = message.role === 'user';
+   185→
+   186→  return (
+   187→    <motion.div
+   188→      initial={{ opacity: 0, y: 8 }}
+   189→      animate={{ opacity: 1, y: 0 }}
+   190→      transition={{ duration: 0.25, ease: 'easeOut' }}
+   191→      className={`flex items-start gap-3 px-4 py-3 ${isUser ? 'flex-row-reverse' : ''}`}
+   192→    >
+   193→      <Avatar className="size-8 shrink-0">
+   194→        <AvatarFallback
+   195→          className={
+   196→            isUser
+   197→              ? 'bg-secondary text-secondary-foreground text-xs'
+   198→              : 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs font-bold'
+   199→          }
+   200→        >
+   201→          {isUser ? <User className="size-4" /> : <Bot className="size-4" />}
+   202→        </AvatarFallback>
+   203→      </Avatar>
+   204→
+   205→      <div
+   206→        className={`max-w-[85%] space-y-1 ${isUser ? 'items-end' : 'items-start'}`}
+   207→      >
+   208→        <div
+   209→          className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+   210→            isUser
+   211→              ? 'bg-emerald-600 text-white rounded-tr-sm'
+   212→              : 'bg-muted rounded-tl-sm'
+   213→          }`}
+   214→        >
+   215→          {isUser ? (
+   216→            <p className="whitespace-pre-wrap">{message.content}</p>
+   217→          ) : (
+   218→            <div className="prose prose-sm dark:prose-invert max-w-none [&_p]:my-1 [&_ul]:my-1 [&_ol]:my-1 [&_li]:my-0.5 [&_code]:text-xs [&_code]:bg-black/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_pre]:bg-black/5 [&_pre]:rounded-md [&_pre]:p-2">
+   219→              <ReactMarkdown>{message.content}</ReactMarkdown>
+   220→            </div>
+   221→          )}
+   222→        </div>
+   223→        {mounted && (
+   224→          <p
+   225→            className={`text-[10px] text-muted-foreground px-1 ${isUser ? 'text-right' : ''}`}
+   226→          >
+   227→            {new Date(message.createdAt).toLocaleTimeString([], {
+   228→              hour: '2-digit',
+   229→              minute: '2-digit',
+   230→            })}
+   231→          </p>
+   232→        )}
+   233→      </div>
+   234→    </motion.div>
+   235→  );
+   236→}
+   237→
+   238→function WelcomeState({
+   239→  onExampleClick,
+   240→}: {
+   241→  onExampleClick: (prompt: string) => void;
+   242→}) {
+   243→  const { t } = useI18n();
+   244→
+   245→  return (
+   246→    <div className="flex flex-col items-center justify-center h-full px-6 py-8">
+   247→      <motion.div
+   248→        initial={{ opacity: 0, scale: 0.95 }}
+   249→        animate={{ opacity: 1, scale: 1 }}
+   250→        transition={{ duration: 0.4, ease: 'easeOut' }}
+   251→        className="text-center space-y-4 max-w-sm"
+   252→      >
+   253→        {/* Logo */}
+   254→        <div className="flex items-center justify-center size-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-2xl shadow-lg shadow-emerald-500/20 mx-auto">
+   255→          Z
+   256→        </div>
+   257→
+   258→        <div>
+   259→          <h2 className="text-lg font-semibold">{t.appName}</h2>
+   260→          <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+   261→            {t.chat.welcome}
+   262→          </p>
+   263→        </div>
+   264→
+   265→        {/* Example prompts */}
+   266→        <div className="grid grid-cols-1 gap-2 w-full mt-4">
+   267→          {EXAMPLE_PROMPTS.map((example) => (
+   268→            <motion.button
+   269→              key={example.key}
+   270→              initial={{ opacity: 0, y: 8 }}
+   271→              animate={{ opacity: 1, y: 0 }}
+   272→              transition={{ duration: 0.3, delay: 0.1 }}
+   273→              whileHover={{ scale: 1.02 }}
+   274→              whileTap={{ scale: 0.98 }}
+   275→              onClick={() => onExampleClick(t.chat.examples[example.key])}
+   276→              className="flex items-center gap-3 p-3 rounded-xl border bg-card hover:bg-accent/50 transition-colors text-left group"
+   277→            >
+   278→              <div
+   279→                className={`flex items-center justify-center size-9 rounded-lg bg-gradient-to-br ${example.gradient} text-white shrink-0`}
+   280→              >
+   281→                <example.icon className="size-4" />
+   282→              </div>
+   283→              <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+   284→                {t.chat.examples[example.key]}
+   285→              </span>
+   286→            </motion.button>
+   287→          ))}
+   288→        </div>
+   289→      </motion.div>
+   290→    </div>
+   291→  );
+   292→}
+   293→
+   294→export function ChatPanel() {
+   295→  const { t } = useI18n();
+   296→  const chatMessages = useZDesignStore((s) => s.chatMessages);
+   297→  const addChatMessage = useZDesignStore((s) => s.addChatMessage);
+   298→  const clearChat = useZDesignStore((s) => s.clearChat);
+   299→  const isGenerating = useZDesignStore((s) => s.isGenerating);
+   300→  const setIsGenerating = useZDesignStore((s) => s.setIsGenerating);
+   301→  const projectId = useZDesignStore((s) => s.projectId);
+   302→  const designTree = useZDesignStore((s) => s.designTree);
+   303→  const designSystem = useZDesignStore((s) => s.designSystem);
+   304→  const setDesignTree = useZDesignStore((s) => s.setDesignTree);
+   305→  const setGenerationProgress = useZDesignStore((s) => s.setGenerationProgress);
+   306→  const resetGenerationProgress = useZDesignStore((s) => s.resetGenerationProgress);
+   307→  const setQualityReport = useZDesignStore((s) => s.setQualityReport);
+   308→  const generationProgress = useZDesignStore((s) => s.generationProgress);
+   309→
+   310→  const [input, setInput] = useState('');
+   311→  const scrollRef = useRef<HTMLDivElement>(null);
+   312→  const textareaRef = useRef<HTMLTextAreaElement>(null);
+   313→
+   314→  // AI Image dialog
+   315→  const [aiImageOpen, setAiImageOpen] = useState(false);
+   316→
+   317→  // Research dialog
+   318→  const [researchOpen, setResearchOpen] = useState(false);
+   319→
+   320→  // === Refs for mutable state to avoid stale closures ===
+   321→  const projectIdRef = useRef(projectId);
+   322→  const isGeneratingRef = useRef(isGenerating);
+   323→  const chatMessagesRef = useRef(chatMessages);
+   324→  const designTreeRef = useRef(designTree);
+   325→  const designSystemRef = useRef(designSystem);
+   326→
+   327→  useEffect(() => { projectIdRef.current = projectId; }, [projectId]);
+   328→  useEffect(() => { isGeneratingRef.current = isGenerating; }, [isGenerating]);
+   329→  useEffect(() => { chatMessagesRef.current = chatMessages; }, [chatMessages]);
+   330→  useEffect(() => { designTreeRef.current = designTree; }, [designTree]);
+   331→  useEffect(() => { designSystemRef.current = designSystem; }, [designSystem]);
+   332→
+   333→  // Stable store action refs
+   334→  const addChatMessageRef = useRef(addChatMessage);
+   335→  const setIsGeneratingRef = useRef(setIsGenerating);
+   336→  const setDesignTreeRef = useRef(setDesignTree);
+   337→  const setGenerationProgressRef = useRef(setGenerationProgress);
+   338→  const resetGenerationProgressRef = useRef(resetGenerationProgress);
+   339→  const setQualityReportRef = useRef(setQualityReport);
+   340→  const tRef = useRef(t);
+   341→
+   342→  useEffect(() => { addChatMessageRef.current = addChatMessage; }, [addChatMessage]);
+   343→  useEffect(() => { setIsGeneratingRef.current = setIsGenerating; }, [setIsGenerating]);
+   344→  useEffect(() => { setDesignTreeRef.current = setDesignTree; }, [setDesignTree]);
+   345→  useEffect(() => { setGenerationProgressRef.current = setGenerationProgress; }, [setGenerationProgress]);
+   346→  useEffect(() => { resetGenerationProgressRef.current = resetGenerationProgress; }, [resetGenerationProgress]);
+   347→  useEffect(() => { setQualityReportRef.current = setQualityReport; }, [setQualityReport]);
+   348→  useEffect(() => { tRef.current = t; }, [t]);
+   349→
+   350→  // ============ Progress simulation ============
+   351→  // Simulates step-by-step progress while the API call is in flight
+   352→  const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+   353→
+   354→  const startProgressSimulation = useCallback(() => {
+   355→    const startTime = Date.now();
+   356→    const totalDuration = 15000; // 15 seconds estimated total
+   357→
+   358→    setGenerationProgressRef.current({
+   359→      stage: 'analyzing',
+   360→      stageLabel: 'Analyzing request...',
+   361→      percentage: 5,
+   362→      message: 'Understanding your design request...',
+   363→      startedAt: startTime,
+   364→      estimatedTimeLeft: 15,
+   365→    });
+   366→
+   367→    let currentStage = 'analyzing';
+   368→
+   369→    progressTimerRef.current = setInterval(() => {
+   370→      const elapsed = Date.now() - startTime;
+   371→      const pct = Math.min(90, Math.round((elapsed / totalDuration) * 100));
+   372→      const timeLeft = Math.max(0, Math.round((totalDuration - elapsed) / 1000));
+   373→
+   374→      // Advance stages based on time
+   375→      if (elapsed > 3000 && currentStage === 'analyzing') {
+   376→        currentStage = 'generating';
+   377→        setGenerationProgressRef.current({
+   378→          stage: 'generating',
+   379→          stageLabel: 'Generating design...',
+   380→          percentage: Math.max(pct, 25),
+   381→          message: 'AI is creating your design...',
+   382→          estimatedTimeLeft: timeLeft,
+   383→        });
+   384→      } else if (elapsed > 9000 && currentStage === 'generating') {
+   385→        currentStage = 'rendering';
+   386→        setGenerationProgressRef.current({
+   387→          stage: 'rendering',
+   388→          stageLabel: 'Rendering preview...',
+   389→          percentage: Math.max(pct, 60),
+   390→          message: 'Preparing design preview...',
+   391→          estimatedTimeLeft: timeLeft,
+   392→        });
+   393→      } else if (elapsed > 12000 && currentStage === 'rendering') {
+   394→        currentStage = 'evaluating';
+   395→        setGenerationProgressRef.current({
+   396→          stage: 'evaluating',
+   397→          stageLabel: 'Evaluating quality...',
+   398→          percentage: Math.max(pct, 80),
+   399→          message: 'Checking design quality...',
+   400→          estimatedTimeLeft: timeLeft,
+   401→        });
+   402→      } else {
+   403→        setGenerationProgressRef.current({
+   404→          percentage: pct,
+   405→          estimatedTimeLeft: timeLeft,
+   406→        });
+   407→      }
+   408→    }, 500);
+   409→  }, []);
+   410→
+   411→  const stopProgressSimulation = useCallback((success: boolean) => {
+   412→    if (progressTimerRef.current) {
+   413→      clearInterval(progressTimerRef.current);
+   414→      progressTimerRef.current = null;
+   415→    }
+   416→
+   417→    if (success) {
+   418→      setGenerationProgressRef.current({
+   419→        stage: 'evaluating',
+   420→        stageLabel: 'Evaluating quality...',
+   421→        percentage: 92,
+   422→        message: 'Checking design quality...',
+   423→      });
+   424→
+   425→      // Quick quality evaluation step
+   426→      setTimeout(() => {
+   427→        setGenerationProgressRef.current({
+   428→          stage: 'complete',
+   429→          stageLabel: 'Complete!',
+   430→          percentage: 100,
+   431→          message: 'Design generated successfully!',
+   432→        });
+   433→
+   434→        // Reset after a short delay
+   435→        setTimeout(() => {
+   436→          resetGenerationProgressRef.current();
+   437→        }, 2000);
+   438→      }, 500);
+   439→    } else {
+   440→      setGenerationProgressRef.current({
+   441→        stage: 'error',
+   442→        stageLabel: 'Error',
+   443→        percentage: 100,
+   444→        message: 'Generation failed',
+   445→      });
+   446→
+   447→      setTimeout(() => {
+   448→        resetGenerationProgressRef.current();
+   449→      }, 3000);
+   450→    }
+   451→  }, []);
+   452→
+   453→  // ============ Evaluate Design Quality ============
+   454→  const evaluateDesignQuality = useCallback((designTree: Record<string, unknown>) => {
+   455→    const report = {
+   456→      overallScore: 0,
+   457→      completeness: 0,
+   458→      cssValid: 0,
+   459→      semantics: 0,
+   460→      responsiveness: 0,
+   461→      accessibility: 0,
+   462→      issues: [] as Array<{
+   463→        severity: 'critical' | 'warning' | 'info';
+   464→        category: 'css' | 'semantics' | 'responsiveness' | 'accessibility' | 'completeness';
+   465→        message: string;
+   466→        autoFixable: boolean;
+   467→      }>,
+   468→      suggestions: [] as string[],
+   469→    };
+   470→
+   471→    // Check completeness
+   472→    const children = (designTree as { children?: unknown[] }).children;
+   473→    if (children && children.length > 0) {
+   474→      report.completeness = Math.min(100, children.length * 20);
+   475→      // Check for essential sections
+   476→      const hasNav = children.some((c: unknown) => {
+   477→        const node = c as { type?: string; tag?: string };
+   478→        return node.type === 'nav' || node.tag === 'nav' || node.type === 'header';
+   479→      });
+   480→      const hasFooter = children.some((c: unknown) => {
+   481→        const node = c as { type?: string; tag?: string };
+   482→        return node.type === 'footer' || node.tag === 'footer';
+   483→      });
+   484→      const hasContent = children.some((c: unknown) => {
+   485→        const node = c as { type?: string; tag?: string };
+   486→        return node.type === 'section' || node.tag === 'section' || node.type === 'main';
+   487→      });
+   488→
+   489→      if (!hasNav) {
+   490→        report.issues.push({
+   491→          severity: 'warning',
+   492→          category: 'completeness',
+   493→          message: 'No navigation section found',
+   494→          autoFixable: false,
+   495→        });
+   496→      }
+   497→      if (!hasFooter) {
+   498→        report.issues.push({
+   499→          severity: 'info',
+   500→          category: 'completeness',
+   501→          message: 'No footer section found',
+   502→          autoFixable: false,
+   503→        });
+   504→      }
+   505→      if (!hasContent) {
+   506→        report.issues.push({
+   507→          severity: 'warning',
+   508→          category: 'completeness',
+   509→          message: 'No main content section found',
+   510→          autoFixable: false,
+   511→        });
+   512→      }
+   513→
+   514→      if (hasNav && hasFooter && hasContent) {
+   515→        report.completeness = 100;
+   516→      }
+   517→    } else {
+   518→      report.issues.push({
+   519→        severity: 'critical',
+   520→        category: 'completeness',
+   521→        message: 'Design tree has no children',
+   522→        autoFixable: false,
+   523→      });
+   524→    }
+   525→
+   526→    // Check CSS validity (basic check)
+   527→    const styleStr = JSON.stringify(designTree);
+   528→    const hasTailwindShorthand = /\d+xl|text-md|p-lg|gap-md/.test(styleStr);
+   529→    if (hasTailwindShorthand) {
+   530→      report.cssValid = 50;
+   531→      report.issues.push({
+   532→        severity: 'critical',
+   533→        category: 'css',
+   534→        message: 'Found Tailwind shorthand in CSS values — should use real CSS (px, rem, %)',
+   535→        autoFixable: true,
+   536→      });
+   537→    } else {
+   538→      report.cssValid = 95;
+   539→    }
+   540→
+   541→    // Check semantics
+   542→    const semanticTags = ['header', 'nav', 'main', 'section', 'footer', 'article', 'aside'];
+   543→    const usedTags = new Set<string>();
+   544→    const findTags = (node: unknown) => {
+   545→      const n = node as { tag?: string; children?: unknown[] };
+   546→      if (n.tag) usedTags.add(n.tag);
+   547→      if (n.children) n.children.forEach(findTags);
+   548→    };
+   549→    findTags(designTree);
+   550→    const semanticCount = semanticTags.filter((tag) => usedTags.has(tag)).length;
+   551→    report.semantics = Math.min(100, Math.round((semanticCount / 3) * 100)); // 3+ semantic tags = good
+   552→
+   553→    // Check responsiveness
+   554→    const hasFlexOrGrid = /flex|grid/.test(styleStr);
+   555→    const hasPercentOrRelative = /%|rem|vh|vw/.test(styleStr);
+   556→    report.responsiveness = hasFlexOrGrid ? (hasPercentOrRelative ? 90 : 70) : 40;
+   557→
+   558→    // Check accessibility basics
+   559→    const hasHeadings = /"heading"|"h1"|"h2"|"h3"/.test(styleStr);
+   560→    const hasButtons = /"button"/.test(styleStr);
+   561→    report.accessibility = hasHeadings ? (hasButtons ? 80 : 60) : 40;
+   562→    if (!hasHeadings) {
+   563→      report.issues.push({
+   564→        severity: 'warning',
+   565→        category: 'accessibility',
+   566→        message: 'No heading elements found — important for screen readers',
+   567→        autoFixable: false,
+   568→      });
+   569→    }
+   570→
+   571→    // Suggestions
+   572→    if (report.responsiveness < 80) {
+   573→      report.suggestions.push('Consider using flexbox/grid layouts with relative units for better responsiveness');
+   574→    }
+   575→    if (report.semantics < 80) {
+   576→      report.suggestions.push('Use semantic HTML tags (header, nav, main, section, footer) for better structure');
+   577→    }
+   578→    if (report.accessibility < 80) {
+   579→      report.suggestions.push('Add proper heading hierarchy and ARIA labels for accessibility');
+   580→    }
+   581→
+   582→    // Overall score
+   583→    report.overallScore = Math.round(
+   584→      (report.completeness * 0.25 +
+   585→        report.cssValid * 0.2 +
+   586→        report.semantics * 0.2 +
+   587→        report.responsiveness * 0.2 +
+   588→        report.accessibility * 0.15)
+   589→    );
+   590→
+   591→    return report;
+   592→  }, []);
+   593→
+   594→  // === sendMessage with progress tracking ===
+   595→  const sendMessage = useCallback(
+   596→    async (messageText: string) => {
+   597→      const currentProjectId = projectIdRef.current;
+   598→      const currentIsGenerating = isGeneratingRef.current;
+   599→
+   600→      if (!messageText.trim() || !currentProjectId || currentIsGenerating) return;
+   601→
+   602→      // Clean up any voice indicators from the message
+   603→      const cleanText = messageText.replace(/🎤/g, '').trim();
+   604→      if (!cleanText) return;
+   605→
+   606→      const userMessage: ChatMessage = {
+   607→        id: `user-${Date.now()}`,
+   608→        projectId: currentProjectId,
+   609→        role: 'user',
+   610→        content: cleanText,
+   611→        createdAt: new Date(),
+   612→      };
+   613→
+   614→      addChatMessageRef.current(userMessage);
+   615→      setInput('');
+   616→      setIsGeneratingRef.current(true);
+   617→
+   618→      // Start progress simulation
+   619→      startProgressSimulation();
+   620→
+   621→      try {
+   622→        const currentMessages = chatMessagesRef.current;
+   623→        const history = currentMessages.slice(-10).map((m) => ({
+   624→          role: m.role as 'user' | 'assistant',
+   625→          content: m.content,
+   626→        }));
+   627→
+   628→        const currentDesignTree = designTreeRef.current;
+   629→        const currentDesignSystem = designSystemRef.current;
+   630→
+   631→        const res = await fetch('/api/chat', {
+   632→          method: 'POST',
+   633→          headers: { 'Content-Type': 'application/json' },
+   634→          body: JSON.stringify({
+   635→            message: cleanText,
+   636→            projectId: currentProjectId,
+   637→            designTree: currentDesignTree.children && currentDesignTree.children.length > 0 ? currentDesignTree : undefined,
+   638→            designSystem: currentDesignSystem || undefined,
+   639→            history,
+   640→          }),
+   641→        });
+   642→
+   643→        if (res.ok) {
+   644→          const data = await res.json();
+   645→          const aiMessage: ChatMessage = {
+   646→            id: data.id || `ai-${Date.now()}`,
+   647→            projectId: currentProjectId,
+   648→            role: 'assistant',
+   649→            content: data.message || 'I processed your request.',
+   650→            metadata: data.design
+   651→              ? { designUpdate: data.design }
+   652→              : undefined,
+   653→            createdAt: new Date(data.createdAt || Date.now()),
+   654→          };
+   655→          addChatMessageRef.current(aiMessage);
+   656→
+   657→          if (data.design) {
+   658→            setDesignTreeRef.current(data.design);
+   659→
+   660→            // Evaluate design quality
+   661→            const qualityReport = evaluateDesignQuality(data.design);
+   662→            setQualityReportRef.current(qualityReport);
+   663→          }
+   664→
+   665→          // Stop progress with success
+   666→          stopProgressSimulation(true);
+   667→        } else {
+   668→          const errorData = await res.json().catch(() => ({}));
+   669→          const errorMessage: ChatMessage = {
+   670→            id: `error-${Date.now()}`,
+   671→            projectId: currentProjectId,
+   672→            role: 'system',
+   673→            content: `${tRef.current.common.error}: ${errorData.error || 'Unknown error'}`,
+   674→            createdAt: new Date(),
+   675→          };
+   676→          addChatMessageRef.current(errorMessage);
+   677→          stopProgressSimulation(false);
+   678→        }
+   679→      } catch {
+   680→        const errorMessage: ChatMessage = {
+   681→          id: `error-${Date.now()}`,
+   682→          projectId: currentProjectId,
+   683→          role: 'system',
+   684→          content: tRef.current.common.error,
+   685→          createdAt: new Date(),
+   686→        };
+   687→        addChatMessageRef.current(errorMessage);
+   688→        stopProgressSimulation(false);
+   689→      } finally {
+   690→        setIsGeneratingRef.current(false);
+   691→      }
+   692→    },
+   693→    [startProgressSimulation, stopProgressSimulation, evaluateDesignQuality]
+   694→  );
+   695→
+   696→  // Voice input handlers
+   697→  const handleVoiceTranscript = useCallback(
+   698→    (transcript: string) => {
+   699→      if (transcript.trim()) {
+   700→        sendMessage(transcript.trim());
+   701→      }
+   702→    },
+   703→    [sendMessage]
+   704→  );
+   705→
+   706→  const handleVoiceInterim = useCallback((interim: string) => {
+   707→    setInput((prev) => {
+   708→      const base = prev.replace(/🎤.*$/, '');
+   709→      return interim ? `${base}🎤 ${interim}` : base;
+   710→    });
+   711→  }, []);
+   712→
+   713→  const {
+   714→    isListening,
+   715→    isSupported: voiceSupported,
+   716→    startListening,
+   717→    stopListening,
+   718→    error: voiceError,
+   719→  } = useVoiceInput({
+   720→    onTranscript: handleVoiceTranscript,
+   721→    onInterimTranscript: handleVoiceInterim,
+   722→  });
+   723→
+   724→  // Auto-scroll to bottom
+   725→  useEffect(() => {
+   726→    if (scrollRef.current) {
+   727→      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+   728→    }
+   729→  }, [chatMessages, isGenerating]);
+   730→
+   731→  const handleKeyDown = useCallback(
+   732→    (e: React.KeyboardEvent) => {
+   733→      if (e.key === 'Enter' && !e.shiftKey) {
+   734→        e.preventDefault();
+   735→        const cleanInput = input.replace(/🎤/g, '');
+   736→        sendMessage(cleanInput);
+   737→      }
+   738→    },
+   739→    [input, sendMessage]
+   740→  );
+   741→
+   742→  const handleExampleClick = useCallback(
+   743→    (prompt: string) => {
+   744→      sendMessage(prompt);
+   745→    },
+   746→    [sendMessage]
+   747→  );
+   748→
+   749→  const handleClear = useCallback(() => {
+   750→    clearChat();
+   751→  }, [clearChat]);
+   752→
+   753→  const handleVoiceToggle = useCallback(() => {
+   754→    if (isListening) {
+   755→      stopListening();
+   756→    } else {
+   757→      startListening();
+   758→    }
+   759→  }, [isListening, startListening, stopListening]);
+   760→
+   761→  const hasMessages = chatMessages.length > 0;
+   762→  const showProgress = isGenerating && generationProgress.stage !== 'idle';
+   763→
+   764→  return (
+   765→    <div className="flex flex-col h-full bg-background">
+   766→      {/* Header */}
+   767→      <div className="flex items-center justify-between px-4 h-11 border-b shrink-0">
+   768→        <div className="flex items-center gap-2">
+   769→          <Sparkles className="size-4 text-emerald-600" />
+   770→          <span className="text-sm font-medium">{t.chat.title}</span>
+   771→          {isGenerating && (
+   772→            <Badge
+   773→              variant="secondary"
+   774→              className="text-[10px] px-1.5 py-0 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+   775→            >
+   776→              {t.chat.thinking}
+   777→            </Badge>
+   778→          )}
+   779→        </div>
+   780→        {hasMessages && (
+   781→          <Tooltip>
+   782→            <TooltipTrigger asChild>
+   783→              <Button
+   784→                variant="ghost"
+   785→                size="icon"
+   786→                className="size-7"
+   787→                onClick={handleClear}
+   788→              >
+   789→                <Trash2 className="size-3.5 text-muted-foreground" />
+   790→              </Button>
+   791→            </TooltipTrigger>
+   792→            <TooltipContent side="bottom">{t.chat.clearChat}</TooltipContent>
+   793→          </Tooltip>
+   794→        )}
+   795→      </div>
+   796→
+   797→      {/* Messages or Welcome */}
+   798→      {!hasMessages ? (
+   799→        <WelcomeState onExampleClick={handleExampleClick} />
+   800→      ) : (
+   801→        <ScrollArea className="flex-1">
+   802→          <div ref={scrollRef} className="py-2 space-y-1">
+   803→            <AnimatePresence mode="popLayout">
+   804→              {chatMessages.map((message) => (
+   805→                <MessageBubble key={message.id} message={message} />
+   806→              ))}
+   807→            </AnimatePresence>
+   808→            {isGenerating && !showProgress && <TypingIndicator />}
+   809→          </div>
+   810→        </ScrollArea>
+   811→      )}
+   812→
+   813→      {/* Generation Step Progress */}
+   814→      {showProgress && <GenerationStepProgress />}
+   815→
+   816→      <Separator />
+   817→
+   818→      {/* Input area */}
+   819→      <div className="p-3 shrink-0">
+   820→        <div className="relative flex items-end gap-2 bg-muted/50 rounded-xl border focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
+   821→          {/* Attachment button */}
+   822→          <Tooltip>
+   823→            <TooltipTrigger asChild>
+   824→              <Button
+   825→                variant="ghost"
+   826→                size="icon"
+   827→                className="size-8 ml-2 mb-1.5 shrink-0 text-muted-foreground hover:text-foreground"
+   828→              >
+   829→                <Paperclip className="size-4" />
+   830→              </Button>
+   831→            </TooltipTrigger>
+   832→            <TooltipContent side="top">Attach file</TooltipContent>
+   833→          </Tooltip>
+   834→
+   835→          {/* Research button */}
+   836→          <Tooltip>
+   837→            <TooltipTrigger asChild>
+   838→              <Button
+   839→                variant="ghost"
+   840→                size="icon"
+   841→                className="size-8 mb-1.5 shrink-0 text-muted-foreground hover:text-emerald-600"
+   842→                onClick={() => setResearchOpen(true)}
+   843→              >
+   844→                <Search className="size-4" />
+   845→              </Button>
+   846→            </TooltipTrigger>
+   847→            <TooltipContent side="top">
+   848→              {t.research?.button || 'Research'}
+   849→            </TooltipContent>
+   850→          </Tooltip>
+   851→
+   852→          {/* AI Image button */}
+   853→          <Tooltip>
+   854→            <TooltipTrigger asChild>
+   855→              <Button
+   856→                variant="ghost"
+   857→                size="icon"
+   858→                className="size-8 mb-1.5 shrink-0 text-muted-foreground hover:text-emerald-600"
+   859→                onClick={() => setAiImageOpen(true)}
+   860→              >
+   861→                <ImageIcon className="size-4" />
+   862→              </Button>
+   863→            </TooltipTrigger>
+   864→            <TooltipContent side="top">
+   865→              {t.aiImage?.buttonText || 'AI Image'}
+   866→            </TooltipContent>
+   867→          </Tooltip>
+   868→
+   869→          <Textarea
+   870→            ref={textareaRef}
+   871→            value={input}
+   872→            onChange={(e) => setInput(e.target.value)}
+   873→            onKeyDown={handleKeyDown}
+   874→            placeholder={
+   875→              isListening
+   876→                ? t.voice?.listening || 'Listening...'
+   877→                : t.chat.placeholder
+   878→            }
+   879→            className={`min-h-[44px] max-h-[120px] resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:border-0 shadow-none text-sm py-2.5 px-0 placeholder:text-muted-foreground/60 ${
+   880→              isListening ? 'placeholder:text-red-500/60' : ''
+   881→            }`}
+   882→            rows={1}
+   883→            disabled={isGenerating}
+   884→          />
+   885→
+   886→          <div className="flex items-center gap-0.5 mr-1.5 mb-1.5 shrink-0">
+   887→            {/* Voice input button */}
+   888→            {voiceSupported && (
+   889→              <Tooltip>
+   890→                <TooltipTrigger asChild>
+   891→                  <Button
+   892→                    variant="ghost"
+   893→                    size="icon"
+   894→                    className={`size-8 ${
+   895→                      isListening
+   896→                        ? 'text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-900/20'
+   897→                        : 'text-muted-foreground hover:text-foreground'
+   898→                    }`}
+   899→                    onClick={handleVoiceToggle}
+   900→                  >
+   901→                    {isListening ? (
+   902→                      <motion.div
+   903→                        animate={{ scale: [1, 1.2, 1] }}
+   904→                        transition={{ duration: 1, repeat: Infinity }}
+   905→                      >
+   906→                        <Mic className="size-4" />
+   907→                      </motion.div>
+   908→                    ) : (
+   909→                      <Mic className="size-4" />
+   910→                    )}
+   911→                  </Button>
+   912→                </TooltipTrigger>
+   913→                <TooltipContent side="top">
+   914→                  {isListening
+   915→                    ? t.voice?.stopListening || 'Stop listening'
+   916→                    : t.voice?.startListening || 'Start voice input'}
+   917→                </TooltipContent>
+   918→              </Tooltip>
+   919→            )}
+   920→
+   921→            {/* Send button */}
+   922→            <Tooltip>
+   923→              <TooltipTrigger asChild>
+   924→                <Button
+   925→                  size="icon"
+   926→                  className="size-8 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white"
+   927→                  onClick={() => {
+   928→                    const cleanInput = input.replace(/🎤/g, '');
+   929→                    sendMessage(cleanInput);
+   930→                  }}
+   931→                  disabled={!input.replace(/🎤/g, '').trim() || isGenerating}
+   932→                >
+   933→                  <Send className="size-4" />
+   934→                </Button>
+   935→              </TooltipTrigger>
+   936→              <TooltipContent side="top">
+   937→                {t.chat.send} (Enter)
+   938→              </TooltipContent>
+   939→            </Tooltip>
+   940→          </div>
+   941→        </div>
+   942→
+   943→        {/* Voice error */}
+   944→        {voiceError && (
+   945→          <p className="text-[10px] text-red-500 mt-1 text-center">
+   946→            {voiceError}
+   947→          </p>
+   948→        )}
+   949→
+   950→        {/* Listening indicator */}
+   951→        {isListening && (
+   952→          <div className="flex items-center justify-center gap-2 mt-1.5">
+   953→            <motion.div
+   954→              className="size-2 rounded-full bg-red-500"
+   955→              animate={{ opacity: [1, 0.3, 1] }}
+   956→              transition={{ duration: 1.2, repeat: Infinity }}
+   957→            />
+   958→            <span className="text-[10px] text-red-500 font-medium">
+   959→              {t.voice?.listening || 'Listening...'}
+   960→            </span>
+   961→          </div>
+   962→        )}
+   963→
+   964→        {!isListening && (
+   965→          <p className="text-[10px] text-muted-foreground/50 mt-1.5 text-center">
+   966→            Shift+Enter for new line
+   967→          </p>
+   968→        )}
+   969→      </div>
+   970→
+   971→      {/* AI Image Dialog */}
+   972→      <AIImageDialog open={aiImageOpen} onOpenChange={setAiImageOpen} />
+   973→
+   974→      {/* Research Dialog */}
+   975→      <ResearchDialog
+   976→        open={researchOpen}
+   977→        onOpenChange={setResearchOpen}
+   978→        onResults={(query, results) => {
+   979→          // Add a user message showing what was searched
+   980→          const userMessage: ChatMessage = {
+   981→            id: `user-research-${Date.now()}`,
+   982→            projectId: projectId || '',
+   983→            role: 'user',
+   984→            content: `🔍 ${t.research?.button || 'Research'}: ${query}`,
+   985→            createdAt: new Date(),
+   986→          };
+   987→          addChatMessage(userMessage);
+   988→
+   989→          // Add an assistant message with the results
+   990→          const resultLines = results
+   991→            .map(
+   992→              (r, i) =>
+   993→                `${i + 1}. **[${r.title}](${r.url})**\n   ${r.description}\n   _${r.domain}${r.date ? ` · ${r.date}` : ''}_`
+   994→            )
+   995→            .join('\n\n');
+   996→
+   997→          const assistantMessage: ChatMessage = {
+   998→            id: `ai-research-${Date.now()}`,
+   999→            projectId: projectId || '',
+  1000→            role: 'assistant',
+  1001→            content: `${t.research?.results || 'Found inspiration!'} Here's what I found for "${query}":\n\n${resultLines}`,
+  1002→            createdAt: new Date(),
+  1003→          };
+  1004→          addChatMessage(assistantMessage);
+  1005→        }}
+  1006→      />
+  1007→    </div>
+  1008→  );
+  1009→}
+  1010→

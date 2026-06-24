@@ -1,0 +1,1064 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sawasdee — Thai Imbiss | Tropical Street Food</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --coral:#FF6B6B;
+    --sun:#FFE66D;
+    --mint:#4ECDC4;
+    --ink:#2A1A12;
+    --cream:#FFF8E7;
+    --deep:#1A4742;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Quicksand',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    overflow-x:hidden;
+    line-height:1.5;
+  }
+  /* dotted bg */
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background-image:radial-gradient(var(--coral) 2px,transparent 2px);
+    background-size:32px 32px;
+    opacity:.08;
+    z-index:0;
+    pointer-events:none;
+  }
+  /* === TOP BANNER === */
+  .topbar{
+    background:var(--ink);
+    color:var(--sun);
+    text-align:center;
+    padding:8px;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:2px;
+    position:relative;z-index:5;
+    overflow:hidden;
+    white-space:nowrap;
+  }
+  .topbar span{display:inline-block;animation:marquee 22s linear infinite}
+  @keyframes marquee{
+    0%{transform:translateX(0)}
+    100%{transform:translateX(-50%)}
+  }
+  /* === NAV === */
+  nav{
+    position:sticky;top:0;
+    background:var(--mint);
+    border-bottom:4px solid var(--ink);
+    z-index:50;
+    padding:14px 5%;
+    display:flex;align-items:center;justify-content:space-between;
+    box-shadow:0 4px 0 rgba(42,26,18,.15);
+  }
+  .logo{
+    font-family:'Pacifico',cursive;
+    font-size:32px;
+    color:var(--ink);
+    text-decoration:none;
+    display:flex;align-items:center;gap:10px;
+  }
+  .logo .sun-icon{
+    width:38px;height:38px;border-radius:50%;
+    background:var(--sun);
+    border:3px solid var(--ink);
+    position:relative;
+    animation:spin 14s linear infinite;
+  }
+  .logo .sun-icon::before{
+    content:"";position:absolute;inset:6px;
+    border-radius:50%;
+    background:var(--coral);
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .nav-links{display:flex;gap:8px;list-style:none}
+  .nav-links a{
+    text-decoration:none;color:var(--ink);
+    font-weight:700;font-size:14px;
+    padding:8px 14px;
+    background:var(--cream);
+    border:3px solid var(--ink);
+    border-radius:20px;
+    transition:transform .25s cubic-bezier(.34,1.56,.64,1),background .2s;
+  }
+  .nav-links a:hover{
+    transform:rotate(-4deg) scale(1.06);
+    background:var(--sun);
+  }
+  .burger{display:none;font-size:28px;background:none;border:none;cursor:pointer;color:var(--ink)}
+  @media(max-width:780px){
+    .nav-links{display:none}
+    .burger{display:block}
+  }
+  /* === HERO === */
+  .hero{
+    position:relative;
+    padding:80px 5% 120px;
+    background:
+      radial-gradient(circle at 80% 20%,var(--sun) 0,transparent 25%),
+      radial-gradient(circle at 10% 80%,var(--coral) 0,transparent 30%),
+      var(--mint);
+    border-bottom:6px solid var(--ink);
+    overflow:hidden;
+  }
+  .hero-grid{
+    position:relative;z-index:2;
+    display:grid;grid-template-columns:1.1fr 1fr;gap:50px;
+    align-items:center;max-width:1200px;margin:0 auto;
+  }
+  @media(max-width:880px){.hero-grid{grid-template-columns:1fr;text-align:center}}
+  .hero-tag{
+    display:inline-block;
+    background:var(--ink);color:var(--sun);
+    padding:6px 16px;border-radius:20px;
+    font-weight:700;font-size:12px;letter-spacing:2px;
+    margin-bottom:18px;
+    animation:bob 2.4s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%,100%{transform:translateY(0) rotate(-2deg)}
+    50%{transform:translateY(-6px) rotate(2deg)}
+  }
+  .hero h1{
+    font-family:'Pacifico',cursive;
+    font-size:clamp(48px,8vw,92px);
+    line-height:.95;
+    color:var(--ink);
+    text-shadow:5px 5px 0 var(--sun),10px 10px 0 var(--coral);
+    margin-bottom:20px;
+  }
+  .hero p{font-size:18px;font-weight:500;max-width:480px;margin-bottom:28px}
+  @media(max-width:880px){.hero p{margin-inline:auto}}
+  .btn-row{display:flex;gap:14px;flex-wrap:wrap}
+  @media(max-width:880px){.btn-row{justify-content:center}}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:14px 26px;
+    border-radius:30px;
+    font-family:'Quicksand',sans-serif;
+    font-weight:700;font-size:15px;
+    text-decoration:none;
+    border:4px solid var(--ink);
+    cursor:pointer;
+    transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;
+    box-shadow:4px 4px 0 var(--ink);
+  }
+  .btn:hover{transform:translate(-2px,-2px) rotate(-2deg);box-shadow:6px 6px 0 var(--ink)}
+  .btn:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+  .btn-coral{background:var(--coral);color:#fff}
+  .btn-sun{background:var(--sun);color:var(--ink)}
+  .btn-mint{background:var(--mint);color:var(--ink)}
+  /* HERO ILLUSTRATION */
+  .hero-art{
+    position:relative;
+    height:420px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .plate{
+    width:340px;height:340px;
+    border-radius:50%;
+    background:var(--cream);
+    border:8px solid var(--ink);
+    position:relative;
+    box-shadow:14px 14px 0 var(--coral);
+    animation:wobble 5s ease-in-out infinite;
+  }
+  @keyframes wobble{
+    0%,100%{transform:rotate(-3deg)}
+    50%{transform:rotate(3deg)}
+  }
+  .noodles{
+    position:absolute;inset:20px;
+    border-radius:50%;
+    background:
+      repeating-radial-gradient(circle at 50% 50%,var(--sun) 0 8px,var(--coral) 8px 14px,var(--mint) 14px 22px);
+    opacity:.9;
+  }
+  .noodles::after{
+    content:"";position:absolute;inset:30px;
+    border-radius:50%;
+    background:radial-gradient(circle,var(--coral) 30%,transparent 31%);
+    background-size:30px 30px;
+    opacity:.6;
+  }
+  .leaf{
+    position:absolute;
+    width:80px;height:50px;
+    background:var(--mint);
+    border:3px solid var(--ink);
+    border-radius:0 100% 0 100%;
+  }
+  .leaf.l1{top:-20px;left:60px;transform:rotate(-30deg)}
+  .leaf.l2{top:-30px;right:80px;transform:rotate(40deg) scaleX(-1)}
+  .chili{
+    position:absolute;
+    width:50px;height:18px;
+    background:var(--coral);
+    border:3px solid var(--ink);
+    border-radius:20px 60% 20px 60%;
+    transform:rotate(-25deg);
+  }
+  .chili::before{
+    content:"";position:absolute;top:-6px;left:-4px;
+    width:14px;height:14px;
+    background:var(--mint);
+    border:3px solid var(--ink);
+    border-radius:50% 0 50% 50%;
+    transform:rotate(45deg);
+  }
+  .chili.c1{top:80px;right:-10px;animation:bob 3s ease-in-out infinite}
+  .chili.c2{bottom:60px;left:-20px;animation:bob 3.4s ease-in-out infinite .5s}
+  .star{
+    position:absolute;
+    font-family:'Pacifico',cursive;
+    color:var(--sun);
+    -webkit-text-stroke:3px var(--ink);
+    font-size:34px;
+    animation:spin 6s linear infinite;
+  }
+  .star.s1{top:0;right:0}
+  .star.s2{bottom:20px;right:30px;font-size:24px;animation-duration:8s}
+  /* floating shapes */
+  .float{
+    position:absolute;
+    border:3px solid var(--ink);
+    z-index:1;
+  }
+  .f1{width:50px;height:50px;background:var(--coral);border-radius:50%;top:10%;left:5%;animation:bob 4s ease-in-out infinite}
+  .f2{width:40px;height:40px;background:var(--sun);border-radius:50%;bottom:15%;right:8%;animation:bob 5s ease-in-out infinite .4s}
+  .f3{
+    width:0;height:0;
+    border:0;
+    border-left:25px solid transparent;
+    border-right:25px solid transparent;
+    border-bottom:40px solid var(--coral);
+    top:60%;left:3%;
+    animation:spin 10s linear infinite;
+    filter:drop-shadow(2px 2px 0 var(--ink));
+  }
+  .f4{
+    width:30px;height:30px;background:var(--mint);
+    transform:rotate(45deg);
+    top:8%;right:15%;
+    animation:bob 3.5s ease-in-out infinite;
+  }
+  /* === SECTION TITLE === */
+  .section{
+    position:relative;
+    padding:90px 5%;
+    z-index:1;
+  }
+  .section-head{text-align:center;margin-bottom:50px}
+  .kicker{
+    display:inline-block;
+    background:var(--coral);color:#fff;
+    padding:6px 18px;border-radius:20px;
+    font-weight:700;font-size:12px;letter-spacing:3px;
+    border:3px solid var(--ink);
+    margin-bottom:14px;
+  }
+  .section h2{
+    font-family:'Pacifico',cursive;
+    font-size:clamp(36px,5vw,60px);
+    color:var(--ink);
+    text-shadow:3px 3px 0 var(--sun);
+    margin-bottom:10px;
+  }
+  .section .sub{
+    font-size:16px;font-weight:500;color:var(--ink);opacity:.7;
+    max-width:520px;margin:0 auto;
+  }
+  /* === MENU === */
+  .menu-section{
+    background:
+      linear-gradient(135deg,var(--sun) 25%,transparent 25%) -20px 0,
+      linear-gradient(225deg,var(--sun) 25%,transparent 25%) -20px 0,
+      linear-gradient(315deg,var(--sun) 25%,transparent 25%),
+      linear-gradient(45deg,var(--sun) 25%,transparent 25%);
+    background-size:40px 40px;
+    background-color:var(--cream);
+  }
+  .menu-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:26px;
+    max-width:1200px;margin:0 auto;
+  }
+  .card{
+    background:var(--cream);
+    border:4px solid var(--ink);
+    border-radius:30px;
+    padding:24px;
+    position:relative;
+    box-shadow:8px 8px 0 var(--ink);
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;
+  }
+  .card:hover{
+    transform:translate(-4px,-4px) rotate(-1.5deg);
+    box-shadow:12px 12px 0 var(--coral);
+  }
+  .card.coral{background:#FFE5E5}
+  .card.mint{background:#DFF7F4}
+  .card.sun{background:#FFF6C2}
+  .card-icon{
+    width:90px;height:90px;
+    margin:0 auto 14px;
+    border-radius:50%;
+    background:var(--cream);
+    border:4px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+    transition:transform .4s ease;
+  }
+  .card:hover .card-icon{transform:rotate(20deg) scale(1.1)}
+  /* noodle bowl icon */
+  .ic-bowl::before{
+    content:"";width:60px;height:30px;
+    background:var(--mint);
+    border:3px solid var(--ink);
+    border-radius:0 0 30px 30px;
+  }
+  .ic-bowl::after{
+    content:"";position:absolute;top:18px;
+    width:60px;height:8px;
+    background:var(--sun);
+    border:3px solid var(--ink);
+    border-radius:50%;
+  }
+  /* curry icon */
+  .ic-curry::before{
+    content:"";width:55px;height:40px;
+    background:var(--coral);
+    border:3px solid var(--ink);
+    border-radius:0 0 20px 20px;
+  }
+  .ic-curry::after{
+    content:"";position:absolute;top:8px;left:50%;transform:translateX(-50%);
+    width:60px;height:14px;
+    background:var(--sun);
+    border:3px solid var(--ink);
+    border-radius:50%;
+  }
+  /* spring roll icon */
+  .ic-roll{
+    width:60px;height:24px;
+    background:var(--sun);
+    border:3px solid var(--ink);
+    border-radius:30px;
+    transform:rotate(-15deg);
+    position:relative;
+  }
+  .ic-roll::before{
+    content:"";position:absolute;left:6px;top:50%;transform:translateY(-50%);
+    width:8px;height:8px;background:var(--coral);border-radius:50%;
+  }
+  .ic-roll::after{
+    content:"";position:absolute;right:-2px;top:50%;transform:translateY(-50%);
+    width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;
+    border-left:8px solid var(--mint);
+  }
+  /* mango sticky */
+  .ic-mango::before{
+    content:"";width:36px;height:46px;
+    background:var(--coral);
+    border:3px solid var(--ink);
+    border-radius:50% 50% 40% 40%;
+  }
+  .ic-mango::after{
+    content:"";position:absolute;top:8px;
+    width:14px;height:8px;
+    background:var(--mint);
+    border:3px solid var(--ink);
+    border-radius:0 0 6px 6px;
+  }
+  /* soup icon */
+  .ic-soup::before{
+    content:"";width:60px;height:32px;
+    background:#FFE5E5;
+    border:3px solid var(--ink);
+    border-radius:0 0 30px 30px;
+  }
+  .ic-soup::after{
+    content:"";position:absolute;top:6px;
+    width:60px;height:12px;
+    background:var(--coral);
+    border:3px solid var(--ink);
+    border-radius:50%;
+  }
+  /* satay */
+  .ic-satay{width:60px;height:6px;background:var(--ink);border-radius:3px;position:relative}
+  .ic-satay::before{
+    content:"";position:absolute;left:8px;top:-12px;
+    width:30px;height:30px;
+    background:var(--coral);
+    border:3px solid var(--ink);
+    border-radius:6px;
+    transform:rotate(-20deg);
+  }
+  /* salad */
+  .ic-salad::before{
+    content:"";width:54px;height:54px;
+    background:var(--mint);
+    border:3px solid var(--ink);
+    border-radius:50%;
+  }
+  .ic-salad::after{
+    content:"";position:absolute;top:10px;left:50%;transform:translateX(-50%);
+    width:14px;height:14px;background:var(--coral);border-radius:50%;
+    box-shadow:18px 0 0 var(--sun),-18px 0 0 var(--coral);
+  }
+  .badge{
+    position:absolute;top:-12px;right:-12px;
+    background:var(--coral);color:#fff;
+    width:54px;height:54px;
+    border-radius:50%;
+    border:3px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Pacifico',cursive;font-size:14px;
+    transform:rotate(12deg);
+    animation:bob 3s ease-in-out infinite;
+  }
+  .card h3{
+    font-family:'Pacifico',cursive;
+    font-size:24px;
+    text-align:center;
+    margin-bottom:6px;
+  }
+  .card .desc{
+    font-size:13px;font-weight:500;
+    text-align:center;color:var(--ink);opacity:.75;
+    margin-bottom:14px;min-height:36px;
+  }
+  .price-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-top:14px;
+    border-top:3px dashed var(--ink);
+  }
+  .price{
+    font-family:'Pacifico',cursive;
+    font-size:28px;color:var(--coral);
+  }
+  .veg{
+    background:var(--mint);
+    color:var(--ink);
+    font-size:10px;font-weight:700;
+    padding:4px 10px;border-radius:12px;
+    border:2px solid var(--ink);
+    letter-spacing:1px;
+  }
+  .spicy{
+    background:#FFE5E5;
+    color:var(--coral);
+    font-size:10px;font-weight:700;
+    padding:4px 10px;border-radius:12px;
+    border:2px solid var(--ink);
+    letter-spacing:1px;
+  }
+  /* === GALLERY === */
+  .gallery-section{background:var(--mint);border-top:6px solid var(--ink);border-bottom:6px solid var(--ink)}
+  .gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-auto-rows:160px;
+    gap:18px;
+    max-width:1200px;margin:0 auto;
+  }
+  @media(max-width:780px){.gallery-grid{grid-template-columns:repeat(2,1fr)}}
+  .gal{
+    border:4px solid var(--ink);
+    border-radius:24px;
+    overflow:hidden;
+    position:relative;
+    box-shadow:6px 6px 0 var(--ink);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    cursor:pointer;
+  }
+  .gal:hover{transform:scale(1.04) rotate(-2deg)}
+  .gal:nth-child(odd):hover{transform:scale(1.04) rotate(2deg)}
+  .gal.big{grid-row:span 2;grid-column:span 2}
+  .gal.tall{grid-row:span 2}
+  /* CSS scenes */
+  .scene{width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center}
+  .scene-1{background:var(--sun)}
+  .scene-2{background:var(--coral)}
+  .scene-3{background:var(--cream)}
+  .scene-4{background:#FFE5E5}
+  .scene-5{background:var(--mint)}
+  .scene-6{background:#FFF6C2}
+  /* scene: tuk tuk */
+  .tuktuk{
+    width:140px;height:80px;position:relative;
+  }
+  .tuktuk::before{
+    content:"";position:absolute;left:0;bottom:0;
+    width:80px;height:50px;
+    background:var(--coral);
+    border:3px solid var(--ink);
+    border-radius:10px 30px 6px 6px;
+  }
+  .tuktuk::after{
+    content:"";position:absolute;left:30px;bottom:30px;
+    width:50px;height:30px;
+    background:var(--mint);
+    border:3px solid var(--ink);
+    border-radius:8px 8px 0 0;
+  }
+  .tuktuk .wheel{
+    position:absolute;bottom:-8px;
+    width:24px;height:24px;border-radius:50%;
+    background:var(--ink);
+    border:3px solid var(--ink);
+  }
+  .tuktuk .wheel::after{
+    content:"";position:absolute;inset:5px;
+    background:var(--cream);border-radius:50%;
+  }
+  .tuktuk .w1{left:10px}
+  .tuktuk .w2{right:30px}
+  /* scene: lotus */
+  .lotus{
+    width:100px;height:60px;position:relative;
+  }
+  .lotus::before{
+    content:"";position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+    width:80px;height:14px;
+    background:var(--mint);
+    border:3px solid var(--ink);
+    border-radius:50%;
+  }
+  .petal{
+    position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+    width:24px;height:36px;
+    background:var(--coral);
+    border:3px solid var(--ink);
+    border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+  }
+  .petal.p2{transform:translateX(-50%) rotate(-30deg);background:var(--sun);left:40%}
+  .petal.p3{transform:translateX(-50%) rotate(30deg);background:var(--sun);left:60%}
+  /* scene: elephant */
+  .ele{
+    width:120px;height:80px;position:relative;
+  }
+  .ele::before{
+    content:"";position:absolute;bottom:0;left:0;
+    width:90px;height:50px;
+    background:#D2B48C;
+    border:3px solid var(--ink);
+    border-radius:30px 30px 6px 6px;
+  }
+  .ele::after{
+    content:"";position:absolute;bottom:0;right:6px;
+    width:30px;height:40px;
+    background:#D2B48C;
+    border:3px solid var(--ink);
+    border-radius:50% 50% 6px 6px;
+    transform:rotate(-15deg);
+  }
+  /* scene: chili */
+  .chili-big{
+    width:80px;height:30px;
+    background:var(--coral);
+    border:4px solid var(--ink);
+    border-radius:30px 80px 30px 80px;
+    transform:rotate(-20deg);
+    position:relative;
+  }
+  .chili-big::before{
+    content:"";position:absolute;top:-10px;left:-6px;
+    width:20px;height:20px;
+    background:var(--mint);
+    border:3px solid var(--ink);
+    border-radius:50% 0 50% 50%;
+    transform:rotate(45deg);
+  }
+  /* scene: sun */
+  .sun-big{
+    width:90px;height:90px;border-radius:50%;
+    background:var(--sun);
+    border:4px solid var(--ink);
+    position:relative;
+    box-shadow:6px 6px 0 var(--ink);
+  }
+  .sun-big::before{
+    content:"";position:absolute;inset:-14px;
+    background:
+      conic-gradient(from 0deg,var(--coral) 0 10deg,transparent 10deg 45deg,
+      var(--coral) 45deg 55deg,transparent 55deg 90deg,
+      var(--coral) 90deg 100deg,transparent 100deg 135deg,
+      var(--coral) 135deg 145deg,transparent 145deg 180deg,
+      var(--coral) 180deg 190deg,transparent 190deg 225deg,
+      var(--coral) 225deg 235deg,transparent 235deg 270deg,
+      var(--coral) 270deg 280deg,transparent 280deg 315deg,
+      var(--coral) 315deg 325deg,transparent 325deg 360deg);
+    border-radius:50%;
+    z-index:-1;
+  }
+  /* scene: drink */
+  .drink{
+    width:60px;height:90px;
+    background:var(--mint);
+    border:4px solid var(--ink);
+    border-radius:10px 10px 30px 30px;
+    position:relative;
+  }
+  .drink::before{
+    content:"";position:absolute;top:8px;left:8px;right:8px;
+    height:14px;background:var(--cream);border-radius:4px;
+  }
+  .drink::after{
+    content:"";position:absolute;top:-20px;left:50%;
+    width:4px;height:30px;background:var(--ink);transform:translateX(-50%);
+  }
+  /* === INFO === */
+  .info-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:30px;
+    max-width:1100px;margin:0 auto;
+  }
+  @media(max-width:780px){.info-grid{grid-template-columns:1fr}}
+  .info-card{
+    background:var(--cream);
+    border:4px solid var(--ink);
+    border-radius:30px;
+    padding:34px;
+    box-shadow:8px 8px 0 var(--ink);
+    position:relative;
+  }
+  .info-card.coral{background:#FFE5E5}
+  .info-card.mint{background:#DFF7F4}
+  .info-card h3{
+    font-family:'Pacifico',cursive;
+    font-size:30px;
+    margin-bottom:18px;
+    color:var(--ink);
+  }
+  .hours-list{list-style:none}
+  .hours-list li{
+    display:flex;justify-content:space-between;
+    padding:10px 0;
+    border-bottom:2px dashed var(--ink);
+    font-weight:600;
+  }
+  .hours-list li:last-child{border-bottom:0}
+  .hours-list li.today{
+    background:var(--sun);
+    margin:-4px -10px;
+    padding:14px;
+    border-radius:14px;
+    border:3px solid var(--ink);
+    border-bottom:3px solid var(--ink);
+    font-weight:700;
+  }
+  .address-block{font-size:16px;line-height:1.8;font-weight:600}
+  .address-block .pin{
+    display:inline-block;width:20px;height:20px;
+    background:var(--coral);border:3px solid var(--ink);
+    border-radius:50% 50% 50% 0;
+    transform:rotate(-45deg);
+    margin-right:8px;vertical-align:middle;
+  }
+  .map-fake{
+    margin-top:20px;
+    height:140px;
+    background:
+      repeating-linear-gradient(45deg,var(--mint) 0 20px,var(--cream) 20px 40px);
+    border:3px solid var(--ink);
+    border-radius:18px;
+    position:relative;
+    overflow:hidden;
+  }
+  .map-fake::before{
+    content:"";position:absolute;top:50%;left:0;right:0;height:6px;
+    background:var(--ink);transform:translateY(-50%) rotate(-12deg);
+  }
+  .map-fake::after{
+    content:"★";position:absolute;top:40%;left:55%;
+    color:var(--coral);
+    font-size:36px;
+    -webkit-text-stroke:2px var(--ink);
+    animation:bob 2s ease-in-out infinite;
+  }
+  /* === CTA === */
+  .cta{
+    background:var(--coral);
+    border-top:6px solid var(--ink);
+    border-bottom:6px solid var(--ink);
+    padding:70px 5%;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .cta::before,.cta::after{
+    content:"";position:absolute;
+    width:80px;height:80px;border-radius:50%;
+    background:var(--sun);
+    border:4px solid var(--ink);
+    animation:bob 4s ease-in-out infinite;
+  }
+  .cta::before{top:20px;left:5%}
+  .cta::after{bottom:20px;right:5%;animation-delay:1s}
+  .cta h2{
+    font-family:'Pacifico',cursive;
+    font-size:clamp(36px,5vw,56px);
+    color:var(--sun);
+    text-shadow:4px 4px 0 var(--ink);
+    margin-bottom:18px;
+    position:relative;z-index:2;
+  }
+  .cta p{color:#fff;font-weight:600;font-size:18px;margin-bottom:24px;position:relative;z-index:2}
+  .cta .btn{position:relative;z-index:2}
+  /* === FOOTER === */
+  footer{
+    background:var(--ink);
+    color:var(--cream);
+    padding:50px 5% 30px;
+    text-align:center;
+  }
+  footer .logo-foot{
+    font-family:'Pacifico',cursive;
+    font-size:36px;
+    color:var(--sun);
+    margin-bottom:14px;
+  }
+  footer p{font-size:13px;opacity:.7;margin-bottom:6px}
+  footer .social{
+    display:flex;gap:12px;justify-content:center;margin:20px 0;
+  }
+  footer .social a{
+    width:44px;height:44px;
+    background:var(--mint);
+    color:var(--ink);
+    border:3px solid var(--cream);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;text-decoration:none;
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  footer .social a:hover{transform:rotate(360deg) scale(1.1);background:var(--sun)}
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(40px);transition:opacity .7s,transform .7s cubic-bezier(.34,1.56,.64,1)}
+  .reveal.show{opacity:1;transform:translateY(0)}
+  /* mobile menu */
+  .mobile-menu{
+    display:none;
+    position:fixed;top:0;right:-100%;
+    width:75%;height:100vh;
+    background:var(--sun);
+    border-left:4px solid var(--ink);
+    padding:80px 30px;
+    z-index:100;
+    transition:right .4s ease;
+  }
+  .mobile-menu.open{right:0;display:block}
+  .mobile-menu a{
+    display:block;
+    font-family:'Pacifico',cursive;
+    font-size:28px;
+    color:var(--ink);
+    text-decoration:none;
+    padding:14px 0;
+    border-bottom:2px dashed var(--ink);
+  }
+  .close-x{
+    position:absolute;top:20px;right:24px;
+    font-size:36px;background:none;border:none;
+    cursor:pointer;color:var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>🔥 HEISSE CHILIS · KÜHLE COCKTAILS · SAWASDEE KRUB! 🔥 HEISSE CHILIS · KÜHLE COCKTAILS · SAWASDEE KRUB! 🔥 HEISSE CHILIS · KÜHLE COCKTAILS · SAWASDEE KRUB! 🔥&nbsp;</span>
+</div>
+
+<nav>
+  <a href="#" class="logo">
+    <span class="sun-icon"></span>
+    Sawasdee
+  </a>
+  <ul class="nav-links">
+    <li><a href="#menu">Speisekarte</a></li>
+    <li><a href="#gallery">Galerie</a></li>
+    <li><a href="#info">Öffnungszeiten</a></li>
+    <li><a href="#cta">Bestellen</a></li>
+  </ul>
+  <button class="burger" onclick="document.getElementById('mm').classList.add('open')">☰</button>
+</nav>
+
+<div class="mobile-menu" id="mm">
+  <button class="close-x" onclick="document.getElementById('mm').classList.remove('open')">×</button>
+  <a href="#menu" onclick="document.getElementById('mm').classList.remove('open')">Speisekarte</a>
+  <a href="#gallery" onclick="document.getElementById('mm').classList.remove('open')">Galerie</a>
+  <a href="#info" onclick="document.getElementById('mm').classList.remove('open')">Öffnungszeiten</a>
+  <a href="#cta" onclick="document.getElementById('mm').classList.remove('open')">Bestellen</a>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="float f1"></div>
+  <div class="float f2"></div>
+  <div class="float f3"></div>
+  <div class="float f4"></div>
+  <div class="hero-grid">
+    <div>
+      <span class="hero-tag">★ ECHTE THAI STREET FOOD ★</span>
+      <h1>Sawasdee<br>Imbiss!</h1>
+      <p>Knusprige Frühlingsrollen, duftende Currys und klebriges Mangodessert – direkt aus Bangkok in deine Nachbarschaft. Bunt, frisch und verdammt lecker!</p>
+      <div class="btn-row">
+        <a href="#menu" class="btn btn-coral">Speisekarte ansehen →</a>
+        <a href="#cta" class="btn btn-sun">Jetzt bestellen</a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="plate">
+        <div class="leaf l1"></div>
+        <div class="leaf l2"></div>
+        <div class="noodles"></div>
+        <div class="chili c1"></div>
+        <div class="chili c2"></div>
+      </div>
+      <div class="star s1">✦</div>
+      <div class="star s2">✦</div>
+    </div>
+  </div>
+</header>
+
+<!-- MENU -->
+<section class="section menu-section" id="menu">
+  <div class="section-head reveal">
+    <span class="kicker">UNSERE SPEISEKARTE</span>
+    <h2>Frisch & Feuerig</h2>
+    <p class="sub">Jedes Gericht wird liebevoll mit original thailändischen Gewürzen zubereitet. Schärfe nach Wunsch – frag uns einfach!</p>
+  </div>
+  <div class="menu-grid">
+    <div class="card coral reveal">
+      <div class="badge">NEU</div>
+      <div class="card-icon ic-bowl"></div>
+      <h3>Pad Thai</h3>
+      <p class="desc">Gebratene Reisnudeln mit Tofu, Garnelen, Erdnüssen & Limette</p>
+      <div class="price-row">
+        <span class="price">8,90 €</span>
+        <span class="veg">VEGGIE OPTION</span>
+      </div>
+    </div>
+
+    <div class="card mint reveal">
+      <div class="card-icon ic-curry"></div>
+      <h3>Grünes Curry</h3>
+      <p class="desc">Cremige Kokosmilch mit Hähnchen, Thai-Basilikum & Bambus</p>
+      <div class="price-row">
+        <span class="price">10,50 €</span>
+        <span class="spicy">SCHARF 🌶</span>
+      </div>
+    </div>
+
+    <div class="card sun reveal">
+      <div class="card-icon"><div class="ic-roll"></div></div>
+      <h3>Frühlingsrollen</h3>
+      <p class="desc">4 Stück, knusprig gefüllt mit Gemüse & Süß-Sauer-Sauce</p>
+      <div class="price-row">
+        <span class="price">5,50 €</span>
+        <span class="veg">VEGAN</span>
+      </div>
+    </div>
+
+    <div class="card coral reveal">
+      <div class="card-icon ic-mango"></div>
+      <h3>Mango Sticky Rice</h3>
+      <p class="desc">Klebreis mit frischer Mango & Kokosmilch – unser Liebling!</p>
+      <div class="price-row">
+        <span class="price">6,20 €</span>
+        <span class="veg">VEGAN</span>
+      </div>
+    </div>
+
+    <div class="card mint reveal">
+      <div class="badge">HOT</div>
+      <div class="card-icon ic-soup"></div>
+      <h3>Tom Yum Goong</h3>
+      <p class="desc">Feurig-saure Suppe mit Garnelen, Zitronengras & Galgant</p>
+      <div class="price-row">
+        <span class="price">7,80 €</span>
+        <span class="spicy">SCHARF 🌶🌶</span>
+      </div>
+    </div>
+
+    <div class="card sun reveal">
+      <div class="card-icon"><div class="ic-satay"></div></div>
+      <h3>Hähnchen Satay</h3>
+      <p class="desc">6 Spieße gegrillt mit Erdnuss-Sauce & Gurken-Salat</p>
+      <div class="price-row">
+        <span class="price">9,40 €</span>
+        <span class="veg">GRILL ✓</span>
+      </div>
+    </div>
+
+    <div class="card coral reveal">
+      <div class="card-icon ic-salad"></div>
+      <h3>Som Tum</h3>
+      <p class="desc">Erfrischender Papaya-Salat mit Chili, Limette & Erdnüssen</p>
+      <div class="price-row">
+        <span class="price">7,20 €</span>
+        <span class="spicy">SCHARF 🌶</span>
+      </div>
+    </div>
+
+    <div class="card mint reveal">
+      <div class="card-icon ic-curry"></div>
+      <h3>Rotes Curry</h3>
+      <p class="desc">Mit Rindfleisch, Ananas & Thai-Aubergine in Kokos-Curry</p>
+      <div class="price-row">
+        <span class="price">11,90 €</span>
+        <span class="spicy">SCHARF 🌶🌶</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="section gallery-section" id="gallery">
+  <div class="section-head reveal">
+    <span class="kicker">EINDRÜCKE</span>
+    <h2>Tropical Vibes</h2>
+    <p class="sub">Ein kleiner Urlaub für die Sinne – schau dir an, was dich erwartet!</p>
+  </div>
+  <div class="gallery-grid">
+    <div class="gal big reveal">
+      <div class="scene scene-1">
+        <div class="tuktuk">
+          <div class="wheel w1"></div>
+          <div class="wheel w2"></div>
+        </div>
+      </div>
+    </div>
+    <div class="gal tall reveal">
+      <div class="scene scene-2">
+        <div class="chili-big"></div>
+      </div>
+    </div>
+    <div class="gal reveal">
+      <div class="scene scene-3">
+        <div class="sun-big"></div>
+      </div>
+    </div>
+    <div class="gal reveal">
+      <div class="scene scene-4">
+        <div class="lotus">
+          <div class="petal p2"></div>
+          <div class="petal p3"></div>
+          <div class="petal"></div>
+        </div>
+      </div>
+    </div>
+    <div class="gal tall reveal">
+      <div class="scene scene-5">
+        <div class="drink"></div>
+      </div>
+    </div>
+    <div class="gal big reveal">
+      <div class="scene scene-6">
+        <div class="ele"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INFO -->
+<section class="section" id="info" style="background:var(--cream)">
+  <div class="section-head reveal">
+    <span class="kicker">BESUCH UNS</span>
+    <h2>Wann & Wo</h2>
+    <p class="sub">Schau vorbei, hol dir dein Essen ab oder lass es dir liefern!</p>
+  </div>
+  <div class="info-grid">
+    <div class="info-card mint reveal">
+      <h3>⏰ Öffnungszeiten</h3>
+      <ul class="hours-list">
+        <li><span>Montag</span><span>11:30 – 21:00</span></li>
+        <li><span>Dienstag</span><span>11:30 – 21:00</span></li>
+        <li><span>Mittwoch</span><span>11:30 – 21:00</span></li>
+        <li class="today"><span>Donnerstag</span><span>11:30 – 22:00</span></li>
+        <li><span>Freitag</span><span>11:30 – 22:00</span></li>
+        <li><span>Samstag</span><span>12:00 – 22:00</span></li>
+        <li><span>Sonntag</span><span>14:00 – 21:00</span></li>
+      </ul>
+    </div>
+    <div class="info-card coral reveal">
+      <h3>📍 So findest du uns</h3>
+      <div class="address-block">
+        <p><span class="pin"></span>Sawasdee Thai Imbiss</p>
+        <p style="margin-left:28px">Lotusstraße 42</p>
+        <p style="margin-left:28px">10115 Berlin-Mitte</p>
+        <p style="margin-top:14px">📞 030 / 123 456 78</p>
+        <p>✉ hallo@sawasdee-imbiss.de</p>
+      </div>
+      <div class="map-fake"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="cta">
+  <h2>Hunger bekommen?</h2>
+  <p>Bestell online oder ruf uns an – in 20 Minuten ist dein Thai-Erlebnis bereit!</p>
+  <a href="tel:03012345678" class="btn btn-sun">📞 030 / 123 456 78</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo-foot">Sawasdee</div>
+  <p>Thai Imbiss · Berlin-Mitte · Seit 2018</p>
+  <div class="social">
+    <a href="#" title="Instagram">IG</a>
+    <a href="#" title="Facebook">FB</a>
+    <a href="#" title="TikTok">TT</a>
+    <a href="#" title="WhatsApp">WA</a>
+  </div>
+  <p>Made with 🌶 &amp; ❤ in Berlin · Impressum · Datenschutz</p>
+</footer>
+
+<script>
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('show');
+        io.unobserve(e.target);
+      }
+    });
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // Highlight today
+  const days=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+  const today=days[new Date().getDay()];
+  document.querySelectorAll('.hours-list li').forEach(li=>{
+    if(li.querySelector('span').textContent===today){
+      li.classList.add('today');
+    } else {
+      li.classList.remove('today');
+    }
+  });
+
+  // Close mobile menu on outside click
+  document.addEventListener('click',(e)=>{
+    const mm=document.getElementById('mm');
+    if(mm.classList.contains('open') && !mm.contains(e.target) && !e.target.closest('.burger')){
+      mm.classList.remove('open');
+    }
+  });
+</script>
+</body>
+</html>
