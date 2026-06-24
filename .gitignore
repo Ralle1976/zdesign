@@ -41,3 +41,21 @@ shot-*
 
 # Internal harness
 Projekt/.claude-harness/
+
+# Debug screenshots / session artifacts
+Projekt/screenshot-*.png
+Projekt/after-*.png
+Projekt/*-provider*.png
+Projekt/templates-dialog.png
+Projekt/design-systems-dialog.png
+Projekt/thai-design-*.html
+Projekt/thai-design-*.png
+Projekt/test-screenshots/
+Projekt/agent-ctx/
+Projekt/*-review.json
+Projekt/claude-design-help-*.json
+Projekt/HANDOVER-DOCUMENT.md
+Projekt/QUALITY-REPORT.md
+Projekt/worklog.md
+Projekt/.zscripts/dev.pid
+Projekt/upload/
