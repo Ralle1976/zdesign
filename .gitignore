@@ -38,3 +38,6 @@ zdesign-agent-canvas*
 thai30-*
 wow-thai-*
 shot-*
+
+# Internal harness
+Projekt/.claude-harness/
