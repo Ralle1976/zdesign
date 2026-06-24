@@ -24,6 +24,7 @@ const ROLE_LABEL: Record<PanelistResult['role'], string> = {
   brand: 'Brand',
   a11y: 'A11y',
   copy: 'Copy',
+  'concept-fidelity': 'Konzept',
 };
 
 type CallFn = (
