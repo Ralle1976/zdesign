@@ -69,6 +69,7 @@ export function TopToolbar() {
   const creativeMode = useZDesignStore((s) => s.creativeMode);
   const setCreativeMode = useZDesignStore((s) => s.setCreativeMode);
   const activeProviderId = useZDesignStore((s) => s.activeProviderId);
+  const setProviderConfigOpen = useZDesignStore((s) => s.setProviderConfigOpen);
   const qualityReport = useZDesignStore((s) => s.qualityReport);
   const designTree = useZDesignStore((s) => s.designTree);
   const setDesignTree = useZDesignStore((s) => s.setDesignTree);
@@ -443,7 +444,7 @@ export function TopToolbar() {
               variant="ghost"
               size="sm"
               className="h-8 gap-1.5 text-xs"
-              onClick={() => setProviderSettingsOpen(true)}
+              onClick={() => setProviderConfigOpen(true)}
             >
               <Settings2 className="size-3.5" />
               <span className="hidden lg:inline">

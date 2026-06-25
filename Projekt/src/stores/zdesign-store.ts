@@ -240,6 +240,14 @@ interface ZDesignState {
   // Creative Mode
   creativeMode: boolean;
   setCreativeMode: (enabled: boolean) => void;
+
+  // Active providers (new agentic HTML mode)
+  activeTextProvider: string;
+  activeImageProvider: string;
+  providerConfigOpen: boolean;
+  setActiveTextProvider: (provider: string) => void;
+  setActiveImageProvider: (provider: string) => void;
+  setProviderConfigOpen: (open: boolean) => void;
 }
 
 const defaultDesignTree: DesignNode = {
@@ -489,6 +497,14 @@ export const useZDesignStore = create<ZDesignState>((set, get) => ({
   // Creative Mode
   creativeMode: false,
   setCreativeMode: (enabled) => set({ creativeMode: enabled }),
+
+  // Active providers (new agentic HTML mode)
+  activeTextProvider: 'zai',
+  activeImageProvider: 'minimax-image',
+  providerConfigOpen: false,
+  setActiveTextProvider: (provider) => set({ activeTextProvider: provider }),
+  setActiveImageProvider: (provider) => set({ activeImageProvider: provider }),
+  setProviderConfigOpen: (open) => set({ providerConfigOpen: open }),
 }));
 
 // ============ Helper Functions ============
