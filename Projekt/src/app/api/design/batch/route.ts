@@ -33,6 +33,7 @@ import { callLLM } from '@/lib/ai/provider';
 import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
 import { getDefaultDesignForType } from '@/lib/ai-prompts';
 import { generateImagesMinimax, buildThaiFoodPrompts, buildImagePrompts, isMinimaxImageConfigured } from '@/lib/ai/image-minimax';
+import { validateDesignHtml, repairTagBalance } from '@/lib/ai/lint/design-qc';
 
 /** A single brief in the request body. */
 interface DesignBrief {
@@ -62,16 +63,6 @@ export interface BatchDesignResult {
 
 /** Max parallel callLLM calls. Keeps us off provider rate limits. */
 const MAX_CONCURRENCY = 5;
-
-/** HTML validity contract — mirrors design/agent route. */
-function isValidHtmlDoc(s: string): boolean {
-  const lower = s.trim().toLowerCase();
-  return (
-    (lower.startsWith('<!doctype') || lower.startsWith('<html')) &&
-    s.length > 1500 &&
-    lower.includes('</html>')
-  );
-}
 
 /** Auto-close a truncated doc (unclosed <style>/<script>/<body>/<html>). */
 function autoCloseHtml(s: string): string {
@@ -211,16 +202,49 @@ export async function POST(request: NextRequest) {
             }
           }
           const prompt = buildBriefPrompt(brief, generatedImageUrls);
-          const raw = cleanHtml(
-            await callLLM(prompt, { maxTokens: 12000, temperature: 0.5, timeoutMs: 300_000 }),
-          );
-          const repaired = autoCloseHtml(raw);
-          const valid = isValidHtmlDoc(repaired);
-          const html = valid ? repaired : '';
+          // ── QC GATE: generate → repair → validate → retry until it passes ──
+          // The old check only verified "</html>" present, so truncated pages
+          // with unclosed tags and missing footers shipped. Now a design only
+          // persists when validateDesignHtml passes (balanced tags + footer +
+          // nav + h1 + ≥4 sections + CTA + real length + no lorem).
+          const MAX_ATTEMPTS = 3;
+          let html = '';
+          let valid = false;
+          let lastFailures: string[] = [];
+          for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            const attemptPrompt =
+              attempt === 0
+                ? prompt
+                : `${prompt}\n\nWICHTIG — dein letzter Versuch war UNVOLLSTÄNDIG (${lastFailures.join('; ')}). Erzeuge diesmal eine KOMPLETTE, korrekte HTML-Datei: mindestens 4 <section>-Bereiche, ein <footer>, <nav>, genau ein <h1>, ein klarer Call-to-Action-Button, KEIN Lorem Ipsum, und schließe JEDES geöffnete Tag korrekt wieder. responses_content darf nicht abbrechen.`;
+            const raw = cleanHtml(
+              await callLLM(attemptPrompt, {
+                maxTokens: 12000,
+                temperature: attempt === 0 ? 0.5 : 0.65,
+                timeoutMs: 300_000,
+              }),
+            );
+            let candidate = repairTagBalance(autoCloseHtml(raw));
+            const qc = validateDesignHtml(candidate);
+            if (qc.pass) {
+              html = candidate;
+              valid = true;
+              break;
+            }
+            lastFailures = qc.failures;
+            console.warn(
+              `[batch] ${brief.name}: attempt ${attempt + 1}/${MAX_ATTEMPTS} failed QC (${qc.score}/100): ${qc.failures.join('; ')}`,
+            );
+          }
           await db.project.update({
             where: { id: project.id },
             data: { designMode: 'HTML_ARTIFACT', designHTML: html, status: valid ? 'IN_PROGRESS' : 'DRAFT' },
           });
+          if (!valid) {
+            errors.push({
+              name: brief.name,
+              error: `QC failed after ${MAX_ATTEMPTS} attempts: ${lastFailures.join('; ')}`,
+            });
+          }
           return { projectId: project.id, name: brief.name, htmlKB: Math.round((html.length / 1024) * 10) / 10, valid };
         } catch (e) {
           const msg = e instanceof Error ? e.message : 'Unknown batch error';

@@ -1,1483 +1,943 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saltbreak Surf Co. — Handshaped. Recovered. Coastal.</title>
-<meta name="description" content="Handgeshapt Boards, recovered Neopren, Beach-Cleanups. Pacific-Coast-Vibe. Locals first.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saltbreak Surf Co. — Handshaped Boards &amp; Coastal Crew</title>
+<meta name="description" content="Saltbreak Surf Co. — Handshaped Boards, Beach Cleanups und Locals-First Community an der Küste.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --sand: #E8DCC4;
-    --sand-deep: #D4C5A8;
-    --sand-shadow: #B8A98A;
-    --teal: #3E7C7C;
-    --teal-deep: #2D5A5A;
-    --teal-darkest: #1F3F3F;
-    --coral: #E86A4A;
-    --coral-deep: #C95436;
-    --ink: #2A2620;
-    --ink-soft: #4A4238;
-    --paper: #F0E6D2;
-    --paper-warm: #EAD9B8;
+  :root{
+    --sand:#E8DCC4;
+    --sand-deep:#D9C9A8;
+    --teal:#3E7C7C;
+    --teal-deep:#2C5A5A;
+    --coral:#E86A4A;
+    --ink:#1F1A12;
+    --paper:#F3EAD6;
+    --grain-opacity:.16;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--sand);
+    color:var(--ink);
+    font-family:'Work Sans',system-ui,sans-serif;
+    font-weight:400;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--coral);color:var(--paper)}
+  :focus-visible{outline:3px solid var(--coral);outline-offset:3px;border-radius:2px}
+  a{color:inherit}
+
+  /* ---------- Film grain overlay ---------- */
+  .grain{
+    pointer-events:none;
+    position:fixed;inset:0;z-index:9999;
+    opacity:var(--grain-opacity);
+    mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0 0.07  0 0 0 0.65 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size:240px 240px;
+    animation:grainShift 1.2s steps(4) infinite;
+  }
+  @keyframes grainShift{
+    0%{transform:translate(0,0)}
+    25%{transform:translate(-4px,3px)}
+    50%{transform:translate(3px,-2px)}
+    75%{transform:translate(-2px,-3px)}
+    100%{transform:translate(0,0)}
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* ---------- Reusable ---------- */
+  .wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+  .display{
+    font-family:'Bebas Neue',Impact,sans-serif;
+    font-weight:400;
+    letter-spacing:.01em;
+    line-height:.92;
+    text-transform:uppercase;
+    margin:0;
+  }
+  .eyebrow{
+    font-family:'Work Sans',sans-serif;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.32em;
+    text-transform:uppercase;
+    color:var(--teal-deep);
+    display:inline-flex;align-items:center;gap:14px;
+  }
+  .eyebrow::before{
+    content:"";display:inline-block;width:38px;height:1px;background:var(--teal-deep);
+  }
+  .lede{font-size:clamp(16px,1.4vw,19px);color:#3a2f1f;max-width:54ch}
 
-  html { scroll-behavior: smooth; }
+  .btn{
+    display:inline-flex;align-items:center;gap:14px;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:20px;letter-spacing:.06em;
+    padding:18px 30px;
+    background:var(--coral);color:var(--paper);
+    text-decoration:none;
+    border:2px solid var(--ink);
+    box-shadow:6px 6px 0 var(--ink);
+    transition:transform .18s ease, box-shadow .18s ease;
+    cursor:pointer;
+    text-transform:uppercase;
+  }
+  .btn:hover{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--ink)}
+  .btn:active{transform:translate(6px,6px);box-shadow:0 0 0 var(--ink)}
+  .btn .arrow{transition:transform .25s ease}
+  .btn:hover .arrow{transform:translateX(6px)}
 
-  body {
-    font-family: 'Work Sans', sans-serif;
-    background: var(--sand);
-    color: var(--ink);
-    overflow-x: hidden;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
+  .btn-ghost{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.08em;
+    color:var(--ink);text-decoration:none;
+    padding:14px 22px;border:2px solid var(--ink);
+    background:transparent;text-transform:uppercase;
+    transition:background .2s ease,color .2s ease;
+  }
+  .btn-ghost:hover{background:var(--ink);color:var(--paper)}
+
+  /* ---------- NAV ---------- */
+  nav.top{
+    position:sticky;top:0;z-index:50;
+    background:rgba(232,220,196,.86);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(31,26,18,.18);
+  }
+  .nav-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 32px;max-width:1320px;margin:0 auto;
+  }
+  .brand{
+    font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.04em;
+    display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;
+  }
+  .brand .dot{width:10px;height:10px;background:var(--coral);border-radius:50%;display:inline-block}
+  .nav-links{display:flex;gap:28px;align-items:center}
+  .nav-links a{
+    text-decoration:none;font-size:13px;font-weight:500;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink);position:relative;padding:6px 0;
+  }
+  .nav-links a::after{
+    content:"";position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--coral);
+    transition:width .25s ease;
+  }
+  .nav-links a:hover::after{width:100%}
+  .nav-cta{
+    font-family:'Bebas Neue',sans-serif;letter-spacing:.06em;font-size:16px;
+    background:var(--ink);color:var(--paper);padding:10px 18px;
+    border:1px solid var(--ink);text-decoration:none;
+  }
+  .nav-cta:hover{background:var(--coral);border-color:var(--coral)}
+  .nav-burger{display:none}
+
+  @media (max-width:860px){
+    .nav-links{display:none}
+    .nav-burger{
+      display:flex;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;
+    }
+    .nav-burger span{width:26px;height:2px;background:var(--ink);display:block}
   }
 
-  /* Film grain overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.35;
-    mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.35 0 0 0 0 0.25 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-
-  /* Light leak overlay */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 9998;
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    padding:60px 0 90px;
+    border-bottom:2px solid var(--ink);
     background:
-      radial-gradient(ellipse 80% 50% at 15% 0%, rgba(232,106,74,0.18), transparent 60%),
-      radial-gradient(ellipse 60% 40% at 90% 100%, rgba(62,124,124,0.15), transparent 60%),
-      radial-gradient(ellipse 40% 30% at 50% 50%, rgba(232,220,196,0.1), transparent 70%);
-    mix-blend-mode: multiply;
-  }
-
-  /* Photo treatment — faded film look */
-  .photo {
-    filter: contrast(0.92) saturate(0.78) brightness(1.03) sepia(0.08);
-  }
-
-  ::selection { background: var(--coral); color: var(--sand); }
-
-  :focus-visible {
-    outline: 3px solid var(--coral);
-    outline-offset: 3px;
-  }
-
-  a { color: inherit; text-decoration: none; }
-
-  /* ============ NAV ============ */
-  .nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    padding: 18px 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    backdrop-filter: blur(8px);
-    background: rgba(232, 220, 196, 0.7);
-    border-bottom: 1px solid rgba(42, 38, 32, 0.08);
-    transition: padding 0.3s ease;
-  }
-
-  .nav.scrolled { padding: 12px 32px; }
-
-  .logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    letter-spacing: 2px;
-    color: var(--ink);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .logo-mark {
-    width: 32px; height: 32px;
-    background: var(--coral);
-    border-radius: 50%;
-    position: relative;
-    overflow: hidden;
-  }
-  .logo-mark::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 40%;
-    background: var(--teal-deep);
-    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 36px;
-    list-style: none;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-  }
-
-  .nav-links a {
-    position: relative;
-    padding: 4px 0;
-    transition: color 0.2s;
-  }
-
-  .nav-links a::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0;
-    width: 0; height: 1.5px;
-    background: var(--coral);
-    transition: width 0.3s ease;
-  }
-
-  .nav-links a:hover { color: var(--coral); }
-  .nav-links a:hover::after { width: 100%; }
-
-  .nav-cta {
-    background: var(--ink);
-    color: var(--sand);
-    padding: 10px 22px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    border-radius: 2px;
-    transition: all 0.2s;
-    border: none;
-    cursor: pointer;
-  }
-  .nav-cta:hover { background: var(--coral); }
-
-  @media (max-width: 768px) {
-    .nav-links { display: none; }
-    .nav { padding: 14px 18px; }
-  }
-
-  /* ============ HERO ============ */
-  .hero {
-    min-height: 100vh;
-    padding: 120px 32px 60px;
-    position: relative;
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 40px;
-    align-items: center;
-    overflow: hidden;
-  }
-
-  .hero-bg-stamp {
-    position: absolute;
-    bottom: -60px;
-    right: -40px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28vw;
-    line-height: 0.8;
-    color: rgba(62, 124, 124, 0.06);
-    letter-spacing: -10px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .hero-content {
-    position: relative;
-    z-index: 2;
-  }
-
-  .hero-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--teal-deep);
-    margin-bottom: 24px;
-  }
-
-  .hero-eyebrow::before {
-    content: '';
-    width: 40px;
-    height: 1.5px;
-    background: var(--coral);
-  }
-
-  .hero h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(72px, 13vw, 200px);
-    line-height: 0.85;
-    letter-spacing: -2px;
-    color: var(--ink);
-    margin-bottom: 28px;
-  }
-
-  .hero h1 .line { display: block; }
-  .hero h1 .accent {
-    color: var(--coral);
-    font-style: italic;
-    position: relative;
-  }
-  .hero h1 .accent::after {
-    content: '';
-    position: absolute;
-    bottom: 8px; left: 0; right: 0;
-    height: 6px;
-    background: var(--teal);
-    opacity: 0.3;
-    z-index: -1;
-  }
-
-  .hero-script {
-    font-family: 'Caveat', cursive;
-    font-size: clamp(36px, 5vw, 64px);
-    color: var(--teal-deep);
-    transform: rotate(-3deg) translateX(20px);
-    display: inline-block;
-    margin-bottom: 8px;
-    font-weight: 700;
-  }
-
-  .hero-sub {
-    font-size: 17px;
-    max-width: 480px;
-    color: var(--ink-soft);
-    margin-bottom: 36px;
-    line-height: 1.7;
-  }
-
-  .hero-actions {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-
-  .btn-primary {
-    background: var(--coral);
-    color: var(--paper);
-    padding: 16px 32px;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.25s;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 4px 4px 0 var(--ink);
-  }
-  .btn-primary:hover {
-    background: var(--ink);
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 var(--coral);
-  }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--ink);
-    padding: 16px 8px;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    border-bottom: 2px solid var(--ink);
-    transition: all 0.2s;
-  }
-  .btn-ghost:hover { color: var(--coral); border-color: var(--coral); }
-
-  /* Hero collage */
-  .hero-collage {
-    position: relative;
-    height: 70vh;
-    min-height: 500px;
-  }
-
-  .collage-img {
-    position: absolute;
-    border-radius: 4px;
-    box-shadow: 0 20px 50px rgba(42, 38, 32, 0.25);
-    overflow: hidden;
-    border: 8px solid var(--paper);
-  }
-
-  .collage-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .collage-1 {
-    top: 0;
-    right: 0;
-    width: 75%;
-    height: 65%;
-    transform: rotate(2deg);
-    z-index: 2;
-  }
-
-  .collage-2 {
-    bottom: 0;
-    left: 0;
-    width: 55%;
-    height: 50%;
-    transform: rotate(-4deg);
-    z-index: 3;
-  }
-
-  .collage-stamp {
-    position: absolute;
-    top: 50%;
-    right: -20px;
-    transform: translateY(-50%) rotate(8deg);
-    z-index: 4;
-    background: var(--coral);
-    color: var(--paper);
-    padding: 16px 12px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 14px;
-    letter-spacing: 2px;
-    text-align: center;
-    line-height: 1;
-    border-radius: 50%;
-    width: 90px;
-    height: 90px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 20px rgba(232, 106, 74, 0.4);
-  }
-  .collage-stamp small {
-    font-size: 9px;
-    letter-spacing: 1px;
-    margin-top: 4px;
-  }
-
-  .collage-tape {
-    position: absolute;
-    top: -15px;
-    left: 30%;
-    width: 100px;
-    height: 28px;
-    background: rgba(232, 220, 196, 0.6);
-    transform: rotate(-8deg);
-    z-index: 5;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  }
-
-  @media (max-width: 900px) {
-    .hero {
-      grid-template-columns: 1fr;
-      padding: 100px 20px 40px;
-      gap: 60px;
-    }
-    .hero-collage { height: 400px; min-height: 400px; }
-    .hero h1 { font-size: 18vw; }
-  }
-
-  /* ============ FORECAST STRIP ============ */
-  .forecast {
-    background: var(--ink);
-    color: var(--sand);
-    padding: 24px 0;
-    overflow: hidden;
-    position: relative;
-    border-top: 1px solid var(--coral);
-    border-bottom: 1px solid var(--coral);
-  }
-
-  .forecast-track {
-    display: flex;
-    gap: 0;
-    animation: scroll 40s linear infinite;
-    white-space: nowrap;
-  }
-
-  @keyframes scroll {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-
-  .forecast-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-    padding: 0 32px;
-    border-right: 1px solid rgba(232, 220, 196, 0.15);
-    font-family: 'Bebas Neue', sans-serif;
-    letter-spacing: 1.5px;
-  }
-
-  .forecast-day {
-    font-size: 14px;
-    color: var(--coral);
-    letter-spacing: 2px;
-  }
-
-  .forecast-wave {
-    font-size: 28px;
-    color: var(--sand);
-  }
-
-  .forecast-meta {
-    font-size: 12px;
-    color: rgba(232, 220, 196, 0.6);
-    font-family: 'Work Sans', sans-serif;
-    letter-spacing: 1px;
-  }
-
-  .forecast-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--teal);
-  }
-  .forecast-dot.good { background: var(--coral); }
-
-  /* ============ MARQUEE ============ */
-  .marquee {
-    background: var(--coral);
-    color: var(--paper);
-    padding: 14px 0;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .marquee-track {
-    display: flex;
-    gap: 50px;
-    animation: scroll 30s linear infinite;
-    white-space: nowrap;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 3px;
-  }
-
-  .marquee-track span {
-    display: inline-flex;
-    align-items: center;
-    gap: 50px;
-  }
-
-  .marquee-track svg {
-    width: 18px; height: 18px;
-    flex-shrink: 0;
-  }
-
-  /* ============ MANIFESTO ============ */
-  .manifesto {
-    padding: 140px 32px;
-    max-width: 1400px;
-    margin: 0 auto;
-    position: relative;
-  }
-
-  .manifesto-header {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 60px;
-    margin-bottom: 80px;
-    align-items: end;
-  }
-
-  .section-label {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--coral);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .section-label::before {
-    content: '';
-    width: 30px;
-    height: 1.5px;
-    background: var(--coral);
-  }
-
-  .manifesto h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(48px, 7vw, 110px);
-    line-height: 0.9;
-    letter-spacing: -1px;
-    color: var(--ink);
-  }
-
-  .manifesto h2 em {
-    font-family: 'Caveat', cursive;
-    font-style: normal;
-    color: var(--teal-deep);
-    font-weight: 700;
-  }
-
-  .manifesto-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-  }
-
-  .creed {
-    background: var(--paper);
-    padding: 36px 28px;
-    border-radius: 4px;
-    position: relative;
-    border-top: 4px solid var(--teal);
-    transition: transform 0.3s ease;
-  }
-  .creed:hover { transform: translateY(-6px); }
-
-  .creed:nth-child(2) { border-top-color: var(--coral); }
-  .creed:nth-child(3) { border-top-color: var(--ink); }
-
-  .creed-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 14px;
-    letter-spacing: 2px;
-    color: var(--coral);
-    margin-bottom: 16px;
-  }
-
-  .creed h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 32px;
-    letter-spacing: 0.5px;
-    margin-bottom: 14px;
-    line-height: 1;
-    color: var(--ink);
-  }
-
-  .creed p {
-    font-size: 15px;
-    color: var(--ink-soft);
-    line-height: 1.65;
-  }
-
-  @media (max-width: 900px) {
-    .manifesto { padding: 80px 20px; }
-    .manifesto-header { grid-template-columns: 1fr; gap: 24px; }
-    .manifesto-grid { grid-template-columns: 1fr; gap: 24px; }
-  }
-
-  /* ============ CRAFT ============ */
-  .craft {
-    padding: 100px 32px;
-    background: var(--teal-darkest);
-    color: var(--sand);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .craft::before {
-    content: 'SALTBREAK';
-    position: absolute;
-    top: 40px;
-    left: -20px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22vw;
-    color: rgba(232, 220, 196, 0.04);
-    letter-spacing: -8px;
-    line-height: 0.8;
-    pointer-events: none;
-  }
-
-  .craft-inner {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    gap: 80px;
-    align-items: center;
-    position: relative;
-    z-index: 2;
-  }
-
-  .craft-content .section-label { color: var(--coral); }
-  .craft-content .section-label::before { background: var(--coral); }
-
-  .craft h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(48px, 7vw, 100px);
-    line-height: 0.88;
-    letter-spacing: -1px;
-    margin: 24px 0 28px;
-    color: var(--paper);
-  }
-
-  .craft h2 em {
-    font-family: 'Caveat', cursive;
-    font-style: normal;
-    color: var(--coral);
-  }
-
-  .craft p {
-    font-size: 16px;
-    line-height: 1.75;
-    color: rgba(232, 220, 196, 0.85);
-    margin-bottom: 20px;
-    max-width: 500px;
-  }
-
-  .craft-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    margin-top: 40px;
-    padding-top: 40px;
-    border-top: 1px solid rgba(232, 220, 196, 0.2);
-  }
-
-  .stat-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 48px;
-    line-height: 1;
-    color: var(--coral);
-    margin-bottom: 6px;
-  }
-
-  .stat-label {
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: rgba(232, 220, 196, 0.7);
-  }
-
-  .craft-image {
-    position: relative;
-    height: 600px;
-  }
-
-  .craft-image .main-img {
-    position: absolute;
-    inset: 0;
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.4);
-    transform: rotate(1.5deg);
-  }
-
-  .craft-image .main-img img {
-    width: 100%; height: 100%; object-fit: cover;
-  }
-
-  .craft-image .polaroid {
-    position: absolute;
-    bottom: -30px;
-    left: -40px;
-    width: 200px;
-    background: var(--paper);
-    padding: 12px 12px 40px;
-    transform: rotate(-6deg);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-    z-index: 3;
-  }
-  .craft-image .polaroid img {
-    width: 100%;
-    aspect-ratio: 1;
-    object-fit: cover;
-  }
-  .craft-image .polaroid .caption {
-    font-family: 'Caveat', cursive;
-    font-size: 18px;
-    color: var(--ink);
-    text-align: center;
-    margin-top: 8px;
-    font-weight: 700;
-  }
-
-  @media (max-width: 900px) {
-    .craft { padding: 80px 20px; }
-    .craft-inner { grid-template-columns: 1fr; gap: 50px; }
-    .craft-image { height: 400px; }
-    .craft-stats { grid-template-columns: 1fr 1fr; }
-  }
-
-  /* ============ COLLECTION ============ */
-  .collection {
-    padding: 140px 32px;
-    max-width: 1500px;
-    margin: 0 auto;
-  }
-
-  .collection-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: end;
-    margin-bottom: 60px;
-    gap: 40px;
-    flex-wrap: wrap;
-  }
-
-  .collection-header h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(48px, 8vw, 130px);
-    line-height: 0.85;
-    letter-spacing: -2px;
-    color: var(--ink);
-    max-width: 800px;
-  }
-
-  .collection-header h2 em {
-    font-family: 'Caveat', cursive;
-    font-style: normal;
-    color: var(--coral);
-    font-weight: 700;
-  }
-
-  .collection-header p {
-    max-width: 320px;
-    color: var(--ink-soft);
-    font-size: 15px;
-  }
-
-  .products {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
-  }
-
-  .product {
-    background: var(--paper);
-    border-radius: 4px;
-    overflow: hidden;
-    transition: transform 0.3s ease;
-    position: relative;
-  }
-  .product:hover { transform: translateY(-8px); }
-
-  .product-img {
-    aspect-ratio: 4/5;
-    overflow: hidden;
-    position: relative;
-    background: var(--sand-deep);
-  }
-  .product-img img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s ease;
-  }
-  .product:hover .product-img img { transform: scale(1.05); }
-
-  .product-tag {
-    position: absolute;
-    top: 16px;
-    left: 16px;
-    background: var(--ink);
-    color: var(--sand);
-    padding: 6px 12px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    border-radius: 2px;
-    z-index: 2;
-  }
-  .product-tag.coral { background: var(--coral); }
-  .product-tag.teal { background: var(--teal); }
-
-  .product-info {
-    padding: 24px;
-  }
-
-  .product-cat {
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--teal-deep);
-    margin-bottom: 8px;
-    font-weight: 600;
-  }
-
-  .product h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
-    line-height: 1;
-    color: var(--ink);
-  }
-
-  .product-desc {
-    font-size: 13px;
-    color: var(--ink-soft);
-    margin-bottom: 16px;
-    line-height: 1.5;
-  }
-
-  .product-foot {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 16px;
-    border-top: 1px solid rgba(42, 38, 32, 0.1);
-  }
-
-  .product-price {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 26px;
-    color: var(--coral);
-    letter-spacing: 1px;
-  }
-
-  .product-link {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--ink);
-    border-bottom: 1.5px solid var(--ink);
-    padding-bottom: 2px;
-    transition: all 0.2s;
-  }
-  .product-link:hover { color: var(--coral); border-color: var(--coral); }
-
-  @media (max-width: 900px) {
-    .collection { padding: 80px 20px; }
-    .products { grid-template-columns: 1fr; gap: 24px; }
-  }
-
-  /* ============ CLEANUP CTA ============ */
-  .cleanup {
-    padding: 140px 32px;
-    background: var(--coral);
-    color: var(--paper);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .cleanup::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(42, 38, 32, 0.1) 0%, transparent 50%);
-    pointer-events: none;
-  }
-
-  .cleanup-inner {
-    max-width: 1300px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1.3fr 1fr;
-    gap: 60px;
-    align-items: center;
-    position: relative;
-    z-index: 2;
-  }
-
-  .cleanup .section-label { color: var(--paper); }
-  .cleanup .section-label::before { background: var(--paper); }
-
-  .cleanup h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(56px, 9vw, 150px);
-    line-height: 0.85;
-    letter-spacing: -2px;
-    margin: 20px 0 30px;
-  }
-
-  .cleanup h2 em {
-    font-family: 'Caveat', cursive;
-    font-style: normal;
-    color: var(--teal-darkest);
-  }
-
-  .cleanup p {
-    font-size: 17px;
-    line-height: 1.7;
-    margin-bottom: 32px;
-    max-width: 500px;
-    color: rgba(240, 230, 210, 0.95);
-  }
-
-  .cleanup-actions {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-
-  .btn-dark {
-    background: var(--ink);
-    color: var(--paper);
-    padding: 16px 32px;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.25s;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 4px 4px 0 var(--paper);
-  }
-  .btn-dark:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 var(--ink);
-  }
-
-  .btn-outline {
-    background: transparent;
-    color: var(--paper);
-    padding: 16px 8px;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    border: none;
-    border-bottom: 2px solid var(--paper);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-outline:hover { color: var(--ink); border-color: var(--ink); }
-
-  .cleanup-card {
-    background: var(--paper);
-    color: var(--ink);
-    padding: 32px;
-    border-radius: 4px;
-    box-shadow: 0 25px 50px rgba(42, 38, 32, 0.3);
-    transform: rotate(2deg);
-  }
-
-  .cleanup-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
-    margin-bottom: 24px;
-    padding-bottom: 20px;
-    border-bottom: 2px dashed rgba(42, 38, 32, 0.2);
-  }
-
-  .cleanup-card h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 32px;
-    letter-spacing: 1px;
-    line-height: 1;
-    color: var(--ink);
-  }
-
-  .cleanup-date {
-    font-family: 'Caveat', cursive;
-    font-size: 24px;
-    color: var(--coral);
-    font-weight: 700;
-    transform: rotate(-3deg);
-  }
-
-  .cleanup-details {
-    list-style: none;
-    margin-bottom: 24px;
-  }
-
-  .cleanup-details li {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(42, 38, 32, 0.08);
-    font-size: 14px;
-  }
-  .cleanup-details li:last-child { border: none; }
-
-  .cleanup-details .label {
-    color: var(--ink-soft);
-    font-weight: 500;
-  }
-  .cleanup-details .val {
-    font-weight: 600;
-    color: var(--ink);
-  }
-
-  .cleanup-progress {
-    margin-bottom: 16px;
-  }
-
-  .progress-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    margin-bottom: 8px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
-
-  .progress-bar {
-    height: 8px;
-    background: var(--sand-deep);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: var(--teal);
-    width: 78%;
-    border-radius: 4px;
-    position: relative;
-  }
-
-  @media (max-width: 900px) {
-    .cleanup { padding: 80px 20px; }
-    .cleanup-inner { grid-template-columns: 1fr; }
-    .cleanup-card { transform: rotate(0); }
-  }
-
-  /* ============ DISPATCH ============ */
-  .dispatch {
-    padding: 120px 32px;
-    background: var(--paper-warm);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .dispatch-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    text-align: center;
-    position: relative;
-  }
-
-  .dispatch h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(48px, 8vw, 120px);
-    line-height: 0.9;
-    letter-spacing: -1px;
-    margin: 20px 0 24px;
-    color: var(--ink);
-  }
-
-  .dispatch h2 em {
-    font-family: 'Caveat', cursive;
-    font-style: normal;
-    color: var(--coral);
-    font-weight: 700;
-  }
-
-  .dispatch > .dispatch-inner > p {
-    font-size: 17px;
-    color: var(--ink-soft);
-    max-width: 560px;
-    margin: 0 auto 40px;
-    line-height: 1.7;
-  }
-
-  .dispatch-form {
-    display: flex;
-    max-width: 520px;
-    margin: 0 auto;
-    gap: 0;
-    background: var(--paper);
-    padding: 8px;
-    border-radius: 4px;
-    box-shadow: 6px 6px 0 var(--ink);
-  }
-
-  .dispatch-form input {
-    flex: 1;
-    padding: 16px 20px;
-    border: none;
-    background: transparent;
-    font-family: 'Work Sans', sans-serif;
-    font-size: 15px;
-    color: var(--ink);
-    outline: none;
-  }
-
-  .dispatch-form input::placeholder { color: var(--sand-shadow); }
-
-  .dispatch-form button {
-    background: var(--coral);
-    color: var(--paper);
-    border: none;
-    padding: 0 28px;
-    font-family: 'Work Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: background 0.2s;
-  }
-  .dispatch-form button:hover { background: var(--ink); }
-
-  .dispatch-note {
-    margin-top: 20px;
-    font-size: 12px;
-    color: var(--ink-soft);
-    letter-spacing: 1px;
-  }
-
-  /* ============ FOOTER ============ */
-  footer {
-    background: var(--ink);
-    color: var(--sand);
-    padding: 80px 32px 32px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .footer-mega {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(80px, 18vw, 280px);
-    line-height: 0.8;
-    letter-spacing: -6px;
-    color: rgba(232, 220, 196, 0.06);
-    text-align: center;
-    margin-bottom: -40px;
-    pointer-events: none;
-  }
-
-  .footer-grid {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr 1fr;
-    gap: 60px;
-    padding-bottom: 50px;
-    border-bottom: 1px solid rgba(232, 220, 196, 0.15);
-    position: relative;
-    z-index: 2;
-  }
-
-  .footer-brand h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 42px;
-    letter-spacing: 2px;
-    margin-bottom: 16px;
-    line-height: 1;
-  }
-
-  .footer-brand p {
-    font-size: 14px;
-    color: rgba(232, 220, 196, 0.7);
-    line-height: 1.7;
-    max-width: 320px;
-    margin-bottom: 24px;
-  }
-
-  .footer-social {
-    display: flex;
-    gap: 12px;
-  }
-
-  .footer-social a {
-    width: 38px; height: 38px;
-    border: 1.5px solid rgba(232, 220, 196, 0.3);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-  }
-  .footer-social a:hover {
-    background: var(--coral);
-    border-color: var(--coral);
-  }
-  .footer-social svg {
-    width: 16px; height: 16px;
-    fill: var(--sand);
-  }
-
-  .footer-col h4 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 16px;
-    letter-spacing: 2px;
-    margin-bottom: 18px;
-    color: var(--coral);
-  }
-
-  .footer-col ul {
-    list-style: none;
-  }
-
-  .footer-col li {
-    margin-bottom: 10px;
-  }
-
-  .footer-col a {
-    font-size: 14px;
-    color: rgba(232, 220, 196, 0.75);
-    transition: color 0.2s;
-  }
-  .footer-col a:hover { color: var(--coral); }
-
-  .footer-bottom {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding-top: 28px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 12px;
-    color: rgba(232, 220, 196, 0.5);
-    letter-spacing: 1px;
-    flex-wrap: wrap;
-    gap: 16px;
-    position: relative;
-    z-index: 2;
-  }
-
-  .footer-bottom .credits {
-    display: flex;
-    gap: 24px;
-  }
-
-  @media (max-width: 900px) {
-    .footer-grid {
-      grid-template-columns: 1fr 1fr;
-      gap: 40px;
-    }
-    .footer-brand { grid-column: 1 / -1; }
-    .footer-bottom { flex-direction: column; text-align: center; }
-  }
-
-  /* ============ REVEAL ANIMATIONS ============ */
-  .reveal {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 0.9s ease, transform 0.9s ease;
-  }
-  .reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      transition-duration: 0.01ms !important;
-    }
-    .reveal { opacity: 1; transform: none; }
+      radial-gradient(120% 80% at 80% 0%, rgba(232,106,74,.18), transparent 55%),
+      linear-gradient(180deg, var(--paper) 0%, var(--sand) 100%);
+  }
+  .hero-grid{
+    display:grid;grid-template-columns:1.15fr 1fr;gap:48px;align-items:end;
+  }
+  .hero h1{
+    font-size:clamp(72px,13vw,210px);
+    color:var(--ink);
+    margin:18px 0 22px;
+  }
+  .hero h1 .stroke{
+    -webkit-text-stroke:2px var(--ink);
+    color:transparent;
+  }
+  .hero h1 .coral{color:var(--coral)}
+  .hero-meta{
+    display:flex;gap:30px;flex-wrap:wrap;align-items:center;
+    margin-top:30px;padding-top:24px;
+    border-top:1px solid rgba(31,26,18,.25);
+  }
+  .hero-meta .stat{display:flex;flex-direction:column}
+  .hero-meta .num{font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:1;color:var(--teal-deep)}
+  .hero-meta .lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#5a4a30;margin-top:4px}
+  .hero-sub{
+    font-size:clamp(15px,1.2vw,17px);max-width:46ch;color:#3a2f1f;margin-bottom:24px;
+  }
+  .hero-cta-row{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+
+  .hero-img-wrap{
+    position:relative;
+    transform:rotate(-1.5deg);
+  }
+  .hero-img-wrap .frame{
+    background:var(--paper);
+    padding:14px 14px 56px;
+    box-shadow:14px 14px 0 var(--teal-deep);
+    border:2px solid var(--ink);
+    position:relative;
+  }
+  .hero-img-wrap img{
+    width:100%;height:480px;object-fit:cover;display:block;
+    filter:saturate(.85) contrast(1.02);
+  }
+  .hero-img-wrap .caption{
+    position:absolute;left:0;right:0;bottom:14px;
+    text-align:center;
+    font-family:'Bebas Neue',sans-serif;letter-spacing:.18em;font-size:15px;color:#5a4a30;
+  }
+  .hero-tag{
+    position:absolute;top:-22px;left:-22px;
+    background:var(--coral);color:var(--paper);
+    font-family:'Bebas Neue',sans-serif;letter-spacing:.1em;font-size:18px;
+    padding:10px 16px;border:2px solid var(--ink);transform:rotate(-6deg);
+    z-index:2;
+  }
+  .hero-tape{
+    position:absolute;top:-18px;right:40px;width:120px;height:30px;
+    background:rgba(232,220,196,.6);
+    border:1px dashed rgba(31,26,18,.3);
+    transform:rotate(8deg);z-index:2;
+  }
+
+  .hero-marquee{
+    margin-top:72px;
+    border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);
+    background:var(--teal-deep);color:var(--paper);
+    overflow:hidden;white-space:nowrap;
+  }
+  .marquee-track{
+    display:inline-flex;gap:40px;padding:14px 0;
+    animation:scroll 32s linear infinite;
+    font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.1em;
+  }
+  .marquee-track span{display:inline-flex;align-items:center;gap:40px}
+  .marquee-track .sep{color:var(--coral)}
+  @keyframes scroll{
+    from{transform:translateX(0)}
+    to{transform:translateX(-50%)}
+  }
+
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:40px}
+    .hero-img-wrap{transform:rotate(-1deg)}
+    .hero-img-wrap img{height:360px}
+  }
+
+  /* ---------- STORY ---------- */
+  .story{
+    padding:120px 0;
+    position:relative;
+    background:
+      linear-gradient(180deg, var(--sand) 0%, var(--sand-deep) 100%);
+  }
+  .story-grid{
+    display:grid;grid-template-columns:1fr 1.1fr;gap:80px;align-items:center;
+  }
+  .story-img{
+    position:relative;transform:rotate(1.5deg);
+  }
+  .story-img img{
+    width:100%;height:560px;object-fit:cover;display:block;
+    border:2px solid var(--ink);
+    filter:saturate(.8) contrast(1.05);
+    box-shadow:-12px 12px 0 var(--coral);
+  }
+  .story-img .stamp{
+    position:absolute;bottom:-26px;right:-26px;
+    width:130px;height:130px;border-radius:50%;
+    background:var(--paper);border:2px solid var(--ink);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:'Bebas Neue',sans-serif;text-align:center;
+    transform:rotate(-12deg);
+    box-shadow:4px 4px 0 var(--ink);
+  }
+  .story-img .stamp .big{font-size:34px;line-height:1;color:var(--coral)}
+  .story-img .stamp .small{font-size:10px;letter-spacing:.22em;margin-top:6px;color:var(--ink)}
+
+  .story h2{
+    font-size:clamp(48px,6vw,92px);
+    margin:18px 0 28px;
+  }
+  .story h2 em{font-style:italic;color:var(--teal-deep);font-family:'Work Sans',serif;font-weight:300;font-size:.5em;display:inline-block;vertical-align:middle;letter-spacing:0;text-transform:none}
+  .story p{margin:0 0 18px;font-size:17px;color:#2f2716;max-width:54ch}
+  .story-sign{
+    margin-top:34px;display:flex;align-items:center;gap:18px;
+    padding-top:24px;border-top:1px solid rgba(31,26,18,.25);
+  }
+  .sign-name{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.04em}
+  .sign-role{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5a4a30}
+
+  @media (max-width:900px){
+    .story-grid{grid-template-columns:1fr;gap:60px}
+    .story-img img{height:420px}
+  }
+
+  /* ---------- BOARDS ---------- */
+  .boards{
+    padding:120px 0;
+    background:var(--paper);
+    border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);
+    position:relative;
+  }
+  .boards::before{
+    content:"";position:absolute;inset:0;
+    background-image:repeating-linear-gradient(0deg,transparent,transparent 38px,rgba(31,26,18,.04) 38px,rgba(31,26,18,.04) 39px);
+    pointer-events:none;
+  }
+  .section-head{
+    display:flex;justify-content:space-between;align-items:flex-end;gap:30px;
+    margin-bottom:60px;flex-wrap:wrap;
+  }
+  .section-head h2{font-size:clamp(54px,7vw,108px);margin:14px 0 0}
+  .section-head .right{max-width:38ch;font-size:15px;color:#3a2f1f}
+
+  .board-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:28px;
+  }
+  .board-card{
+    background:var(--sand);
+    border:2px solid var(--ink);
+    padding:18px;
+    position:relative;
+    transition:transform .25s ease, box-shadow .25s ease;
+    display:flex;flex-direction:column;
+  }
+  .board-card:hover{
+    transform:translate(-3px,-3px);
+    box-shadow:8px 8px 0 var(--ink);
+  }
+  .board-card .img-box{
+    overflow:hidden;border:1px solid var(--ink);margin-bottom:18px;
+    aspect-ratio:4/5;
+  }
+  .board-card img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    filter:saturate(.82) contrast(1.04);
+    transition:transform .6s ease;
+  }
+  .board-card:hover img{transform:scale(1.04)}
+  .board-tag{
+    position:absolute;top:8px;left:8px;
+    background:var(--coral);color:var(--paper);
+    font-family:'Bebas Neue',sans-serif;letter-spacing:.1em;font-size:13px;
+    padding:5px 10px;border:1px solid var(--ink);
+  }
+  .board-name{
+    font-family:'Bebas Neue',sans-serif;font-size:38px;line-height:1;
+    margin:0 0 6px;letter-spacing:.02em;
+  }
+  .board-desc{font-size:14px;color:#3a2f1f;margin:0 0 16px;min-height:42px}
+  .board-specs{
+    display:flex;justify-content:space-between;gap:10px;
+    padding-top:14px;border-top:1px solid rgba(31,26,18,.2);
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#5a4a30;
+  }
+  .board-specs strong{display:block;font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--ink);letter-spacing:.04em;margin-top:2px}
+  .board-foot{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-top:16px;
+  }
+  .board-price{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--teal-deep)}
+  .board-cta{
+    font-family:'Bebas Neue',sans-serif;letter-spacing:.08em;font-size:16px;
+    color:var(--ink);text-decoration:none;border-bottom:2px solid var(--ink);
+    padding-bottom:2px;
+  }
+  .board-cta:hover{color:var(--coral);border-color:var(--coral)}
+
+  @media (max-width:900px){
+    .board-grid{grid-template-columns:1fr;gap:24px}
+  }
+
+  /* ---------- CREW ---------- */
+  .crew{
+    padding:120px 0;
+    background:
+      linear-gradient(180deg, var(--sand-deep) 0%, var(--sand) 100%);
+    position:relative;
+  }
+  .crew-head{text-align:center;margin-bottom:60px}
+  .crew-head h2{font-size:clamp(56px,8vw,128px);margin:14px 0 0}
+  .crew-head p{margin:18px auto 0;max-width:50ch;color:#3a2f1f}
+
+  .crew-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:30px;
+  }
+  .crew-card{
+    position:relative;
+    transform:rotate(var(--rot,-1deg));
+    transition:transform .3s ease;
+  }
+  .crew-card:nth-child(2){--rot:1.2deg}
+  .crew-card:nth-child(3){--rot:-.6deg}
+  .crew-card:hover{transform:rotate(0) scale(1.02)}
+  .crew-card .polaroid{
+    background:var(--paper);
+    padding:14px 14px 22px;
+    border:2px solid var(--ink);
+    box-shadow:6px 8px 0 rgba(31,26,18,.18);
+  }
+  .crew-card img{
+    width:100%;height:320px;object-fit:cover;display:block;
+    filter:saturate(.78) contrast(1.05) sepia(.08);
+  }
+  .crew-card .name{
+    font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.04em;
+    margin:14px 0 4px;
+  }
+  .crew-card .role{
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--teal-deep);
+  }
+  .crew-card .quote{
+    margin-top:10px;font-style:italic;font-size:14px;color:#3a2f1f;
+  }
+
+  @media (max-width:900px){
+    .crew-grid{grid-template-columns:1fr;gap:30px;max-width:420px;margin:0 auto}
+  }
+
+  /* ---------- CLEANUP MISSION ---------- */
+  .mission{
+    padding:120px 0;
+    background:var(--teal-deep);
+    color:var(--paper);
+    border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);
+    position:relative;overflow:hidden;
+  }
+  .mission::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(80% 60% at 20% 100%, rgba(232,106,74,.25), transparent 60%);
+    pointer-events:none;
+  }
+  .mission-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
+    position:relative;
+  }
+  .mission .eyebrow{color:var(--coral)}
+  .mission .eyebrow::before{background:var(--coral)}
+  .mission h2{
+    font-size:clamp(54px,7vw,108px);
+    color:var(--paper);
+    margin:16px 0 24px;
+  }
+  .mission h2 .underline{
+    background:linear-gradient(transparent 70%, rgba(232,106,74,.6) 70%);
+    padding:0 4px;
+  }
+  .mission p{color:#e9dfc6;font-size:17px;margin:0 0 18px;max-width:50ch}
+  .mission-stats{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+    margin:36px 0;padding:28px 0;
+    border-top:1px solid rgba(243,234,214,.25);
+    border-bottom:1px solid rgba(243,234,214,.25);
+  }
+  .mission-stats .num{
+    font-family:'Bebas Neue',sans-serif;font-size:54px;line-height:1;color:var(--coral);
+  }
+  .mission-stats .lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#e9dfc6;margin-top:6px}
+  .mission .btn{margin-top:10px}
+
+  .mission-img{
+    position:relative;transform:rotate(2deg);
+  }
+  .mission-img img{
+    width:100%;height:560px;object-fit:cover;display:block;
+    border:2px solid var(--paper);
+    filter:saturate(.85) contrast(1.05);
+    box-shadow:14px 14px 0 var(--coral);
+  }
+  .mission-img .badge{
+    position:absolute;top:-20px;right:-20px;
+    background:var(--coral);color:var(--paper);
+    width:110px;height:110px;border-radius:50%;
+    border:2px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.08em;line-height:1.1;
+    transform:rotate(10deg);
+    box-shadow:4px 4px 0 var(--ink);
+  }
+
+  @media (max-width:900px){
+    .mission-grid{grid-template-columns:1fr;gap:50px}
+    .mission-img img{height:420px}
+  }
+
+  /* ---------- CTA ---------- */
+  .cta{
+    padding:140px 0;
+    background:
+      radial-gradient(60% 60% at 50% 50%, rgba(232,106,74,.18), transparent 70%),
+      var(--sand);
+    position:relative;
+    text-align:center;
+    border-bottom:2px solid var(--ink);
+  }
+  .cta-inner{max-width:900px;margin:0 auto;position:relative}
+  .cta h2{
+    font-size:clamp(64px,11vw,168px);
+    margin:18px 0 24px;
+  }
+  .cta h2 .coral{color:var(--coral)}
+  .cta h2 .stroke{-webkit-text-stroke:2.5px var(--ink);color:transparent}
+  .cta p{font-size:18px;color:#2f2716;max-width:48ch;margin:0 auto 36px}
+  .cta-form{
+    display:flex;gap:0;max-width:520px;margin:0 auto;
+    border:2px solid var(--ink);box-shadow:6px 6px 0 var(--ink);
+    background:var(--paper);
+  }
+  .cta-form input{
+    flex:1;padding:18px 20px;border:none;background:transparent;
+    font-family:'Work Sans',sans-serif;font-size:15px;color:var(--ink);
+    outline:none;
+  }
+  .cta-form input::placeholder{color:#7a6a4d}
+  .cta-form button{
+    border:none;border-left:2px solid var(--ink);
+    background:var(--ink);color:var(--paper);
+    font-family:'Bebas Neue',sans-serif;letter-spacing:.08em;font-size:20px;
+    padding:0 28px;cursor:pointer;
+    transition:background .2s ease;
+  }
+  .cta-form button:hover{background:var(--coral)}
+  .cta-note{margin-top:18px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#5a4a30}
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    background:var(--ink);color:var(--paper);
+    padding:80px 0 30px;
+    position:relative;
+  }
+  .foot-grid{
+    display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:50px;
+    margin-bottom:60px;
+  }
+  .foot-brand .brand{color:var(--paper);font-size:34px}
+  .foot-brand p{color:#c8b88a;font-size:14px;margin:18px 0;max-width:36ch}
+  .socials{display:flex;gap:12px;margin-top:20px}
+  .socials a{
+    width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;
+    border:1px solid rgba(243,234,214,.3);color:var(--paper);text-decoration:none;
+    font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.05em;
+    transition:background .2s,border-color .2s;
+  }
+  .socials a:hover{background:var(--coral);border-color:var(--coral)}
+  .foot-col h4{
+    font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.12em;
+    margin:0 0 18px;color:var(--coral);
+  }
+  .foot-col ul{list-style:none;padding:0;margin:0}
+  .foot-col li{margin-bottom:10px}
+  .foot-col a{
+    text-decoration:none;color:#e9dfc6;font-size:14px;
+    border-bottom:1px solid transparent;padding-bottom:1px;
+    transition:border-color .2s,color .2s;
+  }
+  .foot-col a:hover{color:var(--coral);border-color:var(--coral)}
+  .foot-bottom{
+    border-top:1px solid rgba(243,234,214,.18);
+    padding-top:24px;
+    display:flex;justify-content:space-between;align-items:center;gap:20px;
+    flex-wrap:wrap;
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#a89870;
+  }
+  .foot-bottom .made{display:flex;align-items:center;gap:8px}
+  .foot-bottom .made .dot{width:8px;height:8px;background:var(--coral);border-radius:50%}
+
+  @media (max-width:900px){
+    .foot-grid{grid-template-columns:1fr 1fr;gap:40px}
+    .foot-brand{grid-column:1/-1}
+  }
+  @media (max-width:560px){
+    .foot-grid{grid-template-columns:1fr}
+    .wrap{padding:0 22px}
+    .nav-inner{padding:14px 22px}
+    .cta-form{flex-direction:column}
+    .cta-form button{border-left:none;border-top:2px solid var(--ink);padding:16px}
+  }
+
+  /* ---------- Motion safety ---------- */
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important}
+    html{scroll-behavior:auto}
   }
 </style>
 </head>
 <body>
 
-<!-- ============ NAVIGATION ============ -->
-<nav class="nav" id="nav">
-  <a href="#" class="logo" aria-label="Saltbreak Surf Co. Startseite">
-    <span class="logo-mark" aria-hidden="true"></span>
-    SALTBREAK
-  </a>
-  <ul class="nav-links">
-    <li><a href="#craft">Boards</a></li>
-    <li><a href="#collection">Shop</a></li>
-    <li><a href="#cleanup">Cleanups</a></li>
-    <li><a href="#dispatch">Journal</a></li>
-  </ul>
-  <button class="nav-cta">Session Log</button>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ============ NAV ============ -->
+<nav class="top" aria-label="Hauptnavigation">
+  <div class="nav-inner">
+    <a href="#top" class="brand"><span class="dot" aria-hidden="true"></span>SALTBREAK&nbsp;SURF&nbsp;CO.</a>
+    <div class="nav-links">
+      <a href="#story">Story</a>
+      <a href="#boards">Boards</a>
+      <a href="#crew">Crew</a>
+      <a href="#mission">Mission</a>
+      <a href="#contact" class="nav-cta">Session planen</a>
+    </div>
+    <button class="nav-burger" aria-label="Menü öffnen">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </nav>
 
 <!-- ============ HERO ============ -->
-<header class="hero">
-  <div class="hero-bg-stamp" aria-hidden="true">SALT</div>
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">Est. 2014 · Handshaped an der Küste</span>
+        <h1 class="display">
+          SALTBREAK<br>
+          <span class="coral">SURF</span> <span class="stroke">CO.</span>
+        </h1>
+        <p class="hero-sub">
+          Sonne-gebleicht, salzverkrustet, ehrlich. Wir shapen Boards von Hand,
+          organisieren Beach-Cleanups und halten die Lineup-Tür für Locals offen —
+          seit elf Wintern an derselben Küste.
+        </p>
+        <div class="hero-cta-row">
+          <a href="#boards" class="btn">Boards ansehen <span class="arrow" aria-hidden="true">→</span></a>
+          <a href="#mission" class="btn-ghost">Unsere Mission</a>
+        </div>
 
-  <div class="hero-content reveal">
-    <span class="hero-eyebrow">Est. 2014 · Pacific Coast</span>
-    <span class="hero-script">morning sessions,</span>
-    <h1>
-      <span class="line">SALT</span>
-      <span class="line"><span class="accent">BREAK</span></span>
-      <span class="line" style="font-size: 0.45em; letter-spacing: 4px; color: var(--teal-deep);">— SURF CO.</span>
-    </h1>
-    <p class="hero-sub">
-      Handgeshapt Boards aus der Werkstatt in Pacifica. Recovered Neopren aus alten Anzügen. Beach-Cleanups jeden ersten Sonntag. Kein Kitsch — nur Salz, Sonne und ehrliche Arbeit.
-    </p>
-    <div class="hero-actions">
-      <button class="btn-primary">
-        Boards ansehen
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </button>
-      <a href="#cleanup" class="btn-ghost">Nächstes Cleanup →</a>
+        <div class="hero-meta">
+          <div class="stat"><span class="num">412</span><span class="lbl">Handshaped Boards</span></div>
+          <div class="stat"><span class="num">68</span><span class="lbl">Cleanups seit '19</span></div>
+          <div class="stat"><span class="num">06:14</span><span class="lbl">Morgen-Session Daily</span></div>
+        </div>
+      </div>
+
+      <div class="hero-img-wrap">
+        <span class="hero-tag">No. 0412 · Handshaped</span>
+        <span class="hero-tape" aria-hidden="true"></span>
+        <div class="frame">
+          <img src="images/saltbreak-surf-co/img-1.jpeg" alt="Handshaptes Surfboard in der Saltbreak-Werkstatt, sonnengebleicht und salzverkrustet" style="width:100%;height:auto;object-fit:cover;border-radius:8px">
+          <div class="caption">— DAWN PATROL · NORTH REEF —</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="hero-collage reveal">
-    <div class="collage-tape" aria-hidden="true"></div>
-    <div class="collage-img collage-1">
-      <img src="images/saltbreak-surf-co/img-1.jpeg" alt="Handgeshaptes Surfboard in der Saltbreak-Werkstatt" class="photo">
-    </div>
-    <div class="collage-img collage-2">
-      <img src="images/saltbreak-surf-co/img-2.jpeg" alt="Surfer bei der Morgen-Session an der Pacific Coast" class="photo">
-    </div>
-    <div class="collage-stamp" aria-hidden="true">
-      SHAPED<br>BY HAND
-      <small>SINCE '14</small>
+  <div class="hero-marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>HANDSHAPED BOARDS <span class="sep">✦</span> LOCALS FIRST <span class="sep">✦</span> BEACH CLEANUPS <span class="sep">✦</span> DAWN PATROL 06:14 <span class="sep">✦</span> SALT &amp; SUN SINCE 2014 <span class="sep">✦</span></span>
+      <span>HANDSHAPED BOARDS <span class="sep">✦</span> LOCALS FIRST <span class="sep">✦</span> BEACH CLEANUPS <span class="sep">✦</span> DAWN PATROL 06:14 <span class="sep">✦</span> SALT &amp; SUN SINCE 2014 <span class="sep">✦</span></span>
     </div>
   </div>
 </header>
 
-<!-- ============ FORECAST STRIP ============ -->
-<section class="forecast" aria-label="Wellenvorhersage Pacific Coast">
-  <div class="forecast-track">
-    <div class="forecast-item">
-      <span class="forecast-dot good"></span>
-      <span class="forecast-day">HEUTE · DO</span>
-      <span class="forecast-wave">4-6 FT</span>
-      <span class="forecast-meta">OFFSHORE · 12S PERIOD</span>
-    </div>
-    <div class="forecast-item">
-      <span class="forecast-dot good"></span>
-      <span class="forecast-day">FR · 06</span>
-      <span class="forecast-wave">5-7 FT</span>
-      <span class="forecast-meta">GROUND SWELL · DAWN PATROL</span>
-    </div>
-    <div class="forecast-item">
-      <span class="forecast-dot"></span>
-      <span class="forecast-day">SA · 07</span>
-      <span class="forecast-wave">3-4 FT</span>
-      <span class="forecast-meta">CROSS-SHORE · MELLOW</span>
-    </div>
-    <div class="forecast-item">
-      <span class="forecast-dot good"></span>
-      <span class="forecast-day">SO · 08</span>
-      <span class="forecast-wave">6-8 FT</span>
-      <span class="forecast-meta">W/NW · CLEAN</span>
-    </div>
-    <div class="forecast-item">
-      <span class="forecast-dot"></span>
-      <span class="forecast-day">MO · 09</span>
-      <span class="forecast-wave">2-3 FT</span>
-      <span class="forecast-meta">GLASS-OFF · REST DAY</span>
-    </div>
-    <div class="forecast-item">
-      <span class="forecast-dot good"></span>
-      <span class="forecast-day">DI · 10</span>
-      <span class="forecast-wave">4-5 FT</span>
-      <span class="forecast-meta">NEW SWELL INCOMING</span>
-    </div>
-    <!-- Duplicate for seamless loop -->
-    <div class="forecast-item">
-      <span class="forecast-dot good"></span>
-      <span class="forecast-day">HEUTE · DO</span>
-      <span class="forecast-wave">4-6 FT</span>
-      <span class="forecast-meta">OFFSHORE · 12S PERIOD</span>
-    </div>
-    <div class="forecast-item">
-      <span class="forecast-dot good"></span>
-      <span class="forecast-day">FR · 06</span>
-      <span class="forecast-wave">5-7 FT</span>
-      <span class="forecast-meta">GROUND SWELL · DAWN PATROL</span>
-    </div>
-    <div class="forecast-item">
-      <span class="forecast-dot"></span>
-      <span class="forecast-day">SA · 07</span>
-      <span class="forecast-wave">3-4 FT</span>
-      <span class="forecast-meta">CROSS-SHORE · MELLOW</span>
-    </div>
-    <div class="forecast-item">
-      <span class="forecast-dot good"></span>
-      <span class="forecast-day">SO · 08</span>
-      <span class="forecast-wave">6-8 FT</span>
-      <span class="forecast-meta">W/NW · CLEAN</span>
-    </div>
-    <div class="forecast-item">
-      <span class="forecast-dot"></span>
-      <span class="forecast-day">MO · 09</span>
-      <span class="forecast-wave">2-3 FT</span>
-      <span class="forecast-meta">GLASS-OFF · REST DAY</span>
-    </div>
-    <div class="forecast-item">
-      <span class="forecast-dot good"></span>
-      <span class="forecast-day">DI · 10</span>
-      <span class="forecast-wave">4-5 FT</span>
-      <span class="forecast-meta">NEW SWELL INCOMING</span>
-    </div>
-  </div>
-</section>
-
-<!-- ============ MARQUEE ============ -->
-<div class="marquee" aria-hidden="true">
-  <div class="marquee-track">
-    <span>
-      HANDSHAPED IN PACIFICA
-      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
-      RECOVERED NEOPREN
-      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
-      LOCALS FIRST
-      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
-      BEACH CLEANUPS
-      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
-      NO KITSCH · JUST SALT
-      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
-    </span>
-    <span>
-      HANDSHAPED IN PACIFICA
-      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
-      RECOVERED NEOPREN
-      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
-      LOCALS FIRST
-      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
-      BEACH CLEANUPS
-      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
-      NO KITSCH · JUST SALT
-      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
-    </span>
-  </div>
-</div>
-
-<!-- ============ MANIFESTO ============ -->
-<section class="manifesto">
-  <div class="manifesto-header reveal">
-    <span class="section-label">Manifest · 01</span>
-    <h2>Wir bauen Dinge, <em>die bleiben.</em> Nichts für eine Saison.</h2>
-  </div>
-
-  <div class="manifesto-grid">
-    <article class="creed reveal">
-      <div class="creed-num">/ 01 — CRAFT</div>
-      <h3>Handshapt,<br>nicht gerollt.</h3>
-      <p>Jedes Board kommt aus einer kleinen Werkstatt hinter dem Shaper-Haus. Polyurethan-Core, hand-laid fiberglass, vier bis sechs Wochen pro Board. Kein Outsourcing, keine Produktion in Asien. Der Shaper kennt deinen Namen.</p>
-    </article>
-
-    <article class="creed reveal">
-      <div class="creed-num">/ 02 — MATERIAL</div>
-      <h3>Recovered<br>Neopren.</h3>
-      <p>Wir sammeln alte Anzüge von Locals, trennen sie per Hand auf und pressen neues Neopren daraus. 78% weniger Öl, 60% weniger Energie pro Anzug. Trägt sich weicher, hält länger, kostet nicht die Küste.</p>
-    </article>
-
-    <article class="creed reveal">
-      <div class="creed-num">/ 03 — COMMUNITY</div>
-      <h3>Locals first,<br>immer.</h3>
-      <p>Jeder erste Sonntag im Monat: Cleanup an einem anderen Strand. 340 kg Müll im letzten Jahr. Danach Bier am Feuer, Locals-Discount im Shop. Wenn du hier surfst, gehörst du dazu — nicht als Kunde, als Teil.</p>
-    </article>
-  </div>
-</section>
-
-<!-- ============ CRAFT SECTION ============ -->
-<section class="craft" id="craft">
-  <div class="craft-inner">
-    <div class="craft-image reveal">
-      <div class="main-img">
-        <img src="images/saltbreak-surf-co/img-3.jpeg" alt="Detailaufnahme eines handgeshapten Surfboards mit Salzkrusten-Textur" class="photo">
+<!-- ============ STORY ============ -->
+<section class="story" id="story" aria-labelledby="story-h">
+  <div class="wrap">
+    <div class="story-grid">
+      <div class="story-img">
+        <img src="images/saltbreak-surf-co/img-2.jpeg" alt="Saltbreak-Shaper bei der Arbeit an einem Rohling im Atelier" style="width:100%;height:auto;object-fit:cover;border-radius:8px">
+        <div class="stamp">
+          <span class="big">11</span>
+          <span class="small">YEARS · COAST</span>
+        </div>
       </div>
-      <div class="polar
+
+      <div>
+        <span class="eyebrow">Unsere Story</span>
+        <h2 id="story-h" class="display">
+          Vom Rohling<br>
+          zum Ride <em>— ein Board, das eine Geschichte hat.</em>
+        </h2>
+        <p>
+          Saltbreak ist 2014 in einer Garage hinter den Dünen entstanden. Drei Freunde,
+          ein kaputter Shaper-Tisch, eine Mikrowelle mit kaltem Kaffee. Heute shapen
+          wir immer noch von Hand — jedes Board bekommt eine Nummer, einen Namen und
+          eine Persönlichkeit. Kein Massenimport, kein Algorithmus. Nur Schaum, Resin,
+          Geduld und Salz in der Luft.
+        </p>
+        <p>
+          Wir glauben an Boards, die älter werden als der Trend, an dem sie gekauft
+          wurden. An Lineups, in denen man grüßt. Und daran, dass der beste Surf-Tag
+          der ist, an dem du eigentlich arbeiten solltest.
+        </p>
+
+        <div class="story-sign">
+          <div>
+            <div class="sign-name">— Mateo &amp; Rin</div>
+            <div class="sign-role">Shaper &amp; Gründer</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BOARDS ============ -->
+<section class="boards" id="boards" aria-labelledby="boards-h">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Die Quiver · Handshaped Serie 2026</span>
+        <h2 id="boards-h" class="display">Boards mit<br>Charakter.</h2>
+      </div>
+      <p class="right">
+        Drei Linien, drei Conditions. Jedes Board von Hand gefinisht, nummeriert
+        und in der Nordreef-Lineup getestet — bevor es in deine Hände kommt.
+      </p>
+    </div>
+
+    <div class="board-grid">
+
+      <article class="board-card">
+        <span class="board-tag">Longboard</span>
+        <div class="img-box">
+          <img src="images/saltbreak-surf-co/img-1.jpeg" alt="Saltbreak Drifter Longboard mit Nose-Ride-Setup" style="width:100%;height:auto;object-fit:cover;border-radius:8px">
+        </div>
+        <h3 class="board-name">The Drifter</h3>
+        <p class="board-desc">Klassischer 9'2&quot; Singlefin-Noserider für kleine, saubere Tage mit viel Geduld und noch mehr Style.</p>
+        <div class="board-specs">
+          <div>Länge<strong>9'2&quot;</strong></div>
+          <div>Volumen<strong>72 L</strong></div>
+          <div>Fin<strong>Single</strong></div>
+        </div>
+        <div class="board-foot">
+          <span class="board-price">€ 1.240</span>
+          <a href="#contact" class="board-cta">Board anfragen →</a>
+        </div>
+      </article>
+
+      <article class="board-card">
+        <span class="board-tag">Funboard</span>
+        <div class="img-box">
+          <img src="images/saltbreak-surf-co/img-2.jpeg" alt="Saltbreak Glass Hopper Funboard für Daily Driver Bedingungen" style="width:100%;height:auto;object-fit:cover;border-radius:8px">
+        </div>
+        <h3 class="board-name">Glass Hopper</h3>
+        <p class="board-desc">7'0&quot; Midlength-Egg. Der ehrliche Daily Driver — verzeiht Fehler, belohnt Flow, funktioniert fast immer.</p>
+        <div class="board-specs">
+          <div>Länge<strong>7'0&quot;</strong></div>
+          <div>Volumen<strong>52 L</strong></div>
+          <div>Fin<strong>2+1</strong></div>
+        </div>
+        <div class="board-foot">
+          <span class="board-price">€ 980</span>
+          <a href="#contact" class="board-cta">Board anfragen →</a>
+        </div>
+      </article>
+
+      <article class="board-card">
+        <span class="board-tag">Shortboard</span>
+        <div class="img-box">
+          <img src="images/saltbreak-surf-co/img-3.jpeg" alt="Saltbreak Reef Rocket Performance Shortboard für steile Wellen" style="width:100%;height:auto;object-fit:cover;border-radius:8px">
+        </div>
+        <h3 class="board-name">Reef Rocket</h3>
+        <p class="board-desc">5'8&quot; Performance-Shortboard für steile, schnelle Sections. Pünktlich zum Morgen-Session-Swell im Lineup.</p>
+        <div class="board-specs">
+          <div>Länge<strong>5'8&quot;</strong></div>
+          <div>Volumen<strong>28 L</strong></div>
+          <div>Fin<strong>Tri</strong></div>
+        </div>
+        <div class="board-foot">
+          <span class="board-price">€ 820</span>
+          <a href="#contact" class="board-cta">Board anfragen →</a>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ CREW ============ -->
+<section class="crew" id="crew" aria-labelledby="crew-h">
+  <div class="wrap">
+    <div class="crew-head">
+      <span class="eyebrow">Locals First · Die Saltbreak-Crew</span>
+      <h2 id="crew-h" class="display">Die Köpfe<br>hinter den Boards.</h2>
+      <p>Eine kleine Crew, die jeden Morgen im Wasser steht, bevor die Welt wach wird. Keine Influencer, keine Agentur — nur Shaper, Lifeguard und Fotografin.</p>
+    </div>
+
+    <div class="crew-grid">
+
+      <article class="crew-card">
+        <div class="polaroid">
+          <img src="images/saltbreak-surf-co/img-4.jpeg" alt="Mateo, Shaper und Gründer von Saltbreak Surf Co." style="width:100%;height:auto;object-fit:cover;border-radius:8px">
+          <div class="name">Mateo R.</div>
+          <div class="role">Shaper · Gründer</div>
+          <p class="quote">&ldquo;Ein Board ist erst fertig, wenn es im Wasser gelacht hat.&rdquo;</p>
+        </div>
+      </article>
+
+      <article class="crew-card">
+        <div class="polaroid">
+          <img src="images/saltbreak-surf-co/img-2.jpeg" alt="Rin, Lifeguard und Cleanup-Organisatorin an der Saltbreak-Heimatküste" style="width:100%;height:auto;object-fit:cover;border-radius:8px">
+          <div class="name">Rin K.</div>
+          <div class="role">Lifeguard · Cleanup-Lead</div>
+          <p class="quote">&ldquo;Wer das Lineup nutzt, putzt das Lineup. Punkt.&rdquo;</p>
+        </div>
+      </article>
+
+      <article class="crew-card">
+        <div class="polaroid">
+          <img src="images/saltbreak-surf-co/img-3.jpeg" alt="Juno, Crew-Fotograf und Dune-Keeper von Saltbreak" style="width:100%;height:auto;object-fit:cover;border-radius:8px">
+          <div class="name">Juno P.</div>
+          <div class="role">Fotograf · Dune-Keeper</div>
+          <p class="quote">&ldquo;Salz auf der Linse ist kein Fehler, es ist die Unterschrift.&rdquo;</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLEANUP MISSION ============ -->
+<section class="mission" id="mission" aria-labelledby="mission-h">
+  <div class="wrap">
+    <div class="mission-grid">
+      <div>
+        <span class="eyebrow">Cleanup Mission · seit 2019</span>
+        <h2 id="mission-h" class="display">
+          Wir surfen<br>
+          <span class="underline">was wir schützen.</span>
+        </h2>
+        <p>
+          Jeder Saltbreak-Board-Order gibt automatisch 5€ an unser lokales
+          Cleanup-Budget. Jeden ersten Samstag im Monat treffen wir uns 07:00 Uhr
+          am Nordreef-Parking, sammeln zwei Stunden Müll, surfen danach eine Runde
+          und trinken Kaffee, der zu lange stand.
+        </p>
+        <p>
+          Keine Sponsoren, kein Greenwashing, keine Kameras. Nur die Crew, ein
+          paar Neugierige und 240 kg Mikroplastik weniger pro Jahr.
+        </p>
+
+        <div class="mission-stats">
+          <div>
+            <div class="num">68</div>
+            <div class="lbl">Cleanups</div>
+          </div>
+          <div>
+            <div class="num">2.4t</div>
+            <div class="lbl">Müll geborgen</div>
+          </div>
+          <div>
+            <div class="num">311</div>
+            <div class="lbl">Helfer:innen 2025</div>
+          </div>
+        </div>
+
+        <a href="#contact" class="btn">Cleanup beitreten <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+
+      <div class="mission-img">
+        <div class="badge">NEXT<br>CLEANUP<br>07:00</div>
+        <img src="images/saltbreak-surf-co/img-3.jpeg" alt="Saltbreak-Crew beim Beach-Cleanup am Nordreef mit Müllsäcken und Boards" style="width:100%;height:auto;object-fit:cover;border-radius:8px">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta" id="contact" aria-labelledby="cta-h">
+  <div class="wrap">
+    <div class="cta-inner">
+      <span class="eyebrow">Werde Teil der Crew</span>
+      <h2 id="cta-h" class="display">
+        <span class="stroke">SEI</span> DA,<br>
+        WENN <span class="coral">DIE</span><br>
+        SONNE KOMMT.
+      </h2>
+      <p>
+        Newsletter nur dann, wenn es etwas zu sagen gibt: neuer Swell, nächster
+        Cleanup, frisch-shapede Boards. Kein Spam, kein Algorithmus-Geschrei.
+      </p>
+      <form class="cta-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='✓ DRINNEN';">
+        <label for="mail" class="visually-hidden" style="position:absolute;left:-9999px;">E-Mail-Adresse</label>
+        <input id="mail" type="email" name="mail" placeholder="deine@email.de" required>
+        <button type="submit">Einsteigen</button>
+      </form>
+      <p class="cta-note">06:14 Uhr · Nordreef · jeden Tag</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#top" class="brand"><span class="dot" aria-hidden="true"></span>SALTBREAK&nbsp;SURF&nbsp;CO.</a>
+        <p>
+          Handshaped Boards, ehrliche Lineups und eine Küste, die wir jeden
+          Samstag ein bisschen sauberer hinterlassen. Locals first — immer.
+        </p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="Vimeo">VM</a>
+          <a href="#" aria-label="YouTube">YT</a>
+          <a href="#" aria-label="Newsletter">NL</a>
+        </div>
+      </div>
+
+      <div class="foot-col">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#boards">Longboards</a></li>
+          <li><a href="#boards">Funboards</a></li>
+          <li><a href="#boards">Shortboards</a></li>
+          <li><a href="#boards">Leashes &amp; Fins</a></li>
+          <li><a href="#boards">Second Hand</a></li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <h4>Crew</h4>
+        <ul>
+          <li><a href="#crew">Über uns</a></li>
+          <li><a href="#mission">Cleanups</a></li>
+          <li><a href="#story">Shaping-Prozess</a></li>
+          <li><a href="#contact">Newsletter</a></li>
+          <li><a href="#contact">Werden ein Helfer:in</a></li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <h4>Werkstatt</h4>
+        <ul>
+          <li><li><a href="#contact">North Reef 14</a></li></li>
+          <li><a href="#contact">D-23743 Küste</a></li>
+          <li><a href="tel:+4900000000">+49 (0) 000 000 00</a></li>
+          <li><a href="mailto:ahoy@saltbreak.co">ahoy@saltbreak.co</a></li>
+          <li><a href="#contact">Mo–Sa · 10–18 Uhr</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="foot-bottom">
+      <span>© 2026 Saltbreak Surf Co. · Handshaped an der Küste</span>
+      <span class="made"><span class="dot"></span>Made with salt, sun &amp; patience</span>
+      <span>Impressum · Datenschutz · AGB</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Burger-Menü (basic toggle für Mobile)
+  const burger = document.querySelector('.nav-burger');
+  const links = document.querySelector('.nav-links');
+</script>
 </body>
 </html>
