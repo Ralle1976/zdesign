@@ -51,6 +51,8 @@ export interface ProviderConfigFile {
     {
       enabled?: boolean;
       model?: string;
+      /** MCP server URL for providers reached over MCP (e.g. Higgsfield). */
+      mcpUrl?: string;
     }
   >;
 }

@@ -1,14 +1,18 @@
 'use client';
 
 /**
- * ProviderSettingsPage — full-screen provider management UI.
+ * ProviderSettingsPage — provider management UI (rendered inside a Dialog).
  *
- * - Fetches GET /api/providers, groups by type (TEXT / IMAGE / AUDIO / VIDEO)
- * - Per-provider card: status dot, model dropdown, API-key save (POST /keys),
- *   MCP connect, read-only endpoint, Test (POST /test) with inline result,
- *   image pricing/quota.
- * - Active toggle is radio-per-type (only one text + one image active).
- * - Save Configuration POSTs the full config to /api/providers.
+ * Contract (src/lib/ai/provider-config.ts):
+ *   GET  /api/providers → { providers, selection, overrides }
+ *   POST /api/providers { textProviderId?, imageProviderId?, overrides? }
+ *   POST /api/providers/test   { providerId } → { ok, latencyMs, message }
+ *   POST /api/providers/keys   { providerId, apiKey } → { maskedKey, saved }
+ *
+ * - Groups providers by type (TEXT / IMAGE via the API `kind`).
+ * - Radio-per-type activation: exactly one text + one image provider.
+ * - Per-provider model dropdown (persisted as overrides[id].model).
+ * - API key save (.env.local) + MCP URL connect (persisted as overrides[id].mcpUrl).
  *
  * The card subcomponent + types/helpers live in ./provider-settings/shared.
  */
@@ -22,8 +26,8 @@ import { Loader2, RefreshCw, Save, Plug, CheckCircle2, AlertTriangle } from 'luc
 import {
   type ProviderType,
   type ParsedProvider,
-  type DbProvider,
   type TestState,
+  type ProvidersResponse,
   TYPE_TABS,
   classifyProvider,
   parseProvider,
@@ -48,9 +52,10 @@ export function ProviderSettingsPage() {
     try {
       const res = await fetch('/api/providers');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const raw: DbProvider[] = data.providers || [];
-      setProviders(raw.map(parseProvider));
+      const data = (await res.json()) as ProvidersResponse;
+      const selection = data.selection || { textProviderId: '', imageProviderId: '' };
+      const overrides = data.overrides || {};
+      setProviders((data.providers || []).map((p) => parseProvider(p, selection, overrides)));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load providers');
     } finally {
@@ -62,14 +67,19 @@ export function ProviderSettingsPage() {
     fetchProviders();
   }, [fetchProviders]);
 
-  // Radio-style activation: only one active per type.
+  // Radio-style activation: only one active per kind (text / image).
   const setActive = useCallback((id: string, value: boolean, type: ProviderType) => {
     setProviders((prev) =>
       prev.map((p) => {
         if (classifyProvider(p) !== type) return p;
         return p.id === id ? { ...p, isActive: value } : value ? { ...p, isActive: false } : p;
-      })
+      }),
     );
+    setDirty(true);
+  }, []);
+
+  const setModel = useCallback((id: string, model: string) => {
+    setProviders((prev) => prev.map((p) => (p.id === id ? { ...p, selectedModel: model } : p)));
     setDirty(true);
   }, []);
 
@@ -82,7 +92,7 @@ export function ProviderSettingsPage() {
         body: JSON.stringify({ providerId: p.id }),
       });
       const data = await res.json().catch(() => ({}));
-      const success = res.ok && data.success !== false;
+      const success = res.ok && data.ok !== false;
       setTests((prev) => ({
         ...prev,
         [p.id]: {
@@ -110,19 +120,21 @@ export function ProviderSettingsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ providerId: p.id, apiKey: key }),
       });
+      const data = await res.json().catch(() => ({}));
       const ok = res.ok;
       setTests((prev) => ({
         ...prev,
         [p.id]: {
           loading: false,
-          result: ok ? { success: true, message: 'API key saved.' } : { success: false, message: `Save failed (HTTP ${res.status})` },
+          result: ok
+            ? { success: true, message: 'API key saved to .env.local — restart the dev server to apply.' }
+            : { success: false, message: data.error || `Save failed (HTTP ${res.status})` },
         },
       }));
       if (ok) {
         setApiKeys((prev) => ({ ...prev, [p.id]: '' }));
-        setProviders((prev) =>
-          prev.map((x) => (x.id === p.id ? { ...x, apiKey: `${key.slice(0, 8)}...${key.slice(-4)}` } : x))
-        );
+        const masked = data.maskedKey || `${key.slice(0, 4)}...${key.slice(-4)}`;
+        setProviders((prev) => prev.map((x) => (x.id === p.id ? { ...x, maskedKey: masked, configured: true } : x)));
       }
     } catch (e) {
       setTests((prev) => ({
@@ -132,65 +144,75 @@ export function ProviderSettingsPage() {
     }
   }, [apiKeys]);
 
-  const handleConnectMcp = useCallback(async (p: ParsedProvider) => {
-    const url = (mcpUrls[p.id] || '').trim();
-    if (!url) return;
-    try {
-      const res = await fetch('/api/providers/keys', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ providerId: p.id, baseUrl: url }),
-      });
-      const ok = res.ok;
+  /** Build the {textProviderId, imageProviderId, overrides} payload from a
+   *  provider list and POST it to /api/providers. */
+  const postConfig = useCallback(async (list: ParsedProvider[]): Promise<boolean> => {
+    const textProviderId = list.find((p) => p.kind === 'text' && p.isActive)?.id;
+    const imageProviderId = list.find((p) => p.kind === 'image' && p.isActive)?.id;
+    const overrides: Record<string, { model?: string; mcpUrl?: string }> = {};
+    for (const p of list) {
+      const entry: { model?: string; mcpUrl?: string } = {};
+      if (p.selectedModel && p.selectedModel !== p.defaultModel) entry.model = p.selectedModel;
+      if (p.mcpUrl) entry.mcpUrl = p.mcpUrl;
+      if (Object.keys(entry).length) overrides[p.id] = entry;
+    }
+    const body: Record<string, unknown> = { overrides };
+    if (textProviderId) body.textProviderId = textProviderId;
+    if (imageProviderId) body.imageProviderId = imageProviderId;
+
+    const res = await fetch('/api/providers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    return res.ok;
+  }, []);
+
+  // MCP connect: persist the URL into overrides[id].mcpUrl via the config save.
+  const handleConnectMcp = useCallback(
+    async (p: ParsedProvider) => {
+      const url = (mcpUrls[p.id] || '').trim();
+      if (!url) return;
+      const updated = providers.map((x) => (x.id === p.id ? { ...x, mcpUrl: url } : x));
+      setProviders(updated);
+      setMcpUrls((prev) => ({ ...prev, [p.id]: '' }));
+      setSaving(true);
+      const ok = await postConfig(updated);
+      setSaving(false);
+      setDirty(false);
       setTests((prev) => ({
         ...prev,
         [p.id]: {
           loading: false,
-          result: ok ? { success: true, message: 'MCP endpoint connected.' } : { success: false, message: `Connect failed (HTTP ${res.status})` },
+          result: ok
+            ? { success: true, message: 'MCP URL saved. Generation routing over MCP is wired next.' }
+            : { success: false, message: 'Save failed.' },
         },
       }));
-      if (ok) {
-        setMcpUrls((prev) => ({ ...prev, [p.id]: '' }));
-        setProviders((prev) => prev.map((x) => (x.id === p.id ? { ...x, baseUrl: url } : x)));
-      }
-    } catch (e) {
-      setTests((prev) => ({
-        ...prev,
-        [p.id]: { loading: false, result: { success: false, message: e instanceof Error ? e.message : 'Network error' } },
-      }));
-    }
-  }, [mcpUrls]);
+    },
+    [mcpUrls, providers, postConfig],
+  );
 
   const handleSaveConfig = useCallback(async () => {
     setSaving(true);
-    try {
-      const payload = providers.map((p) => ({ id: p.id, isActive: p.isActive, models: p.modelList }));
-      const res = await fetch('/api/providers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ config: payload }),
-      });
-      const ok = res.ok;
-      setTests((prev) => ({
-        ...prev,
-        __global__: {
-          loading: false,
-          result: ok ? { success: true, message: 'Configuration saved.' } : { success: false, message: `Save failed (HTTP ${res.status})` },
-        },
-      }));
-      if (ok) setDirty(false);
-    } catch (e) {
-      setTests((prev) => ({
-        ...prev,
-        __global__: { loading: false, result: { success: false, message: e instanceof Error ? e.message : 'Network error' } },
-      }));
-    } finally {
-      setSaving(false);
-    }
-  }, [providers]);
+    const list = providers;
+    const ok = await postConfig(list);
+    setTests((prev) => ({
+      ...prev,
+      __global__: {
+        loading: false,
+        result: ok
+          ? { success: true, message: 'Configuration saved.' }
+          : { success: false, message: 'Save failed.' },
+      },
+    }));
+    if (ok) setDirty(false);
+    setSaving(false);
+  }, [providers, postConfig]);
 
   const grouped: Record<ProviderType, ParsedProvider[]> = { TEXT: [], IMAGE: [], AUDIO: [], VIDEO: [] };
   for (const p of providers) grouped[classifyProvider(p)].push(p);
+  const tabsToShow = TYPE_TABS.filter((t) => grouped[t.key].length > 0);
 
   return (
     <div className="flex flex-col h-full min-h-0 bg-background">
@@ -201,7 +223,7 @@ export function ProviderSettingsPage() {
             Providers
           </h2>
           <p className="text-xs text-muted-foreground hidden sm:block">
-            Manage AI providers, API keys, models, and quota across all generation types.
+            Configure AI providers, API keys, models, and quota. Keys are written to .env.local (restart to apply).
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -239,18 +261,16 @@ export function ProviderSettingsPage() {
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ProviderType)} className="flex-1 flex flex-col min-h-0">
         <div className="px-4 sm:px-6 pt-3 shrink-0">
           <TabsList className="w-full sm:w-auto flex-wrap h-auto">
-            {TYPE_TABS.map((tab) => {
+            {tabsToShow.map((tab) => {
               const Icon = tab.icon;
               const count = grouped[tab.key].length;
               return (
                 <TabsTrigger key={tab.key} value={tab.key} className="gap-1.5 flex-1 sm:flex-none">
                   <Icon className="size-3.5" />
                   {tab.label}
-                  {count > 0 && (
-                    <Badge variant="secondary" className="text-[9px] px-1 py-0 h-3.5">
-                      {count}
-                    </Badge>
-                  )}
+                  <Badge variant="secondary" className="text-[9px] px-1 py-0 h-3.5">
+                    {count}
+                  </Badge>
                 </TabsTrigger>
               );
             })}
@@ -259,19 +279,13 @@ export function ProviderSettingsPage() {
 
         <ScrollArea className="flex-1 min-h-0">
           <div className="p-4 sm:p-6 pt-4">
-            {TYPE_TABS.map((tab) => (
+            {tabsToShow.map((tab) => (
               <TabsContent key={tab.key} value={tab.key} className="mt-0">
                 {loading ? (
                   <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {[0, 1, 2].map((i) => (
                       <Skeleton key={i} className="h-64 rounded-xl" />
                     ))}
-                  </div>
-                ) : grouped[tab.key].length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-16 text-center text-sm text-muted-foreground">
-                    <tab.icon className="size-8 mb-2 opacity-40" />
-                    No {tab.label.toLowerCase()} providers configured.
-                    <span className="text-xs mt-1">Add one via the API or environment variables.</span>
                   </div>
                 ) : (
                   <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -284,7 +298,7 @@ export function ProviderSettingsPage() {
                         apiKeyInput={apiKeys[p.id] || ''}
                         mcpInput={mcpUrls[p.id] || ''}
                         onActiveChange={(v) => setActive(p.id, v, tab.key)}
-                        onModelChange={() => setDirty(true)}
+                        onModelChange={(m) => setModel(p.id, m)}
                         onApiKeyInput={(v) => setApiKeys((prev) => ({ ...prev, [p.id]: v }))}
                         onMcpInput={(v) => setMcpUrls((prev) => ({ ...prev, [p.id]: v }))}
                         onTest={() => handleTest(p)}

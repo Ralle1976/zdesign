@@ -51,7 +51,14 @@ import {
 } from 'lucide-react';
 import { TemplateHub } from './TemplateHub';
 import { DesignSystemManager } from './DesignSystemManager';
-import { ProviderSettings } from './ProviderSettings';
+import { ProviderSettingsPage } from './ProviderSettingsPage';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 export function TopToolbar() {
   const { t, locale, setLocale } = useI18n();
@@ -69,6 +76,7 @@ export function TopToolbar() {
   const creativeMode = useZDesignStore((s) => s.creativeMode);
   const setCreativeMode = useZDesignStore((s) => s.setCreativeMode);
   const activeProviderId = useZDesignStore((s) => s.activeProviderId);
+  const providerConfigOpen = useZDesignStore((s) => s.providerConfigOpen);
   const setProviderConfigOpen = useZDesignStore((s) => s.setProviderConfigOpen);
   const qualityReport = useZDesignStore((s) => s.qualityReport);
   const designTree = useZDesignStore((s) => s.designTree);
@@ -106,7 +114,6 @@ export function TopToolbar() {
   const [editName, setEditName] = useState(projectName);
   const [templateHubOpen, setTemplateHubOpen] = useState(false);
   const [designSystemOpen, setDesignSystemOpen] = useState(false);
-  const [providerSettingsOpen, setProviderSettingsOpen] = useState(false);
 
   const handleNameSave = useCallback(() => {
     if (editName.trim() && projectId) {
@@ -585,7 +592,19 @@ export function TopToolbar() {
       {/* Dialogs */}
       <TemplateHub open={templateHubOpen} onOpenChange={setTemplateHubOpen} />
       <DesignSystemManager open={designSystemOpen} onOpenChange={setDesignSystemOpen} />
-      <ProviderSettings open={providerSettingsOpen} onOpenChange={setProviderSettingsOpen} />
+      <Dialog open={providerConfigOpen} onOpenChange={setProviderConfigOpen}>
+        <DialogContent className="max-w-6xl w-[95vw] h-[85vh] p-0 gap-0 overflow-hidden">
+          <DialogHeader className="px-4 sm:px-6 py-3 border-b shrink-0 sr-only">
+            <DialogTitle>AI Providers &amp; Models</DialogTitle>
+            <DialogDescription>
+              Configure AI providers, API keys, models, and quota.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 min-h-0 h-full">
+            <ProviderSettingsPage />
+          </div>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }

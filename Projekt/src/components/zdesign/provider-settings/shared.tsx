@@ -3,6 +3,12 @@
 /**
  * Shared types, helpers, and the ProviderCardRow subcomponent for the
  * ProviderSettingsPage. Split out to keep the main page under 500 lines.
+ *
+ * These types mirror the REAL GET /api/providers contract from
+ * src/lib/ai/provider-config.ts (ProviderStatus + selection/overrides):
+ *   { id, name, kind:'text'|'image', envKey, envBaseUrl, defaultModel,
+ *     models:[{id,name}], configured, maskedKey }
+ * plus the top-level { selection:{textProviderId,imageProviderId}, overrides }.
  */
 
 import {
@@ -42,32 +48,32 @@ import {
 
 export type ProviderType = 'TEXT' | 'IMAGE' | 'AUDIO' | 'VIDEO';
 
-export interface DbProvider {
+/** Exact shape returned per provider by GET /api/providers (`providers[]`). */
+export interface ProviderDTO {
   id: string;
   name: string;
-  provider: string;
-  apiKey: string | null;
-  baseUrl: string | null;
-  models: string; // stringified JSON
-  capabilities: string; // stringified JSON
-  isActive: boolean;
-  priority: number;
-  config: string; // stringified JSON
-  requestsUsed?: number;
-  requestsLimit?: number;
-  requestsRemaining?: number;
-  tokensUsed?: number;
-  tokensLimit?: number;
-  tokensRemaining?: number;
-  isRateLimited?: boolean;
-  lastError?: string | null;
-  lastUsedAt?: string | null;
-  type?: ProviderType;
+  kind: 'text' | 'image';
+  envKey?: string;
+  envBaseUrl?: string;
+  defaultModel: string;
+  models: { id: string; name: string }[];
+  configured: boolean;
+  maskedKey: string | null;
 }
 
-export interface ParsedProvider extends DbProvider {
+/** Top-level GET /api/providers response. */
+export interface ProvidersResponse {
+  providers: ProviderDTO[];
+  selection: { textProviderId: string; imageProviderId: string };
+  overrides: Record<string, { enabled?: boolean; model?: string; mcpUrl?: string }>;
+}
+
+/** ProviderDTO enriched with parsed/derived UI state. */
+export interface ParsedProvider extends ProviderDTO {
   modelList: string[];
-  capabilityList: string[];
+  isActive: boolean;
+  selectedModel: string;
+  mcpUrl: string;
 }
 
 export interface TestState {
@@ -84,48 +90,38 @@ export const TYPE_TABS: { key: ProviderType; label: string; icon: typeof Type }[
 
 // ============ Helpers ============
 
-const TYPE_KEYWORDS: Record<ProviderType, string[]> = {
-  TEXT: ['zai', 'anthropic', 'claude', 'openai', 'gpt', 'openrouter', 'gemini', 'llm', 'chat'],
-  IMAGE: ['minimax', 'replicate', 'flux', 'higgsfield', 'stability', 'dalle', 'image'],
-  AUDIO: ['whisper', 'elevenlabs', 'tts', 'speech', 'audio'],
-  VIDEO: ['sora', 'runway', 'pika', 'video', 'kling'],
-};
-
-export function classifyProvider(p: DbProvider): ProviderType {
-  const hay = `${p.provider} ${p.name}`.toLowerCase();
-  try {
-    const cfg = JSON.parse(p.config || '{}');
-    if (cfg.type) return cfg.type as ProviderType;
-  } catch { /* ignore */ }
-  for (const t of Object.keys(TYPE_KEYWORDS) as ProviderType[]) {
-    if (TYPE_KEYWORDS[t].some((k) => hay.includes(k))) return t;
-  }
-  try {
-    const caps = JSON.parse(p.capabilities || '[]') as string[];
-    if (caps.some((c) => c.includes('image'))) return 'IMAGE';
-    if (caps.some((c) => c.includes('speech'))) return 'AUDIO';
-  } catch { /* ignore */ }
+/** Classify a provider into a UI tab. The API `kind` is authoritative. */
+export function classifyProvider(p: ProviderDTO | ParsedProvider): ProviderType {
+  if (p.kind === 'image') return 'IMAGE';
   return 'TEXT';
 }
 
-export function parseProvider(p: DbProvider): ParsedProvider {
-  let modelList: string[] = [];
-  let capabilityList: string[] = [];
-  try {
-    const m = JSON.parse(p.models || '[]');
-    modelList = Array.isArray(m)
-      ? m.map((x) => (typeof x === 'string' ? x : x?.id || x?.name || JSON.stringify(x)))
-      : [];
-  } catch { /* ignore */ }
-  try {
-    const c = JSON.parse(p.capabilities || '[]');
-    capabilityList = Array.isArray(c) ? c.map(String) : [];
-  } catch { /* ignore */ }
-  return { ...p, modelList, capabilityList };
+/**
+ * Normalize a raw provider DTO into the ParsedProvider the card renders.
+ * Applies the current selection (active text/image) and overrides (pinned
+ * model / MCP url) so the UI reflects what's persisted on disk.
+ */
+export function parseProvider(
+  p: ProviderDTO,
+  selection: ProvidersResponse['selection'],
+  overrides: ProvidersResponse['overrides'],
+): ParsedProvider {
+  const modelList = (p.models || []).map((m) => m.id);
+  const ov = overrides?.[p.id] || {};
+  return {
+    ...p,
+    modelList,
+    isActive:
+      (p.kind === 'text' && p.id === selection.textProviderId) ||
+      (p.kind === 'image' && p.id === selection.imageProviderId),
+    selectedModel: ov.model || p.defaultModel || modelList[0] || '',
+    mcpUrl: ov.mcpUrl || '',
+  };
 }
 
-export function isMcpProvider(p: ParsedProvider): boolean {
-  const hay = `${p.provider} ${p.name}`.toLowerCase();
+/** Providers that can be reached over MCP (Higgsfield exposes an MCP server). */
+export function isMcpProvider(p: ProviderDTO | ParsedProvider): boolean {
+  const hay = `${p.id} ${p.name}`.toLowerCase();
   return hay.includes('higgsfield') || hay.includes('mcp');
 }
 
@@ -140,8 +136,7 @@ function StatusDot({ p, test }: { p: ParsedProvider; test: TestState }) {
       <XCircle className="size-3.5 text-red-500" />
     );
   }
-  if (p.isRateLimited) return <XCircle className="size-3.5 text-red-500" />;
-  if (p.apiKey || isMcpProvider(p)) return <CheckCircle2 className="size-3.5 text-emerald-500" />;
+  if (p.configured || isMcpProvider(p)) return <CheckCircle2 className="size-3.5 text-emerald-500" />;
   return <Circle className="size-3.5 text-muted-foreground/40" />;
 }
 
@@ -177,8 +172,7 @@ export function ProviderCardRow({
   onConnectMcp,
 }: ProviderCardRowProps) {
   const mcp = isMcpProvider(p);
-  const hasKey = !!p.apiKey;
-  const selectedModel = p.modelList[0] || '';
+  const hasKey = !!p.maskedKey;
 
   return (
     <Card
@@ -198,9 +192,9 @@ export function ProviderCardRow({
                 Active
               </Badge>
             )}
-            {p.isRateLimited && (
-              <Badge className="text-[9px] px-1.5 py-0 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-0">
-                Rate limited
+            {!p.configured && !mcp && (
+              <Badge variant="outline" className="text-[9px] px-1.5 py-0 text-muted-foreground border-0">
+                No key
               </Badge>
             )}
           </div>
@@ -243,7 +237,7 @@ export function ProviderCardRow({
         {p.modelList.length > 0 && (
           <div className="space-y-1">
             <span className="text-[11px] text-muted-foreground">Model</span>
-            <Select defaultValue={selectedModel} onValueChange={onModelChange}>
+            <Select value={p.selectedModel} onValueChange={onModelChange}>
               <SelectTrigger className="h-9 text-sm">
                 <SelectValue placeholder="Select model" />
               </SelectTrigger>
@@ -265,7 +259,7 @@ export function ProviderCardRow({
             </span>
             <div className="flex gap-2">
               <Input
-                placeholder="https://mcp.example.com/sse"
+                placeholder="https://mcp.higgsfield.ai/mcp"
                 value={mcpInput}
                 onChange={(e) => onMcpInput(e.target.value)}
                 className="h-9 text-sm font-mono"
@@ -284,7 +278,7 @@ export function ProviderCardRow({
             <div className="flex gap-2">
               <Input
                 type="password"
-                placeholder={hasKey ? p.apiKey || '••••••••' : 'Enter API key…'}
+                placeholder={hasKey ? p.maskedKey || '••••••••' : 'Enter API key…'}
                 value={apiKeyInput}
                 onChange={(e) => onApiKeyInput(e.target.value)}
                 className="h-9 text-sm"
@@ -308,45 +302,16 @@ export function ProviderCardRow({
           {mcp ? (
             <Input
               placeholder="https://…"
-              value={p.baseUrl || ''}
+              value={p.mcpUrl || ''}
               readOnly
               className="h-9 text-xs font-mono bg-muted/50"
             />
           ) : (
             <div className="h-9 flex items-center px-3 rounded-md border bg-muted/40 text-xs font-mono text-muted-foreground truncate">
-              {p.baseUrl || '—'}
+              {p.envBaseUrl || '—'}
             </div>
           )}
         </div>
-
-        {classifyProvider(p) === 'IMAGE' && (
-          <div className="grid grid-cols-2 gap-2 text-[11px]">
-            <div className="rounded-md bg-muted/50 p-2">
-              <div className="text-muted-foreground">Requests</div>
-              <div className="font-medium">
-                {p.requestsUsed ?? 0}
-                {(p.requestsLimit ?? 0) > 0 ? ` / ${p.requestsLimit}` : ''}
-              </div>
-              {(p.requestsRemaining ?? -1) > 0 && (
-                <div className="text-emerald-600 dark:text-emerald-400">
-                  {p.requestsRemaining} left
-                </div>
-              )}
-            </div>
-            <div className="rounded-md bg-muted/50 p-2">
-              <div className="text-muted-foreground">Tokens</div>
-              <div className="font-medium">
-                {p.tokensUsed ?? 0}
-                {(p.tokensLimit ?? 0) > 0 ? ` / ${p.tokensLimit}` : ''}
-              </div>
-              {(p.tokensRemaining ?? -1) > 0 && (
-                <div className="text-emerald-600 dark:text-emerald-400">
-                  {p.tokensRemaining} left
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
         <div className="flex items-center gap-2 pt-1">
           <Button
@@ -363,10 +328,10 @@ export function ProviderCardRow({
             )}
             Test
           </Button>
-          {p.lastError && (
-            <span className="text-[10px] text-red-500 truncate" title={p.lastError}>
-              {p.lastError}
-            </span>
+          {p.configured && (
+            <Badge variant="secondary" className="text-[9px] px-1.5 py-0">
+              {p.maskedKey || 'configured'}
+            </Badge>
           )}
         </div>
       </CardContent>
