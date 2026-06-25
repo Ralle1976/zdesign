@@ -226,7 +226,7 @@ export function ProviderSettingsPage() {
             Configure AI providers, API keys, models, and quota. Keys are written to .env.local (restart to apply).
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 pr-9 sm:pr-11">
           <Button variant="ghost" size="sm" className="gap-1.5" onClick={fetchProviders} disabled={loading}>
             {loading ? <Loader2 className="size-3.5 animate-spin" /> : <RefreshCw className="size-3.5" />}
             <span className="hidden sm:inline">Refresh</span>
@@ -282,13 +282,13 @@ export function ProviderSettingsPage() {
             {tabsToShow.map((tab) => (
               <TabsContent key={tab.key} value={tab.key} className="mt-0">
                 {loading ? (
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     {[0, 1, 2].map((i) => (
                       <Skeleton key={i} className="h-64 rounded-xl" />
                     ))}
                   </div>
                 ) : (
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     {grouped[tab.key].map((p) => (
                       <ProviderCardRow
                         key={p.id}

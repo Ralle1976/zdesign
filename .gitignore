@@ -44,6 +44,7 @@ Projekt/.claude-harness/
 
 # Debug screenshots / session artifacts
 Projekt/screenshot-*.png
+Projekt/providers-*.png
 Projekt/after-*.png
 Projekt/*-provider*.png
 Projekt/templates-dialog.png

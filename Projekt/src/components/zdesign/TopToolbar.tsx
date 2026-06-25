@@ -593,14 +593,14 @@ export function TopToolbar() {
       <TemplateHub open={templateHubOpen} onOpenChange={setTemplateHubOpen} />
       <DesignSystemManager open={designSystemOpen} onOpenChange={setDesignSystemOpen} />
       <Dialog open={providerConfigOpen} onOpenChange={setProviderConfigOpen}>
-        <DialogContent className="max-w-6xl w-[95vw] h-[85vh] p-0 gap-0 overflow-hidden">
-          <DialogHeader className="px-4 sm:px-6 py-3 border-b shrink-0 sr-only">
+        <DialogContent className="flex flex-col gap-0 p-0 overflow-hidden h-[88vh] max-h-[94vh] w-[96vw] max-w-7xl sm:max-w-7xl">
+          <DialogHeader className="sr-only">
             <DialogTitle>AI Providers &amp; Models</DialogTitle>
             <DialogDescription>
               Configure AI providers, API keys, models, and quota.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex-1 min-h-0 h-full">
+          <div className="flex-1 min-h-0">
             <ProviderSettingsPage />
           </div>
         </DialogContent>
