@@ -1,0 +1,1208 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Casa Verde — Boutique-Dschungel-Lodge in den Bergen Costa Ricas</title>
+<meta name="description" content="Zwölf Suiten, die im Regenwald verschwinden. Infinity-Pools über dem Blätterdach, Sternen-Nächte und Farm-to-Table aus eigenem Garten.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Mulish:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Reset & Tokens ---------- */
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --jungle-deep:#1B3A2A;
+    --jungle-mid:#2E5D43;
+    --terracotta:#B5573A;
+    --cream:#EFE7D6;
+    --cream-soft:#F5EFE2;
+    --cream-dim:#D9CFB8;
+    --ink:#15241B;
+    --hairline:rgba(27,58,42,.18);
+    --hairline-light:rgba(239,231,214,.22);
+    --ease:cubic-bezier(.22,1,.36,1);
+    --ease-slow:cubic-bezier(.16,1,.3,1);
+  }
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    font-family:'Mulish',sans-serif;
+    font-weight:300;
+    color:var(--ink);
+    background:var(--cream);
+    line-height:1.7;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  img{display:block;max-width:100%;height:auto}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--terracotta);color:var(--cream)}
+
+  /* ---------- Typografie ---------- */
+  h1,h2,h3,h4{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:400;
+    line-height:1.08;
+    letter-spacing:-.012em;
+    color:var(--jungle-deep);
+  }
+  .eyebrow{
+    font-family:'Mulish',sans-serif;
+    font-weight:400;
+    font-size:.72rem;
+    letter-spacing:.42em;
+    text-transform:uppercase;
+    color:var(--terracotta);
+    display:inline-flex;
+    align-items:center;
+    gap:1rem;
+  }
+  .eyebrow::before{
+    content:"";
+    width:38px;
+    height:1px;
+    background:currentColor;
+    opacity:.7;
+  }
+  .eyebrow.center::before{display:none}
+
+  /* ---------- Layout ---------- */
+  .wrap{width:100%;max-width:1320px;margin:0 auto;padding:0 2.5rem}
+  .wrap-narrow{max-width:880px;margin:0 auto;padding:0 2.5rem}
+  section{position:relative}
+
+  /* ---------- Nav ---------- */
+  .nav{
+    position:fixed;
+    top:0;left:0;right:0;
+    z-index:100;
+    padding:1.6rem 2.5rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    transition:background .6s var(--ease), padding .6s var(--ease), backdrop-filter .6s;
+  }
+  .nav.scrolled{
+    background:rgba(239,231,214,.92);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    padding:1.1rem 2.5rem;
+    border-bottom:1px solid var(--hairline);
+  }
+  .nav__brand{
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.45rem;
+    font-weight:500;
+    letter-spacing:.04em;
+    color:var(--cream);
+    transition:color .6s var(--ease);
+    display:flex;
+    align-items:baseline;
+    gap:.6rem;
+  }
+  .nav__brand small{
+    font-family:'Mulish',sans-serif;
+    font-size:.6rem;
+    letter-spacing:.32em;
+    text-transform:uppercase;
+    opacity:.75;
+    font-weight:300;
+  }
+  .nav.scrolled .nav__brand{color:var(--jungle-deep)}
+  .nav__links{
+    display:flex;
+    gap:2.6rem;
+    list-style:none;
+    align-items:center;
+  }
+  .nav__links a{
+    font-size:.78rem;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--cream);
+    font-weight:300;
+    transition:color .4s, opacity .4s;
+    position:relative;
+  }
+  .nav.scrolled .nav__links a{color:var(--jungle-deep)}
+  .nav__links a::after{
+    content:"";
+    position:absolute;
+    left:0;bottom:-6px;
+    width:0;height:1px;
+    background:var(--terracotta);
+    transition:width .5s var(--ease);
+  }
+  .nav__links a:hover::after,
+  .nav__links a:focus-visible::after{width:100%}
+  .nav__cta{
+    border:1px solid currentColor;
+    padding:.7rem 1.4rem;
+    border-radius:100px;
+    font-size:.72rem !important;
+    letter-spacing:.22em !important;
+  }
+  .nav__cta::after{display:none !important}
+  .nav__cta:hover{background:var(--terracotta);color:var(--cream) !important;border-color:var(--terracotta)}
+  .nav__burger{display:none;background:none;border:0;cursor:pointer;width:32px;height:32px;position:relative}
+  .nav__burger span{position:absolute;left:4px;width:24px;height:1px;background:var(--cream);transition:.4s}
+  .nav__burger span:nth-child(1){top:12px}
+  .nav__burger span:nth-child(2){top:20px}
+  .nav.scrolled .nav__burger span{background:var(--jungle-deep)}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    height:100vh;
+    min-height:720px;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:flex-end;
+    color:var(--cream);
+  }
+  .hero__media{
+    position:absolute;
+    inset:0;
+    z-index:1;
+  }
+  .hero__media img{
+    width:100%;height:120%;
+    object-fit:cover;
+    object-position:center;
+    will-change:transform;
+    animation:kenburns 28s ease-in-out infinite alternate;
+  }
+  @keyframes kenburns{
+    0%{transform:scale(1.02) translate(0,0)}
+    100%{transform:scale(1.14) translate(-1.5%, -2%)}
+  }
+  .hero__media::after{
+    content:"";
+    position:absolute;inset:0;
+    background:
+      linear-gradient(180deg, rgba(27,58,42,.45) 0%, rgba(27,58,42,0) 28%, rgba(27,58,42,0) 55%, rgba(27,58,42,.78) 100%),
+      linear-gradient(90deg, rgba(27,58,42,.35) 0%, transparent 50%);
+    z-index:2;
+  }
+  .hero__content{
+    position:relative;
+    z-index:3;
+    width:100%;
+    padding:0 2.5rem 5.5rem;
+    max-width:1320px;
+    margin:0 auto;
+  }
+  .hero__eyebrow{
+    color:var(--cream-dim);
+    margin-bottom:2rem;
+    opacity:0;
+    transform:translateY(20px);
+    animation:rise 1.4s var(--ease) .4s forwards;
+  }
+  .hero__eyebrow::before{background:var(--cream-dim)}
+  .hero h1{
+    color:var(--cream);
+    font-size:clamp(3rem, 8.2vw, 7.4rem);
+    font-weight:300;
+    max-width:14ch;
+    letter-spacing:-.02em;
+    margin-bottom:2.5rem;
+    opacity:0;
+    transform:translateY(40px);
+    animation:rise 1.6s var(--ease-slow) .6s forwards;
+  }
+  .hero h1 em{
+    font-style:italic;
+    font-weight:300;
+    color:var(--cream-dim);
+  }
+  .hero__lede{
+    max-width:46ch;
+    font-size:1.05rem;
+    color:var(--cream-dim);
+    font-weight:300;
+    line-height:1.85;
+    opacity:0;
+    transform:translateY(30px);
+    animation:rise 1.4s var(--ease) 1s forwards;
+  }
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  .hero__meta{
+    position:absolute;
+    bottom:5.5rem;
+    right:2.5rem;
+    z-index:3;
+    text-align:right;
+    color:var(--cream-dim);
+    font-size:.72rem;
+    letter-spacing:.32em;
+    text-transform:uppercase;
+    opacity:0;
+    animation:rise 1.4s var(--ease) 1.4s forwards;
+  }
+  .hero__meta strong{
+    display:block;
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:1.6rem;
+    letter-spacing:0;
+    text-transform:none;
+    color:var(--cream);
+    margin-top:.4rem;
+  }
+  .hero__scroll{
+    position:absolute;
+    bottom:2rem;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:3;
+    color:var(--cream-dim);
+    font-size:.65rem;
+    letter-spacing:.4em;
+    text-transform:uppercase;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:.8rem;
+    opacity:0;
+    animation:rise 1.4s var(--ease) 1.8s forwards;
+  }
+  .hero__scroll::after{
+    content:"";
+    width:1px;height:42px;
+    background:linear-gradient(180deg, var(--cream-dim), transparent);
+    animation:scrollLine 2.4s ease-in-out infinite;
+  }
+  @keyframes scrollLine{
+    0%{transform:scaleY(0);transform-origin:top}
+    50%{transform:scaleY(1);transform-origin:top}
+    51%{transform:scaleY(1);transform-origin:bottom}
+    100%{transform:scaleY(0);transform-origin:bottom}
+  }
+
+  /* ---------- Section: Manifest ---------- */
+  .manifest{
+    padding:11rem 0 9rem;
+    background:var(--cream);
+    position:relative;
+  }
+  .manifest__grid{
+    display:grid;
+    grid-template-columns:1fr 1.4fr;
+    gap:6rem;
+    align-items:start;
+  }
+  .manifest__label{padding-top:.6rem}
+  .manifest__label .num{
+    display:block;
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:1.3rem;
+    color:var(--terracotta);
+    margin-bottom:1.4rem;
+  }
+  .manifest__body h2{
+    font-size:clamp(2.2rem, 4.4vw, 3.8rem);
+    font-weight:300;
+    margin-bottom:2.8rem;
+  }
+  .manifest__body h2 em{
+    font-style:italic;
+    color:var(--terracotta);
+    font-weight:300;
+  }
+  .manifest__body p{
+    font-size:1.08rem;
+    line-height:1.9;
+    color:var(--jungle-mid);
+    margin-bottom:1.6rem;
+    max-width:54ch;
+  }
+  .manifest__signature{
+    margin-top:3rem;
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:1.4rem;
+    color:var(--jungle-deep);
+  }
+  .manifest__signature small{
+    display:block;
+    font-family:'Mulish',sans-serif;
+    font-style:normal;
+    font-size:.7rem;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    color:var(--terracotta);
+    margin-top:.6rem;
+  }
+
+  /* ---------- Section: Suite / Image Feature ---------- */
+  .suite{
+    padding:8rem 0;
+    background:var(--jungle-deep);
+    color:var(--cream);
+    position:relative;
+    overflow:hidden;
+  }
+  .suite__grid{
+    display:grid;
+    grid-template-columns:1.1fr 1fr;
+    gap:5rem;
+    align-items:center;
+  }
+  .suite__media{
+    position:relative;
+    aspect-ratio:4/5;
+    overflow:hidden;
+    border-radius:4px;
+    box-shadow:0 60px 120px -40px rgba(0,0,0,.6);
+  }
+  .suite__media img{
+    width:100%;height:100%;
+    object-fit:cover;
+    transition:transform 1.8s var(--ease-slow);
+  }
+  .suite__media:hover img{transform:scale(1.04)}
+  .suite__media::after{
+    content:"";
+    position:absolute;inset:0;
+    background:linear-gradient(180deg, transparent 60%, rgba(27,58,42,.4));
+    pointer-events:none;
+  }
+  .suite__caption{
+    position:absolute;
+    bottom:1.6rem;left:1.6rem;
+    font-size:.7rem;
+    letter-spacing:.3em;
+    text-transform:uppercase;
+    color:var(--cream-dim);
+    z-index:2;
+  }
+  .suite__body h2{
+    color:var(--cream);
+    font-size:clamp(2.2rem, 4.2vw, 3.6rem);
+    font-weight:300;
+    margin:1.6rem 0 2rem;
+  }
+  .suite__body h2 em{font-style:italic;color:var(--cream-dim)}
+  .suite__body .eyebrow{color:var(--terracotta)}
+  .suite__body p{
+    color:var(--cream-dim);
+    font-size:1.02rem;
+    line-height:1.9;
+    margin-bottom:1.4rem;
+    max-width:48ch;
+  }
+  .suite__specs{
+    margin-top:3rem;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:2rem;
+    padding-top:2.4rem;
+    border-top:1px solid var(--hairline-light);
+  }
+  .suite__specs dt{
+    font-size:.66rem;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    color:var(--terracotta);
+    margin-bottom:.6rem;
+  }
+  .suite__specs dd{
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.7rem;
+    font-weight:400;
+    color:var(--cream);
+    line-height:1.2;
+  }
+  .suite__specs dd small{
+    font-family:'Mulish',sans-serif;
+    font-size:.78rem;
+    color:var(--cream-dim);
+    letter-spacing:.05em;
+    display:block;
+    margin-top:.2rem;
+    font-weight:300;
+  }
+
+  /* ---------- Section: Features (Was wir geben) ---------- */
+  .features{
+    padding:11rem 0 9rem;
+    background:var(--cream-soft);
+  }
+  .features__head{
+    text-align:center;
+    margin-bottom:7rem;
+  }
+  .features__head .eyebrow{
+    margin-bottom:2rem;
+    justify-content:center;
+  }
+  .features__head .eyebrow::before{display:none}
+  .features__head h2{
+    font-size:clamp(2.4rem, 5vw, 4.2rem);
+    font-weight:300;
+    max-width:18ch;
+    margin:0 auto;
+  }
+  .features__head h2 em{font-style:italic;color:var(--terracotta)}
+  .features__grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:4rem 3rem;
+  }
+  .feature{
+    padding:2rem 0;
+    border-top:1px solid var(--hairline);
+    position:relative;
+  }
+  .feature__num{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:1.05rem;
+    color:var(--terracotta);
+    margin-bottom:1.4rem;
+    display:block;
+  }
+  .feature h3{
+    font-size:1.85rem;
+    font-weight:400;
+    margin-bottom:1rem;
+    line-height:1.15;
+  }
+  .feature h3 em{font-style:italic;color:var(--jungle-mid)}
+  .feature p{
+    color:var(--jungle-mid);
+    font-size:.96rem;
+    line-height:1.85;
+  }
+
+  /* ---------- Section: Image Quote (Zwischenraum) ---------- */
+  .interlude{
+    height:90vh;
+    min-height:600px;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--jungle-deep);
+  }
+  .interlude__media{
+    position:absolute;inset:0;
+    z-index:1;
+  }
+  .interlude__media img{
+    width:100%;height:115%;
+    object-fit:cover;
+    animation:kenburns 32s ease-in-out infinite alternate;
+  }
+  .interlude__media::after{
+    content:"";
+    position:absolute;inset:0;
+    background:linear-gradient(180deg, rgba(27,58,42,.5), rgba(27,58,42,.65));
+  }
+  .interlude__quote{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    color:var(--cream);
+    padding:0 2rem;
+    max-width:900px;
+  }
+  .interlude__quote blockquote{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(1.8rem, 3.6vw, 3rem);
+    font-weight:300;
+    line-height:1.35;
+    font-style:italic;
+    margin:0;
+  }
+  .interlude__quote blockquote span{
+    color:var(--cream-dim);
+  }
+  .interlude__quote cite{
+    display:block;
+    margin-top:2.4rem;
+    font-family:'Mulish',sans-serif;
+    font-style:normal;
+    font-size:.7rem;
+    letter-spacing:.32em;
+    text-transform:uppercase;
+    color:var(--cream-dim);
+  }
+
+  /* ---------- Section: Kulinarik ---------- */
+  .culinary{
+    padding:11rem 0;
+    background:var(--cream);
+  }
+  .culinary__grid{
+    display:grid;
+    grid-template-columns:1fr 1.2fr;
+    gap:5rem;
+    align-items:center;
+  }
+  .culinary__body h2{
+    font-size:clamp(2.2rem, 4.4vw, 3.8rem);
+    font-weight:300;
+    margin:1.6rem 0 2rem;
+  }
+  .culinary__body h2 em{font-style:italic;color:var(--terracotta)}
+  .culinary__body p{
+    color:var(--jungle-mid);
+    font-size:1.04rem;
+    line-height:1.9;
+    margin-bottom:1.4rem;
+    max-width:50ch;
+  }
+  .culinary__list{
+    margin-top:2.6rem;
+    list-style:none;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1rem 2rem;
+    padding-top:2.4rem;
+    border-top:1px solid var(--hairline);
+  }
+  .culinary__list li{
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.15rem;
+    color:var(--jungle-deep);
+    padding-left:1.4rem;
+    position:relative;
+    font-style:italic;
+  }
+  .culinary__list li::before{
+    content:"";
+    position:absolute;
+    left:0;top:.7rem;
+    width:8px;height:1px;
+    background:var(--terracotta);
+  }
+  .culinary__media{
+    position:relative;
+    aspect-ratio:5/6;
+    overflow:hidden;
+    border-radius:4px;
+    box-shadow:0 50px 100px -40px rgba(27,58,42,.4);
+  }
+  .culinary__media img{
+    width:100%;height:100%;
+    object-fit:cover;
+    transition:transform 1.8s var(--ease-slow);
+  }
+  .culinary__media:hover img{transform:scale(1.05)}
+  .culinary__tag{
+    position:absolute;
+    top:1.6rem;left:1.6rem;
+    background:rgba(239,231,214,.92);
+    backdrop-filter:blur(8px);
+    padding:.7rem 1.2rem;
+    font-size:.66rem;
+    letter-spacing:.3em;
+    text-transform:uppercase;
+    color:var(--jungle-deep);
+    border-radius:100px;
+  }
+
+  /* ---------- Section: Aufenthalt / Buchung ---------- */
+  .stay{
+    padding:11rem 0;
+    background:var(--jungle-deep);
+    color:var(--cream);
+    position:relative;
+    overflow:hidden;
+  }
+  .stay::before{
+    content:"";
+    position:absolute;
+    top:-20%;right:-10%;
+    width:60%;height:140%;
+    background:radial-gradient(circle, rgba(181,87,58,.18), transparent 60%);
+    pointer-events:none;
+  }
+  .stay__head{
+    text-align:center;
+    margin-bottom:5rem;
+    position:relative;
+    z-index:2;
+  }
+  .stay__head .eyebrow{color:var(--terracotta)}
+  .stay__head .eyebrow.center::before{display:none}
+  .stay__head .eyebrow{justify-content:center}
+  .stay__head h2{
+    color:var(--cream);
+    font-size:clamp(2.4rem, 5vw, 4.2rem);
+    font-weight:300;
+    margin-top:2rem;
+  }
+  .stay__head h2 em{font-style:italic;color:var(--cream-dim)}
+  .stay__form{
+    max-width:760px;
+    margin:0 auto;
+    background:rgba(239,231,214,.06);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border:1px solid var(--hairline-light);
+    border-radius:6px;
+    padding:2.4rem;
+    position:relative;
+    z-index:2;
+  }
+  .stay__form-row{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:1.2rem;
+    margin-bottom:1.4rem;
+  }
+  .stay__form label{
+    display:block;
+    font-size:.66rem;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    color:var(--terracotta);
+    margin-bottom:.7rem;
+  }
+  .stay__form input,
+  .stay__form select{
+    width:100%;
+    background:transparent;
+    border:0;
+    border-bottom:1px solid var(--hairline-light);
+    color:var(--cream);
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.3rem;
+    padding:.5rem 0;
+    outline:none;
+    transition:border-color .4s;
+    font-weight:400;
+  }
+  .stay__form input:focus,
+  .stay__form select:focus{
+    border-color:var(--terracotta);
+  }
+  .stay__form select option{background:var(--jungle-deep);color:var(--cream)}
+  .stay__form input::placeholder{color:rgba(239,231,214,.4)}
+  .stay__submit{
+    margin-top:1.6rem;
+    width:100%;
+    background:var(--terracotta);
+    color:var(--cream);
+    border:0;
+    padding:1.3rem 2rem;
+    font-family:'Mulish',sans-serif;
+    font-size:.78rem;
+    letter-spacing:.32em;
+    text-transform:uppercase;
+    cursor:pointer;
+    border-radius:100px;
+    transition:background .4s, transform .4s, letter-spacing .4s;
+    font-weight:400;
+  }
+  .stay__submit:hover,
+  .stay__submit:focus-visible{
+    background:var(--cream);
+    color:var(--jungle-deep);
+    letter-spacing:.38em;
+  }
+  .stay__note{
+    text-align:center;
+    margin-top:2rem;
+    font-size:.78rem;
+    color:var(--cream-dim);
+    font-style:italic;
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.05rem;
+  }
+
+  /* ---------- Footer ---------- */
+  footer{
+    background:var(--ink);
+    color:var(--cream-dim);
+    padding:6rem 0 2.5rem;
+  }
+  .footer__grid{
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr 1fr;
+    gap:4rem;
+    padding-bottom:4rem;
+    border-bottom:1px solid var(--hairline-light);
+  }
+  .footer__brand h3{
+    color:var(--cream);
+    font-size:2rem;
+    font-weight:400;
+    margin-bottom:1rem;
+  }
+  .footer__brand h3 em{font-style:italic;color:var(--cream-dim)}
+  .footer__brand p{
+    font-size:.92rem;
+    line-height:1.85;
+    max-width:34ch;
+  }
+  .footer__col h4{
+    color:var(--terracotta);
+    font-family:'Mulish',sans-serif;
+    font-size:.7rem;
+    letter-spacing:.3em;
+    text-transform:uppercase;
+    font-weight:400;
+    margin-bottom:1.4rem;
+  }
+  .footer__col ul{list-style:none}
+  .footer__col li{margin-bottom:.7rem;font-size:.92rem}
+  .footer__col a{
+    transition:color .3s;
+    border-bottom:1px solid transparent;
+    padding-bottom:1px;
+  }
+  .footer__col a:hover,
+  .footer__col a:focus-visible{color:var(--cream);border-color:var(--terracotta)}
+  .footer__bottom{
+    padding-top:2.5rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:.78rem;
+    color:rgba(239,231,214,.5);
+  }
+  .footer__bottom em{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    color:var(--cream-dim);
+    font-size:1rem;
+  }
+
+  /* ---------- Reveal Animations ---------- */
+  .reveal{
+    opacity:0;
+    transform:translateY(40px);
+    transition:opacity 1.4s var(--ease), transform 1.4s var(--ease);
+  }
+  .reveal.in{opacity:1;transform:none}
+  .reveal-delay-1{transition-delay:.15s}
+  .reveal-delay-2{transition-delay:.3s}
+  .reveal-delay-3{transition-delay:.45s}
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:1024px){
+    .manifest__grid,
+    .suite__grid,
+    .culinary__grid{grid-template-columns:1fr;gap:3rem}
+    .features__grid{grid-template-columns:1fr 1fr}
+    .footer__grid{grid-template-columns:1fr 1fr;gap:3rem}
+    .stay__form-row{grid-template-columns:1fr}
+  }
+  @media (max-width:720px){
+    .wrap,.wrap-narrow{padding:0 1.5rem}
+    .nav{padding:1.2rem 1.5rem}
+    .nav__links{display:none}
+    .nav__burger{display:block}
+    .hero__content{padding:0 1.5rem 4rem}
+    .hero__meta{display:none}
+    .hero h1{font-size:clamp(2.6rem, 11vw, 4rem)}
+    .manifest,
+    .features,
+    .culinary,
+    .stay{padding:6rem 0}
+    .suite{padding:5rem 0}
+    .features__grid{grid-template-columns:1fr;gap:2rem}
+    .suite__specs{grid-template-columns:1fr;gap:1.4rem}
+    .culinary__list{grid-template-columns:1fr}
+    .footer__grid{grid-template-columns:1fr;gap:2.5rem}
+    .footer__bottom{flex-direction:column;gap:1rem;text-align:center}
+    .interlude{height:70vh}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.01ms !important;
+    }
+    .hero__media img,
+    .interlude__media img{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav" id="nav" aria-label="Hauptnavigation">
+  <a href="#top" class="nav__brand">
+    Casa Verde <small>Jungle Lodge</small>
+  </a>
+  <ul class="nav__links">
+    <li><a href="#manifest">Philosophie</a></li>
+    <li><a href="#suite">Suiten</a></li>
+    <li><a href="#features">Aufenthalt</a></li>
+    <li><a href="#kulinarik">Kulinarik</a></li>
+    <li><a href="#aufenthalt" class="nav__cta">Anfragen</a></li>
+  </ul>
+  <button class="nav__burger" aria-label="Menü öffnen" id="burger">
+    <span></span><span></span>
+  </button>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <div class="hero__media" id="heroMedia">
+    <img src="images/casa-verde-jungle-lodge/img-1.jpeg" alt="Blick über das Blätterdach des costa-ricanischen Regenwalds in der goldenen Stunde">
+  </div>
+  <div class="hero__content">
+    <span class="eyebrow hero__eyebrow">Monteverde · Costa Rica</span>
+    <h1>Luxus, der <em>unsichtbar</em> bleibt.</h1>
+    <p class="hero__lede">
+      Zwölf Suiten, die im Regenwald verschwinden. Infinity-Pools über dem Blätterdach,
+      Sternen-Nächte ohne Licht von irgendwo. Eine Lodge für jene, die das Langsame wieder lernen möchten.
+    </p>
+  </div>
+  <div class="hero__meta">
+    Eröffnet 2019<br>
+    <strong>1.420 m ü. M.</strong>
+  </div>
+  <div class="hero__scroll" aria-hidden="true">Scrollen</div>
+</header>
+
+<!-- ============ MANIFEST ============ -->
+<section class="manifest" id="manifest">
+  <div class="wrap">
+    <div class="manifest__grid">
+      <aside class="manifest__label reveal">
+        <span class="num">I.</span>
+        <span class="eyebrow">Unsere Philosophie</span>
+      </aside>
+      <div class="manifest__body">
+        <h2 class="reveal reveal-delay-1">
+          Architektur, die den Berg fragt, <em>bevor sie baut</em>.
+        </h2>
+        <p class="reveal reveal-delay-2">
+          Casa Verde wurde nicht auf den Wald gesetzt, sondern in ihn hineingefaltet. Jede der zwölf Suiten
+          steht zwischen vorhandenen Bäumen — kein einziger wurde gefällt, um Platz zu machen. Die Konstruktion
+          aus lokalem Zedernholz, erdigen Putzen und lebendem Grün verschmilzt nach wenigen Jahreszeiten
+          so sehr mit dem Blätterdach, dass man die Lodge vom Tal aus kaum erkennt.
+        </p>
+        <p class="reveal reveal-delay-2">
+          Wer hierher kommt, kauft keine Leistung. Er kauft Stille. Das Knarren des Holzes in der Nacht,
+          den Ruf des Tucans um fünf Uhr morgens, das langsame Aufsteigen des Nebels über der Wolkenwald- Schlucht.
+          Ein Ort für Menschen, deren Kalender voll war und deren Seele es nicht mehr war.
+        </p>
+        <div class="manifest__signature reveal reveal-delay-3">
+          — Elena &amp; Mateo Vargas
+          <small>Gründer &amp; Gastgeber</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SUITE ============ -->
+<section class="suite" id="suite">
+  <div class="wrap">
+    <div class="suite__grid">
+      <figure class="suite__media reveal">
+        <img src="images/casa-verde-jungle-lodge/img-2.jpeg" alt="Suite mit offenem Holzbalkon über dem Regenwald, Badewanne mit Blick ins Tal">
+        <figcaption class="suite__caption">Suite Colibrí · No. 04</figcaption>
+      </figure>
+      <div class="suite__body">
+        <span class="eyebrow reveal">II. Die Suiten</span>
+        <h2 class="reveal reveal-delay-1">
+          Ein Raum hat nur dann Größe, <em>wenn er schweigt</em>.
+        </h2>
+        <p class="reveal reveal-delay-2">
+          Zwölf Suiten, verteilt auf drei Hänge des Bergrückens. Keine teilt eine Wand mit einer anderen.
+          Jede öffnet sich vollständig nach Süden, zum Tal hin — eine Glasfront, dahinter nur Luft, Vögel
+          und das langsame Wandern der Wolken.
+        </p>
+        <p class="reveal reveal-delay-2">
+          Das Interieur ist warm und dunkel: Zedernholz, Leinen in Erdfarben, handgetöpferte Waschschalen
+          aus der Töpferei von San Luis. Kein Fernseher. Kein Kühlschrank-Brummen. Nur das Konzert des Waldes.
+        </p>
+        <dl class="suite__specs reveal reveal-delay-3">
+          <div>
+            <dt>Größe</dt>
+            <dd>68 m² <small>+ 24 m² Terrasse</small></dd>
+          </div>
+          <div>
+            <dt>Blick</dt>
+            <dd>Süd <small>Golf von Nicoya</small></dd>
+          </div>
+          <div>
+            <dt>Privatpool</dt>
+            <dd>Ja <small>beheizt · 28°C</small></dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="features" id="features">
+  <div class="wrap">
+    <header class="features__head">
+      <span class="eyebrow center reveal">III. Was wir geben</span>
+      <h2 class="reveal reveal-delay-1">
+        Sechs Dinge, die Sie hier <em>wieder finden</em>.
+      </h2>
+    </header>
+    <div class="features__grid">
+      <article class="feature reveal">
+        <span class="feature__num">01</span>
+        <h3>Stille, die <em>fast weh tut</em></h3>
+        <p>Kein Verkehr, kein Generator, kein WLAN im Zimmer. Nur das Atmen des Waldes — 47 dB nachts,
+        gemessen am Bett. Schlaftiefs, die Sie seit Jahrzehnten nicht mehr kannten.</p>
+      </article>
+      <article class="feature reveal reveal-delay-1">
+        <span class="feature__num">02</span>
+        <h3>Ein <em>eigener Himmel</em></h3>
+        <p>Unsere Lage auf 1.420 Metern liegt über der Lichtverschmutzung der Küste. Jede Suite hat
+        eine Liegefläche unter freiem Himmel. Sterne, die man vom Hörbuch her kennt, aber nie selbst sah.</p>
+      </article>
+      <article class="feature reveal reveal-delay-2">
+        <span class="feature__num">03</span>
+        <h3>Vögel, die Sie <em>ansehen</em></h3>
+        <p>340 dokumentierte Arten im Reservat. Unser Ornithologe Javier führt Sie im Morgengrauen
+        zum Quetzal-Brutplatz. Ferngläser und Schweigen inklusive.</p>
+      </article>
+      <article class="feature reveal">
+        <span class="feature__num">04</span>
+        <h3>Wasser aus <em>eigener Quelle</em></h3>
+        <p>Die Bergquelle oberhalb der Lodge speist Pools, Duschen und Küche. Klar, mineralisch, unbehandelt.
+        Im Infinity-Pool scheint es, als schwämme man in den Wolken.</p>
+      </article>
+      <article class="feature reveal reveal-delay-1">
+        <span class="feature__num">05</span>
+        <h3>Garten vor der <em>Küchentür</em></h3>
+        <p>120 Sorten Obst, Gemüse und Kräuter auf eigenen Terrassen. Yucca, Malinche, Cilantro,
+        Kaffee aus 1.600 Metern. Was nicht bei uns wächst, kommt von Bauern aus dem Tal.</p>
+      </article>
+      <article class="feature reveal reveal-delay-2">
+        <span class="feature__num">06</span>
+        <h3>Zeit, die <em>sich dehnt</em></h3>
+        <p>Kein Programm, das Sie einhalten müssen. Massagen auf Bestellung, Yoga im Pavillon um sieben,
+        Bibliothek mit 600 Bänden. Der Rest des Tages gehört Ihnen allein.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INTERLUDE ============ -->
+<section class="interlude" aria-label="Zitat">
+  <div class="interlude__media">
+    <img src="images/casa-verde-jungle-lodge/img-3.jpeg" alt="Tropische Blüte im Dschungellicht, Tropfen am Blatt">
+  </div>
+  <div class="interlude__quote reveal">
+    <blockquote>
+      „Man kommt an, <span>um anzukommen</span>.<br>
+      Alles andere erledigt der Berg.“
+    </blockquote>
+    <cite>— Ein Gast, Februar 2024</cite>
+  </div>
+</section>
+
+<!-- ============ KULINARIK ============ -->
+<section class="culinary" id="kulinarik">
+  <div class="wrap">
+    <div class="culinary__grid">
+      <div class="culinary__body">
+        <span class="eyebrow reveal">IV. Kulinarik</span>
+        <h2 class="reveal reveal-delay-1">
+          Ein Menü, das <em>heute Morgen</em> noch wuchs.
+        </h2>
+        <p class="reveal reveal-delay-2">
+          Unsere Köchin Mariana kocht, was der Tag hergibt. Das Menü steht nicht auf einer Karte — es steht
+          im Garten, in den Beeten, an den Bäumen. Jeder Teller erzählt die Höhe, den Boden, die Stunde.
+        </p>
+        <p class="reveal reveal-delay-2">
+          Fünf Gänge am Abend, serviert auf der offenen Terrasse über dem Tal. Dazu Kaffee aus eigenen
+          Hängen, fermentiert in Zedernholz, geröstet über offenem Feuer.
+        </p>
+        <ul class="culinary__list reveal reveal-delay-3">
+          <li>Yucca-Püree mit Annatto-Öl</li>
+          <li>Wolkenwald-Pilze, in Blättern gegart</li>
+          <li>Ceviche aus dem Golf von Nicoya</li>
+          <li>Kaffee-Sorbet, dunkle Schokolade</li>
+          <li>Culantro-Mariniertes Huhn vom Grill</li>
+          <li>Mango, Karamell, Macadamia</li>
+        </ul>
+      </div>
+      <figure class="culinary__media reveal reveal-delay-1">
+        <span class="culinary__tag">Farm to Table</span>
+        <img src="images/casa-verde-jungle-lodge/img-3.jpeg" alt="Teller mit frischem Gemüse und Kräutern aus dem eigenen Garten der Lodge">
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AUFENTHALT / CTA ============ -->
+<section class="stay" id="aufenthalt">
+  <div class="wrap-narrow">
+    <header class="stay__head">
+      <span class="eyebrow center reveal">V. Anfragen</span>
+      <h2 class="reveal reveal-delay-1">
+        Drei Nächte, die <em>alles verändern</em>.
+      </h2>
+    </header>
+    <form class="stay__form reveal reveal-delay-2" onsubmit="event.preventDefault(); this.querySelector('.stay__submit').textContent='Wir melden uns innerhalb von 24 Stunden'; this.querySelector('.stay__submit').disabled=true;">
+      <div class="stay__form-row">
+        <div>
+          <label for="anreise">Anreise</label>
+          <input type="date" id="anreise" required>
+        </div>
+        <div>
+          <label for="abreise">Abreise</label>
+          <input type="date" id="abreise" required>
+        </div>
+        <div>
+          <label for="gaeste">Gäste</label>
+          <select id="gaeste">
+            <option>2 Erwachsene</option>
+            <option>1 Erwachsener</option>
+            <option>2 Erwachsene · 1 Kind</option>
+            <option>4 Erwachsene (Suite Reserva)</option>
+          </select>
+        </div>
+      </div>
+      <div class="stay__form-row">
+        <div>
+          <label for="name">Name</label>
+          <input type="text" id="name" placeholder="Vor- und Nachname" required>
+        </div>
+        <div>
+          <label for="email">E-Mail</label>
+          <input type="email" id="email" placeholder="ihre@email.de" required>
+        </div>
+        <div>
+          <label for="suite">Suite</label>
+          <select id="suite">
+            <option>Colibrí — Standard</option>
+            <option>Quetzal — Deluxe</option>
+            <option>Reserva — Panorama</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="stay__submit">Verfügbarkeit anfragen</button>
+    </form>
+    <p class="stay__note reveal reveal-delay-3">
+      Wir antworten persönlich innerhalb von 24 Stunden — nicht automatisiert.
+    </p>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <h3>Casa Verde <em>Jungle Lodge</em></h3>
+        <p>Eine Lodge für Menschen, deren Kalender voll war und deren Seele es nicht mehr war. Zwölf Suiten, ein Berg, ein eigener Himmel.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Lodge</h4>
+        <ul>
+          <li><a href="#manifest">Philosophie</a></li>
+          <li><a href="#suite">Suiten</a></li>
+          <li><a href="#kulinarik">Kulinarik</a></li>
+          <li><a href="#features">Erlebnisse</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Reisen</h4>
+        <ul>
+          <li><a href="#">Anreise &amp; Transfer</a></li>
+          <li><a href="#">Beste Reisezeit</a></li>
+          <li><a href="#">Nachhaltigkeit</a></li>
+          <li><a href="#aufenthalt">Verfügbarkeit</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Kontakt</h4>
+        <ul>
+          <li><a href="mailto:hola@casaverde.cr">hola@casaverde.cr</a></li>
+          <li><a href="tel:+50626459900">+506 2645 9900</a></li>
+          <li>Monteverde · Puntarenas</li>
+          <li>Costa Rica</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2025 Casa Verde Jungle Lodge S.A.</span>
+      <em>El lujo es el silencio.</em>
+      <span>Impressum · Datenschutz</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* Nav scroll state */
+  const nav = document.getElementById('nav');
+  let lastY = 0;
+  const onScroll = () => {
+    const y = window.scrollY;
+    if (y > 60) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+    lastY = y;
+  };
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+
+  /* Reveal on scroll */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* Subtle hero parallax (no jitter, rAF-throttled) */
+  const heroMedia = document.getElementById('heroMedia');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (heroMedia && !reduceMotion) {
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const y = window.scrollY;
+          if (y < window.innerHeight) {
+            heroMedia.style.transform = `translateY(${y * 0.35}px)`;
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive:true });
+  }
+
+  /* Mobile burger (simple toggle) */
+  const burger = document.getElementById('burger');
+  const links = document.querySelector('.nav__links');
+  if (burger) {
+    burger.addEventListener('click', () => {
+      const open = links.style.display === 'flex';
+      if (open) {
+        links.style.display = '';
+      } else {
+        links.style.display = 'flex';
+        links.style.position = 'absolute';
+        links.style.top = '100%';
+        links.style.left = '0';
+        links.style.right = '0';
+        links.style.flexDirection = 'column';
+        links.style.background = 'var(--cream)';
+        links.style.padding = '2rem';
+        links.style.gap = '1.4rem';
+        links.style.borderTop = '1px solid var(--hairline)';
+      }
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1394 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fougère Botanical Studio — Saisonale Sträuße, Pflanzencurating & Workshops</title>
+<meta name="description" content="Botanische Design-Werkstatt aus Lyon. Saisonale Sträuße, Pflanzencurating für Interior und Workshops. Blumen als rohes Material.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Maven+Pro:wght@400;500;600;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     Fougère Botanical Studio — Editorial / Scrapbook
+     ============================================================ */
+
+  :root{
+    --moss:        #5A7D4F;
+    --moss-deep:   #3F5A37;
+    --moss-soft:   #8DA982;
+    --ivory:       #F5F0E6;
+    --ivory-warm:  #EFE7D6;
+    --clay:        #B89968;
+    --clay-deep:   #8E7349;
+    --rose:        #C9A0A6;
+    --rose-deep:   #A87C84;
+    --ink:         #2B2A24;
+    --ink-soft:    #5C5A50;
+    --paper:       #F5F0E6;
+    --paper-shade: rgba(43,42,36,0.06);
+    --shadow-paper: 0 1px 2px rgba(43,42,36,0.04), 0 18px 40px -16px rgba(43,42,36,0.18);
+    --shadow-polaroid: 0 2px 4px rgba(43,42,36,0.05), 0 22px 50px -18px rgba(43,42,36,0.28);
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    margin:0;
+    font-family:'Maven Pro', system-ui, sans-serif;
+    font-weight:400;
+    color:var(--ink);
+    background:var(--paper);
+    line-height:1.65;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* Papier-Textur-Overlay */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:9999;
+    opacity:0.5;
+    mix-blend-mode:multiply;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(184,153,104,0.05) 0, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(90,125,79,0.04) 0, transparent 40%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.17 0 0 0 0 0.16 0 0 0 0 0.14 0 0 0 0.08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  img{ max-width:100%; display:block; }
+
+  a{ color:var(--moss-deep); text-decoration:none; }
+  a:focus-visible{
+    outline:2px dashed var(--moss-deep);
+    outline-offset:4px;
+    border-radius:2px;
+  }
+
+  button{ font-family:inherit; cursor:pointer; }
+
+  ::selection{ background:var(--rose); color:var(--ivory); }
+
+  /* ---------- Typo ---------- */
+  h1,h2,h3,h4{
+    font-family:'DM Serif Display', Georgia, serif;
+    font-weight:400;
+    color:var(--ink);
+    line-height:1.05;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+
+  .eyebrow{
+    font-family:'Maven Pro', sans-serif;
+    font-weight:600;
+    font-size:0.72rem;
+    letter-spacing:0.32em;
+    text-transform:uppercase;
+    color:var(--moss-deep);
+    display:inline-flex;
+    align-items:center;
+    gap:0.7rem;
+  }
+  .eyebrow::before{
+    content:"";
+    width:28px; height:1px;
+    background:var(--moss-deep);
+    display:inline-block;
+  }
+
+  .script{
+    font-family:'Caveat', cursive;
+    font-weight:500;
+    color:var(--rose-deep);
+  }
+
+  /* ---------- Layout ---------- */
+  .wrap{
+    width:100%;
+    max-width:1280px;
+    margin:0 auto;
+    padding:0 2rem;
+  }
+
+  section{ position:relative; }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:fixed;
+    top:0; left:0; right:0;
+    z-index:200;
+    padding:1.1rem 0;
+    background:rgba(245,240,230,0.78);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(43,42,36,0.06);
+  }
+  .nav-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:2rem;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:0.7rem;
+    font-family:'DM Serif Display', serif;
+    font-size:1.35rem;
+    color:var(--ink);
+    letter-spacing:0.01em;
+  }
+  .brand-mark{
+    width:34px; height:34px;
+    display:grid; place-items:center;
+    background:var(--moss);
+    color:var(--ivory);
+    border-radius:50%;
+    font-size:0.95rem;
+    font-family:'DM Serif Display', serif;
+    font-style:italic;
+    box-shadow:0 4px 10px -4px rgba(90,125,79,0.5);
+  }
+  .brand small{
+    display:block;
+    font-family:'Maven Pro', sans-serif;
+    font-size:0.62rem;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-top:2px;
+    font-weight:500;
+  }
+  .nav-links{
+    display:flex;
+    align-items:center;
+    gap:2.2rem;
+    list-style:none;
+    margin:0; padding:0;
+  }
+  .nav-links a{
+    color:var(--ink);
+    font-size:0.88rem;
+    font-weight:500;
+    position:relative;
+    padding:0.3rem 0;
+    transition:color .25s ease;
+  }
+  .nav-links a::after{
+    content:"";
+    position:absolute;
+    left:0; bottom:0;
+    width:0; height:1px;
+    background:var(--moss-deep);
+    transition:width .3s ease;
+  }
+  .nav-links a:hover{ color:var(--moss-deep); }
+  .nav-links a:hover::after{ width:100%; }
+
+  .nav-cta{
+    display:inline-flex;
+    align-items:center;
+    gap:0.5rem;
+    padding:0.6rem 1.2rem;
+    background:var(--moss);
+    color:var(--ivory);
+    border-radius:999px;
+    font-size:0.82rem;
+    font-weight:600;
+    letter-spacing:0.04em;
+    transition:transform .25s ease, background .25s ease, box-shadow .25s ease;
+    box-shadow:0 6px 14px -6px rgba(90,125,79,0.55);
+  }
+  .nav-cta:hover{
+    background:var(--moss-deep);
+    transform:translateY(-1px);
+    box-shadow:0 10px 20px -8px rgba(90,125,79,0.6);
+  }
+  .nav-cta::after{
+    content:"→";
+    transition:transform .25s ease;
+  }
+  .nav-cta:hover::after{ transform:translateX(3px); }
+
+  .nav-burger{ display:none; }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:9rem 0 5rem;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .hero-grid{
+    display:grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap:3rem;
+    align-items:center;
+  }
+
+  .hero-left{
+    position:relative;
+    padding-right:1rem;
+  }
+
+  .hero h1{
+    font-size:clamp(3rem, 7vw, 6.4rem);
+    line-height:0.96;
+    margin:1.6rem 0 1.8rem;
+    color:var(--ink);
+  }
+  .hero h1 em{
+    font-style:italic;
+    color:var(--moss-deep);
+    position:relative;
+    display:inline-block;
+  }
+  .hero h1 em::after{
+    content:"";
+    position:absolute;
+    left:-4%; right:-4%; bottom:8%;
+    height:14px;
+    background:var(--rose);
+    opacity:0.4;
+    z-index:-1;
+    border-radius:6px;
+    transform:rotate(-1deg);
+  }
+
+  .hero-lede{
+    font-size:1.08rem;
+    color:var(--ink-soft);
+    max-width:34rem;
+    margin-bottom:2.2rem;
+  }
+
+  .hero-cta{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:1.2rem;
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:0.6rem;
+    padding:1rem 1.8rem;
+    border-radius:999px;
+    font-weight:600;
+    font-size:0.92rem;
+    letter-spacing:0.02em;
+    transition:all .28s ease;
+    border:none;
+  }
+  .btn-primary{
+    background:var(--moss);
+    color:var(--ivory);
+    box-shadow:0 8px 22px -10px rgba(90,125,79,0.7);
+  }
+  .btn-primary:hover{
+    background:var(--moss-deep);
+    transform:translateY(-2px);
+    box-shadow:0 14px 28px -10px rgba(90,125,79,0.75);
+  }
+  .btn-ghost{
+    background:transparent;
+    color:var(--ink);
+    border:1px solid rgba(43,42,36,0.2);
+  }
+  .btn-ghost:hover{
+    border-color:var(--moss-deep);
+    color:var(--moss-deep);
+    background:rgba(90,125,79,0.06);
+  }
+
+  /* Hero visuals — Scrapbook cluster */
+  .hero-right{
+    position:relative;
+    min-height:560px;
+  }
+
+  .polaroid{
+    position:absolute;
+    background:#FBF8F1;
+    padding:14px 14px 48px;
+    box-shadow:var(--shadow-polaroid);
+    border-radius:4px;
+    transition:transform .4s cubic-bezier(.2,.7,.3,1.2), box-shadow .4s ease;
+    will-change:transform;
+  }
+  .polaroid img{
+    width:100%;
+    height:auto;
+    object-fit:cover;
+    border-radius:2px;
+    display:block;
+  }
+  .polaroid .caption{
+    position:absolute;
+    left:0; right:0;
+    bottom:14px;
+    text-align:center;
+    font-family:'Caveat', cursive;
+    font-size:1.15rem;
+    color:var(--ink-soft);
+  }
+  .polaroid:hover{
+    transform:rotate(0deg) scale(1.03) translateY(-4px) !important;
+    box-shadow:0 6px 8px rgba(43,42,36,0.06), 0 32px 60px -20px rgba(43,42,36,0.35);
+    z-index:5;
+  }
+
+  .polaroid-1{
+    width:300px;
+    top:20px; left:0;
+    transform:rotate(-7deg);
+    z-index:2;
+  }
+  .polaroid-2{
+    width:260px;
+    top:200px; right:-10px;
+    transform:rotate(5deg);
+    z-index:3;
+  }
+  .polaroid-1 img{ aspect-ratio:3/4; }
+  .polaroid-2 img{ aspect-ratio:4/5; }
+
+  /* Tape elements */
+  .tape{
+    position:absolute;
+    width:90px; height:24px;
+    background:rgba(201,160,166,0.45);
+    backdrop-filter:blur(1px);
+    z-index:6;
+    box-shadow:0 2px 4px rgba(43,42,36,0.08);
+  }
+  .tape::before, .tape::after{
+    content:"";
+    position:absolute;
+    top:0; bottom:0;
+    width:6px;
+    background-image:linear-gradient(45deg, transparent 33%, rgba(255,255,255,0.4) 33%, rgba(255,255,255,0.4) 66%, transparent 66%);
+    background-size:8px 8px;
+  }
+  .tape::before{ left:0; }
+  .tape::after{ right:0; }
+  .tape-1{ top:-10px; left:35%; transform:rotate(-12deg); }
+  .tape-2{ top:180px; right:25%; transform:rotate(8deg); background:rgba(184,153,104,0.4); }
+
+  /* Hero decorative */
+  .hero-deco{
+    position:absolute;
+    font-family:'Caveat', cursive;
+    color:var(--rose-deep);
+    pointer-events:none;
+  }
+  .deco-1{
+    top:8%; right:32%;
+    font-size:1.4rem;
+    transform:rotate(-6deg);
+  }
+  .deco-arrow{
+    position:absolute;
+    top:42%; left:48%;
+    width:80px; height:60px;
+    pointer-events:none;
+    color:var(--clay-deep);
+    opacity:0.7;
+  }
+
+  /* Hero meta strip */
+  .hero-meta{
+    margin-top:5rem;
+    padding-top:2rem;
+    border-top:1px solid rgba(43,42,36,0.1);
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:2rem;
+  }
+  .meta-item{
+    display:flex;
+    flex-direction:column;
+    gap:0.3rem;
+  }
+  .meta-num{
+    font-family:'DM Serif Display', serif;
+    font-size:2.4rem;
+    color:var(--moss-deep);
+    line-height:1;
+  }
+  .meta-label{
+    font-size:0.78rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:500;
+  }
+
+  /* ---------- PHILOSOPHIE ---------- */
+  .philosophy{
+    padding:7rem 0 6rem;
+    background:var(--ivory-warm);
+    position:relative;
+    overflow:hidden;
+  }
+  .philosophy::before{
+    content:"";
+    position:absolute;
+    top:-100px; right:-100px;
+    width:400px; height:400px;
+    background:radial-gradient(circle, rgba(90,125,79,0.08) 0%, transparent 70%);
+    pointer-events:none;
+  }
+
+  .philo-grid{
+    display:grid;
+    grid-template-columns:0.9fr 1.1fr;
+    gap:5rem;
+    align-items:start;
+  }
+
+  .philo-left{
+    position:sticky;
+    top:7rem;
+  }
+  .philo-left h2{
+    font-size:clamp(2.4rem, 4.5vw, 3.8rem);
+    margin:1.4rem 0 1.6rem;
+  }
+  .philo-left h2 em{
+    font-style:italic;
+    color:var(--moss-deep);
+  }
+  .philo-left p{
+    color:var(--ink-soft);
+    font-size:1.05rem;
+    max-width:30rem;
+  }
+
+  .philo-right{
+    display:flex;
+    flex-direction:column;
+    gap:3rem;
+  }
+
+  .principle{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:1.8rem;
+    align-items:start;
+  }
+  .principle-num{
+    font-family:'DM Serif Display', serif;
+    font-style:italic;
+    font-size:3rem;
+    color:var(--clay);
+    line-height:1;
+    padding-top:0.3rem;
+  }
+  .principle h3{
+    font-size:1.6rem;
+    margin-bottom:0.6rem;
+    color:var(--ink);
+  }
+  .principle p{
+    color:var(--ink-soft);
+    margin:0;
+  }
+  .principle .script-tag{
+    display:inline-block;
+    margin-top:0.6rem;
+    font-size:1.15rem;
+  }
+
+  /* ---------- ATELIER / SERVICES ---------- */
+  .atelier{
+    padding:8rem 0;
+    position:relative;
+  }
+
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:end;
+    gap:3rem;
+    margin-bottom:4rem;
+    flex-wrap:wrap;
+  }
+  .section-head h2{
+    font-size:clamp(2.4rem, 5vw, 4.2rem);
+    max-width:18ch;
+    line-height:1;
+  }
+  .section-head h2 em{
+    font-style:italic;
+    color:var(--moss-deep);
+  }
+  .section-head .head-aside{
+    max-width:24rem;
+    color:var(--ink-soft);
+    font-size:0.98rem;
+  }
+
+  .atelier-grid{
+    display:grid;
+    grid-template-columns:repeat(12, 1fr);
+    gap:2rem;
+    margin-top:2rem;
+  }
+
+  .service-card{
+    background:#FBF8F1;
+    padding:2.5rem 2.2rem;
+    border-radius:6px;
+    box-shadow:var(--shadow-paper);
+    position:relative;
+    transition:transform .35s ease, box-shadow .35s ease;
+    border:1px solid rgba(43,42,36,0.04);
+  }
+  .service-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 4px 8px rgba(43,42,36,0.05), 0 28px 50px -20px rgba(43,42,36,0.25);
+  }
+  .service-card .num{
+    font-family:'DM Serif Display', serif;
+    font-style:italic;
+    font-size:0.95rem;
+    color:var(--clay-deep);
+    letter-spacing:0.1em;
+  }
+  .service-card h3{
+    font-size:1.85rem;
+    margin:1rem 0 0.8rem;
+    line-height:1.1;
+  }
+  .service-card h3 em{
+    font-style:italic;
+    color:var(--moss-deep);
+  }
+  .service-card p{
+    color:var(--ink-soft);
+    font-size:0.96rem;
+    margin:0 0 1.4rem;
+  }
+  .service-card .price{
+    display:inline-block;
+    font-family:'Caveat', cursive;
+    font-size:1.4rem;
+    color:var(--rose-deep);
+    padding-top:1rem;
+    border-top:1px dashed rgba(43,42,36,0.15);
+    width:100%;
+  }
+
+  .service-card.large{ grid-column:span 7; }
+  .service-card.small{ grid-column:span 5; }
+  .service-card.medium{ grid-column:span 6; }
+  .service-card.full{ grid-column:span 12; }
+
+  .service-card.feature{
+    background:var(--moss);
+    color:var(--ivory);
+  }
+  .service-card.feature h3,
+  .service-card.feature .num{ color:var(--ivory); }
+  .service-card.feature h3 em{ color:var(--rose); }
+  .service-card.feature p{ color:rgba(245,240,230,0.85); }
+  .service-card.feature .price{
+    color:var(--rose);
+    border-color:rgba(245,240,230,0.25);
+  }
+
+  .card-tag{
+    position:absolute;
+    top:1.4rem; right:1.4rem;
+    font-size:0.68rem;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--clay-deep);
+    font-weight:600;
+  }
+  .service-card.feature .card-tag{ color:var(--rose); }
+
+  /* ---------- SAISON / Scrapbook spread ---------- */
+  .saison{
+    padding:8rem 0;
+    background:var(--ivory-warm);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .saison-head{
+    text-align:center;
+    margin-bottom:5rem;
+  }
+  .saison-head .eyebrow{
+    justify-content:center;
+    margin-bottom:1.5rem;
+  }
+  .saison-head .eyebrow::before{ display:none; }
+  .saison-head h2{
+    font-size:clamp(2.6rem, 5.5vw, 4.6rem);
+    line-height:1;
+    margin-bottom:1rem;
+  }
+  .saison-head h2 em{
+    font-style:italic;
+    color:var(--moss-deep);
+  }
+  .saison-head p{
+    color:var(--ink-soft);
+    max-width:36rem;
+    margin:0 auto;
+  }
+
+  .scrapbook{
+    position:relative;
+    display:grid;
+    grid-template-columns:repeat(12, 1fr);
+    gap:1.5rem;
+    margin-top:3rem;
+  }
+
+  .scrap-item{
+    background:#FBF8F1;
+    padding:12px 12px 38px;
+    box-shadow:var(--shadow-polaroid);
+    border-radius:3px;
+    position:relative;
+    transition:transform .4s cubic-bezier(.2,.7,.3,1.2);
+  }
+  .scrap-item img{
+    width:100%;
+    border-radius:2px;
+  }
+  .scrap-item .cap{
+    position:absolute;
+    bottom:8px; left:0; right:0;
+    text-align:center;
+    font-family:'Caveat', cursive;
+    font-size:1.05rem;
+    color:var(--ink-soft);
+  }
+  .scrap-item:hover{
+    transform:rotate(0deg) scale(1.04) translateY(-3px) !important;
+    z-index:10;
+  }
+
+  .scrap-1{ grid-column:span 4; transform:rotate(-4deg); }
+  .scrap-2{ grid-column:span 5; transform:rotate(2deg); margin-top:2rem; }
+  .scrap-3{ grid-column:span 3; transform:rotate(-2deg); margin-top:-1rem; }
+
+  .scrap-note{
+    grid-column:span 12;
+    text-align:center;
+    margin-top:2rem;
+    font-family:'Caveat', cursive;
+    font-size:1.6rem;
+    color:var(--rose-deep);
+    transform:rotate(-1deg);
+  }
+
+  /* ---------- WORKSHOP ---------- */
+  .workshop{
+    padding:8rem 0;
+    position:relative;
+  }
+
+  .workshop-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:5rem;
+    align-items:center;
+  }
+
+  .workshop-visual{
+    position:relative;
+    min-height:520px;
+  }
+
+  .ws-img-1, .ws-img-2{
+    position:absolute;
+    background:#FBF8F1;
+    padding:14px 14px 44px;
+    box-shadow:var(--shadow-polaroid);
+    border-radius:4px;
+    transition:transform .4s ease;
+  }
+  .ws-img-1{
+    width:75%;
+    top:0; left:0;
+    transform:rotate(-3deg);
+    z-index:2;
+  }
+  .ws-img-2{
+    width:60%;
+    bottom:0; right:0;
+    transform:rotate(4deg);
+    z-index:3;
+  }
+  .ws-img-1 img, .ws-img-2 img{ border-radius:2px; }
+  .ws-img-1 .caption, .ws-img-2 .caption{
+    position:absolute;
+    bottom:10px; left:0; right:0;
+    text-align:center;
+    font-family:'Caveat', cursive;
+    color:var(--ink-soft);
+    font-size:1.05rem;
+  }
+  .workshop-visual:hover .ws-img-1{ transform:rotate(-5deg) translateY(-4px); }
+  .workshop-visual:hover .ws-img-2{ transform:rotate(6deg) translateY(-4px); }
+
+  .ws-stamp{
+    position:absolute;
+    top:38%; right:-30px;
+    width:120px; height:120px;
+    border:2px dashed var(--clay-deep);
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    text-align:center;
+    color:var(--clay-deep);
+    font-family:'DM Serif Display', serif;
+    font-style:italic;
+    font-size:0.9rem;
+    line-height:1.2;
+    background:rgba(245,240,230,0.6);
+    transform:rotate(-12deg);
+    z-index:5;
+  }
+  .ws-stamp small{
+    display:block;
+    font-family:'Maven Pro', sans-serif;
+    font-style:normal;
+    font-size:0.62rem;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    margin-top:4px;
+  }
+
+  .workshop-text h2{
+    font-size:clamp(2.4rem, 4.5vw, 3.8rem);
+    margin:1.4rem 0 1.6rem;
+  }
+  .workshop-text h2 em{
+    font-style:italic;
+    color:var(--moss-deep);
+  }
+  .workshop-text > p{
+    color:var(--ink-soft);
+    font-size:1.05rem;
+    margin-bottom:2rem;
+  }
+
+  .ws-list{
+    list-style:none;
+    padding:0;
+    margin:0 0 2.4rem;
+    display:grid;
+    gap:1rem;
+  }
+  .ws-list li{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:1rem;
+    align-items:baseline;
+    padding-bottom:1rem;
+    border-bottom:1px dashed rgba(43,42,36,0.12);
+  }
+  .ws-list li:last-child{ border-bottom:none; }
+  .ws-list .ico{
+    color:var(--moss-deep);
+    font-family:'DM Serif Display', serif;
+    font-style:italic;
+    font-size:1.1rem;
+  }
+  .ws-list strong{
+    display:block;
+    color:var(--ink);
+    font-weight:600;
+    margin-bottom:0.2rem;
+  }
+  .ws-list span{
+    color:var(--ink-soft);
+    font-size:0.92rem;
+  }
+
+  /* ---------- STIMMEN ---------- */
+  .voices{
+    padding:7rem 0;
+    background:var(--moss-deep);
+    color:var(--ivory);
+    position:relative;
+    overflow:hidden;
+  }
+  .voices::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 0.95 0 0 0 0 0.88 0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity:0.6;
+    pointer-events:none;
+  }
+  .voices .wrap{ position:relative; z-index:1; }
+
+  .voices-head{
+    text-align:center;
+    margin-bottom:4rem;
+  }
+  .voices-head .eyebrow{ color:var(--rose); }
+  .voices-head .eyebrow::before{ background:var(--rose); }
+  .voices-head h2{
+    color:var(--ivory);
+    font-size:clamp(2.2rem, 4.5vw, 3.6rem);
+    margin-top:1.2rem;
+  }
+  .voices-head h2 em{
+    font-style:italic;
+    color:var(--rose);
+  }
+
+  .voice-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:2rem;
+  }
+  .voice{
+    background:rgba(245,240,230,0.06);
+    border:1px solid rgba(245,240,230,0.12);
+    padding:2.2rem;
+    border-radius:6px;
+    position:relative;
+  }
+  .voice .quote-mark{
+    font-family:'DM Serif Display', serif;
+    font-size:3.6rem;
+    line-height:0.6;
+    color:var(--rose);
+    margin-bottom:0.6rem;
+    display:block;
+  }
+  .voice p{
+    font-family:'DM Serif Display', serif;
+    font-size:1.18rem;
+    line-height:1.4;
+    color:var(--ivory);
+    margin:0 0 1.6rem;
+  }
+  .voice .author{
+    display:flex;
+    align-items:center;
+    gap:0.8rem;
+    padding-top:1rem;
+    border-top:1px solid rgba(245,240,230,0.15);
+  }
+  .voice .author-name{
+    font-weight:600;
+    font-size:0.95rem;
+  }
+  .voice .author-role{
+    font-size:0.78rem;
+    color:rgba(245,240,230,0.6);
+    letter-spacing:0.06em;
+  }
+
+  /* ---------- CTA ---------- */
+  .cta-section{
+    padding:8rem 0;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .cta-box{
+    background:var(--ivory-warm);
+    border-radius:8px;
+    padding:5rem 4rem;
+    position:relative;
+    overflow:hidden;
+    box-shadow:var(--shadow-paper);
+  }
+  .cta-box::before{
+    content:"";
+    position:absolute;
+    top:-50px; left:-50px;
+    width:200px; height:200px;
+    background:radial-gradient(circle, rgba(201,160,166,0.25) 0%, transparent 70%);
+  }
+  .cta-box::after{
+    content:"";
+    position:absolute;
+    bottom:-80px; right:-80px;
+    width:280px; height:280px;
+    background:radial-gradient(circle, rgba(90,125,79,0.18) 0%, transparent 70%);
+  }
+
+  .cta-inner{
+    position:relative;
+    z-index:1;
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:3rem;
+    align-items:center;
+  }
+
+  .cta-text h2{
+    font-size:clamp(2.4rem, 4.5vw, 3.8rem);
+    line-height:1;
+    margin-bottom:1.2rem;
+  }
+  .cta-text h2 em{
+    font-style:italic;
+    color:var(--moss-deep);
+  }
+  .cta-text p{
+    color:var(--ink-soft);
+    font-size:1.05rem;
+    max-width:32rem;
+  }
+
+  .cta-form{
+    background:#FBF8F1;
+    padding:2rem;
+    border-radius:6px;
+    box-shadow:0 2px 4px rgba(43,42,36,0.04), 0 12px 30px -10px rgba(43,42,36,0.12);
+    border:1px solid rgba(43,42,36,0.05);
+  }
+  .cta-form label{
+    display:block;
+    font-size:0.78rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:600;
+    margin-bottom:0.5rem;
+  }
+  .cta-form input,
+  .cta-form select{
+    width:100%;
+    padding:0.85rem 1rem;
+    border:1px solid rgba(43,42,36,0.15);
+    background:var(--ivory);
+    border-radius:4px;
+    font-family:inherit;
+    font-size:0.95rem;
+    color:var(--ink);
+    margin-bottom:1.2rem;
+    transition:border-color .25s ease, box-shadow .25s ease;
+  }
+  .cta-form input:focus,
+  .cta-form select:focus{
+    outline:none;
+    border-color:var(--moss);
+    box-shadow:0 0 0 3px rgba(90,125,79,0.15);
+  }
+  .cta-form .btn{
+    width:100%;
+    justify-content:center;
+  }
+  .cta-form .form-note{
+    font-family:'Caveat', cursive;
+    font-size:1.1rem;
+    color:var(--rose-deep);
+    text-align:center;
+    margin:0.8rem 0 0;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    background:var(--ink);
+    color:var(--ivory);
+    padding:5rem 0 2rem;
+    position:relative;
+  }
+
+  .foot-grid{
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr 1fr;
+    gap:3rem;
+    margin-bottom:3.5rem;
+  }
+
+  .foot-brand .brand{
+    color:var(--ivory);
+    margin-bottom:1.2rem;
+  }
+  .foot-brand p{
+    color:rgba(245,240,230,0.65);
+    font-size:0.92rem;
+    max-width:24rem;
+    margin-bottom:1.4rem;
+  }
+  .foot-brand .script{
+    color:var(--rose);
+    font-size:1.3rem;
+  }
+
+  .foot-col h4{
+    font-family:'Maven Pro', sans-serif;
+    font-size:0.72rem;
+    letter-spacing:0.24em;
+    text-transform:uppercase;
+    color:var(--rose);
+    margin-bottom:1.2rem;
+    font-weight:600;
+  }
+  .foot-col ul{
+    list-style:none;
+    padding:0; margin:0;
+    display:grid;
+    gap:0.7rem;
+  }
+  .foot-col a{
+    color:rgba(245,240,230,0.75);
+    font-size:0.92rem;
+    transition:color .25s ease;
+  }
+  .foot-col a:hover{ color:var(--ivory); }
+  .foot-col p{
+    color:rgba(245,240,230,0.65);
+    font-size:0.9rem;
+    margin:0 0 0.5rem;
+    line-height:1.5;
+  }
+
+  .foot-bottom{
+    border-top:1px solid rgba(245,240,230,0.12);
+    padding-top:2rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:1rem;
+    font-size:0.82rem;
+    color:rgba(245,240,230,0.5);
+  }
+  .foot-bottom .credits{
+    display:flex;
+    gap:1.5rem;
+    flex-wrap:wrap;
+  }
+
+  /* ---------- ANIMATIONEN ---------- */
+  .reveal{
+    opacity:0;
+    transform:translateY(30px);
+    transition:opacity .9s ease, transform .9s ease;
+  }
+  .reveal.in{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1024px){
+    .hero-grid{ grid-template-columns:1fr; gap:4rem; }
+    .hero-right{ min-height:480px; }
+    .philo-grid{ grid-template-columns:1fr; gap:3rem; }
+    .philo-left{ position:static; }
+    .workshop-grid{ grid-template-columns:1fr; gap:3rem; }
+    .workshop-visual{ min-height:440px; }
+    .cta-inner{ grid-template-columns:1fr; }
+    .foot-grid{ grid-template-columns:1fr 1fr; }
+  }
+
+  @media (max-width: 768px){
+    .wrap{ padding:0 1.4rem; }
+    .nav-links{ display:none; }
+    .nav-burger{
+      display:inline-flex;
+      flex-direction:column;
+      gap:5px;
+      background:none;
+      border:none;
+      padding:0.5rem;
+    }
+    .nav-burger span{
+      width:24px; height:2px;
+      background:var(--ink);
+      display:block;
+    }
+    .hero{ padding:7rem 0 4rem; }
+    .hero-meta{ grid-template-columns:1fr 1fr; gap:1.5rem; }
+    .polaroid-1{ width:240px; }
+    .polaroid-2{ width:210px; }
+    .section-head{ flex-direction:column; align-items:flex-start; }
+    .service-card.large,
+    .service-card.small,
+    .service-card.medium,
+    .service-card.full{ grid-column:span 12; }
+    .scrap-1, .scrap-2, .scrap-3{ grid-column:span 12; margin-top:0; }
+    .voice-grid{ grid-template-columns:1fr; }
+    .cta-box{ padding:3rem 1.8rem; }
+    .foot-grid{ grid-template-columns:1fr; gap:2rem; }
+    .foot-bottom{ flex-direction:column; align-items:flex-start; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+      animation-duration:0.01ms !important;
+      transition-duration:0.01ms !important;
+    }
+    .reveal{ opacity:1; transform:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav" aria-label="Hauptnavigation">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand" aria-label="Fougère Botanical Studio — Startseite">
+      <span class="brand-mark" aria-hidden="true">F</span>
+      <span>
+        Fougère
+        <small>Botanical Studio · Lyon</small>
+      </span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#atelier">Atelier</a></li>
+      <li><a href="#saison">Saison</a></li>
+      <li><a href="#workshop">Workshops</a></li>
+      <li><a href="#stimmen">Stimmen</a></li>
+    </ul>
+    <a href="#cta" class="nav-cta">Strauß vorbestellen</a>
+    <button class="nav-burger" aria-label="Menü öffnen">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div class="hero-left reveal">
+      <span class="eyebrow">Saison 04 — Herbst/Winter 25</span>
+      <h1>Blumen sind<br>kein Produkt.<br><em>Sie sind Material.</em></h1>
+      <p class="hero-lede">
+        Eine botanische Werkstatt in Lyon. Wir binden Sträuße, kuratieren Pflanzen für Räume
+        und laden euch ein, selbst Hand anzulegen. Wild, saisonal, ein bisschen ungezähmt —
+        so wie die Wiese hinter der alten Mühle.
+      </p>
+      <div class="hero-cta">
+        <a href="#atelier" class="btn btn-primary">Atelier entdecken</a>
+        <a href="#workshop" class="btn btn-ghost">Workshop-Termine ansehen</a>
+      </div>
+    </div>
+
+    <div class="hero-right reveal">
+      <span class="tape tape-1" aria-hidden="true"></span>
+      <span class="tape tape-2" aria-hidden="true"></span>
+
+      <figure class="polaroid polaroid-1">
+        <img src="images/fougere-botanical-studio/img-1.jpeg" alt="Saisonaler Strauss mit Wildblumen und Gräsern auf cremefarbenem Papier">
+        <figcaption class="caption">Strauß „Octobre" — 24 Stiele</figcaption>
+      </figure>
+
+      <figure class="polaroid polaroid-2">
+        <img src="images/fougere-botanical-studio/img-2.jpeg" alt="Detailaufnahme einer botanischen Komposition mit trockenen Blüten und Samenständen">
+        <figcaption class="caption">Atelier · Mittwochmorgen</figcaption>
+      </figure>
+
+      <span class="hero-deco deco-1">frisch geschnitten ✿</span>
+      <svg class="deco-arrow" viewBox="0 0 80 60" fill="none" aria-hidden="true">
+        <path d="M5 50 Q 30 5, 70 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 4"/>
+        <path d="M62 14 L 72 20 L 64 28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="hero-meta reveal">
+      <div class="meta-item">
+        <span class="meta-num">07</span>
+        <span class="meta-label">Saisons gebunden</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-num">142</span>
+        <span class="meta-label">Curating-Projekte</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-num">38</span>
+        <span class="meta-label">Workshops / Jahr</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-num">100%</span>
+        <span class="meta-label">Lokal &amp; saisonal</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ PHILOSOPHIE ============ -->
+<section class="philosophy" id="philosophie">
+  <div class="wrap philo-grid">
+    <div class="philo-left reveal">
+      <span class="eyebrow">Manifest</span>
+      <h2>Wir behandeln Blumen wie <em>Rohmaterial</em>, nicht wie Ware.</h2>
+      <p>
+        Jeder Strauss beginnt mit einem Spaziergang — durch die Wiesen der Monts du Lyonnais,
+        über den Markt von Croix-Rousse, durchs eigene Atelier-Gartenstück. Was die Woche
+        hergibt, das binden wir. Nichts kommt aus dem Kühlregal, nichts passt in eine
+        Vitrine.
+      </p>
+    </div>
+
+    <div class="philo-right">
+      <article class="principle reveal">
+        <span class="principle-num">01</span>
+        <div>
+          <h3>Saisonal, immer.</h3>
+          <p>
+            Narzissen im März, Pfingstrosen im Juni, Astern und Gräser im Oktober.
+            Unser Kalender richtet sich nach dem Garten, nicht nach dem Supermarkt.
+          </p>
+          <span class="script-tag">— was blüht, das binden wir</span>
+        </div>
+      </article>
+
+      <article class="principle reveal">
+        <span class="principle-num">02</span>
+        <div>
+          <h3>Wild &amp; ungezähmt.</h3>
+          <p>
+            Wir mögen es, wenn ein Strauss atmet — wenn sich ein Hirtentäschel
+            zwischen die Stockrose schiebt und ein Grashalm weiter ragt als geplant.
+            Symmetrie ist uns zu langweilig.
+          </p>
+        </div>
+      </article>
+
+      <article class="principle reveal">
+        <span class="principle-num">03</span>
+        <div>
+          <h3>Lokal verwurzelt.</h3>
+          <p>
+            Wir arbeiten mit drei Höfen aus der Region, ernten einen Teil selbst und
+            trocknen die Stiele, die wir nicht sofort verbauen. Kein Luftfracht-Import,
+            keine Pestizide, keine Ausreden.
+          </p>
+          <span class="script-tag">— Radius unter 80 km</span>
+        </div>
+      </article>
+
+      <article class="principle reveal">
+        <span class="principle-num">04</span>
+        <div>
+          <h3>Handgemacht, nicht skaliert.</h3>
+          <p>
+            Jeder Strauss wird von einer Person gebunden — nicht von einer Maschine,
+            nicht von einem Team. Ihr könnt vorbeikommen und zuschauen. Wir haben
+            nichts zu verbergen.
+          </p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ATELIER / SERVICES ============ -->
+<section class="atelier" id="atelier">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="eyebrow">Das Atelier</span>
+        <h2>Drei Wege, <em>Natur</em> bei euch zu haben.</h2>
+      </div>
+      <p class="head-aside">
+        Ob wöchentlicher Strauss für den Küchentisch, ein grünes Konzept für euer
+        Café oder ein Abend mit Händen in der Erde — wir machen Botanik zum
+        Handwerk, nicht zum Deko-Artikel.
+      </p>
+    </div>
+
+    <div class="atelier-grid">
+      <article class="service-card large feature reveal">
+        <span class="card-tag">Abo</span>
+        <span class="num">— 01</span>
+        <h3>Saisonale <em>Sträuße</em></h3>
+        <p>
+          Jeden Freitag frisch gebunden. Ihr wählt die Grösse, wir wählen die Blumen —
+          passend zur Woche, zur Wiese, zur Stimmung. Abholung im Atelier oder
+          Lieferung innerhalb Lyons.
+        </p>
+        <ul style="list-style:none;padding:0;margin:0 0 1.4rem;display:grid;gap:0.5rem;color:rgba(245,240,230,0.85);font-size:0.94rem;">
+          <li>✿ Klein (15–20 Stiele) — wöchentlich oder 14-tägig</li>
+          <li>✿ Gross (25–35 Stiele) — für den Esstisch</li>
+          <li>✿ Trauerstrauss — auf Anfrage</li>
+        </ul>
+        <span class="price">ab 28 € / Woche — flexibel kündbar</span>
+      </article>
+
+      <article class="service-card small reveal">
+        <span class="card-tag">B2B</span>
+        <span class="num">— 02</span>
+        <h3>Curating für <em>Räume</em></h3>
+        <p>
+          Wir konzipieren Bepflanzung für Cafés, Hotels, Studios und Privaträume —
+          von der Topf-Auswahl über die Artenwahl bis zur Pflege.
+        </p>
+        <span class="price">Angebot nach Ortstermin</span>
+      </article>
+
+      <article class="service-card medium reveal">
+        <span class="card-tag">Event</span>
+        <span class="num">— 03</span>
+        <h3>Hochzeiten &amp; <em>Feste</em></h3>
+        <p>
+          Brautsträusse, Tischdekoration, Kirchengestaltung — wir begleiten euch
+          durch die ganze Saison, nicht nur am Tag selbst. Max. 12 Hochzeiten/Jahr.
+        </p>
+        <span class="price">ab 1.200 € — Beratung kostenlos</span>
+      </article>
+
+      <article class="service-card medium reveal">
+        <span class="card-tag">Trocken</span>
+        <span class="num">— 04</span>
+        <h3>Dauerhaftes &amp; <em>Getrocknetes</h3>
+        <p>
+          Kränze, Wandstücke, Sträusse fürs ganze Jahr. Aus getrockneten
+          Wiesenblumen, Gräsern und Samenständen — im Atelier oder als
+          Workshop für zuhause.
+        </p>
+        <span class="price">ab 45 €</span>
+      </article>
+
+      <article class="service-card full reveal" style="background:#FBF8F1;">
+        <span class="card-tag">Geschenk</span>
+        <span class="num">— 05</span>
+        <h3>Gutschein — <em>ein Atelierbesuch</em></h3>
+        <p style="max-width:48rem;">
+          Das häufigste Geschenk unserer Stammkunden: ein Gutschein für einen
+          Workshop nach Wahl. Schön verpackt, mit handgeschriebener Karte und
+          einem kleinen Strauss getrockneter Lavendel. Lieferung innerhalb von
+          48 Stunden.
+        </p>
+        <span class="price">ab 85 € — inkl. Material &amp; Provence-Snacks</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SAISON / SCRAPBOOK ============ -->
+<section class="saison" id="saison">
+  <div class="wrap">
+    <div class="saison-head reveal">
+      <span class="eyebrow">Saison-Kalender</span>
+      <h2>Was diese Woche <em>blüht</em>.</h2>
+      <p>
+        Ein loses Scrapbook aus dem Atelier — jede Woche ein neues Bild, ein neuer
+        Strauss, ein anderer Duft. Klickt euch durch, oder kommt vorbei.
+      </p>
+    </div>
+
+    <div class="scrapbook">
+      <figure class="scrap-item scrap-1">
+        <img src="http://hailuo-image
+</body>
+</html>

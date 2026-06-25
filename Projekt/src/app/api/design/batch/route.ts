@@ -32,7 +32,7 @@ import { db } from '@/lib/db';
 import { callLLM } from '@/lib/ai/provider';
 import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
 import { getDefaultDesignForType } from '@/lib/ai-prompts';
-import { generateImagesMinimax, buildThaiFoodPrompts, isMinimaxImageConfigured } from '@/lib/ai/image-minimax';
+import { generateImagesMinimax, buildThaiFoodPrompts, buildImagePrompts, isMinimaxImageConfigured } from '@/lib/ai/image-minimax';
 
 /** A single brief in the request body. */
 interface DesignBrief {
@@ -198,10 +198,14 @@ export async function POST(request: NextRequest) {
           let generatedImageUrls: string[] | undefined;
           if (isMinimaxImageConfigured()) {
             try {
-              const foodPrompts = buildThaiFoodPrompts(brief.theme, brief.imagery);
-              const images = await generateImagesMinimax(foodPrompts, {}, 2);
+              const hay = `${brief.theme} ${brief.imagery || ''}`.toLowerCase();
+              const isThai = /thai|pad thai|imbiss|kurry|curry|basil|nudel|noodle/.test(hay);
+              const prompts = isThai
+                ? buildThaiFoodPrompts(brief.theme, brief.imagery)
+                : buildImagePrompts(brief.theme, brief.imagery);
+              const images = await generateImagesMinimax(prompts, {}, 2);
               generatedImageUrls = images.map(img => img.url).filter(Boolean);
-              console.log(`[batch] ${brief.name}: ${generatedImageUrls.length} MiniMax images generated`);
+              console.log(`[batch] ${brief.name}: ${generatedImageUrls.length} MiniMax images generated (${isThai ? 'thai' : 'general'})`);
             } catch (e) {
               console.warn(`[batch] ${brief.name}: image gen failed:`, e instanceof Error ? e.message : e);
             }
