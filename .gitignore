@@ -59,3 +59,17 @@ Projekt/QUALITY-REPORT.md
 Projekt/worklog.md
 Projekt/.zscripts/dev.pid
 Projekt/upload/
+
+# Old project artifacts (not part of Z.Design release)
+Projekt/public/hero-banner.png
+Projekt/public/logo-design.png
+Projekt/*-official.json
+Projekt/debug-*.json
+Projekt/*-help-text.txt
+Projekt/prd.md
+Projekt/research-summary.txt
+Projekt/search-results-*.json
+Projekt/download/
+Projekt/docs/FEATURE-*.md
+Projekt/docs/PDF-EXPORT-*.md
+Projekt/examples/websocket/
