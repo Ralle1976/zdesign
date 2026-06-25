@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fresh-garden — Thai Kitchen, freshly rooted</title>
+<meta name="description" content="Frische thailändische Küche aus Bio-Zutaten. Handgemacht in Berlin — Pad Thai, Green Curry, Mango Sticky Rice und mehr.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest:#2D6A4F;
+    --forest-deep:#1d4d39;
+    --forest-soft:#3e8e6f;
+    --mint:#D8F3DC;
+    --mint-deep:#b8e6c4;
+    --white:#FFFFFF;
+    --cream:#f6fbf7;
+    --ink:#0f2419;
+    --ink-soft:#3a4a42;
+    --line:rgba(45,106,79,.14);
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Mulish',system-ui,sans-serif;
+    color:var(--ink);
+    background:var(--white);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--forest);color:var(--mint)}
+  :focus-visible{outline:2px solid var(--forest);outline-offset:3px;border-radius:4px}
+  img{display:block;max-width:100%;height:auto}
+  a{color:inherit;text-decoration:none}
+  .wrap{width:min(1280px,92vw);margin-inline:auto}
+
+  /* ============ NAV ============ */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    padding:18px 0;
+    transition:background .4s var(--ease), box-shadow .4s var(--ease), padding .4s var(--ease);
+  }
+  .nav.scrolled{
+    background:rgba(255,255,255,.85);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    box-shadow:0 1px 0 var(--line);
+    padding:12px 0;
+  }
+  .nav-row{display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-weight:600;font-size:22px;color:var(--forest)}
+  .brand-mark{
+    width:34px;height:34px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, var(--mint-deep), var(--forest));
+    position:relative;overflow:hidden;
+  }
+  .brand-mark::after{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 70% 70%, rgba(255,255,255,.4), transparent 40%);
+  }
+  .brand small{font-family:'Mulish',sans-serif;font-weight:400;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);display:block;line-height:1}
+  .nav-links{display:flex;gap:28px;align-items:center}
+  .nav-links a{font-size:14px;font-weight:500;color:var(--ink-soft);transition:color .25s}
+  .nav-links a:hover{color:var(--forest)}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:12px 22px;border-radius:999px;
+    font-family:'Mulish',sans-serif;font-weight:600;font-size:14px;
+    background:var(--forest);color:var(--mint);
+    border:1px solid var(--forest);
+    transition:transform .3s var(--ease), background .3s, box-shadow .3s;
+    cursor:pointer;
+  }
+  .btn:hover{background:var(--forest-deep);transform:translateY(-2px);box-shadow:0 14px 30px -10px rgba(45,106,79,.5)}
+  .btn-ghost{background:transparent;color:var(--forest);border-color:var(--forest)}
+  .btn-ghost:hover{background:var(--forest);color:var(--mint);box-shadow:none}
+  .nav-cta{display:inline-flex}
+
+  /* ============ HERO ============ */
+  .hero{
+    position:relative;
+    padding:160px 0 100px;
+    background:
+      radial-gradient(900px 500px at 90% 10%, var(--mint) 0%, transparent 60%),
+      linear-gradient(180deg, var(--cream), var(--white));
+    overflow:hidden;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.05fr 1fr;
+    gap:80px;
+    align-items:center;
+  }
+  .hero-visual{
+    position:relative;
+    aspect-ratio:4/5;
+    border-radius:240px 24px 240px 24px;
+    overflow:hidden;
+    box-shadow:0 40px 80px -30px rgba(15,36,25,.35);
+    will-change:transform;
+  }
+  .hero-visual img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
+  .hero-visual:hover img{transform:scale(1.05)}
+  .hero-badge{
+    position:absolute;
+    bottom:24px;left:24px;right:24px;
+    background:rgba(255,255,255,.92);
+    backdrop-filter:blur(10px);
+    padding:16px 20px;
+    border-radius:18px;
+    display:flex;align-items:center;gap:14px;
+    box-shadow:0 20px 40px -20px rgba(0,0,0,.25);
+  }
+  .badge-dot{width:10px;height:10px;border-radius:50%;background:#1fb866;box-shadow:0 0 0 4px rgba(31,184,102,.2);flex-shrink:0;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(31,184,102,.2)}50%{box-shadow:0 0 0 8px rgba(31,184,102,.05)}}
+  .badge-text{font-size:13px;color:var(--ink-soft)}
+  .badge-text strong{color:var(--ink);font-weight:700}
+
+  .hero-copy{position:relative}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--forest);
+    margin-bottom:28px;
+  }
+  .eyebrow::before{content:"";width:32px;height:1px;background:var(--forest)}
+  .hero h1{
+    font-family:'Fraunces',serif;
+    font-weight:300;
+    font-size:clamp(48px,7vw,96px);
+    line-height:.98;
+    letter-spacing:-.02em;
+    color:var(--ink);
+    margin-bottom:32px;
+    font-variation-settings:"opsz" 144, "SOFT" 50;
+  }
+  .hero h1 em{
+    font-style:italic;
+    font-weight:500;
+    color:var(--forest);
+    font-variation-settings:"opsz" 144, "SOFT" 100;
+  }
+  .hero-lead{
+    font-size:18px;
+    color:var(--ink-soft);
+    max-width:480px;
+    margin-bottom:40px;
+  }
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .hero-meta{
+    margin-top:64px;
+    display:flex;gap:48px;flex-wrap:wrap;
+    padding-top:32px;
+    border-top:1px solid var(--line);
+  }
+  .meta-item .num{
+    font-family:'Fraunces',serif;
+    font-size:36px;font-weight:500;
+    color:var(--forest);
+    line-height:1;
+    display:block;
+    margin-bottom:6px;
+  }
+  .meta-item .lbl{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+
+  /* Floating decorative leaves */
+  .leaf{
+    position:absolute;
+    pointer-events:none;
+    opacity:.5;
+    will-change:transform;
+  }
+  .leaf-1{top:8%;right:-40px;width:120px;animation:float 9s ease-in-out infinite}
+  .leaf-2{bottom:10%;left:-30px;width:90px;animation:float 11s ease-in-out infinite reverse}
+  @keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-18px) rotate(8deg)}}
+
+  /* ============ MARQUEE ============ */
+  .marquee{
+    background:var(--forest);
+    color:var(--mint);
+    padding:22px 0;
+    overflow:hidden;
+    border-top:1px solid var(--forest-deep);
+  }
+  .marquee-track{
+    display:flex;gap:60px;
+    white-space:nowrap;
+    animation:scroll 30s linear infinite;
+    font-family:'Fraunces',serif;
+    font-size:22px;
+    font-style:italic;
+    font-weight:300;
+  }
+  .marquee-track span{display:inline-flex;align-items:center;gap:60px}
+  .marquee-track::after{content:"✦";color:var(--mint-deep)}
+  .marquee-track span::after{content:"✦";color:var(--mint-deep)}
+  @keyframes scroll{to{transform:translateX(-50%)}}
+
+  /* ============ FEATURES (asymmetric) ============ */
+  .features{padding:140px 0;background:var(--white)}
+  .section-head{
+    display:grid;
+    grid-template-columns:1fr 1.4fr;
+    gap:80px;
+    align-items:end;
+    margin-bottom:96px;
+  }
+  .section-head h2{
+    font-family:'Fraunces',serif;
+    font-weight:300;
+    font-size:clamp(40px,5vw,68px);
+    line-height:1;
+    letter-spacing:-.02em;
+  }
+  .section-head h2 em{font-style:italic;color:var(--forest);font-weight:500}
+  .section-head p{font-size:17px;color:var(--ink-soft);max-width:520px}
+
+  .feature-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:80px;
+    align-items:center;
+    margin-bottom:140px;
+  }
+  .feature-row:last-child{margin-bottom:0}
+  .feature-row.flip .feature-visual{order:2}
+  .feature-row.flip .feature-copy{order:1}
+
+  .feature-visual{
+    position:relative;
+    aspect-ratio:5/6;
+    border-radius:200px 200px 24px 24px;
+    overflow:hidden;
+    box-shadow:0 30px 60px -25px rgba(15,36,25,.3);
+    will-change:transform;
+  }
+  .feature-row:not(.flip) .feature-visual{border-radius:24px 200px 24px 200px}
+  .feature-visual img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
+  .feature-visual:hover img{transform:scale(1.06)}
+
+  .feature-num{
+    font-family:'Fraunces',serif;
+    font-size:14px;
+    font-weight:500;
+    letter-spacing:.2em;
+    color:var(--forest-soft);
+    margin-bottom:20px;
+    display:block;
+  }
+  .feature-copy h3{
+    font-family:'Fraunces',serif;
+    font-weight:400;
+    font-size:clamp(32px,3.5vw,48px);
+    line-height:1.05;
+    letter-spacing:-.01em;
+    margin-bottom:24px;
+  }
+  .feature-copy h3 em{font-style:italic;color:var(--forest)}
+  .feature-copy p{
+    font-size:17px;
+    color:var(--ink-soft);
+    margin-bottom:28px;
+    max-width:480px;
+  }
+  .feature-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin-top:32px}
+  .feature-list li{
+    display:flex;align-items:flex-start;gap:14px;
+    font-size:15px;color:var(--ink);
+    padding-bottom:12px;
+    border-bottom:1px dashed var(--line);
+  }
+  .feature-list li:last-child{border-bottom:none}
+  .feature-list .check{
+    width:22px;height:22px;border-radius:50%;
+    background:var(--mint);
+    color:var(--forest);
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;
+    flex-shrink:0;margin-top:2px;
+  }
+
+  /* ============ MENU GALLERY ============ */
+  .menu{padding:140px 0;background:var(--cream);position:relative;overflow:hidden}
+  .menu::before{
+    content:"";position:absolute;top:-100px;left:-100px;
+    width:400px;height:400px;border-radius:50%;
+    background:radial-gradient(circle, var(--mint) 0%, transparent 70%);
+    opacity:.6;
+  }
+  .menu-head{text-align:center;margin-bottom:80px;position:relative}
+  .menu-head h2{
+    font-family:'Fraunces',serif;font-weight:300;
+    font-size:clamp(40px,5vw,68px);
+    line-height:1;letter-spacing:-.02em;
+    margin-top:20px;
+  }
+  .menu-head h2 em{font-style:italic;color:var(--forest);font-weight:500}
+  .menu-grid{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    gap:20px;
+  }
+  .dish{
+    position:relative;
+    overflow:hidden;
+    border-radius:20px;
+    background:var(--forest);
+    cursor:pointer;
+  }
+  .dish img{
+    width:100%;height:100%;object-fit:cover;
+    transition:transform .8s var(--ease), opacity .4s;
+  }
+  .dish:hover img{transform:scale(1.08);opacity:.85}
+  .dish-info{
+    position:absolute;left:0;right:0;bottom:0;
+    padding:24px;
+    background:linear-gradient(transparent, rgba(15,36,25,.85));
+    color:var(--white);
+    transform:translateY(20px);
+    opacity:0;
+    transition:transform .5s var(--ease), opacity .5s;
+  }
+  .dish:hover .dish-info{transform:translateY(0);opacity:1}
+  .dish-info h4{font-family:'Fraunces',serif;font-weight:500;font-size:22px;margin-bottom:4px;font-style:italic}
+  .dish-info .price{font-size:13px;color:var(--mint-deep);letter-spacing:.1em}
+  .dish-1{grid-column:span 5;aspect-ratio:4/5}
+  .dish-2{grid-column:span 4;aspect-ratio:1/1}
+  .dish-3{grid-column:span 3;aspect-ratio:3/5}
+  .dish-4{grid-column:span 4;aspect-ratio:1/1}
+  .dish-5{grid-column:span 3;aspect-ratio:3/4}
+  .dish-6{grid-column:span 5;aspect-ratio:5/4}
+
+  /* ============ QUOTE ============ */
+  .quote{
+    padding:160px 0;
+    background:var(--forest);
+    color:var(--mint);
+    position:relative;
+    overflow:hidden;
+  }
+  .quote::before{
+    content:"";
+    position:absolute;inset:0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(216,243,220,.08), transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(216,243,220,.06), transparent 50%);
+    pointer-events:none;
+  }
+  .quote-inner{position:relative;max-width:900px;margin:0 auto;text-align:center;padding:0 20px}
+  .quote-mark{
+    font-family:'Fraunces',serif;
+    font-size:120px;line-height:1;
+    color:var(--mint-deep);
+    opacity:.4;
+    margin-bottom:-30px;
+  }
+  .quote q{
+    font-family:'Fraunces',serif;
+    font-weight:300;
+    font-style:italic;
+    font-size:clamp(28px,3.5vw,46px);
+    line-height:1.25;
+    letter-spacing:-.01em;
+    quotes:none;
+    display:block;
+  }
+  .quote q::before,.quote q::after{content:""}
+  .quote-author{
+    margin-top:40px;
+    font-family:'Mulish',sans-serif;
+    font-size:13px;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--mint-deep);
+  }
+  .quote-author strong{color:var(--mint);font-weight:600;display:block;font-size:15px;letter-spacing:.05em;text-transform:none;margin-bottom:4px}
+
+  /* ============ CTA ============ */
+  .cta{padding:140px 0;background:var(--white)}
+  .cta-card{
+    position:relative;
+    background:var(--mint);
+    border-radius:32px;
+    overflow:hidden;
+    padding:80px;
+    display:grid;
+    grid-template-columns:1.2fr 1fr;
+    gap:60px;
+    align-items:center;
+  }
+  .cta-card::before{
+    content:"";position:absolute;
+    top:-50px;right:-50px;
+    width:300px;height:300px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(45,106,79,.15), transparent 70%);
+  }
+  .cta-copy{position:relative}
+  .cta-copy h2{
+    font-family:'Fraunces',serif;
+    font-weight:300;
+    font-size:clamp(36px,4.5vw,60px);
+    line-height:1;
+    letter-spacing:-.02em;
+    margin-bottom:24px;
+    color:var(--ink);
+  }
+  .cta-copy h2 em{font-style:italic;color:var(--forest);font-weight:500}
+  .cta-copy p{font-size:17px;color:var(--ink-soft);margin-bottom:36px;max-width:440px}
+  .cta-actions{display:flex;gap:14px;flex-wrap:wrap}
+  .cta-visual{
+    position:relative;
+    aspect-ratio:4/5;
+    border-radius:200px 24px 200px 24px;
+    overflow:hidden;
+    box-shadow:0 30px 60px -20px rgba(45,106,79,.4);
+  }
+  .cta-visual img{width:100%;height:100%;object-fit:cover}
+
+  /* ============ FOOTER ============ */
+  footer{
+    background:var(--ink);
+    color:var(--mint);
+    padding:100px 0 40px;
+  }
+  .foot-grid{
+    display:grid;
+    grid-template-columns:1.5fr 1fr 1fr 1fr;
+    gap:60px;
+    margin-bottom:80px;
+  }
+  .foot-brand{font-family:'Fraunces',serif;font-size:32px;font-weight:500;margin-bottom:20px;color:var(--mint)}
+  .foot-brand em{font-style:italic;color:var(--mint-deep)}
+  .foot-tag{color:rgba(216,243,220,.7);font-size:15px;max-width:320px;margin-bottom:24px}
+  .foot-social{display:flex;gap:12px}
+  .foot-social a{
+    width:40px;height:40px;border-radius:50%;
+    border:1px solid rgba(216,243,220,.2);
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:13px;color:var(--mint);
+    transition:all .3s;
+  }
+  .foot-social a:hover{background:var(--forest);border-color:var(--forest)}
+  .foot-col h5{
+    font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--mint-deep);margin-bottom:20px;font-weight:600;
+  }
+  .foot-col ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+  .foot-col a{color:rgba(216,243,220,.8);font-size:15px;transition:color .25s}
+  .foot-col a:hover{color:var(--mint)}
+  .foot-bottom{
+    padding-top:32px;
+    border-top:1px solid rgba(216,243,220,.1);
+    display:flex;justify-content:space-between;align-items:center;
+    flex-wrap:wrap;gap:16px;
+    font-size:13px;color:rgba(216,243,220,.5);
+  }
+
+  /* ============ REVEAL ANIMATIONS ============ */
+  .reveal{opacity:0;transform:translateY(40px);transition:opacity 1s var(--ease), transform 1s var(--ease)}
+  .reveal.in{opacity:1;transform:translateY(0)}
+  .reveal-delay-1{transition-delay:.1s}
+  .reveal-delay-2{transition-delay:.2s}
+  .reveal-delay-3{transition-delay:.3s}
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:960px){
+    .hero{padding:130px 0 80px}
+    .hero-grid,.feature-row,.cta-card,.section-head{grid-template-columns:1fr;gap:48px}
+    .feature-row.flip .feature-visual{order:1}
+    .feature-row.flip .feature-copy{order:2}
+    .nav-links{display:none}
+    .menu-grid{grid-template-columns:repeat(6,1fr)}
+    .dish-1,.dish-6{grid-column:span 6}
+    .dish-2,.dish-4{grid-column:span 3}
+    .dish-3,.dish-5{grid-column:span 3}
+    .foot-grid{grid-template-columns:1fr 1fr;gap:40px}
+    .cta-card{padding:48px 32px}
+    .hero-meta{gap:32px}
+    .quote{padding:100px 0}
+  }
+  @media (max-width:560px){
+    .hero h1{font-size:48px}
+    .menu-grid{grid-template-columns:1fr 1fr}
+    .dish-1,.dish-2,.dish-3,.dish-4,.dish-5,.dish-6{grid-column:span 1;aspect-ratio:1/1}
+    .foot-grid{grid-template-columns:1fr}
+    .hero-meta{gap:24px}
+    .meta-item .num{font-size:28px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAVIGATION ============ -->
+<header class="nav" id="nav">
+  <div class="wrap nav-row">
+    <a href="#" class="brand" aria-label="fresh-garden Startseite">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>fresh-garden<small>Thai Kitchen</small></span>
+    </a>
+    <nav class="nav-links" aria-label="Hauptnavigation">
+      <a href="#philosophy">Philosophie</a>
+      <a href="#menu">Speisen</a>
+      <a href="#story">Geschichte</a>
+      <a href="#contact">Kontakt</a>
+    </nav>
+    <a href="#cta" class="btn nav-cta">Tisch reservieren</a>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <svg class="leaf leaf-1" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 5 Q 80 30 50 95 Q 20 30 50 5 Z" fill="#2D6A4F" opacity=".55"/><path d="M50 10 L50 90" stroke="#1d4d39" stroke-width="1" fill="none"/></svg>
+  <svg class="leaf leaf-2" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 5 Q 80 30 50 95 Q 20 30 50 5 Z" fill="#3e8e6f" opacity=".5"/><path d="M50 10 L50 90" stroke="#1d4d39" stroke-width="1" fill="none"/></svg>
+
+  <div class="wrap hero-grid">
+    <div class="hero-visual reveal" id="heroVisual">
+      <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=80"
+           alt="Frisch zubereitetes Pad Thai mit Tofu, Sprossen und Erdnüssen auf einem keramischen Teller"
+           loading="eager">
+      <div class="hero-badge">
+        <span class="badge-dot" aria-hidden="true"></span>
+        <span class="badge-text"><strong>Heute geöffnet</strong> · 11:30 – 22:00 · Mitte, Berlin</span>
+      </div>
+    </div>
+
+    <div class="hero-copy">
+      <span class="eyebrow reveal">Bio · Regional · Handgemacht</span>
+      <h1 class="reveal reveal-delay-1">
+        Thai Küche,<br>
+        frisch <em>verwurzelt.</em>
+      </h1>
+      <p class="hero-lead reveal reveal-delay-2">
+        Bei fresh-garden verwandeln wir biologisch angebaute Kräuter, Limetten und Chili
+        in ehrliche thailändische Gerichte — jeden Morgen neu gekocht, niemals aufgewärmt.
+      </p>
+      <div class="hero-actions reveal reveal-delay-3">
+        <a href="#menu" class="btn">Speisekarte ansehen</a>
+        <a href="#cta" class="btn btn-ghost">Lieferung bestellen</a>
+      </div>
+
+      <div class="hero-meta reveal reveal-delay-3">
+        <div class="meta-item">
+          <span class="num">100%</span>
+          <span class="lbl">Bio-Zutaten</span>
+        </div>
+        <div class="meta-item">
+          <span class="num">28</span>
+          <span class="lbl">Frische Kräuter</span>
+        </div>
+        <div class="meta-item">
+          <span class="num">4.9</span>
+          <span class="lbl">Google Rating</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Zitronengras</span><span>Koriander</span><span>Thai-Basilikum</span><span>Limetten</span><span>Vogelaugenchili</span><span>Galangal</span>
+    <span>Zitronengras</span><span>Koriander</span><span>Thai-Basilikum</span><span>Limetten</span><span>Vogelaugenchili</span><span>Galangal</span>
+  </div>
+</div>
+
+<!-- ============ FEATURES ============ -->
+<section class="features" id="philosophy">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="reveal">Aus dem <em>Garten</em><br>auf den Teller.</h2>
+      <p class="reveal reveal-delay-1">
+        Drei Überzeugungen bestimmen, was auf unseren Tellern landet —
+        und was nicht. Wir kochen, was die Saison hergibt. Wir ernten, was wir brauchen.
+        Und wir respektieren, was die Erde gibt.
+      </p>
+    </div>
+
+    <!-- Feature 1: image left -->
+    <div class="feature-row">
+      <div class="feature-visual reveal" data-parallax>
+        <img src="https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&w=900&q=80"
+             alt="Grünes Thai-Curry mit Thai-Basilikum, Bambus und Hähnchen in einer Kokosmilch-Sauce"
+             loading="lazy">
+      </div>
+      <div class="feature-copy">
+        <span class="feature-num reveal">01 — Herkunft</span>
+        <h3 class="reveal reveal-delay-1">Bio-Kräuter aus <em>eigener</em> Aufzucht.</h3>
+        <p class="reveal reveal-delay-2">
+          Unser Kräutergarten auf dem Dach liefert Zitronengras, Kaffir-Limetten
+          und Thai-Basilikum — geerntet am Morgen, im Wok bis Mittag.
+        </p>
+        <ul class="feature-list reveal reveal-delay-3">
+          <li><span class="check">✓</span> Eigener Kräutergarten auf dem Dach</li>
+          <li><span class="check">✓</span> Bio-zertifizierte Landwirte aus Brandenburg</li>
+          <li><span class="check">✓</span> Kokosmilch direkt aus Phuket, Fairtrade</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Feature 2: image right -->
+    <div class="feature-row flip">
+      <div class="feature-visual reveal" data-parallax>
+        <img src="https://images.unsplash.com/photo-1559314809-0d155014e95e?auto=format&fit=crop&w=900&q=80"
+             alt="Som Tam — grüner Papaya-Salat mit Chili, Erdnüssen und Limette"
+             loading="lazy">
+      </div>
+      <div class="feature-copy">
+        <span class="feature-num reveal">02 — Küche</span>
+        <h3 class="reveal reveal-delay-1">Jedes Gericht ein <em>Handgriff.</em></h3>
+        <p class="reveal reveal-delay-2">
+          Khun Mali kocht seit 32 Jahren thailändische Küche. Ihr Som Tam
+          hat den Geschmack von Bangkok-Märkten — ohne Kompromiss, ohne Microwave.
+        </p>
+        <ul class="feature-list reveal reveal-delay-3">
+          <li><span class="check">✓</span> Stündlich frisch zubereitet, nicht auf Vorrat</li>
+          <li><span class="check">✓</span> Currypasten selbst gemörstert, nicht gekauft</li>
+          <li><span class="check">✓</span> Chili-Schärfe nach Wunsch — von mild bis „thai-mild"</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Feature 3: image left -->
+    <div class="feature-row" id="story">
+      <div class="feature-visual reveal" data-parallax>
+        <img src="https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=900&q=80"
+             alt="Mango Sticky Rice mit Kokosmilch und geröstetem Sesam auf Bananenblatt"
+             loading="lazy">
+      </div>
+      <div class="feature-copy">
+        <span class="feature-num reveal">03 — Verantwortung</span>
+        <h3 class="reveal reveal-delay-1">Süß, ohne <em>Schuld.</em></h3>
+        <p class="reveal reveal-delay-2">
+          Unser Mango Sticky Rice kommt mit vollreifen Mangos aus Andalusien,
+          Klebreis aus dem Piemont und Kokosnuss-Creme aus nachhaltiger Ernte.
+          Gut für dich, gut für alle.
+        </p>
+        <ul class="feature-list reveal reveal-delay-3">
+          <li><span class="check">✓</span> Klimaneutrale Lieferung innerhalb Berlins</li>
+          <li><span class="check">✓</span> Kompostierbare Verpackung aus Bagasse</li>
+          <li><span class="check">✓</span> 1 % des Umsatzes an Bio-Landwirtschaft-Projekte</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MENU GALLERY ============ -->
+<section class="menu" id="menu">
+  <div class="wrap">
+    <div class="menu-head">
+      <span class="eyebrow reveal" style="justify-content:center">Speisekarte · Auswahl</span>
+      <h2 class="reveal reveal-delay-1">Klassiker, wie sie <em>schmecken</em> sollen.</h2>
+    </div>
+
+    <div class="menu-grid">
+      <article class="dish dish-1 reveal">
+        <img src="https://images.unsplash.com/photo-1559314809-0d155014e95e?auto=format&fit=crop&w=700&q=80"
+             alt="Pad Thai mit Garnelen, Tamarinden-Sauce, Erdnüssen und Limettenspalte" loading="lazy">
+        <div class="dish-info">
+          <h4>Pad Thai</h4>
+          <span class="price">€ 13,50 · Klassiker</span>
+        </div>
+      </article>
+
+      <article class="dish dish-2 reveal reveal-delay-1">
+        <img src="https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&w=600&q=80"
+             alt="Grünes Thai-Curry mit Hähnchen, Thai-Basilikum und Bambus" loading="lazy">
+        <div class="dish-info">
+          <h4>Green Curry</h4>
+          <span class="price">€ 14,00</span>
+        </div>
+      </article>
+
+      <article class="dish dish-3 reveal reveal-delay-2">
+        <img src="https://images.unsplash.com/photo-1606471191009-63994c53433b?auto=format&fit=crop&w=500&q=80"
+             alt="Tom Yum Goong — scharf-saure Suppe mit Garnelen, Zitronengras und Galangal" loading="lazy">
+        <div class="dish-info">
+          <h4>Tom Yum</h4>
+          <span class="price">€ 9,50</span>
+        </div>
+      </article>
+
+      <article class="dish dish-4 reveal">
+        <img src="https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=600&q=80"
+             alt="Frische Frühlingsrollen mit Dip auf Schieferplatte" loading="lazy">
+        <div class="dish-info">
+          <h4>Frühlingsrollen</h4>
+          <span class="price">€ 7,50 · Vegan</span>
+        </div>
+      </article>
+
+      <article class="dish dish-5 reveal reveal-delay-1">
+        <img src="https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=500&q=80"
+             alt="Hähnchen-Satay Spieße mit Erdnuss-Dip" loading="lazy">
+        <div class="dish-info">
+          <h4>Satay Spieße</h4>
+          <span class="price">€ 11,00</span>
+        </div>
+      </article>
+
+      <article class="dish dish-6 reveal reveal-delay-2">
+        <img src="https://images.unsplash.com/photo-1606471191009-63994c53433b?auto=format&fit=crop&w=800&q=80"
+             alt="Mango Sticky Rice Dessert mit Kokosmilch" loading="lazy">
+        <div class="dish-info">
+          <h4>Mango Sticky Rice</h4>
+          <span class="price">€ 8,50 · Dessert</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUOTE ============ -->
+<section class="quote">
+  <div class="quote-inner">
+    <div class="quote-mark reveal" aria-hidden="true">"</div>
+    <q class="reveal reveal-delay-1">
+      Eine gute thailändische Küche braucht drei Dinge: frische Kräuter,
+      eine ruhige Hand — und Respekt vor dem, was auf den Teller kommt.
+    </q>
+    <div class="quote-author reveal reveal-delay-2">
+      <strong>Khun Mali Sawatdee</strong>
+      Küchenleitung · fresh-garden Berlin
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta" id="cta">
+  <div class="wrap">
+    <div class="cta-card reveal">
+      <div class="cta-copy">
+        <span class="eyebrow">Heute noch genießen</span>
+        <h2>Lust auf etwas <em>Frisches?</em></h2>
+        <p>
+          Bestelle bis 21:30 zur Lieferung oder reserviere einen Tisch
+          in unserem Garten in Berlin-Mitte. Wir halten einen Platz für dich frei.
+        </p>
+        <div class="cta-actions">
+          <a href="#" class="btn">Jetzt bestellen</a>
+          <a href="#" class="btn btn-ghost">Tisch reservieren</a>
+        </div>
+      </div>
+      <div class="cta-visual" data-parallax>
+        <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=700&q=80"
+             alt="Nahaufnahme eines thailändischen Gerichts mit frischen Kräutern und Chili" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer id="contact">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">fresh<em>-garden</em></div>
+        <p class="foot-tag">
+          Frische thailändische Küche aus Bio-Zutaten.
+          Handgemacht in Berlin-Mitte, mit Liebe seit 2019.
+        </p>
+        <div class="foot-social">
+          <a href="#" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="Facebook">FB</a>
+          <a href="#" aria-label="TikTok">TT</a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h5>Adresse</h5>
+        <ul>
+          <li><a href="#">Auguststraße 47</a></li>
+          <li><a href="#">10119 Berlin</a></li>
+          <li><a href="#">Mitte</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Öffnungszeiten</h5>
+        <ul>
+          <li>Mo – Fr: 11:30 – 22:00</li>
+          <li>Sa – So: 13:00 – 22:00</li>
+          <li><a href="#">Feiertage →</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Kontakt</h5>
+        <ul>
+          <li><a href="tel:+493012345678">+49 30 123 456 78</a></li>
+          <li><a href="mailto:hallo@fresh-garden.de">hallo@fresh-garden.de</a></li>
+          <li><a href="#">Newsletter</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2025 fresh-garden Berlin. Bio-zertifiziert DE-ÖKO-007.</span>
+      <span>Mit ♥ und Zitronengras gekocht.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Sticky nav
+  const nav = document.getElementById('nav');
+  const onScroll = () => {
+    if (window.scrollY > 30) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  };
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, {threshold:0.12, rootMargin:'0px 0px -60px 0px'});
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Soft parallax
+  const parallaxItems = document.querySelectorAll('[data-parallax], #heroVisual');
+  const heroVisual = document.getElementById('heroVisual');
+  let ticking = false;
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!prefersReduced) {
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const y = window.scrollY;
+          parallaxItems.forEach((el, i) => {
+            const rect = el.getBoundingClientRect();
+            const center = rect.top + rect.height / 2;
+            const offset = (window.innerHeight / 2 - center) * 0.06;
+            el.style.transform = `translateY(${offset}px)`;
+          });
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, {passive:true});
+  }
+
+  // Smooth anchor scroll handled by CSS scroll-behavior
+</script>
+
+</body>
+</html>

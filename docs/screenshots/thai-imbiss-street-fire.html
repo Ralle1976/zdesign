@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STREET FIRE — Thai Street Food mit offener Flamme</title>
+<meta name="description" content="STREET FIRE. Laut. Lebendig. Authentische thailändische Straßenküche mit offener Flamme. Pad Thai aus dem Wok, Satay vom Holzkohlegrill, Tom Yum, Mango Sticky Rice.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#E63946;
+    --red-deep:#B81E2C;
+    --yellow:#FFD60A;
+    --yellow-soft:#FFE770;
+    --ink:#1D1D1D;
+    --ink-2:#262626;
+    --ink-3:#3a3a3a;
+    --paper:#F2EAD9;
+    --paper-2:#E8DEC8;
+    --line:rgba(242,234,217,.14);
+    --line-strong:rgba(242,234,217,.32);
+    --smoke:rgba(242,234,217,.06);
+    --max:1320px;
+    --ease:cubic-bezier(.2,.7,.2,1);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--ink);
+    color:var(--paper);
+    line-height:1.55;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  img{display:block;max-width:100%;height:auto}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  ul{list-style:none}
+
+  /* ---------- TYPOGRAPHIE ---------- */
+  .display{
+    font-family:'Bebas Neue',Impact,sans-serif;
+    font-weight:400;
+    letter-spacing:.01em;
+    line-height:.86;
+    text-transform:uppercase;
+  }
+  .eyebrow{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:.78rem;
+    letter-spacing:.32em;
+    text-transform:uppercase;
+    color:var(--yellow);
+    display:inline-flex;
+    align-items:center;
+    gap:.7rem;
+  }
+  .eyebrow::before{
+    content:"";
+    width:28px;height:1px;background:var(--yellow);
+    display:inline-block;
+  }
+
+  /* ---------- RAUCH / HINTERGRUND ---------- */
+  .smoke-layer{
+    position:fixed;inset:0;
+    pointer-events:none;
+    z-index:1;
+    background:
+      radial-gradient(40% 30% at 12% 8%, rgba(230,57,70,.18), transparent 70%),
+      radial-gradient(50% 40% at 88% 92%, rgba(255,214,10,.10), transparent 70%),
+      radial-gradient(60% 50% at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,.25) 100%);
+    mix-blend-mode:screen;
+  }
+  .smoke-noise{
+    position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.05;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/></svg>");
+  }
+
+  /* ---------- LAYOUT-HELPER ---------- */
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 28px;position:relative;z-index:3}
+  .stack-lg > * + *{margin-top:5rem}
+  @media (max-width:760px){ .stack-lg > * + *{margin-top:3.25rem} }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    background:rgba(29,29,29,.55);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:var(--max);margin:0 auto;
+    padding:14px 28px;
+    display:flex;align-items:center;justify-content:space-between;gap:24px;
+  }
+  .brand{
+    display:flex;align-items:center;gap:.6rem;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:1.55rem;letter-spacing:.04em;
+    color:var(--paper);
+  }
+  .brand-mark{
+    width:30px;height:30px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--yellow) 0%, var(--red) 55%, var(--red-deep) 100%);
+    box-shadow:0 0 18px rgba(255,214,10,.45), inset 0 0 8px rgba(0,0,0,.4);
+    flex-shrink:0;
+  }
+  .brand small{color:var(--yellow);font-size:.7rem;letter-spacing:.3em;font-family:'Inter';font-weight:600;transform:translateY(-2px)}
+  .nav-links{display:flex;gap:2rem;align-items:center}
+  .nav-links a{
+    font-size:.86rem;font-weight:500;letter-spacing:.04em;
+    color:var(--paper);opacity:.82;
+    transition:opacity .25s var(--ease), color .25s var(--ease);
+    position:relative;
+  }
+  .nav-links a:hover{opacity:1;color:var(--yellow)}
+  .nav-links a:focus-visible{outline:2px solid var(--yellow);outline-offset:6px;border-radius:2px}
+  .nav-cta{
+    background:var(--red);color:#fff;
+    padding:.6rem 1.1rem;border-radius:2px;
+    font-weight:700;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;
+    transition:background .25s var(--ease), transform .25s var(--ease);
+  }
+  .nav-cta:hover{background:var(--yellow);color:var(--ink);transform:translateY(-1px)}
+  .nav-cta:focus-visible{outline:2px solid var(--yellow);outline-offset:4px}
+  @media (max-width:820px){ .nav-links{display:none} }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    padding:140px 0 60px;
+    display:flex;align-items:center;
+    overflow:hidden;
+  }
+  .hero-bg{
+    position:absolute;inset:0;z-index:0;
+    background:
+      linear-gradient(180deg, rgba(29,29,29,.55) 0%, rgba(29,29,29,.75) 60%, rgba(29,29,29,.95) 100%),
+      url('https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=2000&q=80') center/cover no-repeat;
+  }
+  .hero-bg::after{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(60% 50% at 80% 30%, rgba(230,57,70,.35), transparent 60%),
+      radial-gradient(40% 30% at 15% 80%, rgba(255,214,10,.18), transparent 60%);
+    mix-blend-mode:screen;
+  }
+  .hero-inner{
+    position:relative;z-index:3;
+    width:100%;
+    display:grid;
+    grid-template-columns: 1.4fr .9fr;
+    gap:48px;
+    align-items:end;
+  }
+  @media (max-width:980px){
+    .hero-inner{grid-template-columns:1fr;align-items:start;gap:32px}
+  }
+  .hero-title{
+    font-size:clamp(4.5rem, 13vw, 11.5rem);
+    color:var(--paper);
+    text-shadow:0 4px 30px rgba(0,0,0,.5);
+  }
+  .hero-title .red{color:var(--red)}
+  .hero-title .yellow{color:var(--yellow)}
+  .hero-title .stroke{
+    -webkit-text-stroke:2px var(--paper);
+    color:transparent;
+  }
+  .hero-sub{
+    max-width:520px;
+    font-size:1.1rem;
+    color:rgba(242,234,217,.85);
+    margin-top:1.5rem;
+    line-height:1.65;
+  }
+  .hero-sub strong{color:var(--yellow);font-weight:600}
+  .hero-actions{
+    display:flex;gap:1rem;flex-wrap:wrap;
+    margin-top:2.2rem;
+  }
+  .btn{
+    display:inline-flex;align-items:center;gap:.7rem;
+    padding:1rem 1.6rem;
+    font-weight:700;font-size:.86rem;letter-spacing:.14em;text-transform:uppercase;
+    border-radius:2px;
+    transition:transform .3s var(--ease), background .3s var(--ease), color .3s var(--ease), box-shadow .3s var(--ease);
+  }
+  .btn-primary{
+    background:var(--red);color:#fff;
+    box-shadow:0 10px 30px -10px rgba(230,57,70,.7);
+  }
+  .btn-primary:hover{background:var(--yellow);color:var(--ink);transform:translateY(-2px);box-shadow:0 14px 36px -10px rgba(255,214,10,.6)}
+  .btn-primary:focus-visible{outline:2px solid var(--yellow);outline-offset:4px}
+  .btn-ghost{
+    background:transparent;color:var(--paper);
+    border:1px solid var(--line-strong);
+  }
+  .btn-ghost:hover{border-color:var(--yellow);color:var(--yellow);transform:translateY(-2px)}
+  .btn-ghost:focus-visible{outline:2px solid var(--yellow);outline-offset:4px}
+  .btn .arrow{
+    display:inline-block;width:14px;height:14px;
+    border-right:2px solid currentColor;border-top:2px solid currentColor;
+    transform:rotate(45deg);transition:transform .3s var(--ease);
+  }
+  .btn:hover .arrow{transform:rotate(45deg) translate(2px,-2px)}
+
+  /* Hero Side Card */
+  .hero-card{
+    background:rgba(29,29,29,.7);
+    border:1px solid var(--line);
+    backdrop-filter:blur(8px);
+    padding:1.6rem;
+    border-radius:4px;
+    max-width:340px;
+    justify-self:end;
+  }
+  @media (max-width:980px){ .hero-card{justify-self:start} }
+  .hero-card .label{
+    font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--yellow);font-weight:600;margin-bottom:.8rem;
+  }
+  .hero-card .big{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:3.2rem;line-height:.9;color:var(--paper);
+  }
+  .hero-card .big sup{font-size:1.2rem;color:var(--red);vertical-align:super}
+  .hero-card p{
+    font-size:.92rem;color:rgba(242,234,217,.75);
+    margin-top:.6rem;
+  }
+  .hero-card .meta{
+    display:flex;gap:1.4rem;margin-top:1.2rem;
+    padding-top:1.2rem;border-top:1px solid var(--line);
+    font-size:.78rem;color:rgba(242,234,217,.65);
+  }
+  .hero-card .meta strong{display:block;color:var(--paper);font-size:1rem;font-weight:600;font-family:'Bebas Neue';letter-spacing:.04em}
+
+  /* Hero ticker */
+  .ticker{
+    position:absolute;left:0;right:0;bottom:0;
+    background:var(--yellow);
+    color:var(--ink);
+    padding:.7rem 0;
+    overflow:hidden;
+    z-index:4;
+    border-top:2px solid var(--ink);
+  }
+  .ticker-track{
+    display:flex;gap:2.4rem;
+    white-space:nowrap;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:1.1rem;letter-spacing:.08em;
+    animation:scroll 28s linear infinite;
+  }
+  .ticker-track span{display:inline-flex;align-items:center;gap:2.4rem}
+  .ticker-track span::after{content:"🔥";font-size:1rem;-webkit-text-fill-color:initial}
+  @keyframes scroll{
+    from{transform:translateX(0)}
+    to{transform:translateX(-50%)}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ticker-track{animation:none}
+  }
+
+  /* ---------- SECTION HEADERS ---------- */
+  .section{padding:7rem 0;position:relative}
+  @media (max-width:760px){ .section{padding:4.5rem 0} }
+  .section-head{
+    display:grid;grid-template-columns:1fr 1fr;gap:48px;
+    align-items:end;
+    margin-bottom:4rem;
+    padding-bottom:2rem;
+    border-bottom:1px solid var(--line);
+  }
+  @media (max-width:820px){
+    .section-head{grid-template-columns:1fr;gap:1.5rem;margin-bottom:2.5rem}
+  }
+  .section-title{
+    font-size:clamp(2.8rem, 7vw, 6rem);
+    color:var(--paper);
+  }
+  .section-title .red{color:var(--red)}
+  .section-title .yellow{color:var(--yellow)}
+  .section-desc{
+    font-size:1.02rem;color:rgba(242,234,217,.78);
+    max-width:460px;
+  }
+
+  /* ---------- FEATURES (Drei Säulen) ---------- */
+  .features-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  @media (max-width:820px){ .features-grid{grid-template-columns:1fr} }
+  .feature{
+    background:var(--ink);
+    padding:2.4rem 2rem;
+    transition:background .4s var(--ease);
+    position:relative;
+  }
+  .feature:hover{background:var(--ink-2)}
+  .feature-num{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:1rem;letter-spacing:.2em;
+    color:var(--red);
+    margin-bottom:1.4rem;
+  }
+  .feature-icon{
+    width:48px;height:48px;
+    margin-bottom:1.4rem;
+    display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--line-strong);
+    border-radius:50%;
+  }
+  .feature h3{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:2rem;letter-spacing:.03em;
+    color:var(--paper);
+    margin-bottom:.7rem;
+  }
+  .feature p{
+    color:rgba(242,234,217,.72);
+    font-size:.95rem;
+  }
+
+  /* ---------- SIGNATURE DISH (Zweispalter) ---------- */
+  .signature{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0;
+    align-items:stretch;
+    border:1px solid var(--line);
+  }
+  @media (max-width:820px){ .signature{grid-template-columns:1fr} }
+  .signature-img{
+    position:relative;
+    min-height:520px;
+    overflow:hidden;
+    background:#000;
+  }
+  .signature-img img{
+    width:100%;height:100%;
+    object-fit:cover;
+    transition:transform 1.2s var(--ease);
+  }
+  .signature:hover .signature-img img{transform:scale(1.05)}
+  .signature-img::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(90deg, transparent 60%, var(--ink) 100%);
+    pointer-events:none;
+  }
+  @media (max-width:820px){ .signature-img::after{display:none} }
+  .signature-body{
+    padding:3.5rem;
+    background:var(--ink-2);
+    display:flex;flex-direction:column;justify-content:center;
+  }
+  @media (max-width:820px){ .signature-body{padding:2.2rem} }
+  .signature-body .eyebrow{margin-bottom:1.4rem}
+  .signature-body h3{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(2.5rem,5vw,4rem);
+    line-height:.95;
+    color:var(--paper);
+    margin-bottom:1.2rem;
+  }
+  .signature-body p{
+    color:rgba(242,234,217,.78);
+    margin-bottom:1.6rem;
+    max-width:440px;
+  }
+  .signature-stats{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:1.4rem;
+    padding-top:1.6rem;
+    border-top:1px solid var(--line);
+  }
+  .signature-stats div span{
+    display:block;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:2rem;color:var(--yellow);
+    line-height:1;
+  }
+  .signature-stats div small{
+    color:rgba(242,234,217,.6);
+    font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;
+    margin-top:.4rem;display:block;
+  }
+
+  /* ---------- MENÜ ---------- */
+  .menu-tabs{
+    display:flex;gap:.4rem;flex-wrap:wrap;
+    margin-bottom:2.5rem;
+  }
+  .tab{
+    padding:.55rem 1.1rem;
+    font-size:.78rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+    border:1px solid var(--line-strong);
+    color:rgba(242,234,217,.7);
+    transition:all .3s var(--ease);
+    border-radius:2px;
+  }
+  .tab.active{background:var(--red);color:#fff;border-color:var(--red)}
+  .tab:hover:not(.active){border-color:var(--yellow);color:var(--yellow)}
+  .tab:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
+
+  .menu-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1.4rem;
+  }
+  @media (max-width:980px){ .menu-grid{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width:620px){ .menu-grid{grid-template-columns:1fr} }
+
+  .dish{
+    background:var(--ink-2);
+    border:1px solid var(--line);
+    overflow:hidden;
+    display:flex;flex-direction:column;
+    transition:transform .4s var(--ease), border-color .4s var(--ease);
+  }
+  .dish:hover{transform:translateY(-4px);border-color:var(--yellow)}
+  .dish:focus-within{border-color:var(--yellow)}
+  .dish-img{
+    position:relative;
+    aspect-ratio:4/3;
+    overflow:hidden;
+    background:linear-gradient(135deg, var(--red-deep), var(--ink));
+  }
+  .dish-img img{
+    width:100%;height:100%;object-fit:cover;
+    transition:transform .8s var(--ease);
+  }
+  .dish:hover .dish-img img{transform:scale(1.1)}
+  .dish-tag{
+    position:absolute;top:14px;left:14px;
+    background:var(--yellow);color:var(--ink);
+    padding:.3rem .7rem;
+    font-size:.7rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+    z-index:2;
+  }
+  .dish-tag.spicy{background:var(--red);color:#fff}
+  .dish-tag.new{background:var(--paper);color:var(--ink)}
+  .dish-body{
+    padding:1.5rem;
+    display:flex;flex-direction:column;flex:1;
+  }
+  .dish-name{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:1.7rem;letter-spacing:.03em;
+    color:var(--paper);
+    line-height:1;
+  }
+  .dish-desc{
+    color:rgba(242,234,217,.65);
+    font-size:.88rem;
+    margin-top:.6rem;
+    flex:1;
+  }
+  .dish-foot{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-top:1.2rem;
+    padding-top:1.2rem;
+    border-top:1px solid var(--line);
+  }
+  .dish-price{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:1.6rem;color:var(--yellow);
+    letter-spacing:.04em;
+  }
+  .dish-price small{color:rgba(242,234,217,.5);font-size:.8rem;margin-right:.15rem}
+  .dish-heat{
+    display:inline-flex;gap:.15rem;
+    font-size:.85rem;
+  }
+  .dish-heat .h-on{color:var(--red)}
+  .dish-heat .h-off{color:rgba(242,234,217,.2)}
+
+  /* ---------- QUOTE / ATMOSPHERE ---------- */
+  .atmosphere{
+    position:relative;
+    padding:8rem 0;
+    overflow:hidden;
+  }
+  .atmosphere-bg{
+    position:absolute;inset:0;z-index:0;
+    background:
+      linear-gradient(180deg, rgba(29,29,29,.7), rgba(29,29,29,.92)),
+      url('https://images.unsplash.com/photo-1582411846-4c805f5c3f1d?auto=format&fit=crop&w=2000&q=80') center/cover fixed no-repeat;
+  }
+  @media (max-width:820px){
+    .atmosphere-bg{background-attachment:scroll}
+  }
+  .atmosphere-inner{position:relative;z-index:3;text-align:center;max-width:900px;margin:0 auto}
+  .atmosphere-inner .eyebrow{justify-content:center;display:flex;margin-bottom:2rem}
+  .atmosphere-inner .eyebrow::before{display:none}
+  .atmosphere-quote{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(2.2rem,5.5vw,4.4rem);
+    line-height:1;
+    color:var(--paper);
+    letter-spacing:.01em;
+  }
+  .atmosphere-quote .yellow{color:var(--yellow)}
+  .atmosphere-quote .red{color:var(--red)}
+  .atmosphere-cite{
+    margin-top:2rem;
+    font-size:.86rem;letter-spacing:.24em;text-transform:uppercase;
+    color:rgba(242,234,217,.6);
+  }
+  .atmosphere-cite strong{color:var(--yellow);font-weight:600}
+
+  /* ---------- VISIT / CTA ---------- */
+  .visit-grid{
+    display:grid;
+    grid-template-columns:1.2fr 1fr;
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  @media (max-width:820px){ .visit-grid{grid-template-columns:1fr} }
+  .visit-info{
+    background:var(--ink);
+    padding:3rem;
+  }
+  @media (max-width:760px){ .visit-info{padding:2rem} }
+  .visit-info h3{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(2.4rem,5vw,3.6rem);
+    color:var(--paper);
+    line-height:.95;
+    margin-bottom:1.6rem;
+  }
+  .visit-rows{
+    display:grid;gap:1.4rem;
+  }
+  .visit-row{
+    display:grid;grid-template-columns:140px 1fr;
+    gap:1rem;
+    padding-bottom:1.4rem;
+    border-bottom:1px solid var(--line);
+  }
+  .visit-row:last-child{border-bottom:none}
+  .visit-row dt{
+    font-size:.74rem;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--yellow);font-weight:600;
+    padding-top:.2rem;
+  }
+  .visit-row dd{
+    color:var(--paper);font-size:1rem;
+  }
+  .visit-row dd small{display:block;color:rgba(242,234,217,.6);font-size:.84rem;margin-top:.2rem}
+  .visit-map{
+    background:var(--ink-2);
+    min-height:420px;
+    position:relative;
+    overflow:hidden;
+    background-image:
+      linear-gradient(135deg, rgba(230,57,70,.15), transparent 60%),
+      linear-gradient(0deg, rgba(0,0,0,.4), rgba(0,0,0,.4)),
+      url('https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=1400&q=80');
+    background-size:cover;
+    background-position:center;
+    display:flex;align-items:flex-end;
+    padding:2rem;
+  }
+  .visit-map::before{
+    content:"";position:absolute;inset:0;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 38px, rgba(255,214,10,.05) 38px 39px),
+      repeating-linear-gradient(90deg, transparent 0 38px, rgba(255,214,10,.05) 38px 39px);
+  }
+  .visit-pin{
+    position:absolute;top:44%;left:50%;
+    transform:translate(-50%,-100%);
+    display:flex;flex-direction:column;align-items:center;
+    z-index:2;
+    animation:bob 2.4s ease-in-out infinite;
+  }
+  @keyframes bob{0%,100%{transform:translate(-50%,-100%)}50%{transform:translate(-50%,-110%)}}
+  .visit-pin .dot{
+    width:18px;height:18px;border-radius:50%;
+    background:var(--red);
+    box-shadow:0 0 0 8px rgba(230,57,70,.25), 0 0 30px rgba(230,57,70,.6);
+  }
+  .visit-pin .stick{
+    width:2px;height:34px;background:var(--yellow);
+  }
+  .visit-pin .label{
+    background:var(--yellow);color:var(--ink);
+    padding:.3rem .7rem;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:1rem;letter-spacing:.08em;
+    margin-top:.4rem;
+    white-space:nowrap;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:4rem 0 2rem;
+    background:var(--ink);
+    position:relative;z-index:3;
+  }
+  .foot-top{
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr 1fr;
+    gap:2.5rem;
+    padding-bottom:3rem;
+    border-bottom:1px solid var(--line);
+  }
+  @media (max-width:820px){ .foot-top{grid-template-columns:1fr 1fr;gap:2rem} }
+  @media (max-width:520px){ .foot-top{grid-template-columns:1fr} }
+  .foot-brand .brand{font-size:1.8rem;margin-bottom:1rem}
+  .foot-brand p{color:rgba(242,234,217,.65);font-size:.92rem;max-width:300px}
+  .foot-col h5{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:1.1rem;letter-spacing:.16em;
+    color:var(--yellow);margin-bottom:1rem;
+  }
+  .foot-col ul{display:grid;gap:.55rem}
+  .foot-col a{
+    color:rgba(242,234,217,.75);font-size:.92rem;
+    transition:color .25s var(--ease);
+  }
+  .foot-col a:hover{color:var(--yellow)}
+  .foot-col a:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
+  .foot-bot{
+    padding-top:1.6rem;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;
+    font-size:.82rem;color:rgba(242,234,217,.5);
+  }
+  .foot-bot .socials{display:flex;gap:.8rem}
+  .foot-bot .socials a{
+    width:34px;height:34px;
+    display:inline-flex;align-items:center;justify-content:center;
+    border:1px solid var(--line-strong);
+    border-radius:50%;
+    transition:all .3s var(--ease);
+  }
+  .foot-bot .socials a:hover{border-color:var(--yellow);color:var(--yellow);transform:translateY(-2px)}
+
+  /* ---------- ANIMATIONEN ---------- */
+  .reveal{opacity:0;transform:translateY(30px);transition:opacity .9s var(--ease), transform .9s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    .ticker-track{animation:none}
+    .visit-pin{animation:none}
+    html{scroll-behavior:auto}
+  }
+
+  /* ---------- SCROLLBAR ---------- */
+  ::selection{background:var(--yellow);color:var(--ink)}
+</style>
+</head>
+<body>
+
+<div class="smoke-layer" aria-hidden="true"></div>
+<div class="smoke-noise" aria-hidden="true"></div>
+
+<!-- ============== NAV ============== -->
+<header class="nav" role="banner">
+  <div class="nav-inner">
+    <a href="#top" class="brand" aria-label="STREET FIRE — Startseite">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>STREET FIRE <small>EST. 2014</small></span>
+    </a>
+    <nav class="nav-links" aria-label="Hauptnavigation">
+      <a href="#feuer">Feuer</a>
+      <a href="#signature">Signature</a>
+      <a href="#menu">Menü</a>
+      <a href="#visit">Standort</a>
+    </nav>
+    <a href="#visit" class="nav-cta">Tisch sichern</a>
+  </div>
+</header>
+
+<!-- ============== HERO ============== -->
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="hero-bg" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <p class="eyebrow">Offene Flamme · Seit 2014</p>
+        <h1 class="display hero-title" id="hero-title">
+          <span>STREET</span><br>
+          <span class="red">FIRE</span><span class="yellow">.</span>
+        </h1>
+        <p class="hero-sub">
+          Laut. Lebendig. <strong>Echte thailändische Straßenküche</strong> — geschmiedet über offener Holzkohleflamme, direkt aus dem Wok auf deinen Tisch. Kein Kompromiss. Nur Feuer, Rauch und Geschmack.
+        </p>
+        <div class="hero-actions">
+          <a href="#menu" class="btn btn-primary">
+            Menü ansehen <span class="arrow" aria-hidden="true"></span>
+          </a>
+          <a href="#visit" class="btn btn-ghost">Reservieren</a>
+        </div>
+      </div>
+
+      <aside class="hero-card" aria-label="Heute im Angebot">
+        <p class="label">🔥 Heute heiß</p>
+        <p class="big">PAD THAI<sup>★</sup></p>
+        <p>Reisnudeln, Tamarinde, Erdnuss, Limette — aus dem 400°C Wok auf den Teller.</p>
+        <div class="meta">
+          <div><strong>11,90 €</strong>Preis</div>
+          <div><strong>8 Min</strong>Wartezeit</div>
+          <div><strong>3/5</strong>Schärfe</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>PAD THAI AUS DEM WOK</span>
+      <span>SATAY VOM HOLZKOHLEGRILL</span>
+      <span>TOM YUM — SCHARF &amp; SAUER</span>
+      <span>MANGO STICKY RICE</span>
+      <span>GRÜNES CURRY — HAUSGEMACHT</span>
+      <span>PAD THAI AUS DEM WOK</span>
+      <span>SATAY VOM HOLZKOHLEGRILL</span>
+      <span>TOM YUM — SCHARF &amp; SAUER</span>
+      <span>MANGO STICKY RICE</span>
+      <span>GRÜNES CURRY — HAUSGEMACHT</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FEATURES ============== -->
+<section class="section" id="feuer" aria-labelledby="feat-title">
+  <div class="wrap stack-lg">
+
+    <div class="section-head reveal">
+      <div>
+        <p class="eyebrow">Drei Säulen</p>
+        <h2 class="display section-title" id="feat-title">
+          KEIN KOMPROMISS.<br>
+          <span class="red">NUR FEUER.</span>
+        </h2>
+      </div>
+      <p class="section-desc">
+        Wir kochen nicht „asiatisch inspiriert". Wir kochen thailändisch — mit den Techniken, Zutaten und dem Lärm einer echten Nachtmärkt in Bangkok. Drei Dinge machen den Unterschied.
+      </p>
+    </div>
+
+    <div class="features-grid reveal">
+      <article class="feature">
+        <p class="feature-num">01 / Flamme</p>
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFD60A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s4 4 4 8a4 4 0 0 1-8 0c0-2 1-3 1-3s-3 2-3 6a6 6 0 0 0 12 0c0-6-6-11-6-11z"/></svg>
+        </div>
+        <h3>Offene Flamme</h3>
+        <p>Zwei Tonnen Holzkohle pro Woche. 400°C im Wok. Maillard-Reaktion in Sekunden — der Geschmack, den kein Induktionsherd der Welt erzeugen kann.</p>
+      </article>
+
+      <article class="feature">
+        <p class="feature-num">02 / Herkunft</p>
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFD60A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+        </div>
+        <h3>Importiert</h3>
+        <p>Tamarinde aus Phetchabun. Galgant aus Chiang Mai. Klebreis aus Isan. Unsere Gewürze reisen 9.000 km — weil es sonst einfach nicht schmeckt.</p>
+      </article>
+
+      <article class="feature">
+        <p class="feature-num">03 / Lärm</p>
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFD60A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h3l3-7 4 14 3-9 2 2h5"/></svg>
+        </div>
+        <h3>Laut. Lebendig.</h3>
+        <p>Kein Sanftrösten. Kein Wellness-Ambient. Zischender Wok, schlagender Pfannenwender, Stimmen, Musik. Eine Straßenküche muss klingen wie eine.</p>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============== SIGNATURE DISH ============== -->
+<section class="section" id="signature" aria-labelledby="sig-title" style="padding-top:0">
+  <div class="wrap">
+
+    <div class="signature reveal">
+      <div class="signature-img">
+        <img src="https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1400&q=80"
+             alt="Pad Thai mit Garnelen, Erdnüssen und Limette im Wok zubereitet" loading="lazy">
+      </div>
+      <div class="signature-body">
+        <p class="eyebrow">Signature Dish</p>
+        <h3 class="display" id="sig-title">
+          PAD THAI<br>
+          <span class="yellow">PRARAM 6.</span>
+        </h3>
+        <p>
+          Reisnudeln aus dem Wok, geschmiedet bei 400°C. Tamarindenpaste, Palmzucker, Fischsauce — das heilige Trio. Darüber geröstete Erdnüsse, Frühlingszwiebeln, ein Stück Limette. Bei uns mit Riesengarnelen aus dem Nordatlantik.
+        </p>
+        <p style="color:rgba(242,234,217,.6);font-size:.92rem">
+          Serviert auf einem Zinnteller. Wie in Bangkok. Wie es sein soll.
+        </p>
+        <div class="signature-stats">
+          <div>
+            <span>400°</span>
+            <small>Wok-Hitze</small>
+          </div>
+          <div>
+            <span>90s</span>
+            <small>Garzeit</small>
+          </div>
+          <div>
+            <span>11,90 €</span>
+            <small>Preis</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============== MENÜ ============== -->
+<section class="section" id="menu" aria-labelledby="menu-title">
+  <div class="wrap stack-lg">
+
+    <div class="section-head reveal">
+      <div>
+        <p class="eyebrow">Die Karte</p>
+        <h2 class="display section-title" id="menu-title">
+          AUS DEM WOK<br>
+          <span class="yellow">&amp; VOM GRILL.</span>
+        </h2>
+      </div>
+      <p class="section-desc">
+        Sechs Gerichte, die alles sagen, was wir zu sagen haben. Alle Wok-Gerichte wahlweise mit Tofu, Hähnchen, Garnelen oder Rind. Schärfe 1–5 — frag uns.
+      </p>
+    </div>
+
+    <div class="menu-tabs reveal" role="tablist" aria-label="Menü-Kategorien">
+      <button class="tab active" role="tab" aria-selected="true">Alles</button>
+      <button class="tab" role="tab" aria-selected="false">Wok</button>
+      <button class="tab" role="tab" aria-selected="false">Curry</button>
+      <button class="tab" role="tab" aria-selected="false">Grill</button>
+      <button class="tab" role="tab" aria-selected="false">Süß</button>
+    </div>
+
+    <div class="menu-grid reveal">
+
+      <!-- 1. Pad Thai -->
+      <article class="dish">
+        <div class="dish-img">
+          <span class="dish-tag">Bestseller</span>
+          <img src="https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=900&q=80"
+               alt="Pad Thai mit Reisnudeln, Garnelen, Erdnüssen und Limettenspalte" loading="lazy">
+        </div>
+        <div class="dish-body">
+          <h3 class="dish-name">Pad Thai</h3>
+          <p class="dish-desc">Reisnudeln, Tamarinde, Palmzucker, Fischsauce, Erdnuss, Limette. Wahlweise mit Tofu, Hähnchen oder Garnelen.</p>
+          <div class="dish-foot">
+            <span class="dish-price"><small>ab</small>11,90 €</span>
+            <span class="dish-heat" aria-label="Schärfe 3 von 5">
+              <span class="h-on">●</span><span class="h-on">●</span><span class="h-on">●</span><span class="h-off">●</span><span class="h-off">●</span>
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2. Grünes Curry -->
+      <article class="dish">
+        <div class="dish-img">
+          <span class="dish-tag spicy">Scharf</span>
+          <img src="https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&w=900&q=80"
+               alt="Thailändisches grünes Curry mit Hähnchen, Thai-Aubergine und Basilikum" loading="lazy">
+        </div>
+        <div class="dish-body">
+          <h3 class="dish-name">Grünes Curry</h3>
+          <p class="dish-desc">Selbst gemachte Currypaste, Kokosmilch, Thai-Auberginen, Basilikum. Mit Jasminreis. Klassisch scharf.</p>
+          <div class="dish-foot">
+            <span class="dish-price"><small>ab</small>12,90 €</span>
+            <span class="dish-heat" aria-label="Schärfe 4 von 5">
+              <span class="h-on">●</span><span class="h-on">●</span><span class="h-on">●</span><span class="h-on">●</span><span class="h-off">●</span>
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3. Satay Spieße -->
+      <article class="dish">
+        <div class="dish-img">
+          <span class="dish-tag">Grill</span>
+          <img src="https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=900&q=80"
+               alt="Hähnchen-Satay-Spieße vom Grill mit Erdnusssauce" loading="lazy">
+        </div>
+        <div class="dish-body">
+          <h3 class="dish-name">Satay Hähnchen</h3>
+          <p class="dish-desc">Mariniert in Kurkuma, Zitronengras und Kokos. Über Holzkohle gegrillt. Mit Erdnusssauce und Ajat-Pickle.</p>
+          <div class="dish-foot">
+            <span class="dish-price">9,90 €</span>
+            <span class="dish-heat" aria-label="Schärfe 2 von 5">
+              <span class="h-on">●</span><span class="h-on">●</span><span class="h-off">●</span><span class="h-off">●</span><span class="h-off">●</span>
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 4. Tom Yum -->
+      <article class="dish">
+        <div class="dish-img">
+          <span class="dish-tag spicy">Neu</span>
+          <img src="https://images.unsplash.com/photo-1569562211093-4ed0d0758f12?auto=format&fit=crop&w=900&q=80"
+               alt="Tom Yum Goong — scharf-saure Suppe mit Garnelen, Zitronengras und Chili" loading="lazy">
+        </div>
+        <div class="dish-body">
+          <h3 class="dish-name">Tom Yum Goong</h3>
+          <p class="dish-desc">Scharf-saure Suppe mit Garnelen, Zitronengras, Galgant, Kaffirlimette und Pilzen. Das Aroma Thailands in einer Schale.</p>
+          <div class="dish-foot">
+            <span class="dish-price">8,90 €</span>
+            <span class="dish-heat" aria-label="Schärfe 4 von 5">
+              <span class="h-on">●</span><span class="h-on">●</span><span class="h-on">●</span><span class="h-on">●</span><span class="h-off">●</span>
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 5. Frühlingsrollen -->
+      <article class="dish">
+        <div class="dish-img">
+          <span class="dish-tag">Vegan</span>
+          <img src="https://images.unsplash.com/photo-1606471191009-63994c53433b?auto=format&fit=crop&w=900&q=80"
+               alt="Knusprige thailändische Frühlingsrollen mit Sweet-Chili-Sauce" loading="lazy">
+        </div>
+        <div class="dish-body">
+          <h3 class="dish-name">Frühlingsrollen</h3>
+          <p class="dish-desc">Glasnudeln, Karotte, Kohl, Pilze. In Reispapier gerollt, frittiert. Mit hausgemachter Sweet-Chili-Sauce.</p>
+          <div class="dish-foot">
+            <span class="dish-price">6,90 €</span>
+            <span class="dish-heat" aria-label="Schärfe 1 von 5">
+              <span class="h-on">●</span><span class="h-off">●</span><span class="h-off">●</span><span class="h-off">●</span><span class="h-off">●</span>
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 6. Mango Sticky Rice -->
+      <article class="dish">
+        <div class="dish-img">
+          <span class="dish-tag new">Süß</span>
+          <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=900&q=80"
+               alt="Mango Sticky Rice — Klebreis mit frischer Mango und Kokosmilch" loading="lazy">
+        </div>
+        <div class="dish-body">
+          <h3 class="dish-name">Mango Sticky Rice</h3>
+          <p class="dish-desc">Klebreis in Kokosmilch, reife Mango, geröstete Sesamkörner. Das Dessert, das jede Straße in Thailand schmeckt.</p>
+          <div class="dish-foot">
+            <span class="dish-price">6,50 €</span>
+            <span class="dish-heat" aria-label="Nicht scharf">
+              <span class="h-off">●</span><span class="h-off">●</span><span class="h-off">●</span><span class="h-off">●</span><span class="h-off">●</span>
+            </span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ============== ATMOSPHERE / QUOTE ============== -->
+<section class="atmosphere" aria-labelledby="atm-title">
+  <div class="atmosphere-bg" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="atmosphere-inner reveal">
+      <p class="eyebrow">Stimme von der Straße</p>
+      <blockquote class="atmosphere-quote display" id="atm-title">
+        „DAS EINZIGE,<br>
+        WAS HIER <span class="red">BRENNT</span>,<br>
+        IST DER <span class="yellow">WOK.</span>"
+      </blockquote>
+      <p class="atmosphere-cite">
+        <strong>Bangkok Post</strong> · Street Food Award 2023
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== VISIT / CTA ============== -->
+<section class="section" id="visit" aria-labelledby="visit-title">
+  <div class="wrap stack-lg">
+
+    <div class="section-head reveal">
+      <div>
+        <p class="eyebrow">Komm vorbei</p>
+        <h2 class="display section-title" id="visit-title">
+          STANDORT<br>
+          <span class="yellow">&amp; ÖFFNUNGSZEITEN.</span>
+        </h2>
+      </div>
+      <p class="section-desc">
+        Keine Reservung nötig — aber empfohlen ab 19 Uhr. Komm hungrig. Komm laut. Bleib, solange der Wok brennt.
+      </p>
+    </div>
+
+    <div class="visit-grid reveal">
+
+      <div class="visit-info">
+        <h3>STREET FIRE<br><span style="color:var(--red)">BANGKOK-ALLEE 14</span></h3>
+
+        <dl class="visit-rows">
+          <div class="visit-row">
+            <dt>Adresse</dt>
+            <dd>
+              Bangkok-Allee 14, 10115 Berlin-Mitte
+              <small>Nähe Rosenthaler Platz · 4 Min. zu Fuß</small>
+            </dd>
+          </div>
+          <div class="visit-row">
+            <dt>Öffnungszeiten</dt>
+            <dd>
+              Di – So · 12:00 – 23:00 Uhr
+              <small>Montag Ruhetag · Küche schließt 30 Min. vorher</small>
+            </dd>
+          </div>
+          <div class="visit-row">
+            <dt>Reservierung</dt>
+            <dd>
+              +49 30 555 14 2014
+              <small>oder hallo@street-fire.studio</small>
+            </dd>
+          </div>
+          <div class="visit-row">
+            <dt>Lieferung</dt>
+            <dd>
+              Eigene Fahrer · 3 km Radius
+              <small>Bestellung ab 17 Uhr · 30-Min-Garantie</small>
+            </dd>
+          </div>
+        </dl>
+
+        <div style="margin-top:2rem;display:flex;gap:.8rem;flex-wrap:wrap">
+          <a href="tel:+4930555142014" class="btn btn-primary">Anrufen <span class="arrow" aria-hidden="true"></span></a>
+          <a href="#" class="btn btn-ghost">Online bestellen</a>
+        </div>
+      </div>
+
+      <div class="visit-map" role="img" aria-label="Karte: Bangkok-Allee 14, Berlin-Mitte, in der Nähe des Rosenthaler Platzes">
+        <div class="visit-pin" aria-hidden="true">
+          <span class="dot"></span>
+          <span class="stick
+</body>
+</html>
