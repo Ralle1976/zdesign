@@ -9,6 +9,7 @@
 // memory-layer failure can never break the design route.
 
 import { db } from '@/lib/db';
+import { reinforceDomainPositives } from '@/lib/ai/memory/negative-memory';
 
 /** A raw DesignHistory row (matches the Prisma model field-for-field). */
 export interface DesignHistoryRow {
@@ -71,6 +72,7 @@ export function deriveValence(
 export async function recordDesign(entry: RecordDesignInput): Promise<void> {
   try {
     const derived = deriveValence(entry.composite);
+    const valence = entry.valence ?? derived.valence;
     await db.designHistory.create({
       data: {
         prompt: entry.prompt,
@@ -80,12 +82,15 @@ export async function recordDesign(entry: RecordDesignInput): Promise<void> {
         palette: entry.palette ?? null,
         feedback: entry.feedback ?? null,
         projectId: entry.projectId ?? null,
-        valence: entry.valence ?? derived.valence,
+        valence,
         outcome: entry.outcome ?? derived.outcome,
         rootCause: entry.rootCause ?? null,
         sourceAgentId: entry.sourceAgentId ?? null,
       },
     });
+    // P2.1 extinction loop: a success in this domain weakens its prior negatives
+    // (counter-evidence). Fire-and-forget — never blocks/breaks the design write.
+    if (valence > 0) void reinforceDomainPositives(entry.domain);
   } catch (e) {
     console.warn('[memory/history] recordDesign failed:', e instanceof Error ? e.message : e);
   }

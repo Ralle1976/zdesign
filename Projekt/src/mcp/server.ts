@@ -222,10 +222,22 @@ function requireString(params: Record<string, unknown>, key: string): string {
   return v;
 }
 
+function canCall(auth: AuthContext | undefined, need: 'read' | 'write'): boolean {
+  if (!auth || auth.admin) return true;
+  if (need === 'read') return auth.scopes.some((s) => s === 'read' || s === 'recall' || s === 'admin');
+  return auth.scopes.includes('write') || auth.scopes.includes('admin');
+}
+
 async function dispatchTool(
   name: string,
   params: Record<string, unknown>,
+  auth?: AuthContext,
 ): Promise<unknown> {
+  // P2.3 scope guard (admin bypasses).
+  const need = TOOL_SCOPE[name] ?? 'read';
+  if (!canCall(auth, need)) {
+    throw new Error(`insufficient scope: '${need}' required for ${name}, agent has [${auth?.scopes.join(',') ?? ''}]`);
+  }
   switch (name) {
     case 'zdesign_generate': {
       const message = requireString(params, 'message');
@@ -263,7 +275,10 @@ async function dispatchTool(
       const domain = requireString(params, 'domain');
       const qs = new URLSearchParams({ domain });
       if (typeof params.context === 'string' && params.context.trim()) qs.set('context', params.context);
-      if (typeof params.limit === 'number') qs.set('limit', String(params.limit));
+      // P2.3 cap recall breadth by the agent's trust tier (admin bypasses).
+      const requested = typeof params.limit === 'number' ? params.limit : 25;
+      const limit = auth?.admin ? requested : Math.min(requested, auth?.recallLimit ?? 25);
+      qs.set('limit', String(limit));
       if (typeof params.maxTokens === 'number') qs.set('maxTokens', String(params.maxTokens));
       return apiFetch(`/api/memory/recall?${qs.toString()}`, { method: 'GET' });
     }
@@ -273,19 +288,91 @@ async function dispatchTool(
 }
 
 // ---------------------------------------------------------------------------
-// Auth.
+// Auth — DEFAULT-DENY + scoped per-agent tokens (P2.3).
+//
+// Security model (realism-checked): the previous gate was OPEN whenever
+// MCP_TOKEN was unset (server.ts default-open) — indefensible once the brain is
+// reachable globally. Now:
+//   - DEFAULT-DENY. Open ONLY when MCP_OPEN_DEV=1 is set explicitly (dev opt-in).
+//   - MCP_TOKEN                  = full-admin token (backward compatible).
+//   - MCP_AGENT_TOKENS (JSON)    = {"<token>": {"agentId","scopes","recallLimit"}}
+//     scopes ∈ read|write|recall|admin. recallLimit caps how many negative
+//     memories a low-trust agent may pull. (Crypto-grade Macaroons + Ed25519
+//     signing are the documented graduation; this is the pragmatic 80%.)
 // ---------------------------------------------------------------------------
 
-/** Returns true when the request is authorized. When MCP_TOKEN is unset the
- *  server is open (dev convenience). */
-export function isAuthorized(authHeader: string | null): boolean {
-  const token = process.env.MCP_TOKEN;
-  if (!token) return true; // gate disabled
-  if (!authHeader) return false;
+/** Per-tool minimum scope. */
+const TOOL_SCOPE: Record<string, 'read' | 'write'> = {
+  zdesign_generate: 'write',
+  zdesign_batch: 'write',
+  zdesign_concepts: 'write',
+  zdesign_list_projects: 'read',
+  zdesign_get_project: 'read',
+  zdesign_recall_anti_patterns: 'read',
+};
+
+export interface AuthContext {
+  agentId: string;
+  admin: boolean;
+  scopes: string[];
+  recallLimit: number;
+}
+
+const ADMIN_CONTEXT: AuthContext = {
+  agentId: 'admin',
+  admin: true,
+  scopes: ['admin', 'read', 'write', 'recall'],
+  recallLimit: 100,
+};
+
+let _agentTokensCache: { value: Record<string, Partial<AuthContext> & { agentId?: string }>; env: string } | null = null;
+function parseAgentTokens(): Record<string, Partial<AuthContext> & { agentId?: string }> {
+  const raw = process.env.MCP_AGENT_TOKENS ?? '';
+  if (_agentTokensCache?.env === raw) return _agentTokensCache.value;
+  let value: Record<string, Partial<AuthContext> & { agentId?: string }> = {};
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') value = parsed as typeof value;
+    } catch {
+      value = {};
+    }
+  }
+  _agentTokensCache = { value, env: raw };
+  return value;
+}
+
+/** Pull the bearer token out of an Authorization header (or accept a raw token). */
+function extractBearer(authHeader: string | null): string | null {
+  if (!authHeader) return null;
   const trimmed = authHeader.trim();
-  const direct = trimmed === token;
-  const bearer = /^Bearer\s+(.+)$/i.exec(trimmed)?.[1]?.trim() === token;
-  return direct || bearer;
+  if (!trimmed) return null;
+  const bearer = /^Bearer\s+(.+)$/i.exec(trimmed)?.[1]?.trim();
+  return bearer && bearer.length > 0 ? bearer : trimmed;
+}
+
+/** Resolve an Authorization header to an AuthContext, or null (unknown token). */
+export function resolveAuth(authHeader: string | null): AuthContext | null {
+  const tok = extractBearer(authHeader);
+  if (!tok) return null;
+  const admin = process.env.MCP_TOKEN;
+  if (admin && tok === admin) return { ...ADMIN_CONTEXT };
+  const map = parseAgentTokens();
+  const entry = map[tok];
+  if (!entry) return null;
+  return {
+    agentId: entry.agentId ?? 'agent',
+    admin: !!entry.admin,
+    scopes: Array.isArray(entry.scopes) ? entry.scopes : ['recall'],
+    recallLimit: typeof entry.recallLimit === 'number' && entry.recallLimit > 0 ? entry.recallLimit : 25,
+  };
+}
+
+/** Returns true when the request is authorized. DEFAULT-DENY unless
+ *  MCP_OPEN_DEV=1 (explicit dev opt-in) or a valid token is present. */
+export function isAuthorized(authHeader: string | null): boolean {
+  if (process.env.MCP_OPEN_DEV === '1') return true;
+  return resolveAuth(authHeader) !== null;
 }
 
 /** Reject loopback-only hosts. Returns true when the host header looks like
@@ -319,7 +406,7 @@ function resultResponse(id: string | number | null, result: unknown): string {
 
 /** Handle a single JSON-RPC request object. Returns the JSON string of the
  *  response (empty string for notifications, which get no response). */
-async function handleRequest(req: JsonRpcRequest): Promise<string> {
+async function handleRequest(req: JsonRpcRequest, auth?: AuthContext): Promise<string> {
   const id = req.id ?? null;
   const method = req.method;
 
@@ -357,7 +444,7 @@ async function handleRequest(req: JsonRpcRequest): Promise<string> {
           return errorResponse(id, ERR_INVALID_PARAMS, 'tools/call requires { name }');
         }
         try {
-          const result = await dispatchTool(toolName, toolArgs);
+          const result = await dispatchTool(toolName, toolArgs, auth);
           // Wrap as MCP tool result content (text block).
           const text = typeof result === 'string' ? result : JSON.stringify(result);
           return resultResponse(id, {
@@ -402,8 +489,10 @@ export async function handleMcpRequest(opts: {
     };
   }
 
-  // 2) Bearer token gate (only when MCP_TOKEN is configured).
-  if (!isAuthorized(authHeader)) {
+  // 2) Auth — DEFAULT-DENY. Resolve the auth context once (used both for the
+  //    gate and for per-tool scope/recall-limit enforcement downstream).
+  const auth = process.env.MCP_OPEN_DEV === '1' ? ADMIN_CONTEXT : resolveAuth(authHeader);
+  if (!auth) {
     return {
       status: 401,
       body: JSON.stringify({ jsonrpc: '2.0', error: { code: -32001, message: 'Unauthorized' } }),
@@ -433,7 +522,7 @@ export async function handleMcpRequest(opts: {
       };
     }
     const responses = await Promise.all(
-      parsed.map((item) => handleRequest(item as JsonRpcRequest)),
+      parsed.map((item) => handleRequest(item as JsonRpcRequest, auth)),
     );
     const filtered = responses.filter((r) => r !== '');
     return {
@@ -460,7 +549,7 @@ export async function handleMcpRequest(opts: {
     };
   }
 
-  const respBody = await handleRequest(req);
+  const respBody = await handleRequest(req, auth);
   // Notifications produce '' — HTTP 202, no body.
   if (respBody === '') {
     return { status: 202, body: '', contentType: 'application/json' };

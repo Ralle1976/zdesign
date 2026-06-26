@@ -224,3 +224,39 @@ model DesignLessonHistory {
   composite     Float?
   createdAt     DateTime @default(now())
 }
+
+// ============ P2.1 Extinction / un-learning ============
+// Counter-evidence per (domain, anti-pattern): a false negative can be
+// UN-learned. Retrieval weight is multiplied by a Beta-binomial-ish posterior
+// P(still bad) = confirmations / (confirmations + counterEvidence), so as
+// successes pile up in the same context the negative is SUPPRESSED (not erased).
+
+model DesignExtinction {
+  id              String   @id @default(cuid())
+  domain          String
+  antiPattern     String
+  confirmations   Int      @default(0)
+  counterEvidence Int      @default(0)
+  lastCounterAt   DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([domain, antiPattern])
+}
+
+// ============ P2.4 Shadow-write consolidation + kill-switch ============
+// Candidate anti-patterns distilled from episodes sit in 'shadow' until an
+// eval-gated promotion (confidence ≥ threshold + ≥2 source episodes + not
+// killed). The kill switch rolls a generation back in one update.
+
+model DesignConsolidation {
+  id               String   @id @default(cuid())
+  topic            String
+  candidateJson    String
+  sourceEpisodeIds String
+  confidence       Float    @default(0)
+  status           String   @default("shadow")
+  killSwitch       Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  promotedAt       DateTime?
+}

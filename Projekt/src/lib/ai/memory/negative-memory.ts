@@ -18,6 +18,7 @@
  */
 import { db } from '@/lib/db';
 import { estimateTokens } from '@/lib/ai/memory/context-manager';
+import { sanitizePayload, wrapUntrusted, TRUST, type TrustTier } from '@/lib/ai/memory/memory-sanitizer';
 
 /** ~30-day half-life for recency decay. Tunable. */
 const HALF_LIFE_DAYS = 30;
@@ -28,11 +29,15 @@ const DEFAULT_RECALL_BUDGET_TOKENS = 1200;
 
 export interface RecallItem {
   source: 'episode' | 'recipe';
-  /** One-line, agent-usable "avoid …" string. */
+  /** One-line, agent-usable "avoid …" string (sanitized; low-trust wrapped). */
   text: string;
   valence: number;
   salience: number;
   frequency: number;
+  /** P2.2 trust tier (system/learned/episode/user) — see memory-sanitizer. */
+  trustTier: TrustTier;
+  /** P2.2 true if the payload contained injection-shaped spans (now redacted). */
+  flagged?: boolean;
   provenance: {
     kind: 'DesignHistory' | 'DesignLesson';
     id?: string;
@@ -89,6 +94,7 @@ export async function recallAntiPatterns(opts: {
           // a high-composite lesson's avoid-list is well-supported evidence
           salience: ((l.composite ?? 0) / 10) * LOSS_AVERSION,
           frequency: 1,
+          trustTier: TRUST.learned,
           provenance: {
             kind: 'DesignLesson',
             id: l.id,
@@ -128,8 +134,10 @@ export async function recallAntiPatterns(opts: {
     // group by normalized text so frequency accumulates (repeated failures weigh more)
     const byKey = new Map<string, RecallItem & { _count: number; _latest: Date }>();
     for (const e of relevant) {
-      const text = `avoid (${e.domain}): ${e.rootCause?.trim() || e.feedback?.trim() || e.outcome || 'poor outcome'}`.slice(0, 240);
-      const key = text.toLowerCase();
+      const raw = `avoid (${e.domain}): ${e.rootCause?.trim() || e.feedback?.trim() || e.outcome || 'poor outcome'}`.slice(0, 240);
+      const san = sanitizePayload(raw); // P2.2 strip injection-shaped spans
+      const text = wrapUntrusted(san.clean, 'episode'); // P2.2 envelope as data
+      const key = san.clean.toLowerCase();
       const ageDays = (now - (e.createdAt?.getTime() ?? now)) / 86_400_000;
       const recency = Math.exp(-ageDays / HALF_LIFE_DAYS);
       const salience =
@@ -138,6 +146,7 @@ export async function recallAntiPatterns(opts: {
       if (existing) {
         existing._count += 1;
         existing.salience = Math.max(existing.salience, salience) * (1 + Math.log10(1 + existing._count));
+        existing.flagged = existing.flagged || san.hadInjection;
         if ((e.createdAt?.getTime() ?? 0) > existing._latest.getTime()) existing._latest = e.createdAt!;
       } else {
         byKey.set(key, {
@@ -146,6 +155,8 @@ export async function recallAntiPatterns(opts: {
           valence: e.valence ?? -1,
           salience,
           frequency: 1,
+          trustTier: TRUST.episode,
+          flagged: san.hadInjection,
           provenance: {
             kind: 'DesignHistory',
             id: e.id,
@@ -165,6 +176,22 @@ export async function recallAntiPatterns(opts: {
 
     // --- merge, dedupe (case-insensitive on text), rank, budget ---
     const merged = dedupeByText([...recipeCandidates, ...episodeCandidates]);
+
+    // --- P2.1 EXTINCTION weighting (un-learning): suppress retrieval weight by
+    // a Beta-binomial-ish posterior P(still bad) = conf/(conf+counter) when
+    // counter-evidence has accumulated. Floor 5% so it is suppressed, not erased.
+    const extinctionRows = await db.designExtinction.findMany({
+      where: { domain: { contains: domain } },
+    });
+    const extMap = new Map(extinctionRows.map((r) => [r.antiPattern.toLowerCase(), r]));
+    for (const item of merged) {
+      const ext = extMap.get(normAnti(item.text));
+      if (ext && ext.confirmations + ext.counterEvidence > 0) {
+        const posterior = ext.confirmations / (ext.confirmations + ext.counterEvidence);
+        item.salience *= Math.max(0.05, posterior);
+      }
+    }
+
     merged.sort((a, b) => b.salience - a.salience);
 
     const limit = opts.limit ?? 25;
@@ -252,5 +279,73 @@ export async function appendLessonHistory(change: LessonChange): Promise<void> {
     });
   } catch (e) {
     console.warn('[memory/negative] appendLessonHistory failed:', e instanceof Error ? e.message : e);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// P2.1 Extinction — UN-LEARNING a false negative. Counter-evidence (a success
+// in a context where a negative was recorded) lowers the retrieval posterior,
+// so the avoid-signal is SUPPRESSED without being erased.
+// ---------------------------------------------------------------------------
+
+/**
+ * Normalize an item's text to the anti-pattern key used by DesignExtinction:
+ * strip the <untrusted> envelope + the "avoid (domain):" prefix, lowercase.
+ * Used by BOTH recall (lookup) and recordCounterEvidence (store) so keys align.
+ */
+export function normAnti(text: string): string {
+  return (text ?? '')
+    .replace(/<[^>]+>/g, '') // strip <untrusted ...> envelopes + tags
+    .replace(/^avoid\s*\([^)]*\)\s*:\s*/i, '') // strip "avoid (domain):" prefix
+    .trim()
+    .toLowerCase()
+    .slice(0, 160);
+}
+
+/**
+ * Record that a success occurred against a known anti-pattern (counter-evidence).
+ * Upserts DesignExtinction(domain, normAnti) and increments counterEvidence.
+ * Never throws.
+ */
+export async function recordCounterEvidence(opts: {
+  domain: string;
+  antiPattern: string;
+}): Promise<void> {
+  try {
+    const domain = (opts.domain ?? '').trim();
+    const antiPattern = normAnti(opts.antiPattern);
+    if (!domain || !antiPattern) return;
+    const existing = await db.designExtinction.findUnique({
+      where: { domain_antiPattern: { domain, antiPattern } },
+    });
+    if (existing) {
+      await db.designExtinction.update({
+        where: { id: existing.id },
+        data: { counterEvidence: { increment: 1 }, lastCounterAt: new Date() },
+      });
+    } else {
+      await db.designExtinction.create({
+        data: { domain, antiPattern, counterEvidence: 1, lastCounterAt: new Date() },
+      });
+    }
+  } catch (e) {
+    console.warn('[memory/negative] recordCounterEvidence failed:', e instanceof Error ? e.message : e);
+  }
+}
+
+/**
+ * A success landed in a domain → weaken ALL of that domain's prior negatives
+ * (one unit of counter-evidence each). Coarse but safe domain-wide un-learning,
+ * called from history.recordDesign on a positive outcome. Never throws.
+ */
+export async function reinforceDomainPositives(domain: string): Promise<void> {
+  try {
+    if (!domain?.trim()) return;
+    await db.designExtinction.updateMany({
+      where: { domain: { contains: domain.trim() } },
+      data: { counterEvidence: { increment: 1 }, lastCounterAt: new Date() },
+    });
+  } catch (e) {
+    console.warn('[memory/negative] reinforceDomainPositives failed:', e instanceof Error ? e.message : e);
   }
 }
