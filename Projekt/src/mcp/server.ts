@@ -150,6 +150,21 @@ const TOOLS: ToolDef[] = [
       required: ['id'],
     },
   },
+  {
+    name: 'zdesign_recall_anti_patterns',
+    description:
+      'Read-only negative-memory recall. Returns ranked AVOID signals for a domain — anti-patterns from approved learned recipes + negative past design episodes (failures), scored by a bounded loss-aversion salience and token-budgeted. Call BEFORE generating for a domain so the agent does not repeat past failures.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        domain: { type: 'string', description: 'Design domain/topic to recall avoid-patterns for (e.g. "thai spa", "coffee").' },
+        context: { type: 'string', description: 'Optional extra context to match against past episodes.' },
+        limit: { type: 'number', description: 'Max items (1-100, default 25).' },
+        maxTokens: { type: 'number', description: 'Token budget for the returned payload (default 1200).' },
+      },
+      required: ['domain'],
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -243,6 +258,14 @@ async function dispatchTool(
     case 'zdesign_get_project': {
       const id = requireString(params, 'id');
       return apiFetch(`/api/projects/${encodeURIComponent(id)}`, { method: 'GET' });
+    }
+    case 'zdesign_recall_anti_patterns': {
+      const domain = requireString(params, 'domain');
+      const qs = new URLSearchParams({ domain });
+      if (typeof params.context === 'string' && params.context.trim()) qs.set('context', params.context);
+      if (typeof params.limit === 'number') qs.set('limit', String(params.limit));
+      if (typeof params.maxTokens === 'number') qs.set('maxTokens', String(params.maxTokens));
+      return apiFetch(`/api/memory/recall?${qs.toString()}`, { method: 'GET' });
     }
     default:
       throw new Error(`Unknown tool: ${name}`);

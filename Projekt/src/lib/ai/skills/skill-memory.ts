@@ -6,6 +6,7 @@
  */
 import { db } from '@/lib/db'
 import { jsonrepair } from 'jsonrepair'
+import { appendLessonHistory } from '@/lib/ai/memory/negative-memory'
 
 export interface DesignRecipe {
   topic: string
@@ -96,6 +97,14 @@ export async function saveRecipeProposal(
       approved,
     },
   })
+  await appendLessonHistory({
+    lessonId: created.id,
+    topic: recipe.topic,
+    changeType: 'create',
+    afterJson: JSON.stringify({ ...recipe, sourceComposite: composite }),
+    composite,
+    sourceAgentId: source,
+  })
   return { id: created.id, approved }
 }
 
@@ -183,6 +192,15 @@ export async function patchRecipe(
         version: { increment: 1 },
         // updatedAt is @updatedAt so it auto-bumps; no need to set it.
       },
+    })
+    await appendLessonHistory({
+      lessonId: existing.id,
+      topic,
+      changeType: 'patch',
+      beforeJson: existing.recipeJson,
+      afterJson: JSON.stringify(mergedRecipe),
+      reason: 'merged new winning recipe into approved baseline',
+      composite: mergedComposite,
     })
 
     return { id: updated.id, approved: updated.approved, patched: true }

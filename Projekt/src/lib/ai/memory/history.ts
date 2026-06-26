@@ -20,6 +20,10 @@ export interface DesignHistoryRow {
   palette: string | null;
   feedback: string | null;
   projectId: string | null;
+  valence: number | null;
+  outcome: string | null;
+  rootCause: string | null;
+  sourceAgentId: string | null;
   createdAt: Date;
 }
 
@@ -31,6 +35,34 @@ export interface RecordDesignInput {
   palette?: string | null;
   feedback?: string | null;
   projectId?: string | null;
+  /** Affect in [-1, +1]. If omitted, derived from composite (see deriveValence). */
+  valence?: number | null;
+  /** 'success' | 'neutral' | 'failure'. If omitted, derived from composite. */
+  outcome?: string | null;
+  /** Why it failed / what to avoid (free text, surfaces in negative recall). */
+  rootCause?: string | null;
+  /** Which agent/skill wrote the episode (trust-tiering + attribution). */
+  sourceAgentId?: string | null;
+}
+
+/**
+ * Derive a valence [-1, +1] and an outcome label from a 0-10 composite.
+ *   composite >= 8 → success (+1)   |   >= 7 → neutral (0)   |   < 7 → failure (-1)
+ * The valence is continuous so recall can weight magnitude, while outcome is
+ * the categorical bucket used for filtering. This is the "affect" the negative
+ * memory layer reads — every recorded design becomes a +/- memory automatically,
+ * with no change to callers.
+ */
+export function deriveValence(
+  composite?: number | null,
+): { valence: number; outcome: 'success' | 'neutral' | 'failure' } {
+  if (composite == null || !Number.isFinite(composite)) {
+    return { valence: 0, outcome: 'neutral' };
+  }
+  const valence = Math.max(-1, Math.min(1, (composite - 7) / 3));
+  const outcome: 'success' | 'neutral' | 'failure' =
+    composite >= 8 ? 'success' : composite >= 7 ? 'neutral' : 'failure';
+  return { valence, outcome };
 }
 
 /**
@@ -38,6 +70,7 @@ export interface RecordDesignInput {
  */
 export async function recordDesign(entry: RecordDesignInput): Promise<void> {
   try {
+    const derived = deriveValence(entry.composite);
     await db.designHistory.create({
       data: {
         prompt: entry.prompt,
@@ -47,6 +80,10 @@ export async function recordDesign(entry: RecordDesignInput): Promise<void> {
         palette: entry.palette ?? null,
         feedback: entry.feedback ?? null,
         projectId: entry.projectId ?? null,
+        valence: entry.valence ?? derived.valence,
+        outcome: entry.outcome ?? derived.outcome,
+        rootCause: entry.rootCause ?? null,
+        sourceAgentId: entry.sourceAgentId ?? null,
       },
     });
   } catch (e) {

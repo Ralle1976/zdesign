@@ -197,5 +197,30 @@ model DesignHistory {
   palette     String?
   feedback    String?
   projectId   String?
+  // --- P1 negative-memory (valence/affect layer) ---
+  // valence: affect in [-1, +1] (+success / -failure), auto-derived from composite.
+  // outcome: 'success' | 'neutral' | 'failure'. rootCause: why it failed/what to avoid.
+  // sourceAgentId: which agent/skill wrote it (for trust-tiering + attribution).
+  valence      Float?
+  outcome      String?
+  rootCause    String?
+  sourceAgentId String?
   createdAt   DateTime @default(now())
+}
+
+// ============ Design Lesson History (P1) — append-only skill audit ============
+// Invalidate-not-delete in pure Prisma: every skill (DesignLesson) rewrite is
+// appended here so prior versions are always recoverable. Never updated/deleted.
+
+model DesignLessonHistory {
+  id            String   @id @default(cuid())
+  lessonId      String?
+  topic         String
+  changeType    String
+  beforeJson    String?
+  afterJson     String?
+  reason        String?
+  sourceAgentId String?
+  composite     Float?
+  createdAt     DateTime @default(now())
 }
