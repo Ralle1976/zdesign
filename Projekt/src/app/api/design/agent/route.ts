@@ -27,6 +27,7 @@ import { enforceConceptTokens } from '@/lib/ai/skills/palette-enforcer';
 import { appendTrace } from '@/lib/ai/skills/trace-store';
 import { runAudits } from '@/lib/audit/runner';
 import { recordDesign } from '@/lib/ai/memory/history';
+import { recallAntiPatterns } from '@/lib/ai/memory/negative-memory';
 
 /** Map deterministic lint P0 findings into the same shape as probabilistic
  *  critique refinements, so refine gets BOTH signals in one pass. */
@@ -131,6 +132,26 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // 1b-bis) NEGATIVE MEMORY (avoid loop): recall past failures + learned
+    //   anti-patterns for this domain and inject them as a "VERMEIDE" block so
+    //   the model does NOT repeat them. Surfaces in the agent trace (UI-visible).
+    const memory = await recallAntiPatterns({ domain: brief.domain, maxTokens: 800 });
+    const memoryBlock =
+      memory.items.length > 0
+        ? `\n\nAUS DEM GEDÄCHTNIS — vergangene Fehler für „${brief.domain}", UNBEDINGT VERMEIDEN:\n${memory.items
+            .map((i) => `- ${i.text}`)
+            .join('\n')}\nKeines dieser Muster wiederholen.\n`
+        : '';
+    trace.push({
+      step: 'negative-memory',
+      label: memory.items.length
+        ? `Gedächtnis: ${memory.items.length} zu vermeidende Muster`
+        : 'Gedächtnis: keine vergangenen Fehler für diese Domain',
+      detail: memory.items.length
+        ? memory.items.map((i) => i.text.replace(/<[^>]+>/g, '')).slice(0, 5).join(' · ')
+        : undefined,
+    });
+
     // 1c) TWO-PASS (Q3): when a concept is present, FIRST run an Art-Director
     //     thinking pass that produces a concise design rationale, THEN prepend
     //     it to the production HTML prompt. The rationale primes the model with
@@ -184,7 +205,7 @@ export async function POST(request: NextRequest) {
       : '';
     for (let ga = 1; ga <= GEN_ATTEMPTS; ga++) {
       const raw = cleanHtml(
-        await callZai(rationalePrefix + generateHtmlPrompt(brief, message, existing), {
+        await callZai(rationalePrefix + memoryBlock + generateHtmlPrompt(brief, message, existing), {
           maxTokens: 12000,
           temperature: ga === 1 ? 0.5 : 0.3,
           timeoutMs: 300_000,

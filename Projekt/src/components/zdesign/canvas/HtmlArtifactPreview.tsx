@@ -108,9 +108,12 @@ export function HtmlArtifactPreview({
   const [refineText, setRefineText] = useState('');
   const [refining, setRefining] = useState(false);
   const [refineError, setRefineError] = useState<string | null>(null);
+  const [showTrace, setShowTrace] = useState(false);
 
   const storeProjectId = useZDesignStore((s) => s.projectId);
   const setDesignHTML = useZDesignStore((s) => s.setDesignHTML);
+  const agentTrace = useZDesignStore((s) => s.agentTrace);
+  const agentScores = useZDesignStore((s) => s.agentScores);
   const effectiveProjectId = projectId ?? storeProjectId;
 
   // Re-mount the iframe when the HTML changes so srcDoc reliably reloads.
@@ -310,6 +313,41 @@ export function HtmlArtifactPreview({
         >
           {showControls ? '× Tuning' : '⚙ Tuning'}
         </button>
+
+        {/* --- brain / process trace toggle (P1: makes the memory visible) --- */}
+        {agentTrace.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setShowTrace((v) => !v)}
+            className="absolute top-2 right-2 z-20 rounded-md bg-black/60 px-2 py-1 text-xs font-medium text-white hover:bg-black/80 transition-colors"
+            aria-expanded={showTrace}
+            title="Agent-Prozess & Gedächtnis"
+          >
+            {showTrace ? '× Prozess' : '🧠 Prozess'}
+          </button>
+        )}
+        {showTrace && agentTrace.length > 0 && (
+          <div className="absolute top-9 right-2 z-30 w-72 max-h-[70%] overflow-auto rounded-lg border border-black/10 bg-white/95 p-3 shadow-xl backdrop-blur text-xs text-foreground space-y-1.5">
+            <div className="font-semibold text-[11px] uppercase tracking-wide text-muted-foreground">
+              Agent-Schritte
+            </div>
+            {agentTrace.map((s, i) => (
+              <div key={i} className="border-l-2 border-emerald-400/60 pl-2">
+                <div className="font-medium leading-tight">{s.label}</div>
+                {s.detail && (
+                  <div className="text-muted-foreground text-[10px] leading-snug mt-0.5 break-words">
+                    {s.detail}
+                  </div>
+                )}
+              </div>
+            ))}
+            {agentScores && (
+              <div className="pt-1 mt-1 border-t border-black/10 text-[10px] text-muted-foreground">
+                Ø{(agentScores.harmony + agentScores.life + agentScores.radiance + agentScores.hierarchy + agentScores.craftsmanship) / 5} · H{agentScores.harmony} L{agentScores.life} R{agentScores.radiance} H{agentScores.hierarchy} C{agentScores.craftsmanship}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* --- S5: surgical-refine hint badge --- */}
         <div className="absolute bottom-2 left-2 z-20 rounded bg-black/50 px-2 py-0.5 text-[10px] text-white/80 pointer-events-none">
