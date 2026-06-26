@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linienraum Architekten — Wohn- und Kulturbau</title>
+<meta name="description" content="Linienraum Architekten entwirft Wohn- und Kulturbauten aus Beton, Licht und Proportion. Studio in Leipzig, realisiert in Deutschland, Österreich und der Schweiz.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#141414;
+    --ink-soft:#2a2a28;
+    --concrete:#8A8A85;
+    --concrete-dim:#5c5c58;
+    --paper:#f3f1ec;
+    --paper-warm:#e8e5dd;
+    --white:#ffffff;
+    --line:rgba(20,20,20,.14);
+    --line-strong:rgba(20,20,20,.32);
+    --ease:cubic-bezier(.2,.6,.2,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    font-weight:400;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--ink);color:var(--paper)}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .display{
+    font-family:'Archivo',sans-serif;
+    font-weight:800;
+    letter-spacing:-.025em;
+    line-height:.92;
+    text-transform:uppercase;
+  }
+  .mono{
+    font-family:'Archivo',sans-serif;
+    font-weight:500;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-size:.72rem;
+  }
+  .wrap{max-width:1480px;margin:0 auto;padding:0 32px}
+  @media (max-width:720px){.wrap{padding:0 20px}}
+
+  /* ============ NAV ============ */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    padding:18px 0;
+    background:rgba(243,241,236,.78);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-row{display:flex;align-items:center;justify-content:space-between;gap:32px}
+  .brand{display:flex;align-items:baseline;gap:10px}
+  .brand-mark{
+    font-family:'Archivo',sans-serif;font-weight:900;
+    letter-spacing:-.02em;font-size:1.05rem;
+  }
+  .brand-mark span{color:var(--concrete)}
+  .brand-sub{
+    font-family:'Archivo',sans-serif;font-weight:500;
+    letter-spacing:.18em;text-transform:uppercase;font-size:.62rem;
+    color:var(--concrete-dim);
+  }
+  .nav-links{display:flex;gap:36px;align-items:center}
+  .nav-links a{
+    font-family:'Archivo',sans-serif;font-weight:500;
+    letter-spacing:.08em;text-transform:uppercase;font-size:.74rem;
+    color:var(--ink);transition:color .3s var(--ease);
+    position:relative;padding:6px 0;
+  }
+  .nav-links a:hover{color:var(--concrete)}
+  .nav-cta{
+    border:1px solid var(--ink);
+    padding:11px 22px;
+    font-family:'Archivo',sans-serif;font-weight:600;
+    letter-spacing:.1em;text-transform:uppercase;font-size:.72rem;
+    transition:all .35s var(--ease);
+  }
+  .nav-cta:hover{background:var(--ink);color:var(--paper)}
+  @media (max-width:880px){.nav-links{display:none}}
+
+  /* ============ HERO ============ */
+  .hero{padding:140px 0 80px;position:relative}
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.35fr 1fr;
+    gap:64px;
+    align-items:end;
+  }
+  .hero-left{padding-bottom:20px}
+  .hero-eyebrow{
+    display:flex;align-items:center;gap:14px;
+    margin-bottom:48px;color:var(--concrete-dim);
+  }
+  .hero-eyebrow::before{
+    content:"";width:48px;height:1px;background:var(--ink);
+  }
+  .hero h1{
+    font-size:clamp(3.4rem,9vw,9rem);
+    margin-bottom:36px;
+  }
+  .hero h1 em{
+    font-style:normal;
+    font-family:'Inter',sans-serif;
+    font-weight:300;
+    letter-spacing:-.01em;
+    text-transform:none;
+    color:var(--concrete);
+    display:block;
+    font-size:.42em;
+    line-height:1.3;
+    margin-top:24px;
+    max-width:24ch;
+  }
+  .hero-meta{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:24px;
+    padding-top:32px;
+    border-top:1px solid var(--line-strong);
+    margin-top:48px;
+  }
+  .hero-meta-item .mono{color:var(--concrete-dim);margin-bottom:8px;display:block}
+  .hero-meta-item p{font-size:.92rem;line-height:1.45}
+  .hero-right{position:relative}
+  .hero-img{
+    aspect-ratio:3/4;
+    overflow:hidden;
+    position:relative;
+  }
+  .hero-img img{width:100%;height:100%;object-fit:cover;filter:contrast(1.04) saturate(.92)}
+  .hero-img-caption{
+    position:absolute;bottom:16px;left:16px;
+    color:var(--white);mix-blend-mode:difference;
+    font-family:'Archivo',sans-serif;font-weight:500;
+    letter-spacing:.14em;text-transform:uppercase;font-size:.62rem;
+  }
+  .hero-side{
+    position:absolute;top:0;right:-20px;
+    writing-mode:vertical-rl;
+    transform:rotate(180deg);
+    font-family:'Archivo',sans-serif;font-weight:500;
+    letter-spacing:.3em;text-transform:uppercase;font-size:.62rem;
+    color:var(--concrete-dim);
+  }
+  @media (max-width:980px){
+    .hero-grid{grid-template-columns:1fr;gap:48px}
+    .hero-side{display:none}
+    .hero-meta{grid-template-columns:1fr 1fr}
+  }
+
+  /* ============ TICKER ============ */
+  .ticker{
+    border-top:1px solid var(--ink);
+    border-bottom:1px solid var(--ink);
+    overflow:hidden;
+    background:var(--ink);
+    color:var(--paper);
+    padding:18px 0;
+  }
+  .ticker-track{
+    display:flex;gap:64px;
+    white-space:nowrap;
+    animation:scroll 38s linear infinite;
+    font-family:'Archivo',sans-serif;font-weight:600;
+    letter-spacing:.06em;text-transform:uppercase;font-size:.95rem;
+  }
+  .ticker-track span{display:inline-flex;align-items:center;gap:64px}
+  .ticker-track span::after{
+    content:"◆";color:var(--concrete);font-size:.6rem;
+  }
+  @keyframes scroll{
+    from{transform:translateX(0)}
+    to{transform:translateX(-50%)}
+  }
+
+  /* ============ SECTION HEAD ============ */
+  .section{padding:120px 0}
+  .sec-head{
+    display:grid;
+    grid-template-columns:1fr 2fr;
+    gap:48px;
+    margin-bottom:80px;
+    align-items:end;
+  }
+  .sec-num{
+    font-family:'Archivo',sans-serif;font-weight:500;
+    letter-spacing:.2em;font-size:.78rem;
+    color:var(--concrete);
+  }
+  .sec-title{
+    font-size:clamp(2.4rem,5vw,4.4rem);
+  }
+  .sec-lede{
+    font-size:1.05rem;line-height:1.6;
+    max-width:54ch;color:var(--ink-soft);
+    margin-top:24px;
+  }
+  @media (max-width:880px){
+    .sec-head{grid-template-columns:1fr;gap:24px}
+  }
+
+  /* ============ MATERIAL / PHILOSOPHIE ============ */
+  .mat-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    border-top:1px solid var(--line-strong);
+  }
+  .mat-cell{
+    padding:40px 32px 48px 0;
+    border-right:1px solid var(--line);
+    position:relative;
+  }
+  .mat-cell:last-child{border-right:none;padding-right:0}
+  .mat-cell:not(:first-child){padding-left:32px}
+  .mat-icon{
+    width:48px;height:48px;
+    margin-bottom:32px;
+    color:var(--ink);
+  }
+  .mat-icon svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.2}
+  .mat-cell h3{
+    font-family:'Archivo',sans-serif;font-weight:700;
+    letter-spacing:-.01em;font-size:1.5rem;
+    margin-bottom:16px;line-height:1.1;
+  }
+  .mat-cell p{font-size:.95rem;line-height:1.65;color:var(--ink-soft)}
+  .mat-cell .mono{
+    display:block;margin-bottom:24px;color:var(--concrete);
+  }
+  @media (max-width:880px){
+    .mat-grid{grid-template-columns:1fr}
+    .mat-cell{border-right:none;border-bottom:1px solid var(--line);padding:32px 0}
+    .mat-cell:not(:first-child){padding-left:0}
+    .mat-cell:last-child{border-bottom:none}
+  }
+
+  /* ============ PROJECTS ============ */
+  .projects{background:var(--paper-warm)}
+  .proj-list{display:flex;flex-direction:column;gap:0}
+  .proj{
+    display:grid;
+    grid-template-columns:90px 1fr 1.1fr 200px;
+    gap:48px;
+    padding:40px 0;
+    border-top:1px solid var(--line-strong);
+    align-items:center;
+    cursor:pointer;
+    transition:padding .4s var(--ease);
+    position:relative;
+  }
+  .proj:last-child{border-bottom:1px solid var(--line-strong)}
+  .proj:hover{padding-left:24px}
+  .proj:hover .proj-arrow{transform:translateX(8px);opacity:1}
+  .proj:hover .proj-img img{transform:scale(1.04)}
+  .proj-num{
+    font-family:'Archivo',sans-serif;font-weight:500;
+    letter-spacing:.16em;font-size:.78rem;color:var(--concrete);
+  }
+  .proj-title h3{
+    font-family:'Archivo',sans-serif;font-weight:800;
+    letter-spacing:-.02em;font-size:2rem;line-height:1;
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  .proj-title .mono{color:var(--concrete-dim)}
+  .proj-img{
+    aspect-ratio:4/3;overflow:hidden;
+  }
+  .proj-img img{
+    width:100%;height:100%;object-fit:cover;
+    transition:transform .8s var(--ease);
+    filter:contrast(1.05) saturate(.9);
+  }
+  .proj-meta{display:flex;flex-direction:column;gap:6px}
+  .proj-meta-row{
+    display:flex;justify-content:space-between;
+    font-size:.85rem;padding:6px 0;
+    border-bottom:1px dotted var(--line);
+  }
+  .proj-meta-row span:first-child{
+    font-family:'Archivo',sans-serif;font-weight:500;
+    letter-spacing:.1em;text-transform:uppercase;
+    font-size:.7rem;color:var(--concrete-dim);
+  }
+  .proj-arrow{
+    position:absolute;right:0;top:50%;transform:translateY(-50%);
+    font-family:'Archivo',sans-serif;font-size:1.6rem;font-weight:300;
+    opacity:.4;transition:all .4s var(--ease);
+  }
+  @media (max-width:980px){
+    .proj{grid-template-columns:60px 1fr;gap:20px;padding:32px 0}
+    .proj-img,.proj-meta,.proj-arrow{display:none}
+    .proj-title h3{font-size:1.5rem}
+  }
+
+  /* ============ STUDIO ============ */
+  .studio-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:80px;
+    align-items:start;
+  }
+  .studio-img{
+    aspect-ratio:4/5;overflow:hidden;
+  }
+  .studio-img img{
+    width:100%;height:100%;object-fit:cover;
+    filter:contrast(1.05) saturate(.88) grayscale(.15);
+  }
+  .studio-text h2{
+    font-size:clamp(2rem,4vw,3.4rem);
+    margin-bottom:32px;
+  }
+  .studio-text p{
+    font-size:1.02rem;line-height:1.7;
+    margin-bottom:20px;color:var(--ink-soft);
+  }
+  .studio-text p:first-of-type::first-letter{
+    font-family:'Archivo',sans-serif;font-weight:800;
+    font-size:3.4rem;float:left;line-height:.85;
+    margin:6px 14px 0 0;color:var(--ink);
+  }
+  .studio-sign{
+    margin-top:40px;padding-top:32px;
+    border-top:1px solid var(--line-strong);
+    display:flex;justify-content:space-between;align-items:end;
+  }
+  .studio-sign-name{
+    font-family:'Archivo',sans-serif;font-weight:700;
+    font-size:1.05rem;letter-spacing:-.01em;
+  }
+  .studio-sign-role{
+    font-family:'Archivo',sans-serif;font-weight:500;
+    letter-spacing:.14em;text-transform:uppercase;
+    font-size:.7rem;color:var(--concrete-dim);margin-top:4px;
+  }
+  @media (max-width:880px){
+    .studio-grid{grid-template-columns:1fr;gap:48px}
+  }
+
+  /* ============ AWARDS ============ */
+  .awards{background:var(--ink);color:var(--paper)}
+  .awards .sec-num{color:var(--concrete)}
+  .awards .sec-title{color:var(--paper)}
+  .awards .sec-lede{color:rgba(243,241,236,.7)}
+  .award-table{border-top:1px solid rgba(243,241,236,.18)}
+  .award-row{
+    display:grid;
+    grid-template-columns:100px 1fr 1.4fr 1fr;
+    gap:32px;
+    padding:28px 0;
+    border-bottom:1px solid rgba(243,241,236,.18);
+    align-items:baseline;
+    transition:background .3s var(--ease);
+  }
+  .award-row:hover{background:rgba(243,241,236,.04);padding-left:16px;padding-right:16px}
+  .award-year{
+    font-family:'Archivo',sans-serif;font-weight:700;
+    font-size:1.4rem;letter-spacing:-.01em;
+  }
+  .award-name{
+    font-family:'Archivo',sans-serif;font-weight:600;
+    font-size:1.05rem;letter-spacing:-.005em;
+  }
+  .award-project{
+    color:rgba(243,241,236,.65);font-size:.92rem;
+  }
+  .award-loc{
+    font-family:'Archivo',sans-serif;font-weight:500;
+    letter-spacing:.12em;text-transform:uppercase;
+    font-size:.72rem;color:var(--concrete);text-align:right;
+  }
+  @media (max-width:880px){
+    .award-row{grid-template-columns:1fr;gap:6px;padding:24px 0}
+    .award-loc{text-align:left}
+  }
+
+  /* ============ CTA ============ */
+  .cta{padding:140px 0;position:relative;overflow:hidden}
+  .cta-grid{
+    display:grid;
+    grid-template-columns:1.4fr 1fr;
+    gap:64px;align-items:end;
+  }
+  .cta h2{
+    font-size:clamp(2.8rem,7vw,6.5rem);
+    line-height:.9;
+  }
+  .cta h2 em{
+    font-style:normal;color:var(--concrete);
+  }
+  .cta-right p{
+    font-size:1rem;line-height:1.65;color:var(--ink-soft);
+    margin-bottom:32px;
+  }
+  .cta-btn{
+    display:inline-flex;align-items:center;gap:16px;
+    background:var(--ink);color:var(--paper);
+    padding:20px 32px;
+    font-family:'Archivo',sans-serif;font-weight:600;
+    letter-spacing:.1em;text-transform:uppercase;font-size:.82rem;
+    transition:all .4s var(--ease);
+    border:1px solid var(--ink);
+  }
+  .cta-btn:hover{background:transparent;color:var(--ink)}
+  .cta-btn svg{width:18px;height:18px;transition:transform .4s var(--ease)}
+  .cta-btn:hover svg{transform:translateX(6px)}
+  @media (max-width:880px){
+    .cta-grid{grid-template-columns:1fr;gap:32px}
+  }
+
+  /* ============ FOOTER ============ */
+  footer{
+    background:var(--ink);color:var(--paper);
+    padding:80px 0 32px;
+  }
+  .foot-grid{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr 1fr;
+    gap:48px;
+    padding-bottom:64px;
+    border-bottom:1px solid rgba(243,241,236,.18);
+  }
+  .foot-brand h3{
+    font-family:'Archivo',sans-serif;font-weight:900;
+    font-size:2rem;letter-spacing:-.02em;line-height:.95;
+    text-transform:uppercase;margin-bottom:20px;
+  }
+  .foot-brand h3 span{color:var(--concrete)}
+  .foot-brand p{
+    color:rgba(243,241,236,.6);font-size:.92rem;
+    max-width:36ch;line-height:1.6;
+  }
+  .foot-col h4{
+    font-family:'Archivo',sans-serif;font-weight:500;
+    letter-spacing:.16em;text-transform:uppercase;
+    font-size:.7rem;color:var(--concrete);
+    margin-bottom:20px;
+  }
+  .foot-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .foot-col a{
+    font-size:.92rem;color:rgba(243,241,236,.85);
+    transition:color .3s var(--ease);
+  }
+  .foot-col a:hover{color:var(--white)}
+  .foot-col p{font-size:.92rem;color:rgba(243,241,236,.7);line-height:1.6}
+  .foot-bottom{
+    padding-top:32px;
+    display:flex;justify-content:space-between;align-items:center;
+    flex-wrap:wrap;gap:16px;
+    font-family:'Archivo',sans-serif;font-weight:500;
+    letter-spacing:.1em;text-transform:uppercase;
+    font-size:.68rem;color:rgba(243,241,236,.5);
+  }
+  @media (max-width:880px){
+    .foot-grid{grid-template-columns:1fr 1fr;gap:32px}
+    .foot-brand{grid-column:1/-1}
+  }
+
+  /* focus */
+  a:focus-visible,button:focus-visible{
+    outline:2px solid var(--ink);outline-offset:4px;
+  }
+  .awards a:focus-visible,.cta-btn:focus-visible,footer a:focus-visible{
+    outline-color:var(--paper);
+  }
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(30px);transition:all 1s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav" aria-label="Hauptnavigation">
+  <div class="wrap nav-row">
+    <a href="#" class="brand" aria-label="Linienraum Architekten — Startseite">
+      <span class="brand-mark">Linienraum<span>.</span></span>
+      <span class="brand-sub">Architekten · Est. 2011</span>
+    </a>
+    <div class="nav-links">
+      <a href="#projekte">Projekte</a>
+      <a href="#material">Haltung</a>
+      <a href="#studio">Studio</a>
+      <a href="#preise">Auszeichnungen</a>
+    </div>
+    <a href="#kontakt" class="nav-cta">Projekt anfragen</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-left">
+        <div class="hero-eyebrow mono">Wohn- und Kulturbau · Leipzig</div>
+        <h1 class="display">
+          Linie,<br>Licht,<br>Last.
+          <em>Wir entwerfen Gebäude, die weniger behaupten und länger bestehen. Wohn- und Kulturbauten in Beton, Holz und Licht — gezeichnet vom Grundriss her.</em>
+        </h1>
+        <div class="hero-meta">
+          <div class="hero-meta-item">
+            <span class="mono">Gegründet</span>
+            <p>2011 in Leipzig<br>von M. Hoyer &amp; J. Renner</p>
+          </div>
+          <div class="hero-meta-item">
+            <span class="mono">Realisiert</span>
+            <p>47 Bauten<br>D · A · CH</p>
+          </div>
+          <div class="hero-meta-item">
+            <span class="mono">Auszeichnungen</span>
+            <p>12 nationale<br>und internationale Preise</p>
+          </div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <span class="hero-side">Haus K · 2023 · Photographie S. Bremer</span>
+        <div class="hero-img">
+          <img src="images/linienraum-architekten/img-1.jpeg" alt="Ansicht des Wohnhaus K: Sichtbetonfassade mit tiefen, vertikalen Fensterlaibungen, fotografiert in der Nachmittagssonne" loading="eager">
+          <span class="hero-img-caption">Wohnhaus K · Markkleeberg · 2023</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ TICKER ============ -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>Beton in situ</span><span>Taglicht 38° Nord</span><span>Proportion 1 : 1,618</span><span>Wohnbau</span><span>Kulturbau</span><span>Öffentlich</span><span>Bauen im Bestand</span><span>Beton in situ</span><span>Taglicht 38° Nord</span><span>Proportion 1 : 1,618</span><span>Wohnbau</span><span>Kulturbau</span><span>Öffentlich</span><span>Bauen im Bestand</span>
+  </div>
+</div>
+
+<!-- ============ MATERIAL / HALTUNG ============ -->
+<section class="section" id="material">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-num">01 — Haltung</div>
+      </div>
+      <div>
+        <h2 class="sec-title display">Drei<br>Materialien.<br>Nichts sonst.</h2>
+        <p class="sec-lede">Wir bauen nicht für Effekte. Wir bauen für die nächste Generation. Jeder Entwurf entspringt drei Fragen: Was trägt? Was belichtet? Was bleibt?</p>
+      </div>
+    </div>
+
+    <div class="mat-grid">
+      <article class="mat-cell">
+        <span class="mono">M_01</span>
+        <div class="mat-icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><rect x="6" y="10" width="36" height="28"/><line x1="6" y1="18" x2="42" y2="18"/><line x1="6" y1="26" x2="42" y2="26"/><line x1="14" y1="10" x2="14" y2="38"/><line x1="28" y1="10" x2="28" y2="38"/></svg>
+        </div>
+        <h3>Beton — gelagert,<br>nicht gegossen.</h3>
+        <p>Wir arbeiten ausschließlich mit Ortbeton der Festigkeitsklasse C35/45. Die Schalung wird drei Wochen vor dem Guss gesetzt, damit sich das Holzfeuchtigkeitsmuster auf die Haut überträgt. Jede Fuge steht exakt dort, wo sie die Statik vorgibt — nie dort, wo sie ein Render vorgaukelt.</p>
+      </article>
+
+      <article class="mat-cell">
+        <span class="mono">M_02</span>
+        <div class="mat-icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="14"/><line x1="24" y1="6" x2="24" y2="42"/><line x1="6" y1="24" x2="42" y2="24"/><line x1="11" y1="11" x2="37" y2="37"/><line x1="37" y1="11" x2="11" y2="37"/></svg>
+        </div>
+        <h3>Licht — berechnet<br>auf die Stunde.</h3>
+        <p>Jede Öffnung wird für den 21. Dezember, 14:30 Uhr gezeichnet. Der Sonnenstand im Tiefststand bestimmt die Tiefe der Laibung. Im Sommer wirft der Bau Schatten auf sich selbst. Im Winter fällt das Licht bis in den letzten Winkel des Grundrisses.</p>
+      </article>
+
+      <article class="mat-cell">
+        <span class="mono">M_03</span>
+        <div class="mat-icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32"/><line x1="8" y1="20" x2="40" y2="20"/><line x1="20" y1="8" x2="20" y2="40"/><line x1="8" y1="32" x2="40" y2="32"/><line x1="32" y1="8" x2="32" y2="40"/></svg>
+        </div>
+        <h3>Proportion —<br>kein Zufall.</h3>
+        <p>Unsere Grundrisse folgen einem strellen 1,20-m-Raster. Die Raumhöhe ergibt sich aus der kürzesten Seite mal 1,618. Wer in einem Linienraum-Haus steht, fühlt das Maß, ohne es benennen zu können. Das ist die Absicht.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROJECTS ============ -->
+<section class="section projects" id="projekte">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-num">02 — Ausgewählte Projekte</div>
+      </div>
+      <div>
+        <h2 class="sec-title display">Gebaut,<br>nicht<br>gerendert.</h2>
+        <p class="sec-lede">Vier Bauten, die unsere Haltung in unterschiedlichen Maßstäben zeigen — vom privaten Wohnhaus über einen Kunstraum bis zur städtischen Bibliothek.</p>
+      </div>
+    </div>
+
+    <div class="proj-list">
+
+      <a href="#" class="proj">
+        <div class="proj-num">P / 01</div>
+        <div class="proj-title">
+          <h3>Haus K</h3>
+          <span class="mono">Wohnbau · Privat</span>
+        </div>
+        <div class="proj-img">
+          <img src="images/linienraum-architekten/img-1.jpeg" alt="Wohnhaus K mit vertikal gegliederter Sichtbetonfassade und großzügigem Fensterband" loading="lazy">
+        </div>
+        <div class="proj-meta">
+          <div class="proj-meta-row"><span>Ort</span><span>Markkleeberg</span></div>
+          <div class="proj-meta-row"><span>Jahr</span><span>2023</span></div>
+          <div class="proj-meta-row"><span>Fläche</span><span>248 m²</span></div>
+          <div class="proj-meta-row"><span>Statik</span><span>Ortbeton C35</span></div>
+        </div>
+        <span class="proj-arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a href="#" class="proj">
+        <div class="proj-num">P / 02</div>
+        <div class="proj-title">
+          <h3>Pavillon Lichterfeld</h3>
+          <span class="mono">Kulturbau · Ausstellung</span>
+        </div>
+        <div class="proj-img">
+          <img src="images/linienraum-architekten/img-2.jpeg" alt="Pavillon Lichterfeld: freistehender Kubus aus Beton mit großzügigem Oberlicht und reduzierter Fassade" loading="lazy">
+        </div>
+        <div class="proj-meta">
+          <div class="proj-meta-row"><span>Ort</span><span>Halle (Saale)</span></div>
+          <div class="proj-meta-row"><span>Jahr</span><span>2022</span></div>
+          <div class="proj-meta-row"><span>Fläche</span><span>112 m²</span></div>
+          <div class="proj-meta-row"><span>Nutzung</span><span>Kunstraum</span></div>
+        </div>
+        <span class="proj-arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a href="#" class="proj">
+        <div class="proj-num">P / 03</div>
+        <div class="proj-title">
+          <h3>Stadtbibliothek E.</h3>
+          <span class="mono">Öffentlich · Kultur</span>
+        </div>
+        <div class="proj-img">
+          <img src="images/linienraum-architekten/img-3.jpeg" alt="Stadtbibliothek E.: monolithischer Baukörper mit horizontaler Fensterbandgliederung und vorgelagertem Platz" loading="lazy">
+        </div>
+        <div class="proj-meta">
+          <div class="proj-meta-row"><span>Ort</span><span>Erfurt</span></div>
+          <div class="proj-meta-row"><span>Jahr</span><span>2021</span></div>
+          <div class="proj-meta-row"><span>Fläche</span><span>1.840 m²</span></div>
+          <div class="proj-meta-row"><span>1. Preis</span><span>Wettbewerb 2018</span></div>
+        </div>
+        <span class="proj-arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a href="#" class="proj">
+        <div class="proj-num">P / 04</div>
+        <div class="proj-title">
+          <h3>Atelierhaus R.</h3>
+          <span class="mono">Wohnbau · Atelier</span>
+        </div>
+        <div class="proj-img">
+          <img src="images/linienraum-architekten/img-2.jpeg" alt="Atelierhaus R.: langgestreckter Bau mit seitlichem Oberlicht und zurückhaltender Betonfassade" loading="lazy">
+        </div>
+        <div class="proj-meta">
+          <div class="proj-meta-row"><span>Ort</span><span>Linz / Donau</span></div>
+          <div class="proj-meta-row"><span>Jahr</span><span>2020</span></div>
+          <div class="proj-meta-row"><span>Fläche</span><span>196 m²</span></div>
+          <div class="proj-meta-row"><span>Bestand</span><span>Dachausbau</span></div>
+        </div>
+        <span class="proj-arrow" aria-hidden="true">→</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ STUDIO ============ -->
+<section class="section" id="studio">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-num">03 — Studio</div>
+      </div>
+      <div>
+        <h2 class="sec-title display">Ein Raum,<br>sechs Leute,<br>kein Render.</h2>
+      </div>
+    </div>
+
+    <div class="studio-grid">
+      <div class="studio-img">
+        <img src="images/linienraum-architekten/img-3.jpeg" alt="Innenraum des Linienraum-Studios in Leipzig: hohe Betondecken, großzügiges Oberlicht, reduzierte Einrichtung" loading="lazy">
+      </div>
+      <div class="studio-text">
+        <p>Linienraum wurde 2011 von Merle Hoyer und Jakob Renner in einer ehemaligen Druckerei im Leipziger Westen gegründet. Wir sind sechs Personen — vier Architekt:innen, eine Kunsthistorikerin, ein Modellbauer. Wir arbeiten in 1:50, in 1:20 und in 1:1. Wir arbeiten nicht in 3D, bevor der Grundriss steht.</p>
+        <p>Unsere Bauten entstehen aus dem Material heraus, nicht aus dem Bild. Wir verhandeln mit Bauherren über Schalungshaut, über Korngröße des Zuschlags, über die Farbe des Bewehrungsstahls, der nach dem Sandstrahlen sichtbar bleibt. Das ist langsam. Es ist richtig.</p>
+        <p>Wir bauen durchschnittlich drei Häuser im Jahr. Bewusst nicht mehr. Wer mit uns bauen will, rechnet mit einer Entwurfszeit von zwölf Monaten und einer Bauzeit von achtzehn.</p>
+
+        <div class="studio-sign">
+          <div>
+            <div class="studio-sign-name">Merle Hoyer &amp; Jakob Renner</div>
+            <div class="studio-sign-role">Partner · Architekten BDIA</div>
+          </div>
+          <div class="studio-sign-role">Leipzig, 2024</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AWARDS ============ -->
+<section class="section awards" id="preise">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-num">04 — Auszeichnungen</div>
+      </div>
+      <div>
+        <h2 class="sec-title display">Erkannt,<br>seit 2014.</h2>
+        <p class="sec-lede">Eine Auswahl der Auszeichnungen, die wir in den vergangenen zehn Jahren erhalten haben — vergeben von Jurys, die Bauten besichtigt haben, nicht nur Bilder.</p>
+      </div>
+    </div>
+
+    <div class="award-table">
+      <div class="award-row">
+        <div class="award-year">2024</div>
+        <div class="award-name">BDA Preis Sachsen</div>
+        <div class="award-project">Auszeichnung — Haus K, Markkleeberg</div>
+        <div class="award-loc">Bund Deutscher Architekten</div>
+      </div>
+      <div class="award-row">
+        <div class="award-year">2023</div>
+        <div class="award-name">Architekturpreis Beton</div>
+        <div class="award-project">Anerkennung — Pavillon Lichterfeld</div>
+        <div class="award-loc">Bundesverband Dt. Beton</div>
+      </div>
+      <div class="award-row">
+        <div class="award-year">2022</div>
+        <div class="award-name">Daylight Award · Nominee</div>
+        <div class="award-project">Stadtbibliothek E., Erfurt</div>
+        <div class="award-loc">Velux Stiftung</div>
+      </div>
+      <div class="award-row">
+        <div class="award-year">2021</div>
+        <div class="award-name">Deutscher Architekturpreis</div>
+        <div class="award-project">Shortlist — Stadtbibliothek E.</div>
+        <div class="award-loc">BMWSB Berlin</div>
+      </div>
+      <div class="award-row">
+        <div class="award-year">2019</div>
+        <div class="award-name">Häuser des Jahres</div>
+        <div class="award-project">Top 20 — Atelierhaus R., Linz</div>
+        <div class="award-loc">Häuser Magazin</div>
+      </div>
+      <div class="award-row">
+        <div class="award-year">2017</div>
+        <div class="award-name">Sächsischer Staatspreis</div>
+        <div class="award-project">Silber — Haus über der Parthe</div>
+        <div class="award-loc">SMI Sachsen</div>
+      </div>
+      <div class="award-row">
+        <div class="award-year">2014</div>
+        <div class="award-name">Bauherrenpreis</div>
+        <div class="award-project">Auszeichnung — Erstlingsbau H.</div>
+        <div class="award-loc">Bund Deutscher Architekten</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta" id="kontakt">
+  <div class="wrap">
+    <div class="cta-grid">
+      <div>
+        <h2 class="display">Haben Sie<br>ein <em>Grundstück?</em></h2>
+      </div>
+      <div class="cta-right">
+        <p>Wir nehmen im Jahr drei neue Projekte an. Wenn Sie ein Grundstück besitzen, einen Kunst- oder Kulturbau planen oder ein Wohnhaus errichten wollen, das über die nächste Generation besteht — schreiben Sie uns. Wir antworten innerhalb von 14 Tagen.</p>
+        <a href="mailto:studio@linienraum.de" class="cta-btn">
+          studio@linienraum.de
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <h3>Linienraum<span>.</span><br>Architekten</h3>
+        <p>Wohn- und Kulturbau aus Beton, Licht und Proportion. Gegründet 2011 in Leipzig. Bauten in Deutschland, Österreich und der Schweiz.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Studio</h4>
+        <ul>
+          <li><p>Lindenauer Markt 21<br>04177 Leipzig<br>Deutschland</p></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Kontakt</h4>
+        <ul>
+          <li><a href="mailto:studio@linienraum.de">studio@linienraum.de</a></li>
+          <li><a href="tel:+493413928840">+49 341 3928 840</a></li>
+          <li><a href="#">Termin vereinbaren</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Index</h4>
+        <ul>
+          <li><a href="#projekte">Projekte</a></li>
+          <li><a href="#material">Haltung</a></li>
+          <li><a href="#studio">Studio</a></li>
+          <li><a href="#preise">Auszeichnungen</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2024 Linienraum Architekten GmbH · Leipzig</span>
+      <span>Impressum · Datenschutz · AGB</span>
+      <span>Architekten BDIA · Reg. Nr. 22381</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.sec-head, .mat-cell, .proj, .award-row, .studio-grid > *, .cta-grid > *').forEach(el => {
+    el.classList.add('reveal');
+    io.observe(el);
+  });
+</script>
+
+</body>
+</html>

@@ -34,6 +34,28 @@ A sun-bleached coastal brand. Bebas Neue poster type over faded sand / teal / co
 
 ---
 
+## Craft & trade verticals (generated WITH the memory system)
+
+*Generated through the batch pipeline with the negative-memory brain wired in: every design received the 7 bootstrapped anti-slop avoids + domain recall, and passed the `validateDesignHtml` QC gate.*
+
+### Holzwerk Manufaktur — Tischlerei
+High-end carpentry for custom solid-wood furniture. Cormorant + Inter over oak / walnut / linen — warm, crafted, honest.
+[![Holzwerk](docs/screenshots/showcase-holzwerk-manufaktur-tischlerei.jpg)](examples/holzwerk-manufaktur-tischlerei.html) · **[Open →](examples/holzwerk-manufaktur-tischlerei.html)**
+
+### Linienraum — Architekten
+A minimal architecture studio for residential & cultural builds. Archivo grotesk over concrete-grey / ink — strict, reduced, documentary.
+[![Linienraum](docs/screenshots/showcase-linienraum-architekten.jpg)](examples/linienraum-architekten.html) · **[Open →](examples/linienraum-architekten.html)**
+
+### Pulse — Performance Coaching
+Premium data-driven personal training. Anton condensed over black + neon-lime — high-energy, clinical-precise.
+[![Pulse](docs/screenshots/showcase-pulse-performance-coaching.jpg)](examples/pulse-performance-coaching.html) · **[Open →](examples/pulse-performance-coaching.html)**
+
+### Blütenwerk — Floristik
+A wild-floral atelier for seasonal bouquets & weddings. DM Serif Display over moss / dusty-rose / ivory — soft, natural, handmade.
+[![Blütenwerk](docs/screenshots/showcase-bluetenwerk-floristik.jpg)](examples/bluetenwerk-floristik.html) · **[Open →](examples/bluetenwerk-floristik.html)**
+
+---
+
 ## Thai street-food — MiniMax food photography
 
 The original vertical where Z.Design first proved real generated imagery: every dish is a photorealistic MiniMax `image-01` render, generated for the specific concept before the page is built (no stock, no burgers).

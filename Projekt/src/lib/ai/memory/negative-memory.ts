@@ -27,6 +27,30 @@ const LOSS_AVERSION = 2.0;
 /** Default token budget for a recall payload (keeps the agent's context lean). */
 const DEFAULT_RECALL_BUDGET_TOKENS = 1200;
 
+/**
+ * BOOTSTRAPPED brain — the 7 cardinal anti-slop sins (ported from the
+ * anti-slop linter). These are domain-AGNOSTIC, high-trust (system) avoids
+ * EVERY recall prepends, so the brain is useful from design #1 (not empty
+ * until enough domain episodes accumulate). Marked TRUST.system.
+ */
+const GLOBAL_AVOID: RecallItem[] = [
+  'Default-Indigo/Violett als Akzent (#6366f1, #818cf8) — stattdessen eine markenspezifische Palette wählen',
+  '„Trust"-Purple/Blau-Gradient — stattdessen einen bewussten, markenfarbenen Verlauf oder Vollton',
+  'Emoji als Feature-Icons (🚀✨🎯) — stattdessen monoline SVG-Icons verwenden',
+  'Generische Sans auf Display-Größen — stattdessen eine markante Display-Serif/Kondensiert',
+  'Gerundete Karten mit farbigem Left-Border (das AI-Dashboard-Kachel-Klischee)',
+  'Erfundene Vanity-Metriken („10× schneller", „99,9 %") — nur echte, konkrete Zahlen',
+  'Lorem-Ipsum / Platzhalter-Text — echten, spezifischen, themenbezogenen Text schreiben',
+].map((text, i) => ({
+  source: 'recipe' as const,
+  text,
+  valence: -1,
+  salience: 1.8, // high — these are the baseline sins, always surface
+  frequency: 1,
+  trustTier: TRUST.system,
+  provenance: { kind: 'DesignLesson' as const, topic: 'global-anti-slop', composite: 9.5 },
+}));
+
 export interface RecallItem {
   source: 'episode' | 'recipe';
   /** One-line, agent-usable "avoid …" string (sanitized; low-trust wrapped). */
@@ -175,7 +199,7 @@ export async function recallAntiPatterns(opts: {
     }));
 
     // --- merge, dedupe (case-insensitive on text), rank, budget ---
-    const merged = dedupeByText([...recipeCandidates, ...episodeCandidates]);
+    const merged = dedupeByText([...GLOBAL_AVOID, ...recipeCandidates, ...episodeCandidates]);
 
     // --- P2.1 EXTINCTION weighting (un-learning): suppress retrieval weight by
     // a Beta-binomial-ish posterior P(still bad) = conf/(conf+counter) when

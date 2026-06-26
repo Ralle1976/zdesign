@@ -34,6 +34,7 @@ import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
 import { getDefaultDesignForType } from '@/lib/ai-prompts';
 import { generateImagesMinimax, buildThaiFoodPrompts, buildImagePrompts, isMinimaxImageConfigured } from '@/lib/ai/image-minimax';
 import { validateDesignHtml, repairTagBalance } from '@/lib/ai/lint/design-qc';
+import { recallAntiPatterns } from '@/lib/ai/memory/negative-memory';
 
 /** A single brief in the request body. */
 interface DesignBrief {
@@ -83,7 +84,7 @@ function autoCloseHtml(s: string): string {
 }
 
 /** Build a focused HTML-generation prompt from a brief. */
-function buildBriefPrompt(brief: DesignBrief, generatedImages?: string[]): string {
+function buildBriefPrompt(brief: DesignBrief, generatedImages?: string[], memoryBlock?: string): string {
   const parts: string[] = [
     'Du bist ein Art Director und Frontend-Entwickler.',
     `Erzeuge eine COMPLETE, einzelständige HTML-Datei (mit <!doctype html>, <html>, <head>, <style> und <body>) für eine Landing Page.`,
@@ -91,6 +92,9 @@ function buildBriefPrompt(brief: DesignBrief, generatedImages?: string[]): strin
     `Projektname: ${brief.name}`,
     `Thema / Briefing: ${brief.theme}`,
   ];
+  // NEGATIVE MEMORY: avoid patterns the brain has learned (past failures /
+  // anti-slop sins). Injected EARLY so the model treats them as hard constraints.
+  if (memoryBlock && memoryBlock.trim()) parts.push('', memoryBlock.trim());
   if (brief.palette) parts.push(`Farbpalette: ${brief.palette}`);
   if (brief.fonts) parts.push(`Typografie: ${brief.fonts}`);
   if (brief.layout) parts.push(`Layout-Ansatz: ${brief.layout}`);
@@ -201,7 +205,19 @@ export async function POST(request: NextRequest) {
               console.warn(`[batch] ${brief.name}: image gen failed:`, e instanceof Error ? e.message : e);
             }
           }
-          const prompt = buildBriefPrompt(brief, generatedImageUrls);
+          // ── NEGATIVE MEMORY: recall avoid-patterns for this brief's domain
+          //   (learned failures + bootstrapped anti-slop sins) and inject them.
+          const memory = await recallAntiPatterns({
+            domain: `${brief.name} ${brief.theme}`.slice(0, 120),
+            maxTokens: 600,
+          });
+          const memoryBlock = memory.items.length > 0
+            ? `AUS DEM GEDÄCHTNIS — UNBEDINGT VERMEIDEN (vergangene Fehler):\n${memory.items.map((i) => `- ${i.text}`).join('\n')}\nKeines dieser Muster wiederholen.\n`
+            : '';
+          if (memory.items.length > 0) {
+            console.log(`[batch] ${brief.name}: ${memory.items.length} avoid-Muster aus dem Gedächtnis injiziert`);
+          }
+          const prompt = buildBriefPrompt(brief, generatedImageUrls, memoryBlock);
           // ── QC GATE: generate → repair → validate → retry until it passes ──
           // The old check only verified "</html>" present, so truncated pages
           // with unclosed tags and missing footers shipped. Now a design only

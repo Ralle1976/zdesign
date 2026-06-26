@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blütenwerk Floristik — Saisonale Sträuße, Hochzeiten, Workshops aus Berlin-Kreuzberg</title>
+<meta name="description" content="Blütenwerk ist eine floristische Manufaktur in Berlin-Kreuzberg. Saisonale Sträuße, Hochzeitsfloristik, Pflanzen-Curating und Workshops — wild, französisch-gärtnerisch.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Nunito+Sans:ital,opsz,wght@0,6..12,300..900;1,6..12,300..900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --leaf:#4F6F3F;
+    --leaf-deep:#3A5530;
+    --leaf-soft:#7A9168;
+    --rose:#C99A9F;
+    --rose-deep:#A97680;
+    --ivory:#F5F0E4;
+    --ivory-warm:#EFE7D2;
+    --paper:#FBF7EC;
+    --ink:#2A2E22;
+    --ink-soft:#5A5E50;
+    --rule:rgba(79,111,63,.18);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:"Nunito Sans",system-ui,sans-serif;
+    font-weight:400;
+    color:var(--ink);
+    background:var(--paper);
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(201,154,159,.07) 0, transparent 38%),
+      radial-gradient(circle at 88% 82%, rgba(79,111,63,.06) 0, transparent 42%);
+  }
+  /* Papierkorn */
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    pointer-events:none;
+    z-index:1;
+    opacity:.5;
+    mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.18 0 0 0 0 0.22 0 0 0 0 0.16 0 0 0 0.08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  h1,h2,h3,h4{
+    font-family:"DM Serif Display",Georgia,serif;
+    font-weight:400;
+    letter-spacing:-.01em;
+    line-height:1.05;
+    color:var(--ink);
+    margin:0;
+  }
+  a{color:inherit}
+  img{display:block;max-width:100%}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 28px;position:relative;z-index:2}
+
+  /* ============ NAV ============ */
+  nav.top{
+    position:sticky;top:0;z-index:50;
+    background:rgba(251,247,236,.86);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--rule);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;max-width:1240px;margin:0 auto;gap:24px}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+  .brand-mark{
+    width:38px;height:38px;border-radius:50%;
+    background:var(--leaf);
+    display:grid;place-items:center;
+    color:var(--ivory);
+    flex-shrink:0;
+  }
+  .brand-name{font-family:"DM Serif Display",serif;font-size:22px;line-height:1;color:var(--ink)}
+  .brand-name em{font-style:italic;color:var(--rose-deep)}
+  .nav-links{display:flex;gap:30px;align-items:center}
+  .nav-links a{
+    text-decoration:none;font-size:14px;font-weight:600;
+    color:var(--ink-soft);letter-spacing:.02em;
+    padding:6px 0;border-bottom:1px solid transparent;
+    transition:color .25s,border-color .25s;
+  }
+  .nav-links a:hover{color:var(--leaf);border-bottom-color:var(--leaf)}
+  .nav-cta{
+    background:var(--leaf);color:var(--ivory)!important;
+    padding:11px 22px;border-radius:999px;
+    border:1px solid var(--leaf);
+    transition:background .25s,border-color .25s;
+  }
+  .nav-cta:hover{background:var(--leaf-deep);border-color:var(--leaf-deep)}
+  .nav-burger{display:none;background:none;border:0;cursor:pointer;padding:8px}
+  .nav-burger span{display:block;width:24px;height:2px;background:var(--ink);margin:5px 0}
+
+  /* ============ HERO ============ */
+  .hero{padding:72px 0 96px;position:relative;overflow:hidden}
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.05fr .95fr;
+    gap:64px;align-items:center;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:12px;font-weight:700;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--leaf);
+    margin-bottom:28px;
+  }
+  .eyebrow::before{content:"";width:34px;height:1px;background:var(--leaf)}
+  .hero h1{
+    font-size:clamp(46px,7vw,92px);
+    margin-bottom:28px;
+  }
+  .hero h1 .it{font-style:italic;color:var(--rose-deep)}
+  .hero h1 .leaf-word{color:var(--leaf)}
+  .hero-sub{
+    font-size:18px;color:var(--ink-soft);
+    max-width:480px;margin-bottom:38px;
+  }
+  .hero-cta-row{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:15px 30px;border-radius:999px;
+    font-weight:700;font-size:15px;letter-spacing:.01em;
+    text-decoration:none;cursor:pointer;border:1px solid transparent;
+    transition:transform .25s,background .25s,color .25s,border-color .25s;
+  }
+  .btn-primary{background:var(--leaf);color:var(--ivory)}
+  .btn-primary:hover{background:var(--leaf-deep);transform:translateY(-2px)}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+  .btn-ghost:hover{border-color:var(--leaf);color:var(--leaf)}
+  .btn:focus-visible,.nav-links a:focus-visible{outline:2px solid var(--leaf);outline-offset:3px;border-radius:6px}
+
+  .hero-visual{position:relative;height:560px}
+  .hero-photo{
+    position:absolute;border-radius:6px;
+    box-shadow:0 30px 60px -22px rgba(42,46,34,.32),0 8px 18px -8px rgba(42,46,34,.18);
+    background:var(--ivory);
+    padding:10px 10px 38px;
+  }
+  .hero-photo img{border-radius:3px;width:100%;height:100%;object-fit:cover}
+  .hero-photo .cap{
+    position:absolute;bottom:10px;left:0;right:0;
+    text-align:center;font-family:"DM Serif Display",serif;
+    font-style:italic;font-size:15px;color:var(--ink-soft);
+  }
+  .polaroid-1{width:62%;height:78%;top:0;left:0;transform:rotate(-4deg)}
+  .polaroid-2{width:50%;height:62%;bottom:0;right:0;transform:rotate(5deg);z-index:2}
+  .seal{
+    position:absolute;top:-18px;right:38px;z-index:3;
+    width:108px;height:108px;border-radius:50%;
+    background:var(--rose);color:var(--ivory);
+    display:grid;place-items:center;text-align:center;
+    font-family:"DM Serif Display",serif;font-size:13px;line-height:1.15;
+    transform:rotate(-12deg);
+    box-shadow:0 10px 24px -10px rgba(169,118,128,.6);
+  }
+  .seal small{display:block;font-size:10px;letter-spacing:.18em;font-family:"Nunito Sans";font-weight:700;margin-bottom:4px}
+
+  .hero-meta{
+    margin-top:60px;display:flex;gap:48px;flex-wrap:wrap;
+    padding-top:32px;border-top:1px solid var(--rule);
+  }
+  .hero-meta div{max-width:200px}
+  .hero-meta strong{display:block;font-family:"DM Serif Display",serif;font-size:34px;color:var(--leaf);line-height:1}
+  .hero-meta span{font-size:13px;color:var(--ink-soft)}
+
+  /* ============ SAISONALE ============ */
+  .section{padding:96px 0;position:relative}
+  .section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:56px;flex-wrap:wrap}
+  .section-head h2{font-size:clamp(36px,4.6vw,58px);max-width:680px}
+  .section-head h2 em{font-style:italic;color:var(--rose-deep)}
+  .section-head p{max-width:340px;color:var(--ink-soft);font-size:15px}
+
+  .bouquet-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:48px;
+  }
+  .polaroid{
+    background:var(--ivory);
+    padding:14px 14px 60px;
+    box-shadow:0 24px 50px -20px rgba(42,46,34,.28),0 6px 14px -6px rgba(42,46,34,.14);
+    border-radius:4px;
+    position:relative;
+    transition:transform .5s cubic-bezier(.2,.7,.2,1);
+  }
+  .polaroid:nth-child(1){transform:rotate(-2.5deg)}
+  .polaroid:nth-child(2){transform:rotate(1.5deg) translateY(18px)}
+  .polaroid:nth-child(3){transform:rotate(-1.2deg)}
+  .polaroid:hover{transform:rotate(0) translateY(-6px)}
+  .polaroid .ph{aspect-ratio:3/4;overflow:hidden;border-radius:2px;background:var(--ivory-warm)}
+  .polaroid .ph img{width:100%;height:100%;object-fit:cover}
+  .polaroid .meta{
+    position:absolute;bottom:14px;left:14px;right:14px;
+    display:flex;justify-content:space-between;align-items:flex-end;
+    padding:0 6px;
+  }
+  .polaroid h3{font-size:22px;line-height:1.1}
+  .polaroid .price{font-family:"DM Serif Display",serif;font-size:20px;color:var(--leaf)}
+  .polaroid .tag{
+    display:inline-block;font-size:11px;font-weight:700;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--rose-deep);
+    margin-bottom:8px;
+  }
+  .polaroid ul{
+    list-style:none;padding:0;margin:14px 0 0;
+    font-size:13px;color:var(--ink-soft);
+  }
+  .polaroid ul li{padding:2px 0}
+  .polaroid ul li::before{content:"✿ ";color:var(--rose);font-size:10px}
+
+  /* ============ WEDDINGS ============ */
+  .weddings{background:var(--ivory);position:relative}
+  .weddings::before{
+    content:"";position:absolute;inset:0;
+    background-image:radial-gradient(circle at 80% 10%, rgba(201,154,159,.12), transparent 50%);
+    pointer-events:none;
+  }
+  .wed-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+  .wed-text h2{font-size:clamp(38px,4.6vw,60px);margin-bottom:28px}
+  .wed-text h2 em{font-style:italic;color:var(--rose-deep)}
+  .wed-text p{color:var(--ink-soft);margin:0 0 20px;font-size:16px}
+  .wed-list{list-style:none;padding:0;margin:32px 0;display:grid;gap:14px}
+  .wed-list li{
+    display:flex;gap:14px;align-items:flex-start;
+    padding-bottom:14px;border-bottom:1px dashed var(--rule);
+    font-size:15px;
+  }
+  .wed-list li:last-child{border-bottom:0}
+  .wed-list svg{flex-shrink:0;margin-top:2px}
+  .wed-list strong{display:block;color:var(--ink);font-weight:700}
+  .wed-list span{color:var(--ink-soft);font-size:14px}
+
+  .wed-visual{position:relative;height:600px}
+  .wed-photo{
+    position:absolute;border-radius:6px;
+    box-shadow:0 30px 60px -22px rgba(42,46,34,.32);
+    background:var(--paper);padding:10px 10px 36px;
+  }
+  .wed-photo img{border-radius:3px;width:100%;height:100%;object-fit:cover}
+  .wed-photo .cap{
+    position:absolute;bottom:8px;left:0;right:0;text-align:center;
+    font-family:"DM Serif Display",serif;font-style:italic;
+    font-size:14px;color:var(--ink-soft);
+  }
+  .wed-1{width:70%;height:75%;top:0;left:0;transform:rotate(-3deg)}
+  .wed-2{width:48%;height:55%;bottom:0;right:0;transform:rotate(4deg);z-index:2}
+  .wed-stamp{
+    position:absolute;top:46%;right:-12px;z-index:3;
+    background:var(--leaf);color:var(--ivory);
+    padding:14px 18px;border-radius:4px;
+    font-family:"DM Serif Display",serif;font-style:italic;
+    transform:rotate(6deg);
+    box-shadow:0 12px 24px -10px rgba(58,85,48,.5);
+  }
+  .wed-stamp small{display:block;font-family:"Nunito Sans";font-style:normal;font-size:10px;letter-spacing:.2em;font-weight:700;margin-bottom:2px}
+
+  /* ============ WORKSHOPS ============ */
+  .ws-head{text-align:center;max-width:680px;margin:0 auto 64px}
+  .ws-head h2{font-size:clamp(38px,4.6vw,60px);margin-bottom:18px}
+  .ws-head h2 em{font-style:italic;color:var(--leaf)}
+  .ws-head p{color:var(--ink-soft);font-size:16px}
+
+  .ws-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .ws-card{
+    background:var(--ivory);
+    border-radius:6px;
+    padding:36px 30px;
+    border:1px solid var(--rule);
+    transition:transform .35s,box-shadow .35s,border-color .35s;
+    position:relative;overflow:hidden;
+  }
+  .ws-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px -20px rgba(42,46,34,.2);border-color:var(--leaf-soft)}
+  .ws-icon{
+    width:54px;height:54px;border-radius:50%;
+    background:var(--ivory-warm);
+    display:grid;place-items:center;margin-bottom:24px;
+    color:var(--leaf);
+  }
+  .ws-card .when{
+    font-size:11px;font-weight:700;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--rose-deep);margin-bottom:10px;
+  }
+  .ws-card h3{font-size:26px;margin-bottom:12px}
+  .ws-card p{color:var(--ink-soft);font-size:14px;margin:0 0 22px}
+  .ws-card .ws-foot{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-top:18px;border-top:1px solid var(--rule);
+  }
+  .ws-card .price{font-family:"DM Serif Display",serif;font-size:22px;color:var(--leaf)}
+  .ws-card .price small{font-family:"Nunito Sans";font-size:12px;color:var(--ink-soft);font-weight:400;display:block;line-height:1}
+  .ws-card a{font-size:13px;font-weight:700;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:2px}
+  .ws-card a:hover{color:var(--leaf);border-color:var(--leaf)}
+
+  /* ============ ÜBER UNS ============ */
+  .about{background:var(--leaf);color:var(--ivory);position:relative;overflow:hidden}
+  .about::before{
+    content:"";position:absolute;inset:0;
+    background-image:radial-gradient(circle at 90% 20%, rgba(201,154,159,.18), transparent 45%);
+  }
+  .about-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:80px;align-items:center;position:relative}
+  .about h2{color:var(--ivory);font-size:clamp(38px,4.8vw,62px);margin-bottom:30px}
+  .about h2 em{font-style:italic;color:var(--rose)}
+  .about p{color:rgba(245,240,228,.85);font-size:16px;margin:0 0 18px}
+  .about-portrait{
+    background:var(--ivory);padding:14px 14px 56px;
+    border-radius:6px;transform:rotate(2deg);
+    box-shadow:0 30px 60px -22px rgba(0,0,0,.4);
+    position:relative;
+  }
+  .about-portrait img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:3px}
+  .about-portrait .cap{
+    position:absolute;bottom:14px;left:0;right:0;text-align:center;
+    font-family:"DM Serif Display",serif;font-style:italic;font-size:16px;color:var(--ink-soft);
+  }
+  .signature{font-family:"DM Serif Display",serif;font-style:italic;font-size:28px;color:var(--rose);margin-top:24px}
+
+  /* ============ BESTELLUNG / CTA ============ */
+  .order{padding:120px 0;position:relative}
+  .order-card{
+    background:var(--ivory);
+    border-radius:10px;
+    padding:72px 60px;
+    text-align:center;
+    border:1px solid var(--rule);
+    position:relative;overflow:hidden;
+    box-shadow:0 30px 70px -30px rgba(42,46,34,.25);
+  }
+  .order-card::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(201,154,159,.12), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(79,111,63,.1), transparent 40%);
+    pointer-events:none;
+  }
+  .order-card > *{position:relative}
+  .order-card h2{font-size:clamp(36px,4.6vw,58px);margin-bottom:20px}
+  .order-card h2 em{font-style:italic;color:var(--rose-deep)}
+  .order-card p{max-width:560px;margin:0 auto 36px;color:var(--ink-soft);font-size:16px}
+  .order-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  .order-note{
+    margin-top:32px;font-size:13px;color:var(--ink-soft);
+    display:flex;gap:8px;justify-content:center;align-items:center;
+  }
+
+  /* ============ FOOTER ============ */
+  footer{
+    background:var(--ink);color:var(--ivory);
+    padding:80px 0 32px;position:relative;
+  }
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:48px;margin-bottom:56px}
+  .foot-brand .brand-name{color:var(--ivory)}
+  .foot-brand .brand-mark{background:var(--rose);color:var(--ink)}
+  .foot-brand p{color:rgba(245,240,228,.6);font-size:14px;margin:20px 0;max-width:280px}
+  .foot-col h4{
+    color:var(--ivory);font-family:"Nunito Sans";font-weight:700;
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    margin-bottom:18px;
+  }
+  .foot-col ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+  .foot-col a{color:rgba(245,240,228,.7);text-decoration:none;font-size:14px;transition:color .25s}
+  .foot-col a:hover{color:var(--rose)}
+  .foot-bottom{
+    border-top:1px solid rgba(245,240,228,.12);
+    padding-top:28px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
+    font-size:13px;color:rgba(245,240,228,.5);
+  }
+  .foot-bottom .socials{display:flex;gap:14px}
+  .foot-bottom .socials a{
+    width:36px;height:36px;border-radius:50%;
+    border:1px solid rgba(245,240,228,.18);
+    display:grid;place-items:center;
+    color:rgba(245,240,228,.7);
+    transition:background .25s,color .25s,border-color .25s;
+  }
+  .foot-bottom .socials a:hover{background:var(--rose);color:var(--ink);border-color:var(--rose)}
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:960px){
+    .hero-grid,.wed-grid,.about-grid{grid-template-columns:1fr;gap:48px}
+    .hero-visual,.wed-visual{height:480px;margin-top:20px}
+    .bouquet-grid,.ws-grid{grid-template-columns:1fr;gap:36px}
+    .polaroid:nth-child(n){transform:none;max-width:440px;margin:0 auto;width:100%}
+    .nav-links{display:none}
+    .nav-burger{display:block}
+    .foot-grid{grid-template-columns:1fr 1fr;gap:36px}
+    .section{padding:72px 0}
+    .order-card{padding:48px 28px}
+  }
+  @media (max-width:560px){
+    .wrap{padding:0 20px}
+    .nav-inner{padding:14px 20px}
+    .hero{padding:48px 0 64px}
+    .hero-visual{height:380px}
+    .wed-visual{height:420px}
+    .foot-grid{grid-template-columns:1fr}
+    .hero-meta{gap:24px}
+    .hero-meta strong{font-size:28px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .polaroid:nth-child(n){transform:none!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="top" aria-label="Hauptnavigation">
+  <div class="nav-inner">
+    <a href="#top" class="brand" aria-label="Blütenwerk Floristik — Startseite">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2C9 5 9 9 12 12C15 9 15 5 12 2Z"/>
+          <path d="M12 12C7 12 4 14 4 18C8 18 11 16 12 12Z"/>
+          <path d="M12 12C17 12 20 14 20 18C16 18 13 16 12 12Z"/>
+          <path d="M12 12V22"/>
+        </svg>
+      </span>
+      <span class="brand-name">Blüten<em>werk</em></span>
+    </a>
+    <div class="nav-links" id="navlinks">
+      <a href="#saisonal">Saisonale Sträuße</a>
+      <a href="#hochzeiten">Hochzeiten</a>
+      <a href="#workshops">Workshops</a>
+      <a href="#ueber">Über uns</a>
+      <a href="#bestellen" class="nav-cta">Strauß bestellen</a>
+    </div>
+    <button class="nav-burger" aria-label="Menü öffnen" aria-expanded="false" onclick="document.getElementById('navlinks').style.display=document.getElementById('navlinks').style.display==='flex'?'none':'flex';this.setAttribute('aria-expanded',document.getElementById('navlinks').style.display==='flex')">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-text">
+        <span class="eyebrow">Floristische Manufaktur · Berlin-Kreuzberg</span>
+        <h1>Blumen, die <span class="it">wild</span> wachsen dürfen — und trotzdem <span class="leaf-word">Haltung</span> haben.</h1>
+        <p class="hero-sub">Jeden Freitag binden wir aus saisonaler Ernte der Marktbauern Uckermark &amp; Spreewald einen Strauss in französisch-gärtnerischer Manier. Kein Import, keine Standardrose, kein Plastik.</p>
+        <div class="hero-cta-row">
+          <a href="#bestellen" class="btn btn-primary">
+            Freitag-Strauss sichern
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#workshops" class="btn btn-ghost">Workshops ansehen</a>
+        </div>
+        <div class="hero-meta">
+          <div><strong>2014</strong><span>seit zehn Jahren in Kreuzberg — gegründet von Lieselotte Mahler</span></div>
+          <div><strong>38</strong><span>Hochzeiten pro Jahr — bewusst begrenzt, damit jede ihr Team bekommt</span></div>
+          <div><strong>0&nbsp;km</strong><span>Import-Flugware. Ausschliesslich regionaler Anbau &amp; eigene Anzucht</span></div>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="seal">
+          <small>SEIT</small>
+          2014
+        </div>
+        <div class="hero-photo polaroid-1">
+          <img src="images/bluetenwerk-floristik/img-1.jpeg" alt="Saisonaler Strauss aus Bauerngärtnerei" style="width:100%;height:100%;object-fit:cover;border-radius:3px">
+          <span class="cap">— Strauss Nr. 38, Juli</span>
+        </div>
+        <div class="hero-photo polaroid-2">
+          <img src="images/bluetenwerk-floristik/img-2.jpeg" alt="Detailaufnahme Ranunkel und Schleierkraut" style="width:100%;height:100%;object-fit:cover;border-radius:3px">
+          <span class="cap">— Atelier-Detail</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ SAISONALE STRÄUSSE ============ -->
+<section class="section" id="saisonal">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Saisonale Sträuße</span>
+        <h2>Drei Grössen, <em>eine Saison</em> — jeden Freitag neu gebunden.</h2>
+      </div>
+      <p>Was in dieser Woche auf dem Markttisch landet, entscheidet das Wetter in Beelitz und die Ernte der Bauerngärtnerei Vieracker. Wir binden vor Ort — keine Kühlware, keine Standardmischung.</p>
+    </div>
+
+    <div class="bouquet-grid">
+      <article class="polaroid">
+        <div class="ph">
+          <img src="images/bluetenwerk-floristik/img-1.jpeg" alt="Ateliertisch Strauss — mittlere Grösse mit Schleierkraut" style="width:100%;height:100%;object-fit:cover;border-radius:2px">
+        </div>
+        <div class="meta">
+          <div>
+            <span class="tag">Diese Woche · Juli</span>
+            <h3>Ateliertisch</h3>
+          </div>
+          <span class="price">38&nbsp;€</span>
+        </div>
+        <ul>
+          <li>Bauernranunkel, Buttercup, Schleierkraut</li>
+          <li>Wuchshöhe ca. 45 cm, handgebunden</li>
+          <li>Abholung Fr 10–18 Uhr im Atelier</li>
+        </ul>
+      </article>
+
+      <article class="polaroid">
+        <div class="ph">
+          <img src="images/bluetenwerk-floristik/img-2.jpeg" alt="Freitag-Strauss — mittlere Grösse mit Disteln" style="width:100%;height:100%;object-fit:cover;border-radius:2px">
+        </div>
+        <div class="meta">
+          <div>
+            <span class="tag">Freitags-Strauss</span>
+            <h3>Freitag</h3>
+          </div>
+          <span class="price">52&nbsp;€</span>
+        </div>
+        <ul>
+          <li>Grossstrauss mit Distel, Lupine, Gräsern</li>
+          <li>Höhe ca. 60 cm, opulent &amp; wild</li>
+          <li>Abo möglich: 4× für 188&nbsp;€</li>
+        </ul>
+      </article>
+
+      <article class="polaroid">
+        <div class="ph">
+          <img src="images/bluetenwerk-floristik/img-3.jpeg" alt="Gross-Strauss für Jubiläum mit Saisonblüten" style="width:100%;height:100%;object-fit:cover;border-radius:2px">
+        </div>
+        <div class="meta">
+          <div>
+            <span class="tag">Auf Bestellung</span>
+            <h3>Gross-Strauss</h3>
+          </div>
+          <span class="price">ab&nbsp;78&nbsp;€</span>
+        </div>
+        <ul>
+          <li>Für Jubiläum, Trauer, grossen Tisch</li>
+          <li>Individuelle Beratung &amp; Wünsche</li>
+          <li>24 Stunden Vorlauf, Lieferung innen</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOCHZEITEN ============ -->
+<section class="section weddings" id="hochzeiten">
+  <div class="wrap">
+    <div class="wed-grid">
+      <div class="wed-text">
+        <span class="eyebrow">Hochzeiten</span>
+        <h2>Ein Tag, der <em>nach Garten</em> riecht — nicht nach Kühlwagen.</h2>
+        <p>Wir begleiten maximal 38 Brautpaare pro Jahr. Damit bleibt Zeit für zwei Vorgespräche, einen Probestrauss vier Wochen vorher und ein Team, das am Tag selbst nicht in Stress gerät.</p>
+        <ul class="wed-list">
+          <li>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4F6F3F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg>
+            <div>
+              <strong>Brautstrauss &amp; Anstecker</strong>
+              <span>Handgebunden nach Stimmungsbild — wir arbeiten ohne Floristensteckschaum, mit Naturbast und Sisal.</span>
+            </div>
+          </li>
+          <li>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4F6F3F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg>
+            <div>
+              <strong>Tisch- &amp; Locationschmuck</strong>
+              <span>Vom langen Bauerngärtner-Tisch bis zur Industriehalle — wir kuratieren Gefässe, Licht und Grün.</span>
+            </div>
+          </li>
+          <li>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4F6F3F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M5 8c3 0 5 2 7 5"/><path d="M19 8c-3 0-5 2-7 5"/><path d="M5 14c3 0 5 2 7 5"/><path d="M19 14c-3 0-5 2-7 5"/></svg>
+            <div>
+              <strong>Probestrauss 4 Wochen vorher</strong>
+              <span>Mit Fotos im Atelier-Naturlicht — damit am Tag selbst nichts überrascht.</span>
+            </div>
+          </li>
+        </ul>
+        <a href="#bestellen" class="btn btn-primary">Hochzeitstermin 2025 anfragen</a>
+      </div>
+      <div class="wed-visual" aria-hidden="true">
+        <div class="wed-stamp">
+          <small>SAISON</small>
+          2025/26
+        </div>
+        <div class="wed-photo wed-1">
+          <img src="images/bluetenwerk-floristik/img-3.jpeg" alt="Hochzeitsschmuck mit Saisonblüten und Gräsern" style="width:100%;height:100%;object-fit:cover;border-radius:3px">
+          <span class="cap">— Locationsschmuck, Sommer 2024</span>
+        </div>
+        <div class="wed-photo wed-2">
+          <img src="images/bluetenwerk-floristik/img-2.jpeg" alt="Detail einer Brautstrauss-Bindung" style="width:100%;height:100%;object-fit:cover;border-radius:3px">
+          <span class="cap">— Brautstrauss-Detail</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORKSHOPS ============ -->
+<section class="section" id="workshops">
+  <div class="wrap">
+    <div class="ws-head">
+      <span class="eyebrow" style="justify-content:center">Workshops im Atelier</span>
+      <h2>Selber binden lernen — mit einem Glas <em>Naturwein</em> daneben.</h2>
+      <p>Dreimal im Jahr öffnen wir das Atelier in der Reichenberger Str. 42. Kleine Gruppen, viel Handwerk, viel Zeit für Fragen. Alle Materialien sind inklusive.</p>
+    </div>
+
+    <div class="ws-grid">
+      <article class="ws-card">
+        <div class="ws-icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C9 5 9 9 12 12C15 9 15 5 12 2Z"/><path d="M12 12C7 12 4 14 4 18C8 18 11 16 12 12Z"/><path d="M12 12C17 12 20 14 20 18C16 18 13 16 12 12Z"/><path d="M12 12V22"/></svg>
+        </div>
+        <p class="when">Fr · 14. März 2025 · 18–21 Uhr</p>
+        <h3>Frühlings-Strauss binden</h3>
+        <p>Für Einsteiger. Du lernst den Spiralschnitt, den Aufbau eines Bauerngarten-Strausses und nimmst dein eigenes Werk mit nach Hause — inklusive Vasen-Tipps für die Haltbarkeit.</p>
+        <div class="ws-foot">
+          <span class="price">89&nbsp;€<small>inkl. Material</small></span>
+          <a href="#bestellen">Platz sichern</a>
+        </div>
+      </article>
+
+      <article class="ws-card">
+        <div class="ws-icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/><path d="M8 12V8a4 4 0 0 1 8 0v4"/><path d="M12 4v2"/></svg>
+        </div>
+        <p class="when">Sa · 7. Juni 2025 · 11–16 Uhr</p>
+        <h3>Adventskranz vom Beet</h3>
+        <p>Mit getrockneten Blüten aus eigener Anzucht, Eukalyptus und heimischem Tannengrün. Du bindst einen Kranz auf Stroh-Unterlage — ohne Plastik, ohne Kupferdraht-Schaum.</p>
+        <div class="ws-foot">
+          <span class="price">112&nbsp;€<small>inkl. Material &amp; Tee</small></span>
+          <a href="#bestellen">Platz sichern</a>
+        </div>
+      </article>
+
+      <article class="ws-card">
+        <div class="ws-icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        </div>
+        <p class="when">Sa · 11. Oktober 2025 · 10–17 Uhr</p>
+        <h3>Trockenblumen-Herbstwerk</h3>
+        <p>Ein ganzer Tag im Atelier. Wir stellen eigene Trockengestecke her — vom Wandkranz bis zur langlebigen Tischdekoration. Mit kleinem Mittagessen aus der Atelierküche.</p>
+        <div class="ws-foot">
+          <span class="price">164&nbsp;€<small>inkl. Material &amp; Mittag</small></span>
+          <a href="#bestellen">Platz sichern</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ÜBER UNS ============ -->
+<section class="section about" id="ueber">
+  <div class="wrap">
+    <div class="about-grid">
+      <div class="about-portrait">
+        <img src="images/bluetenwerk-floristik/img-1.jpeg" alt="Atelier-Gründerin Lieselotte Mahler im Blütenwerk-Atelier" style="width:100%;height:auto;object-fit:cover;border-radius:3px">
+        <span class="cap">— Lieselotte im Atelier, Reichenberger Str. 42</span>
+      </div>
+      <div class="about-text">
+        <span class="eyebrow" style="color:var(--rose)">Über uns</span>
+        <h2>Eine Manufaktur, kein <em>Blumenladen</em>.</h2>
+        <p>Blütenwerk begann 2014 als kleiner Stand auf dem Markt am Maybachufer. Heute arbeiten sechs Hände in einem Atelier in Kreuzberg: Lieselotte, Idris und Fatou. Wir binden selbst, beraten selbst, liefern selbst — kein Zwischenhändler, keine Filiale, kein Franchise.</p>
+        <p>Unsere Blumen kommen zu 100&nbsp;% aus der Region: von der Bauerngärtnerei Vieracker in Beelitz, vom Hof Schrader im Spreewald und aus eigener Anzucht auf dem Atelier-Dach. Import-Flugware lehnen wir konsequent ab — auch im Februar, wenn die Auswahl klein wird.</p>
+        <p class="signature">— Lieselotte, Idris &amp; Fatou</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BESTELLUNG / CTA ============ -->
+<section class="section order" id="bestellen">
+  <div class="wrap">
+    <div class="order-card">
+      <span class="eyebrow" style="justify-content:center">Bestellung &amp; Beratung</span>
+      <h2>Schreib uns — wir rufen <em>zurück</em>.</h2>
+      <p>Ob Freitag-Strauss, Hochzeitstermin 2025 oder Workshop-Platz: Schreib eine kurze Mail oder ruf an. Wir antworten in der Regel innerhalb eines Werktages — und beraten ehrlich, auch wenn etwas nicht passt.</p>
+      <div class="order-row">
+        <a href="mailto:hallo@bluetenwerk.berlin" class="btn btn-primary">
+          hallo@bluetenwerk.berlin
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>
+        </a>
+        <a href="tel:+493061234567" class="btn btn-ghost">030 · 6123 4567</a>
+      </div>
+      <p class="order-note">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F6F3F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg>
+        Atelier Reichenberger Str. 42 · 10999 Berlin · geöffnet Di–Fr 10–18 Uhr
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#top" class="brand" aria-label="Blütenwerk — nach oben">
+          <span class="brand-mark" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2C9 5 9 9 12 12C15 9 15 5 12 2Z"/>
+              <path d="M12 12C7 12 4 14 4 18C8 18 11 16 12 12Z"/>
+              <path d="M12 12C17 12 20 14 20 18C16 18 13 16 12 12Z"/>
+              <path d="M12 12V22"/>
+            </svg>
+          </span>
+          <span class="brand-name">Blüten<em>werk</em></span>
+        </a>
+        <p>Floristische Manufaktur in Berlin-Kreuzberg. Saisonale Sträuße, Hochzeiten, Workshops — seit 2014, mit sechs Händen und ohne Importware.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Atelier</h4>
+        <ul>
+          <li><a href="#saisonal">Saisonale Sträuße</a></li>
+          <li><a href="#hochzeiten">Hochzeiten</a></li>
+          <li><a href="#workshops">Workshops</a></li>
+          <li><a href="#ueber">Über uns</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Kontakt</h4>
+        <ul>
+          <li><a href="mailto:hallo@bluetenwerk.berlin">hallo@bluetenwerk.berlin</a></li>
+          <li><a href="tel:+493061234567">030 · 6123 4567</a></li>
+          <li><a href="#bestellen">Atelier-Reichenberger 42</a></li>
+</ul></div></div></div></footer></body>
+</html>
