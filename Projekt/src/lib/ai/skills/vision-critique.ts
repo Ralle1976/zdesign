@@ -16,6 +16,7 @@
  */
 import puppeteer, { type Browser } from 'puppeteer';
 import { callZaiVision, ZAI_MODELS, type ZaiCallOptions } from '@/lib/ai/zai-direct';
+import { callGeminiMultimodal } from '@/lib/ai/gemini-direct';
 
 export interface RenderOpts {
   width?: number;
@@ -128,6 +129,43 @@ export async function critiqueRendered(
     };
   } catch (e) {
     console.warn('[vision-critique] critique failed:', e instanceof Error ? e.message : e);
+    return null;
+  }
+}
+
+/**
+ * GEMINI vision critique — the stricter cream judge (GLM-4.6v was too lenient:
+ * it rated bad/off images 8/10). Gemini sees the rendered design and returns the
+ * same VisionCritique shape. Falls back to null on failure (caller skips round).
+ */
+export async function critiqueRenderedGemini(png: Buffer): Promise<VisionCritique | null> {
+  const b64 = png.toString('base64');
+  try {
+    const raw = await callGeminiMultimodal(CRITIQUE_PROMPT, b64, {
+      maxTokens: 3000,
+      temperature: 0.3,
+      timeoutMs: 120_000,
+    });
+    // Gemini may wrap JSON in markdown fences or preamble — extract the {...}.
+    const match = raw.match(/\{[\s\S]*\}/);
+    if (!match) return null;
+    const parsed = JSON.parse(match[0]);
+    return {
+      overall: clamp(parsed.overall),
+      dimensions: {
+        harmony: clamp(parsed.dimensions?.harmony),
+        life: clamp(parsed.dimensions?.life),
+        typography: clamp(parsed.dimensions?.typography),
+        imagery: clamp(parsed.dimensions?.imagery),
+        layout: clamp(parsed.dimensions?.layout),
+        professionalism: clamp(parsed.dimensions?.professionalism),
+      },
+      problems: Array.isArray(parsed.problems) ? parsed.problems.slice(0, 6) : [],
+      fixes: Array.isArray(parsed.fixes) ? parsed.fixes.slice(0, 6) : [],
+      agencyLevel: parsed.overall >= 8,
+    };
+  } catch (e) {
+    console.warn('[vision-critique] gemini critique failed:', e instanceof Error ? e.message : e);
     return null;
   }
 }

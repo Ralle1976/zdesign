@@ -87,6 +87,21 @@ const TOOLS: ToolDef[] = [
     },
   },
   {
+    name: 'zdesign_cream',
+    description:
+      'CREAM pipeline: generate a design via the full agent loop (art-direction + creative-dna + memory + bespoke MiniMax images) then run the VISION-CRITIQUE LOOP (Puppeteer render -> GLM-4.6v critique -> refine) until score >= target. Returns { html, score, rounds, trace }. Use this for highest-quality (cream) designs.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', description: 'The design brief / user message.' },
+        projectId: { type: 'string', description: 'Target project id.' },
+        target: { type: 'number', description: 'Quality target 1-10 (default 8).' },
+        maxRounds: { type: 'number', description: 'Max vision-critique rounds (default 3).' },
+      },
+      required: ['message', 'projectId'],
+    },
+  },
+  {
     name: 'zdesign_batch',
     description:
       'Generate multiple designs in one batch. Each brief becomes a new LANDING_PAGE project with generated HTML. Returns { designs, errors }.',
@@ -248,6 +263,14 @@ async function dispatchTool(
         json: { message, projectId, ...(concept ? { concept } : {}) },
       });
     }
+    case 'zdesign_cream': {
+      const message = requireString(params, 'message');
+      const projectId = requireString(params, 'projectId');
+      const json: Record<string, unknown> = { message, projectId };
+      if (typeof params.target === 'number') json.target = params.target;
+      if (typeof params.maxRounds === 'number') json.maxRounds = params.maxRounds;
+      return apiFetch('/api/design/cream', { method: 'POST', json });
+    }
     case 'zdesign_batch': {
       const briefs = params.briefs;
       if (!Array.isArray(briefs)) throw new Error('briefs must be an array');
@@ -304,6 +327,7 @@ async function dispatchTool(
 /** Per-tool minimum scope. */
 const TOOL_SCOPE: Record<string, 'read' | 'write'> = {
   zdesign_generate: 'write',
+  zdesign_cream: 'write',
   zdesign_batch: 'write',
   zdesign_concepts: 'write',
   zdesign_list_projects: 'read',
