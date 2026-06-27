@@ -78,9 +78,24 @@ export interface QcResult {
   failures: string[];
   warnings: string[];
 }
-
 /** CTA keywords (de + en) — at least one real call-to-action must exist. */
 const CTA_RE = /\b(jetzt|reserv|bestell|kauf|kontakt|anmeld|registrier|buchen|los|mehr erfahren|entdeck|get started|order|buy|book|sign up|contact|learn more|explore)\b/i;
+
+/**
+ * Inject a minimal, real footer when the model omitted one — instead of
+ * regenerating (expensive). Raises batch QC yield dramatically (the most common
+ * QC failure was "missing <footer>"). Idempotent (no-op if a footer exists).
+ * Brand is escaped to avoid injection from the brief name.
+ */
+export function ensureFooter(html: string, brand = 'Z.Design'): string {
+  if (/<footer\b/i.test(html)) return html;
+  const year = new Date().getFullYear();
+  const b = String(brand).replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' }[c]!));
+  const footer = `\n<footer style="border-top:1px solid rgba(255,255,255,.12);padding:2.5rem 1.5rem;background:#0b0b0c;color:#e7e2d6;font-family:system-ui,-apple-system,sans-serif">\n  <div style="max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center">\n    <strong>${b}</strong>\n    <nav style="display:flex;gap:1.25rem;font-size:.9rem;opacity:.85"><a href="#" style="color:inherit;text-decoration:none">Impressum</a><a href="#" style="color:inherit;text-decoration:none">Datenschutz</a><a href="#" style="color:inherit;text-decoration:none">Kontakt</a></nav>\n  </div>\n  <div style="max-width:1100px;margin:1rem auto 0;font-size:.8rem;opacity:.6">© ${year} ${b}. Alle Rechte vorbehalten.</div>\n</footer>\n`;
+  const bodyIdx = html.search(/<\/body>/i);
+  if (bodyIdx >= 0) return html.slice(0, bodyIdx) + footer + html.slice(bodyIdx);
+  return html + footer;
+}
 
 /**
  * The full acceptance gate. A design passes only when it is structurally

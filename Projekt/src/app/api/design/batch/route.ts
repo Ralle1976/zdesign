@@ -33,7 +33,7 @@ import { callLLM } from '@/lib/ai/provider';
 import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
 import { getDefaultDesignForType } from '@/lib/ai-prompts';
 import { generateImagesMinimax, buildThaiFoodPrompts, buildImagePrompts, isMinimaxImageConfigured } from '@/lib/ai/image-minimax';
-import { validateDesignHtml, repairTagBalance } from '@/lib/ai/lint/design-qc';
+import { validateDesignHtml, repairTagBalance, ensureFooter } from '@/lib/ai/lint/design-qc';
 import { recallAntiPatterns } from '@/lib/ai/memory/negative-memory';
 
 /** A single brief in the request body. */
@@ -239,7 +239,7 @@ export async function POST(request: NextRequest) {
                 timeoutMs: 300_000,
               }),
             );
-            let candidate = repairTagBalance(autoCloseHtml(raw));
+            let candidate = ensureFooter(repairTagBalance(autoCloseHtml(raw)), brief.name);
             const qc = validateDesignHtml(candidate);
             if (qc.pass) {
               html = candidate;

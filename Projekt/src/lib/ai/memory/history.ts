@@ -10,6 +10,7 @@
 
 import { db } from '@/lib/db';
 import { reinforceDomainPositives } from '@/lib/ai/memory/negative-memory';
+import { redactSecrets } from '@/lib/ai/memory/secret-redactor';
 
 /** A raw DesignHistory row (matches the Prisma model field-for-field). */
 export interface DesignHistoryRow {
@@ -73,18 +74,21 @@ export async function recordDesign(entry: RecordDesignInput): Promise<void> {
   try {
     const derived = deriveValence(entry.composite);
     const valence = entry.valence ?? derived.valence;
+    // P2.5 SECRET GUARD: scrub any secret-shaped span from user-derived fields
+    //   BEFORE persisting, so the learned memory never stores a leaked key.
+    const cleanStr = (v?: string | null) => redactSecrets(v ?? '').clean;
     await db.designHistory.create({
       data: {
-        prompt: entry.prompt,
+        prompt: cleanStr(entry.prompt),
         conceptName: entry.conceptName ?? null,
         domain: entry.domain,
         composite: entry.composite ?? null,
         palette: entry.palette ?? null,
-        feedback: entry.feedback ?? null,
+        feedback: cleanStr(entry.feedback),
         projectId: entry.projectId ?? null,
         valence,
         outcome: entry.outcome ?? derived.outcome,
-        rootCause: entry.rootCause ?? null,
+        rootCause: cleanStr(entry.rootCause),
         sourceAgentId: entry.sourceAgentId ?? null,
       },
     });

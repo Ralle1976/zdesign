@@ -19,6 +19,7 @@
 import { db } from '@/lib/db';
 import { estimateTokens } from '@/lib/ai/memory/context-manager';
 import { sanitizePayload, wrapUntrusted, TRUST, type TrustTier } from '@/lib/ai/memory/memory-sanitizer';
+import { redactSecrets } from '@/lib/ai/memory/secret-redactor';
 
 /** ~30-day half-life for recency decay. Tunable. */
 const HALF_LIFE_DAYS = 30;
@@ -41,7 +42,7 @@ const GLOBAL_AVOID: RecallItem[] = [
   'Gerundete Karten mit farbigem Left-Border (das AI-Dashboard-Kachel-Klischee)',
   'Erfundene Vanity-Metriken („10× schneller", „99,9 %") — nur echte, konkrete Zahlen',
   'Lorem-Ipsum / Platzhalter-Text — echten, spezifischen, themenbezogenen Text schreiben',
-].map((text, i) => ({
+].map((text) => ({
   source: 'recipe' as const,
   text,
   valence: -1,
@@ -159,7 +160,8 @@ export async function recallAntiPatterns(opts: {
     const byKey = new Map<string, RecallItem & { _count: number; _latest: Date }>();
     for (const e of relevant) {
       const raw = `avoid (${e.domain}): ${e.rootCause?.trim() || e.feedback?.trim() || e.outcome || 'poor outcome'}`.slice(0, 240);
-      const san = sanitizePayload(raw); // P2.2 strip injection-shaped spans
+      const red = redactSecrets(raw); // P2.5 scrub any secret-shaped span (defense-in-depth)
+      const san = sanitizePayload(red.clean); // P2.2 strip injection-shaped spans
       const text = wrapUntrusted(san.clean, 'episode'); // P2.2 envelope as data
       const key = san.clean.toLowerCase();
       const ageDays = (now - (e.createdAt?.getTime() ?? now)) / 86_400_000;
