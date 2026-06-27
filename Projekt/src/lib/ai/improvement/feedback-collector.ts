@@ -266,9 +266,9 @@ export async function getFeedbackStats(): Promise<FeedbackStats> {
     for (const key of Object.keys(bySkill)) {
       const b = bySkill[key]
       const ext = b as unknown as {
-        _succ: number
-        _compSum: number
-        _compCount: number
+        _succ?: number
+        _compSum?: number
+        _compCount?: number
       }
       b.successRate = b.count > 0 ? ext._succ / b.count : 0
       b.avgComposite =
