@@ -34,6 +34,7 @@ import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
 import { getDefaultDesignForType } from '@/lib/ai-prompts';
 import { generateImagesMinimax, buildThaiFoodPrompts, buildImagePrompts, isMinimaxImageConfigured } from '@/lib/ai/image-minimax';
 import { validateDesignHtml, repairTagBalance, ensureFooter } from '@/lib/ai/lint/design-qc';
+import { fingerprint, DiversityTracker } from '@/lib/ai/lint/diversity-guard';
 import { recallAntiPatterns } from '@/lib/ai/memory/negative-memory';
 
 /** A single brief in the request body. */
@@ -261,7 +262,7 @@ export async function POST(request: NextRequest) {
               error: `QC failed after ${MAX_ATTEMPTS} attempts: ${lastFailures.join('; ')}`,
             });
           }
-          return { projectId: project.id, name: brief.name, htmlKB: Math.round((html.length / 1024) * 10) / 10, valid };
+          return { projectId: project.id, name: brief.name, htmlKB: Math.round((html.length / 1024) * 10) / 10, valid, fp: valid ? fingerprint(html) : null };
         } catch (e) {
           const msg = e instanceof Error ? e.message : 'Unknown batch error';
           console.error('[batch] error for', brief.name, msg);
@@ -270,7 +271,38 @@ export async function POST(request: NextRequest) {
         }
       },
     );
-    return NextResponse.json({ designs, errors, total: briefs.length });
+
+    // ── DIVERSITY PASS (serial, concurrency-safe): reject near-duplicate designs
+    //   (same palette + display font) so the published set stays varied.
+    const tracker = new DiversityTracker();
+    for (const d of designs) {
+      const fp = (d as BatchDesignResult & { fp?: unknown }).fp;
+      if (d.valid && fp && typeof fp === 'object') {
+        const sim = tracker.check(fp as Parameters<DiversityTracker['check']>[0]);
+        if (sim.tooSimilar) {
+          d.valid = false;
+          errors.push({ name: d.name, error: `diversity: too similar to design #${(sim.similarTo ?? 0) + 1}` });
+        } else {
+          tracker.accept(fp as Parameters<DiversityTracker['accept']>[0]);
+        }
+      }
+      delete (d as BatchDesignResult & { fp?: unknown }).fp;
+    }
+
+    // ── BATCH-EVAL summary: aggregate pass-rate + diversity stats
+    const passed = designs.filter((d) => d.valid).length;
+    const summary = {
+      total: briefs.length,
+      passed,
+      failed: briefs.length - passed,
+      passRate: Math.round((passed / Math.max(1, briefs.length)) * 100),
+      distinctAccepted: tracker.count,
+      duplicatesRejected: designs.filter((d) => !d.valid).filter((d) => errors.some((e) => e.name === d.name && e.error.startsWith('diversity'))).length,
+      avgHtmlKB: Math.round((designs.filter((d) => d.valid).reduce((s, d) => s + d.htmlKB, 0) / Math.max(1, passed)) * 10) / 10,
+    };
+    console.log(`[batch] summary: ${passed}/${briefs.length} passed (${summary.passRate}%), ${summary.distinctAccepted} distinct, ${summary.duplicatesRejected} diversity-rejected`);
+
+    return NextResponse.json({ designs, errors, total: briefs.length, summary });
   } catch (error) {
     console.error('[design/batch] Error:', error);
     const msg = error instanceof Error ? error.message : 'Batch generation failed';
