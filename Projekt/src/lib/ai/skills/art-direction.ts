@@ -12,6 +12,7 @@ import { pickSystemForTopic, type DesignSystem } from '@/lib/design-systems/syst
 import { ANTI_SLOP_CRAFT } from '@/lib/ai/lint/anti-slop-craft';
 import type { DesignRecipe } from '@/lib/ai/skills/skill-memory';
 import type { Concept } from './creative-director';
+import { pickCreativeAxes, renderCreativeBlock, type CreativeAxes } from './creative-diversity';
 
 export interface ArtBrief {
   domain: string;
@@ -31,6 +32,12 @@ export interface ArtBrief {
    *  generateHtmlPrompt SERVES the concept — it overrides the generic design-system
    *  palette/fonts and injects a prominent KONZEPT block at the very top. */
   concept?: Concept | null;
+  /** 3-axis creative constellation (layout gesture + motion + effect) — the
+   *  anti-sameness / motion engine. Computed in buildArtBrief; rendered by
+   *  generateHtmlPrompt as an ENFORCED directive. When a concept is present only
+   *  the motion+effect parts are rendered (motion-only), so it never fights the
+   *  concept's own layoutApproach. */
+  creative?: CreativeAxes;
 }
 
 /**
@@ -50,6 +57,7 @@ export function buildArtBrief(message: string): ArtBrief {
     imagery: imageryGuidance(d.domain),
     atmosphere: atmosphereGuidance(d.domain),
     system: pickSystemForTopic(message),
+    creative: pickCreativeAxes(message),
   };
 }
 
@@ -101,6 +109,12 @@ export function generateHtmlPrompt(brief: ArtBrief, message: string, existingHtm
   // Q1 fix: previously both roots leaked into the trace and the model reverted to
   // the (generic) system one, making every "varied" concept look identical.
   const concept = brief.concept;
+  // KREATIV-DNA (anti-sameness + motion): rendered as an enforced directive.
+  // When a concept supplies its own layoutApproach we emit motion+effect only
+  // so the structural gesture never contradicts the concept.
+  const creativeBlock = brief.creative
+    ? '\n' + renderCreativeBlock(brief.creative, concept ? 'motion-only' : 'full') + '\n'
+    : '';
   if (concept) {
     const cp = concept.palette;
     const cf = concept.fonts;
@@ -146,6 +160,7 @@ export function generateHtmlPrompt(brief: ArtBrief, message: string, existingHtm
       `Typografie: große atmende Skala via clamp(), klare H1>H2>H3-Hierarchie, leicht negativer Letter-Spacing bei Display. Display = "${cf.display}", Body = "${cf.body}".`,
       `Bildwelt: ${brief.imagery}`,
       `Atmosphäre: ${brief.atmosphere}${motionLine}`,
+      creativeBlock,
       `DREI QUALITÄTEN (müssen spürbar sein — das ist die Prüfkriterien):`,
       `HARMONIE — ein tragender Grundton, durchgängiger Rhythmus, 8px-Raster, großzügiger Atem; nichts beißt sich.`,
       `LEBEN — echte Atmosphäre (Verlauf/Schatten/Korn/Glow), echte Bildwelt, sanfte Bewegung (Hover, gestaffeltes Fade-in). Nicht flach.`,
@@ -185,6 +200,7 @@ export function generateHtmlPrompt(brief: ArtBrief, message: string, existingHtm
     `Typografie: große atmende Skala via clamp(), klare H1>H2>H3-Hierarchie, leicht negativer Letter-Spacing bei Display.`,
     `Bildwelt: ${brief.imagery}`,
     `Atmosphäre: ${brief.atmosphere}`,
+    creativeBlock,
     ``,
     `DREI QUALITÄTEN (müssen spürbar sein — das ist die Prüfkriterien):`,
     `HARMONIE — ein tragender Grundton, durchgängiger Rhythmus, 8px-Raster, großzügiger Atem; nichts beißt sich.`,

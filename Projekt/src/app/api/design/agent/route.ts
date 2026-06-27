@@ -16,6 +16,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { buildArtBrief, briefLabel, generateHtmlPrompt } from '@/lib/ai/skills/art-direction';
+import { axesLabel } from '@/lib/ai/skills/creative-diversity';
 import { runCritiqueTheater, type TheaterResult } from '@/lib/ai/skills/critic-theater';
 import { refinePrompt } from '@/lib/ai/skills/refine';
 import { callZai } from '@/lib/ai/zai-direct';
@@ -116,6 +117,16 @@ export async function POST(request: NextRequest) {
     trace.push({ step: 'art-direction', label: `Art Direction`, detail: `${directionLabel}` });
     if (concept) {
       trace.push({ step: 'concept', label: `Konzept: ${concept.name}`, detail: concept.bigIdea });
+    }
+    // KREATIV-DNA (anti-sameness / motion): surfaced in the trace so the user
+    // sees WHICH structural gesture + motions + effect this design was built
+    // with (and that two designs of the same topic deliberately diverge).
+    if (brief.creative) {
+      trace.push({
+        step: 'creative-dna',
+        label: `Kreativ-DNA: ${axesLabel(brief.creative)}`,
+        detail: `Struktur ${brief.creative.archetype.name} · Bewegung ×${brief.creative.motions.length} · Effekt ${brief.creative.effect.name}`,
+      });
     }
 
     // 1b) LEARNING loop (load): if a recipe was previously approved for this

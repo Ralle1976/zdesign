@@ -36,6 +36,7 @@ import { generateImagesMinimax, buildThaiFoodPrompts, buildImagePrompts, isMinim
 import { validateDesignHtml, repairTagBalance, ensureFooter } from '@/lib/ai/lint/design-qc';
 import { fingerprint, DiversityTracker } from '@/lib/ai/lint/diversity-guard';
 import { recallAntiPatterns } from '@/lib/ai/memory/negative-memory';
+import { pickCreativeAxes, renderCreativeBlock, axesLabel } from '@/lib/ai/skills/creative-diversity';
 
 /** A single brief in the request body. */
 interface DesignBrief {
@@ -85,7 +86,12 @@ function autoCloseHtml(s: string): string {
 }
 
 /** Build a focused HTML-generation prompt from a brief. */
-function buildBriefPrompt(brief: DesignBrief, generatedImages?: string[], memoryBlock?: string): string {
+function buildBriefPrompt(
+  brief: DesignBrief,
+  generatedImages?: string[],
+  memoryBlock?: string,
+  creativeBlock?: string,
+): string {
   const parts: string[] = [
     'Du bist ein Art Director und Frontend-Entwickler.',
     `Erzeuge eine COMPLETE, einzelständige HTML-Datei (mit <!doctype html>, <html>, <head>, <style> und <body>) für eine Landing Page.`,
@@ -96,6 +102,10 @@ function buildBriefPrompt(brief: DesignBrief, generatedImages?: string[], memory
   // NEGATIVE MEMORY: avoid patterns the brain has learned (past failures /
   // anti-slop sins). Injected EARLY so the model treats them as hard constraints.
   if (memoryBlock && memoryBlock.trim()) parts.push('', memoryBlock.trim());
+  // KREATIV-DNA (anti-sameness + motion): a per-brief structural gesture +
+  // motion + effect so two designs of the same topic diverge instead of
+  // coming out identical. Deterministic from name|theme.
+  if (creativeBlock && creativeBlock.trim()) parts.push('', creativeBlock.trim());
   if (brief.palette) parts.push(`Farbpalette: ${brief.palette}`);
   if (brief.fonts) parts.push(`Typografie: ${brief.fonts}`);
   if (brief.layout) parts.push(`Layout-Ansatz: ${brief.layout}`);
@@ -218,7 +228,13 @@ export async function POST(request: NextRequest) {
           if (memory.items.length > 0) {
             console.log(`[batch] ${brief.name}: ${memory.items.length} avoid-Muster aus dem Gedächtnis injiziert`);
           }
-          const prompt = buildBriefPrompt(brief, generatedImageUrls, memoryBlock);
+          // ── KREATIV-DNA: pick a per-brief 3-axis constellation (layout gesture
+          //   + motion + effect) so designs of the same topic diverge instead of
+          //   coming out identical. Deterministic from name|theme.
+          const axes = pickCreativeAxes(`${brief.name}|${brief.theme}`);
+          const creativeBlock = renderCreativeBlock(axes, 'full');
+          console.log(`[batch] ${brief.name}: Kreativ-DNA = ${axesLabel(axes)}`);
+          const prompt = buildBriefPrompt(brief, generatedImageUrls, memoryBlock, creativeBlock);
           // ── QC GATE: generate → repair → validate → retry until it passes ──
           // The old check only verified "</html>" present, so truncated pages
           // with unclosed tags and missing footers shipped. Now a design only
