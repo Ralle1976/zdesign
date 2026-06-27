@@ -23,6 +23,7 @@ import { callZai } from '@/lib/ai/zai-direct';
 import type { Concept } from '@/lib/ai/skills/creative-director';
 import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
 import { lintHtml, type LintFinding } from '@/lib/ai/lint/anti-slop';
+import { generateImagesMinimax, buildImagePrompts, buildThaiFoodPrompts, isMinimaxImageConfigured } from '@/lib/ai/image-minimax';
 import { loadApprovedRecipeForTopic, proposeRecipe, saveRecipeProposal, patchRecipe, LEARN_THRESHOLD } from '@/lib/ai/skills/skill-memory';
 import { enforceConceptTokens } from '@/lib/ai/skills/palette-enforcer';
 import { appendTrace } from '@/lib/ai/skills/trace-store';
@@ -207,6 +208,35 @@ export async function POST(request: NextRequest) {
     //    prose / scratch notes instead of a full document. When a rationale was
     //    produced in Pass 1, it is PREPENDED to the production prompt so the
     //    model reasons from the Art Director's direction first.
+    // 1d) BESPOKE MINIMAX PHOTOS (the premium path's image layer): pre-generate
+    //     real, on-theme photography and inject the URLs so the critique-loop
+    //     designs ship with authentic imagery (not generic Unsplash). Mirrors the
+    //     batch route's image injection. Images surface in the agent trace too.
+    let imageBlock = '';
+    if (isMinimaxImageConfigured()) {
+      try {
+        const hay = `${message} ${brief.imagery || ''}`.toLowerCase();
+        const isThai = /thai|pad thai|imbiss|kurry|curry|basil|nudel|noodle/.test(hay);
+        const imgPrompts = isThai
+          ? buildThaiFoodPrompts(message, brief.imagery)
+          : buildImagePrompts(message, brief.imagery);
+        const imgs = await generateImagesMinimax(imgPrompts, {}, 3);
+        const urls = imgs.map((i) => i.url).filter(Boolean);
+        if (urls.length > 0) {
+          imageBlock =
+            '\nBILDER (ECHTE FOTOS — bereits generiert, VERWENDE NUR DIESE URLs 1:1 in deinen <img>-Tags):\n' +
+            urls
+              .map((u, i) => `  Bild ${i + 1}: <img src="${u}" alt="" style="width:100%;height:auto;object-fit:cover">`)
+              .join('\n') +
+            '\nKEINE Unsplash-, KEINE Platzhalter-, KEINE anderen URLs.\n';
+          trace.push({ step: 'images', label: 'Bilder generiert', detail: `${urls.length} MiniMax-Fotos` });
+        }
+      } catch (e) {
+        console.warn('[design/agent] image gen failed:', e instanceof Error ? e.message : e);
+        trace.push({ step: 'images', label: 'Bilder übersprungen', detail: 'MiniMax fehlgeschlagen — weiter ohne' });
+      }
+    }
+
     const genStart = Date.now();
     const existing = project.designMode === 'HTML_ARTIFACT' && project.designHTML ? project.designHTML : undefined;
     const GEN_ATTEMPTS = 3;
@@ -216,7 +246,7 @@ export async function POST(request: NextRequest) {
       : '';
     for (let ga = 1; ga <= GEN_ATTEMPTS; ga++) {
       const raw = cleanHtml(
-        await callZai(rationalePrefix + memoryBlock + generateHtmlPrompt(brief, message, existing), {
+        await callZai(rationalePrefix + memoryBlock + imageBlock + generateHtmlPrompt(brief, message, existing), {
           maxTokens: 12000,
           temperature: ga === 1 ? 0.5 : 0.3,
           timeoutMs: 300_000,

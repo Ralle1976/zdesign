@@ -1,0 +1,1053 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maison Lumen — Handgemalte Nischenparfüms aus dem Atelier</title>
+<meta name="description" content="Maison Lumen. Sieben handgemalte Signature-Parfums, komponiert in kleinen Chargen im 9. Arrondissement. Duftberatung und Atelier-Besuche auf Anfrage.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ivory:#F2EBDD;
+    --ivory-deep:#E8DFC9;
+    --black:#0E0D0B;
+    --black-soft:#1A1815;
+    --gold:#C9A24A;
+    --gold-bright:#E4BE63;
+    --gold-deep:#8E6E2A;
+    --paper:#FBF6EA;
+    --rule:rgba(14,13,11,.18);
+    --shadow-hard:6px 6px 0 var(--black);
+    --shadow-gold:0 0 28px rgba(228,190,99,.45);
+    --font-display:'Cormorant Garamond',Georgia,serif;
+    --font-body:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    --border:2.5px solid var(--black);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--font-body);
+    background:var(--ivory);
+    color:var(--black);
+    font-weight:300;
+    line-height:1.6;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ATMENDER UNTERGRUND */
+  .breath{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:linear-gradient(120deg,
+      var(--ivory) 0%,
+      var(--ivory-deep) 35%,
+      var(--paper) 60%,
+      var(--ivory) 100%);
+    background-size:200% 200%;
+    animation:breathe 16s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%{background-position:0% 0%}
+    50%{background-position:100% 100%}
+    100%{background-position:0% 0%}
+  }
+  .noise{
+    position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.35;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.05  0 0 0 0 0.05  0 0 0 0 0.04  0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode:multiply;
+  }
+
+  /* PARALLAX DEKO */
+  .deco{position:absolute;pointer-events:none;z-index:1}
+  .deco-circle{
+    border:2px solid var(--gold);border-radius:50%;
+    width:340px;height:340px;
+    opacity:.35;
+  }
+  .deco-cross{
+    width:42px;height:42px;
+    background:
+      linear-gradient(var(--gold),var(--gold)) center/100% 2px no-repeat,
+      linear-gradient(var(--gold),var(--gold)) center/2px 100% no-repeat;
+  }
+  .deco-square{
+    border:2px solid var(--black);
+    width:120px;height:120px;
+    background:var(--gold);
+    opacity:.85;
+  }
+
+  /* LAYOUT */
+  .wrap{position:relative;z-index:2;max-width:1380px;margin:0 auto;padding:0 32px}
+  section{position:relative;padding:120px 0}
+  @media(max-width:720px){section{padding:80px 0} .wrap{padding:0 20px}}
+
+  /* NAV */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(242,235,221,.85);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-bottom:2px solid var(--black);
+  }
+  .nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 0;
+  }
+  .brand{
+    font-family:var(--font-display);
+    font-size:26px;font-weight:500;letter-spacing:.04em;
+    display:flex;align-items:center;gap:10px;
+  }
+  .brand-mark{
+    display:inline-block;width:14px;height:14px;
+    background:var(--gold);
+    transform:rotate(45deg);
+    box-shadow:0 0 18px rgba(228,190,99,.7);
+  }
+  .nav-links{display:flex;gap:36px;list-style:none;align-items:center}
+  .nav-links a{
+    color:var(--black);text-decoration:none;
+    font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+    font-weight:400;
+    position:relative;padding:6px 0;
+    transition:color .25s ease;
+  }
+  .nav-links a::after{
+    content:"";position:absolute;left:0;bottom:0;height:1px;width:0;
+    background:var(--gold);transition:width .3s ease;
+  }
+  .nav-links a:hover{color:var(--gold-deep)}
+  .nav-links a:hover::after{width:100%}
+  .nav-cta{
+    border:2px solid var(--black);
+    padding:10px 20px;
+    background:var(--black);color:var(--ivory);
+    text-decoration:none;
+    font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    transition:background .2s ease,color .2s ease;
+  }
+  .nav-cta:hover{background:var(--gold);color:var(--black)}
+  @media(max-width:840px){.nav-links{display:none}}
+
+  /* HERO */
+  .hero{padding-top:60px;padding-bottom:80px}
+  .hero-grid{
+    display:grid;grid-template-columns:1.15fr 1fr;
+    gap:60px;align-items:end;
+    position:relative;
+  }
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:40px}}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:14px;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold-deep);font-weight:500;
+    margin-bottom:32px;
+  }
+  .eyebrow::before{
+    content:"";display:inline-block;width:42px;height:1.5px;background:var(--gold);
+  }
+  .hero h1{
+    font-family:var(--font-display);
+    font-weight:300;
+    font-size:clamp(56px,9vw,138px);
+    line-height:.92;
+    letter-spacing:-.02em;
+    color:var(--black);
+    margin-bottom:36px;
+  }
+  .hero h1 em{
+    font-style:italic;font-weight:400;
+    color:var(--gold-deep);
+    position:relative;
+  }
+  .hero h1 .glow{
+    color:var(--gold-bright);
+    text-shadow:0 0 32px rgba(228,190,99,.65),0 0 60px rgba(228,190,99,.35);
+  }
+  .hero p.lede{
+    font-size:18px;line-height:1.65;max-width:520px;
+    color:var(--black-soft);font-weight:300;
+    margin-bottom:44px;
+  }
+  .hero-actions{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+  .btn{
+    display:inline-flex;align-items:center;gap:12px;
+    padding:18px 32px;
+    font-size:13px;letter-spacing:.18em;text-transform:uppercase;
+    text-decoration:none;font-weight:500;
+    border:2.5px solid var(--black);
+    transition:transform .15s ease,box-shadow .2s ease,background .2s ease;
+    cursor:pointer;
+  }
+  .btn-primary{
+    background:var(--black);color:var(--ivory);
+    box-shadow:var(--shadow-hard);
+  }
+  .btn-primary:hover{
+    transform:translate(-2px,-2px);
+    box-shadow:9px 9px 0 var(--gold);
+    background:var(--black);
+  }
+  .btn-ghost{background:transparent;color:var(--black)}
+  .btn-ghost:hover{background:var(--black);color:var(--ivory)}
+  .btn svg{width:14px;height:14px}
+
+  .hero-figure{
+    position:relative;
+    border:var(--border);
+    box-shadow:var(--shadow-hard);
+    background:var(--black);
+    overflow:hidden;
+  }
+  .hero-figure img{
+    width:100%;height:560px;object-fit:cover;display:block;
+    filter:contrast(1.05) saturate(.95);
+  }
+  @media(max-width:900px){.hero-figure img{height:420px}}
+  .hero-figure figcaption{
+    position:absolute;left:0;bottom:0;right:0;
+    padding:18px 22px;
+    background:rgba(14,13,11,.78);color:var(--ivory);
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    display:flex;justify-content:space-between;align-items:center;
+    border-top:2px solid var(--gold);
+  }
+  .hero-figure figcaption span:last-child{color:var(--gold-bright)}
+
+  .hero-meta{
+    margin-top:80px;
+    border-top:2px solid var(--black);
+    border-bottom:2px solid var(--black);
+    display:grid;grid-template-columns:repeat(4,1fr);
+  }
+  @media(max-width:720px){.hero-meta{grid-template-columns:repeat(2,1fr)}}
+  .hero-meta div{
+    padding:26px 22px;
+    border-right:2px solid var(--black);
+  }
+  .hero-meta div:last-child{border-right:none}
+  @media(max-width:720px){
+    .hero-meta div:nth-child(2){border-right:none}
+    .hero-meta div:nth-child(-n+2){border-bottom:2px solid var(--black)}
+  }
+  .hero-meta .num{
+    font-family:var(--font-display);
+    font-size:46px;font-weight:400;line-height:1;
+    color:var(--black);display:block;margin-bottom:8px;
+  }
+  .hero-meta .num em{color:var(--gold-deep);font-style:normal}
+  .hero-meta .lbl{
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--black-soft);
+  }
+
+  /* SECTION HEADER */
+  .sec-head{
+    display:grid;grid-template-columns:1fr 2fr;gap:50px;
+    margin-bottom:80px;align-items:end;
+  }
+  @media(max-width:900px){.sec-head{grid-template-columns:1fr;gap:24px}}
+  .sec-head h2{
+    font-family:var(--font-display);
+    font-weight:300;
+    font-size:clamp(40px,6vw,84px);
+    line-height:.95;letter-spacing:-.015em;
+  }
+  .sec-head h2 em{font-style:italic;color:var(--gold-deep)}
+  .sec-head .intro{font-size:16px;line-height:1.7;color:var(--black-soft);max-width:560px}
+  .sec-num{
+    font-family:var(--font-body);
+    font-size:12px;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--gold-deep);font-weight:500;
+    display:flex;align-items:center;gap:14px;
+    margin-bottom:24px;
+  }
+  .sec-num::before{
+    content:"";width:30px;height:1.5px;background:var(--gold);
+  }
+
+  /* COLLECTION */
+  .collection{background:var(--ivory-deep);border-top:2px solid var(--black);border-bottom:2px solid var(--black)}
+  .perfume-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    border:2px solid var(--black);
+    background:var(--black);
+  }
+  @media(max-width:900px){.perfume-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.perfume-grid{grid-template-columns:1fr}}
+  .perfume{
+    background:var(--paper);
+    padding:36px 30px 32px;
+    border-right:2px solid var(--black);
+    border-bottom:2px solid var(--black);
+    position:relative;
+    transition:background .3s ease;
+    cursor:pointer;
+  }
+  .perfume:nth-child(3n){border-right:none}
+  .perfume:nth-last-child(-n+3){border-bottom:none}
+  @media(max-width:900px){
+    .perfume{border-right:2px solid var(--black)!important;border-bottom:2px solid var(--black)!important}
+    .perfume:nth-child(2n){border-right:none!important}
+  }
+  @media(max-width:560px){
+    .perfume{border-right:none!important}
+  }
+  .perfume:hover{background:var(--ivory)}
+  .perfume-head{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    margin-bottom:24px;
+  }
+  .perfume-no{
+    font-family:var(--font-body);
+    font-size:11px;letter-spacing:.24em;color:var(--gold-deep);
+    font-weight:500;
+  }
+  .perfume-mac{
+    font-family:var(--font-body);
+    font-size:10px;letter-spacing:.18em;color:var(--black-soft);
+    text-transform:uppercase;
+  }
+  .perfume h3{
+    font-family:var(--font-display);
+    font-size:42px;font-weight:400;line-height:1;
+    margin-bottom:6px;letter-spacing:-.01em;
+  }
+  .perfume h3 em{font-style:italic;color:var(--gold-deep)}
+  .perfume .sub{
+    font-family:var(--font-display);font-style:italic;
+    color:var(--black-soft);font-size:15px;
+    margin-bottom:22px;
+  }
+  .perfume .notes{
+    font-size:13px;line-height:1.7;color:var(--black-soft);
+    border-top:1px solid var(--rule);
+    padding-top:18px;
+    margin-bottom:18px;
+  }
+  .perfume .notes strong{
+    display:block;font-family:var(--font-body);font-weight:500;
+    font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--gold-deep);margin-bottom:6px;
+  }
+  .perfume .price{
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:13px;
+  }
+  .perfume .price .euro{
+    font-family:var(--font-display);font-size:24px;font-weight:500;
+  }
+
+  /* ATELIER */
+  .atelier{position:relative;overflow:hidden}
+  .atelier-grid{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:80px;align-items:center;
+  }
+  @media(max-width:900px){.atelier-grid{grid-template-columns:1fr;gap:50px}}
+  .atelier-figure{
+    position:relative;
+    border:var(--border);
+    box-shadow:var(--shadow-hard);
+  }
+  .atelier-figure img{
+    width:100%;height:620px;object-fit:cover;display:block;
+    filter:contrast(1.05);
+  }
+  @media(max-width:900px){.atelier-figure img{height:440px}}
+  .atelier-tag{
+    position:absolute;top:-2px;left:-2px;
+    background:var(--gold);color:var(--black);
+    padding:10px 18px;
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-weight:500;
+    border:2px solid var(--black);
+  }
+  .atelier-content h2{
+    font-family:var(--font-display);
+    font-weight:300;
+    font-size:clamp(40px,5.5vw,76px);
+    line-height:.98;letter-spacing:-.015em;
+    margin-bottom:28px;
+  }
+  .atelier-content h2 em{font-style:italic;color:var(--gold-deep)}
+  .atelier-content p{
+    font-size:16px;line-height:1.75;color:var(--black-soft);
+    margin-bottom:20px;
+  }
+  .atelier-list{
+    list-style:none;margin:32px 0;
+    border-top:1px solid var(--rule);
+  }
+  .atelier-list li{
+    display:grid;grid-template-columns:80px 1fr auto;
+    gap:20px;align-items:center;
+    padding:18px 0;
+    border-bottom:1px solid var(--rule);
+    font-size:14px;
+  }
+  .atelier-list .step{
+    font-family:var(--font-display);font-style:italic;
+    color:var(--gold-deep);font-size:22px;
+  }
+  .atelier-list .what{font-weight:400;color:var(--black)}
+  .atelier-list .dur{
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--black-soft);
+  }
+
+  /* SERVICES */
+  .services{background:var(--black);color:var(--ivory);border-top:2px solid var(--black)}
+  .services .sec-head h2{color:var(--ivory)}
+  .services .sec-head h2 em{color:var(--gold-bright)}
+  .services .sec-head .intro{color:rgba(242,235,221,.7)}
+  .services .sec-num{color:var(--gold-bright)}
+  .services .sec-num::before{background:var(--gold-bright)}
+  .service-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+    border:2px solid var(--gold);
+  }
+  @media(max-width:900px){.service-grid{grid-template-columns:1fr}}
+  .service{
+    padding:42px 32px;
+    border-right:2px solid var(--gold);
+    position:relative;
+    transition:background .3s ease;
+  }
+  .service:last-child{border-right:none}
+  @media(max-width:900px){.service{border-right:none;border-bottom:2px solid var(--gold)}.service:last-child{border-bottom:none}}
+  .service:hover{background:rgba(228,190,99,.06)}
+  .service-icon{
+    width:54px;height:54px;
+    border:2px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:28px;
+    color:var(--gold-bright);
+  }
+  .service-icon svg{width:26px;height:26px}
+  .service h3{
+    font-family:var(--font-display);
+    font-size:32px;font-weight:400;line-height:1.1;
+    margin-bottom:14px;color:var(--ivory);
+  }
+  .service h3 em{font-style:italic;color:var(--gold-bright)}
+  .service p{
+    font-size:14px;line-height:1.7;color:rgba(242,235,221,.72);
+    margin-bottom:24px;
+  }
+  .service .meta{
+    display:flex;justify-content:space-between;
+    border-top:1px solid rgba(228,190,99,.3);
+    padding-top:18px;
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--gold-bright);
+  }
+  .service .meta span:last-child{color:rgba(242,235,221,.6)}
+
+  /* PROCESS */
+  .process-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    border:2px solid var(--black);
+  }
+  @media(max-width:900px){.process-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.process-grid{grid-template-columns:1fr}}
+  .process-step{
+    background:var(--paper);
+    padding:36px 28px;
+    border-right:2px solid var(--black);
+    position:relative;
+  }
+  .process-step:last-child{border-right:none}
+  @media(max-width:900px){
+    .process-step{border-right:2px solid var(--black);border-bottom:2px solid var(--black)}
+    .process-step:nth-child(2n){border-right:none}
+    .process-step:nth-last-child(-n+2){border-bottom:none}
+  }
+  @media(max-width:560px){.process-step{border-right:none!important;border-bottom:2px solid var(--black)!important}.process-step:last-child{border-bottom:none!important}}
+  .process-step .pn{
+    font-family:var(--font-display);
+    font-size:64px;font-weight:300;line-height:1;
+    color:var(--gold);font-style:italic;
+    margin-bottom:18px;display:block;
+  }
+  .process-step h4{
+    font-family:var(--font-display);
+    font-size:24px;font-weight:500;
+    margin-bottom:12px;
+  }
+  .process-step p{
+    font-size:13px;line-height:1.65;color:var(--black-soft);
+  }
+
+  /* QUOTE */
+  .quote-sec{
+    background:var(--ivory-deep);
+    border-top:2px solid var(--black);
+    border-bottom:2px solid var(--black);
+    text-align:center;
+    position:relative;overflow:hidden;
+  }
+  .quote-sec blockquote{
+    font-family:var(--font-display);
+    font-weight:300;font-style:italic;
+    font-size:clamp(28px,4vw,52px);
+    line-height:1.25;letter-spacing:-.01em;
+    max-width:920px;margin:0 auto 28px;
+    color:var(--black);
+  }
+  .quote-sec blockquote span{color:var(--gold-deep)}
+  .quote-sec cite{
+    font-style:normal;
+    font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--black-soft);
+  }
+  .quote-sec cite::before{
+    content:"";display:inline-block;width:30px;height:1px;
+    background:var(--gold);vertical-align:middle;margin-right:14px;
+  }
+
+  /* CTA */
+  .cta{padding:140px 0;position:relative;overflow:hidden}
+  .cta-box{
+    border:var(--border);
+    background:var(--black);
+    color:var(--ivory);
+    padding:80px 60px;
+    box-shadow:14px 14px 0 var(--gold);
+    position:relative;
+    overflow:hidden;
+  }
+  @media(max-width:720px){.cta-box{padding:50px 28px}}
+  .cta-box::before{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(120deg,rgba(228,190,99,0) 0%,rgba(228,190,99,.18) 50%,rgba(228,190,99,0) 100%);
+    background-size:200% 200%;
+    animation:breathe 14s ease-in-out infinite;
+    pointer-events:none;
+  }
+  .cta-eyebrow{
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold-bright);font-weight:500;
+    margin-bottom:24px;display:inline-flex;align-items:center;gap:14px;
+  }
+  .cta-eyebrow::before{content:"";width:42px;height:1.5px;background:var(--gold-bright)}
+  .cta-box h2{
+    font-family:var(--font-display);
+    font-weight:300;
+    font-size:clamp(40px,6vw,84px);
+    line-height:.98;letter-spacing:-.015em;
+    margin-bottom:24px;
+    position:relative;
+  }
+  .cta-box h2 em{font-style:italic;color:var(--gold-bright)}
+  .cta-box h2 .glow{
+    color:var(--gold-bright);
+    text-shadow:0 0 28px rgba(228,190,99,.7),0 0 56px rgba(228,190,99,.4);
+  }
+  .cta-box p{
+    font-size:17px;line-height:1.7;color:rgba(242,235,221,.78);
+    max-width:560px;margin-bottom:40px;
+    position:relative;
+  }
+  .cta-actions{display:flex;gap:18px;flex-wrap:wrap;position:relative}
+  .btn-gold{
+    background:var(--gold);color:var(--black);
+    box-shadow:0 0 24px rgba(228,190,99,.5);
+  }
+  .btn-gold:hover{
+    background:var(--gold-bright);
+    box-shadow:0 0 36px rgba(228,190,99,.8);
+    transform:translate(-2px,-2px);
+  }
+  .btn-outline-light{
+    background:transparent;color:var(--ivory);
+    border-color:var(--ivory);
+  }
+  .btn-outline-light:hover{background:var(--ivory);color:var(--black)}
+
+  /* FOOTER */
+  footer{
+    background:var(--black);color:var(--ivory);
+    border-top:2px solid var(--gold);
+    padding:80px 0 40px;
+  }
+  .foot-grid{
+    display:grid;grid-template-columns:2fr 1fr 1fr 1fr;
+    gap:60px;margin-bottom:60px;
+  }
+  @media(max-width:900px){.foot-grid{grid-template-columns:1fr 1fr;gap:40px}}
+  @media(max-width:560px){.foot-grid{grid-template-columns:1fr}}
+  .foot-brand{
+    font-family:var(--font-display);
+    font-size:38px;font-weight:500;letter-spacing:.02em;
+    margin-bottom:18px;
+  }
+  .foot-brand em{font-style:italic;color:var(--gold-bright)}
+  .foot-grid p{font-size:14px;line-height:1.7;color:rgba(242,235,221,.65);max-width:340px}
+  .foot-col h5{
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--gold-bright);font-weight:500;
+    margin-bottom:22px;
+  }
+  .foot-col ul{list-style:none}
+  .foot-col li{margin-bottom:12px}
+  .foot-col a{
+    color:rgba(242,235,221,.75);text-decoration:none;
+    font-size:14px;transition:color .2s ease;
+  }
+  .foot-col a:hover{color:var(--gold-bright)}
+  .foot-bottom{
+    border-top:1px solid rgba(228,190,99,.25);
+    padding-top:28px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:12px;color:rgba(242,235,221,.5);
+    letter-spacing:.06em;
+  }
+  @media(max-width:560px){.foot-bottom{flex-direction:column;gap:14px;text-align:center}}
+
+  /* FOCUS */
+  a:focus-visible,button:focus-visible{
+    outline:2.5px solid var(--gold-bright);
+    outline-offset:3px;
+  }
+
+  /* REDUCED MOTION */
+  @media (prefers-reduced-motion: reduce){
+    .breath,.cta-box::before{animation:none;background-position:static}
+    .deco{transform:none!important}
+    *{transition-duration:.01ms!important;animation-duration:.01ms!important}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<div class="breath" aria-hidden="true"></div>
+<div class="noise" aria-hidden="true"></div>
+
+<!-- DEKO ELEMENTS -->
+<div class="deco deco-circle" data-speed="0.25" style="top:240px;right:-120px" aria-hidden="true"></div>
+<div class="deco deco-cross" data-speed="0.35" style="top:780px;left:5%" aria-hidden="true"></div>
+<div class="deco deco-square" data-speed="0.2" style="top:1500px;right:8%;transform:rotate(12deg)" aria-hidden="true"></div>
+<div class="deco deco-circle" data-speed="0.3" style="top:2200px;left:-100px;width:200px;height:200px" aria-hidden="true"></div>
+
+<header>
+  <div class="wrap">
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a href="#" class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        Maison Lumen
+      </a>
+      <ul class="nav-links">
+        <li><a href="#kollektion">Kollektion</a></li>
+        <li><a href="#atelier">Atelier</a></li>
+        <li><a href="#beratung">Beratung</a></li>
+        <li><a href="#journal">Journal</a></li>
+      </ul>
+      <a href="#termin" class="nav-cta">Termin</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-text">
+        <span class="eyebrow">Maison Lumen — Paris, 9<sup>e</sup></span>
+        <h1>Sieben Düfte.<br><em>Handgemalt</em> in<br><span class="glow">kleinen Chargen.</span></h1>
+        <p class="lede">Eine Nischenparfümerie ohne Kompromisse. Jeder Duft wird in unserem Atelier in der Rue des Martyrs in Chargen von 120 Flakons abgefüllt — mit natürlichen Absolues, handgeschöpftem Orris und einer Geduld, die in dieser Branche selten geworden ist.</p>
+        <div class="hero-actions">
+          <a href="#kollektion" class="btn btn-primary">
+            Kollektion entdecken
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#termin" class="btn btn-ghost">Atelier besuchen</a>
+        </div>
+      </div>
+
+      <figure class="hero-figure">
+        <img src="../assets/maison-lumen-0.jpeg" alt="Handgemalter Glasflakon der Maison Lumen Kollektion auf elfenbeinfarbenem Ateliertisch">
+        <figcaption>
+          <span>Flacon Nº III — Ambre de Minuit</span>
+          <span>120 Exemplare</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="hero-meta">
+      <div>
+        <span class="num">07</span>
+        <span class="lbl">Signature-Parfums</span>
+      </div>
+      <div>
+        <span class="num"><em>120</em></span>
+        <span class="lbl">Flakons pro Charge</span>
+      </div>
+      <div>
+        <span class="num">14</span>
+        <span class="lbl">Monate Reifung</span>
+      </div>
+      <div>
+        <span class="num">2017</span>
+        <span class="lbl">Gegründet in Paris</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COLLECTION -->
+<section class="collection" id="kollektion">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-num">Kapitel 01 — Kollektion</div>
+        <h2>Die sieben<br><em>Signaturen</em></h2>
+      </div>
+      <p class="intro">Sieben Düfte, jeder über mindestens vierzehn Monate gereift. Keine Limited Editions, keine saisonalen Schnellschüsse — nur ein fester, kleiner Katalog, der seit 2017 wächst. Jeder Flakon trägt die Chargennummer seines Ansatzes und den Namen des Parfumeurs, der ihn gemischt hat.</p>
+    </div>
+
+    <div class="perfume-grid">
+      <article class="perfume">
+        <div class="perfume-head">
+          <span class="perfume-no">Nº I</span>
+          <span class="perfume-mac">Ch. 2024 / 04</span>
+        </div>
+        <h3>Ivoire <em>Brûlé</em></h3>
+        <p class="sub">Ein verbrannter Elfenbein-Monolog.</p>
+        <div class="notes">
+          <strong>Kopf</strong>
+          Birkenrauch, getrocknete Feige, rosa Pfeffer.
+        </div>
+        <div class="notes">
+          <strong>Herz</strong>
+          Orris-Butter aus Florenz, Tabakblatt.
+        </div>
+        <div class="price">
+          <span class="euro">245 €</span>
+          <span class="perfume-mac">50 ml · Eau de Parfum</span>
+        </div>
+      </article>
+
+      <article class="perfume">
+        <div class="perfume-head">
+          <span class="perfume-no">Nº II</span>
+          <span class="perfume-mac">Ch. 2024 / 02</span>
+        </div>
+        <h3>Soie <em>Rouge</em></h3>
+        <p class="sub">Seide, die im Sonnenuntergang brennt.</p>
+        <div class="notes">
+          <strong>Kopf</strong>
+          Safran, Bulgarische Rose, Mandarine.
+        </div>
+        <div class="notes">
+          <strong>Herz</strong>
+          Patschuli, Leder, getrocknete Aprikose.
+        </div>
+        <div class="price">
+          <span class="euro">265 €</span>
+          <span class="perfume-mac">50 ml · Extrait</span>
+        </div>
+      </article>
+
+      <article class="perfume">
+        <div class="perfume-head">
+          <span class="perfume-no">Nº III</span>
+          <span class="perfume-mac">Ch. 2023 / 09</span>
+        </div>
+        <h3>Ambre de <em>Minuit</em></h3>
+        <p class="sub">Mitternachtlicher Bernstein auf nackter Haut.</p>
+        <div class="notes">
+          <strong>Kopf</strong>
+          Labdanum, Pflaume, schwarzer Tee.
+        </div>
+        <div class="notes">
+          <strong>Herz</strong>
+          Benzoin, Tonka, Myrrhe.
+        </div>
+        <div class="price">
+          <span class="euro">280 €</span>
+          <span class="perfume-mac">50 ml · Extrait</span>
+        </div>
+      </article>
+
+      <article class="perfume">
+        <div class="perfume-head">
+          <span class="perfume-no">Nº IV</span>
+          <span class="perfume-mac">Ch. 2024 / 01</span>
+        </div>
+        <h3>Verre <em>Froid</em></h3>
+        <p class="sub">Kaltes Glas im Januarlicht.</p>
+        <div class="notes">
+          <strong>Kopf</strong>
+          Bergamotte aus Kalabrien, Eukalyptus, Salbei.
+        </div>
+        <div class="notes">
+          <strong>Herz</strong>
+          Iris-Pulver, kalter Moschus, Vetiver.
+        </div>
+        <div class="price">
+          <span class="euro">240 €</span>
+          <span class="perfume-mac">50 ml · Eau de Parfum</span>
+        </div>
+      </article>
+
+      <article class="perfume">
+        <div class="perfume-head">
+          <span class="perfume-no">Nº V</span>
+          <span class="perfume-mac">Ch. 2023 / 11</span>
+        </div>
+        <h3>Cuir <em>Lointain</em></h3>
+        <p class="sub">Leder aus einer anderen Zeit.</p>
+        <div class="notes">
+          <strong>Kopf</strong>
+          Wacholder, schwarzer Pfeffer, Rauch.
+        </div>
+        <div class="notes">
+          <strong>Herz</strong>
+          Russisches Leder, Birne, Opoponax.
+        </div>
+        <div class="price">
+          <span class="euro">270 €</span>
+          <span class="perfume-mac">50 ml · Extrait</span>
+        </div>
+      </article>
+
+      <article class="perfume">
+        <div class="perfume-head">
+          <span class="perfume-no">Nº VI</span>
+          <span class="perfume-mac">Ch. 2024 / 03</span>
+        </div>
+        <h3>Jardin <em>d'Encre</em></h3>
+        <p class="sub">Ein Garten, mit Tinte geschrieben.</p>
+        <div class="notes">
+          <strong>Kopf</strong>
+          Veilchenblatt, Galbanum, grüne Mandel.
+        </div>
+        <div class="notes">
+          <strong>Herz</strong>
+          Schwertlilie, schwarze Tinte, Heliotrop.
+        </div>
+        <div class="price">
+          <span class="euro">255 €</span>
+          <span class="perfume-mac">50 ml · Eau de Parfum</span>
+        </div>
+      </article>
+
+      <article class="perfume">
+        <div class="perfume-head">
+          <span class="perfume-no">Nº VII</span>
+          <span class="perfume-mac">Ch. 2023 / 12</span>
+        </div>
+        <h3>Lumen <em>Pure</em></h3>
+        <p class="sub">Der namenlose weiße Mittag.</p>
+        <div class="notes">
+          <strong>Kopf</strong>
+          Neroli, Zedrat, weißer Pfeffer.
+        </div>
+        <div class="notes">
+          <strong>Herz</strong>
+          Jasmin Sambac, Magnolie, weißer Moschus.
+        </div>
+        <div class="price">
+          <span class="euro">290 €</span>
+          <span class="perfume-mac">50 ml · Extrait</span>
+        </div>
+      </article>
+
+      <article class="perfume" style="background:var(--black);color:var(--ivory);display:flex;flex-direction:column;justify-content:space-between">
+        <div>
+          <div class="perfume-head">
+            <span class="perfume-no" style="color:var(--gold-bright)">Atelier</span>
+            <span class="perfume-mac" style="color:rgba(242,235,221,.5)">Auf Anfrage</span>
+          </div>
+          <h3 style="color:var(--ivory)">Maßgefertigte <em style="color:var(--gold-bright)">Komposition</em></h3>
+          <p class="sub" style="color:rgba(242,235,221,.65)">Ein persönlicher Duft, nur für Sie.</p>
+          <p style="font-size:13px;line-height:1.7;color:rgba(242,235,221,.7)">Über mehrere Sitzungen entwickeln wir gemeinsam mit Hélène Mercier eine Komposition, die in Ihrem Namen registriert wird.</p>
+        </div>
+        <a href="#termin" class="btn btn-gold" style="margin-top:24px;align-self:flex-start;padding:14px 22px;font-size:11px">Anfrage stellen</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ATELIER -->
+<section class="atelier" id="atelier">
+  <div class="wrap">
+    <div class="atelier-grid">
+      <figure class="atelier-figure">
+        <span class="atelier-tag">Im Atelier</span>
+        <img src="../assets/maison-lumen-1.jpeg" alt="Parfumeurin Hélène Mercier beim Mischen einer Duftprobe im Maison Lumen Atelier in Paris">
+      </figure>
+
+      <div class="atelier-content">
+        <div class="sec-num">Kapitel 02 — Das Atelier</div>
+        <h2>Wo ein Duft<br><em>entsteht</em>.</h2>
+        <p>Das Atelier liegt im 9. Arrondissement, hinter einer unauffälligen Tür in der Rue des Martyrs. Kein Schaufenster, kein Ladengang. Sechs Arbeitstische, eine Wand aus 312 Rohstoffen, ein Fenster, das nach Norden geht — und eine Regel: Es wird nichts gemischt, was nicht auch erklärt werden kann.</p>
+        <p>Geleitet wird das Atelier von Hélène Mercier, die vor Maison Lumen vierzehn Jahre in Grasse gearbeitet hat. Jede Charge trägt ihre Initialen auf dem Etikett.</p>
+
+        <ul class="atelier-list">
+          <li>
+            <span class="step">i.</span>
+            <span class="what">Atelier-Besuch mit Führung</span>
+            <span class="dur">90 Min · 45 €</span>
+          </li>
+          <li>
+            <span class="step">ii.</span>
+            <span class="what">Persönliche Duftberatung</span>
+            <span class="dur">2 Std · 120 €</span>
+          </li>
+          <li>
+            <span class="step">iii.</span>
+            <span class="what">Komposition auf Maß (3 Sitzungen)</span>
+            <span class="dur">ab 1 800 €</span>
+          </li>
+        </ul>
+
+        <a href="#termin" class="btn btn-primary">Atelier-Termin buchen
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="beratung">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-num">Kapitel 03 — Dienstleistungen</div>
+        <h2>Drei Wege,<br>einen Duft zu <em>finden</em>.</h2>
+      </div>
+      <p class="intro">Parfüm ist keine Selbstbedienung. Wer zu uns kommt, durchläuft ein Gespräch — über Erinnerungen, über Stoffe, über das, was man sich nicht erklären kann. Drei Formate, je nachdem, wie tief Sie eintauchen möchten.</p>
+    </div>
+
+    <div class="service-grid">
+      <article class="service">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v3M3 12h3M21 12h-3M12 21v-3M5.6 5.6l2.1 2.1M18.4 5.6l-2.1 2.1M5.6 18.4l2.1-2.1M18.4 18.4l-2.1-2.1"/>
+            <circle cx="12" cy="12" r="3.5"/>
+          </svg>
+        </div>
+        <h3>Olfaktorische <em>Sondage</em></h3>
+        <p>Eine 90-minütige Sitzung mit unserem Duft-Portfolio. Sie testen 24 Rohstoffe blind, wir dokumentieren Ihre Reaktionen. Am Ende erhalten Sie ein schriftliches Profil Ihrer olfaktorischen Vorlieben.</p>
+        <div class="meta">
+          <span>90 Minuten</span>
+          <span>120 €</span>
+        </div>
+      </article>
+
+      <article class="service">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7l9-4 9 4-9 4-9-4z"/>
+            <path d="M3 12l9 4 9-4M3 17l9 4 9-4"/>
+          </svg>
+        </div>
+        <h3>Signature-<em>Beratung</em></h3>
+        <p>Wir arbeiten uns durch die sieben Signaturen und drei Vorab-Kompositionen. Ziel ist nicht der Verkauf, sondern ein Duft, den Sie in zwölf Monaten noch tragen. Inklusive 5 ml Probe des Empfohlenen.</p>
+        <div class="meta">
+          <span>2 Stunden</span>
+          <span>180 €</span>
+        </div>
+      </article>
+
+      <article class="service">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2l2.4 5.4L20 8.2l-4 3.9.9 5.9L12 15.3l-4.9 2.7.9-5.9-4-3.9 5.6-.8L12 2z"/>
+          </svg>
+        </div>
+        <h3>Komposition auf <em>Maß</em></h3>
+        <p>Drei Sitzungen über sechs Wochen mit Hélène Mercier. Sie erhalten einen persönlichen Duft, registriert unter Ihrem Namen im Archiv der Maison. Inklusive 50 ml Flakon und Rezeptur für spätere Nachbestellung.</p>
+        <div class="meta">
+          <span>3 Sitzungen</span>
+          <span>ab 1 800 €</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="journal">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-num">Kapitel 04 — Verfahren</div>
+        <h2>Von der <em>Röhre</em><br>zum Flakon.</h2>
+      </div>
+      <p class="intro">Vier Stationen, die bei jedem der sieben Düfte gleich ablaufen. Keine Abkürzungen, kein Outsourcing. Was hier steht, steht so auf dem Etikett.</p>
+    </div>
+
+    <div class="process-grid">
+      <div class="process-step">
+        <span class="pn">01</span>
+        <h4>Sourcing</h4>
+        <p>Rohstoffe direkt von den Kooperativen in Florenz (Orris), Tamil Nadu (Vetiver) und Kalabrien (Bergamotte). Keine Zwischenhändler, Charge dokumentiert.</p>
+      </div>
+      <div class="process-step">
+        <span class="pn">02</span>
+        <h4>Maceration</h4>
+        <p>Sechs bis vierzehn Monate Reifung in braunem Glas bei 18 °C. Die Mischung ruht, bis sie sich nicht mehr verändert — nicht, bis ein Kalender es vorschreibt.</p>
+      </div>
+      <div class="process-step">
+        <span class="pn">03</span>
+        <h4>Filtration</h4>
+        <p>Kaltfiltriert über Baumwolle, nicht über Aktivkohle. Es bleibt etwas zurück — das ist Absicht. Jeder Flakon enthält Spuren des Prozesses, der ihn gemacht hat.</p>
+      </div>
+      <div class="process-step">
+        <span class="pn">04</span>
+        <h4>Abfüllung</h4>
+        <p>Von Hand, 120 Flakons pro Charge. Nummeriert, mit Initialen der Parfumeurin und dem Datum des Ansatzes. Danach ruht der Duft weitere vier Wochen in der Flasche.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-sec">
+  <div class="wrap">
+    <blockquote>
+      „Ein Parfüm, das sich erklären lässt, ist keins. Es muss <span>atmen</span>, stören, erinnern — und am Ende eine Frage offenlassen."
+    </blockquote>
+    <cite>Hélène Mercier, Parfumeuse — Le Monde, März 2024</cite>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="termin">
+  <div class="wrap">
+    <div class="cta-box">
+      <span class="cta-eyebrow">Atelier-Termin</span>
+      <h2>Kommen Sie in die<br>Rue des Martyrs <em class="glow">42.</em></h2>
+      <p>Termine werden vierzehn Tage im Voraus vergeben. Schreiben Sie uns zwei Sätze über das, was Sie suchen — wir antworten innerhalb von 48 Stunden mit einem Terminvorschlag.</p>
+      <div class="cta-actions">
+        <a href="mailto:atelier@maisonlumen.fr" class="btn btn-gold">
+          Termin anfragen
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+        <a href="tel:+33148782214" class="btn btn-outline-light">+33 1 48 78 22 14</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">Maison <em>Lumen</em></div>
+        <p>Eine unabhängige Nischenparfümerie in Paris
+</p></div></div></div></footer></body>
+</html>

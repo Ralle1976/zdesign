@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prisma Analytics — Produktanalyse mit Vorhersagekraft</title>
+<meta name="description" content="Ereignis-Tracking, Cohort-Analyse und prädiktive Insights für Produktteams im SaaS. Ein SDK, eine Pipeline, alle Antworten.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0d12;
+    --bg-2:#0f141c;
+    --ink:#f4f6fb;
+    --ink-dim:#a8b0c0;
+    --ink-mute:#6b7384;
+    --indigo:#3b4bd8;
+    --indigo-deep:#1e2a8a;
+    --cyan:#22d3ee;
+    --cyan-soft:#67e8f9;
+    --line:rgba(255,255,255,.08);
+    --line-strong:rgba(255,255,255,.14);
+    --glass:rgba(255,255,255,.04);
+    --glass-strong:rgba(255,255,255,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    font-size:16px;
+    line-height:1.55;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--cyan);color:#04141a}
+
+  /* ---------- Hintergrund-Schichten ---------- */
+  .bg-layer{
+    position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
+  }
+  .bg-grid{
+    position:absolute;inset:-2px;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 30%,#000 30%,transparent 80%);
+  }
+  .bg-blob{
+    position:absolute;border-radius:50%;filter:blur(120px);opacity:.45;
+    will-change:transform;
+  }
+  .blob-1{width:680px;height:680px;background:radial-gradient(circle,#3b4bd8 0%,transparent 65%);top:-180px;left:-160px;}
+  .blob-2{width:540px;height:540px;background:radial-gradient(circle,#22d3ee 0%,transparent 65%);top:30%;right:-180px;opacity:.25;}
+  .blob-3{width:600px;height:600px;background:radial-gradient(circle,#1e2a8a 0%,transparent 65%);bottom:-200px;left:30%;opacity:.35;}
+
+  /* ---------- Layout ---------- */
+  .wrap{max-width:1280px;margin:0 auto;padding:0 32px}
+  @media(max-width:640px){.wrap{padding:0 20px}}
+
+  /* ---------- Nav ---------- */
+  nav.top{
+    position:fixed;top:18px;left:50%;transform:translateX(-50%);
+    z-index:100;width:calc(100% - 48px);max-width:1180px;
+    background:rgba(10,13,18,.55);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:12px 14px 12px 22px;
+    display:flex;align-items:center;justify-content:space-between;
+    box-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 20px 60px -20px rgba(0,0,0,.6);
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk';font-weight:600;font-size:17px;letter-spacing:-.01em}
+  .brand-mark{width:26px;height:26px;flex:none}
+  nav ul{display:flex;gap:6px;list-style:none}
+  nav ul a{
+    color:var(--ink-dim);text-decoration:none;font-size:14px;font-weight:500;
+    padding:8px 14px;border-radius:8px;transition:.2s;
+  }
+  nav ul a:hover{color:var(--ink);background:var(--glass)}
+  nav ul a:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  .nav-cta{
+    background:var(--ink);color:#0a0d12;padding:9px 16px;border-radius:9px;
+    font-weight:600;font-size:14px;text-decoration:none;transition:.2s;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .nav-cta:hover{background:#fff;transform:translateY(-1px)}
+  @media(max-width:860px){nav ul{display:none}}
+
+  /* ---------- Hero ---------- */
+  header.hero{
+    position:relative;
+    padding:180px 0 80px;
+    min-height:88vh;
+    display:flex;align-items:center;
+  }
+  .hero-grid{
+    display:grid;grid-template-columns:1.15fr .85fr;gap:60px;align-items:center;width:100%;
+  }
+  @media(max-width:980px){.hero-grid{grid-template-columns:1fr;gap:48px}}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:'Space Grotesk';font-size:13px;font-weight:500;
+    color:var(--cyan);letter-spacing:.04em;text-transform:uppercase;
+    padding:7px 14px;border:1px solid rgba(34,211,238,.25);border-radius:100px;
+    background:rgba(34,211,238,.05);margin-bottom:28px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan)}
+
+  h1.title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:clamp(44px,6.4vw,86px);
+    line-height:.98;
+    letter-spacing:-.035em;
+    margin-bottom:28px;
+    color:var(--ink);
+  }
+  .title .word{display:inline-block;overflow:hidden;vertical-align:top}
+  .title .word>span{
+    display:inline-block;
+    transform:translateY(110%) rotate(8deg);
+    opacity:0;
+    animation:wordRise .9s cubic-bezier(.2,.7,.2,1) forwards;
+    animation-delay:calc(var(--w)*120ms + 200ms);
+  }
+  .title .accent{
+    font-style:italic;font-weight:500;
+    background:linear-gradient(120deg,var(--cyan) 0%,var(--cyan-soft) 50%,#9b8cff 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  @keyframes wordRise{
+    to{transform:translateY(0) rotate(0);opacity:1}
+  }
+
+  .lede{
+    font-size:19px;line-height:1.55;color:var(--ink-dim);max-width:540px;margin-bottom:36px;
+    opacity:0;animation:fade 1s ease .9s forwards;
+  }
+  @keyframes fade{to{opacity:1}}
+
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;opacity:0;animation:fade 1s ease 1.1s forwards}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:14px 22px;border-radius:11px;font-weight:600;font-size:15px;
+    text-decoration:none;cursor:pointer;border:none;font-family:inherit;
+    transition:transform .25s ease, box-shadow .25s ease, background .2s;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--indigo) 0%,#5a6cf0 100%);
+    color:#fff;
+    box-shadow:0 10px 30px -8px rgba(59,75,216,.55), inset 0 1px 0 rgba(255,255,255,.18);
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 40px -10px rgba(59,75,216,.7), inset 0 1px 0 rgba(255,255,255,.25)}
+  .btn-ghost{
+    background:var(--glass);color:var(--ink);border:1px solid var(--line-strong);
+    backdrop-filter:blur(8px);
+  }
+  .btn-ghost:hover{background:var(--glass-strong);transform:translateY(-2px)}
+  .btn:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+  .hero-meta{
+    margin-top:48px;display:flex;gap:36px;flex-wrap:wrap;
+    opacity:0;animation:fade 1s ease 1.3s forwards;
+  }
+  .hero-meta div{display:flex;flex-direction:column}
+  .hero-meta .num{font-family:'Space Grotesk';font-size:28px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+  .hero-meta .lab{font-size:13px;color:var(--ink-mute);margin-top:2px}
+
+  /* Hero Visual — Live Dashboard Mock */
+  .hero-visual{
+    position:relative;
+    opacity:0;animation:fade 1.2s ease .7s forwards;
+  }
+  .panel{
+    background:rgba(15,20,28,.7);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    border:1px solid var(--line-strong);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06);
+    position:relative;
+  }
+  .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .panel-title{font-family:'Space Grotesk';font-size:14px;font-weight:600;color:var(--ink)}
+  .panel-tag{font-size:11px;color:var(--cyan);background:rgba(34,211,238,.1);padding:3px 8px;border-radius:6px;font-family:'Space Grotesk';letter-spacing:.03em}
+  .spark{display:flex;align-items:flex-end;gap:4px;height:80px;margin-bottom:6px}
+  .spark .bar{flex:1;background:linear-gradient(180deg,var(--cyan) 0%,var(--indigo) 100%);border-radius:3px 3px 0 0;opacity:.85;animation:barRise 1.2s ease-out backwards}
+  @keyframes barRise{from{height:0!important}}
+  .panel-foot{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-mute);margin-top:8px}
+
+  .float-card{
+    position:absolute;
+    background:rgba(15,20,28,.85);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--line-strong);
+    border-radius:14px;padding:14px 16px;
+    box-shadow:0 20px 50px -15px rgba(0,0,0,.7);
+    font-size:13px;
+  }
+  .float-1{top:-22px;right:-12px;display:flex;align-items:center;gap:10px;animation:floaty 6s ease-in-out infinite}
+  .float-2{bottom:-20px;left:-20px;animation:floaty 7s ease-in-out infinite .8s}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .float-card .k{font-family:'Space Grotesk';font-weight:600;color:var(--ink);font-size:18px}
+  .float-card .l{color:var(--ink-mute);font-size:11px}
+  .float-card .pulse{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 0 rgba(34,211,238,.6);animation:pulse 2s infinite}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(34,211,238,.6)}
+    70%{box-shadow:0 0 0 10px rgba(34,211,238,0)}
+    100%{box-shadow:0 0 0 0 rgba(34,211,238,0)}
+  }
+
+  /* ---------- Trust Strip ---------- */
+  .trust{
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    padding:32px 0;margin-top:40px;
+  }
+  .trust-row{
+    display:flex;justify-content:space-between;align-items:center;gap:30px;flex-wrap:wrap;
+  }
+  .trust-label{font-size:12px;color:var(--ink-mute);letter-spacing:.08em;text-transform:uppercase;font-family:'Space Grotesk'}
+  .trust-logos{display:flex;gap:36px;flex-wrap:wrap;align-items:center}
+  .trust-logos span{font-family:'Space Grotesk';font-weight:600;font-size:18px;color:var(--ink-dim);letter-spacing:-.02em;opacity:.7;transition:.2s}
+  .trust-logos span:hover{opacity:1;color:var(--ink)}
+
+  /* ---------- Sektionen ---------- */
+  section{padding:120px 0;position:relative}
+  .section-head{margin-bottom:64px;max-width:780px}
+  .section-num{
+    font-family:'Space Grotesk';font-size:13px;color:var(--cyan);
+    letter-spacing:.1em;display:flex;align-items:center;gap:12px;margin-bottom:18px;
+  }
+  .section-num::before{content:"";width:24px;height:1px;background:var(--cyan)}
+  h2{
+    font-family:'Space Grotesk';font-weight:600;
+    font-size:clamp(34px,4.4vw,56px);line-height:1.05;letter-spacing:-.025em;
+    margin-bottom:18px;
+  }
+  h2 em{font-style:italic;font-weight:500;color:var(--cyan-soft)}
+  .section-sub{font-size:18px;color:var(--ink-dim);max-width:620px}
+
+  /* ---------- Features Grid ---------- */
+  .features{
+    display:grid;grid-template-columns:repeat(12,1fr);gap:18px;
+  }
+  .feature{
+    background:var(--glass);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:30px;
+    transition:transform .35s ease, background .25s, border-color .25s;
+    position:relative;overflow:hidden;
+  }
+  .feature:hover{transform:translateY(-4px);background:var(--glass-strong);border-color:var(--line-strong)}
+  .feature:focus-within{border-color:var(--cyan)}
+  .feature .ico{
+    width:44px;height:44px;border-radius:11px;
+    background:linear-gradient(135deg,rgba(59,75,216,.18),rgba(34,211,238,.12));
+    border:1px solid rgba(34,211,238,.2);
+    display:flex;align-items:center;justify-content:center;margin-bottom:22px;
+    color:var(--cyan);
+  }
+  .feature h3{font-family:'Space Grotesk';font-size:21px;font-weight:600;letter-spacing:-.01em;margin-bottom:10px}
+  .feature p{color:var(--ink-dim);font-size:15px;line-height:1.55}
+  .feature .tag{display:inline-block;margin-top:16px;font-size:12px;color:var(--cyan);font-family:'Space Grotesk';letter-spacing:.04em}
+  .f-1{grid-column:span 5}
+  .f-2{grid-column:span 4}
+  .f-3{grid-column:span 3}
+  .f-4{grid-column:span 4}
+  .f-5{grid-column:span 4}
+  .f-6{grid-column:span 4}
+  @media(max-width:900px){
+    .feature{grid-column:span 6!important}
+  }
+  @media(max-width:600px){
+    .feature{grid-column:span 12!important}
+  }
+
+  /* ---------- Mosaik ---------- */
+  .mosaic{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-auto-rows:160px;
+    gap:14px;
+  }
+  .tile{
+    position:relative;border-radius:14px;overflow:hidden;
+    border:1px solid var(--line);
+    transition:transform .5s cubic-bezier(.2,.7,.2,1), z-index 0s, box-shadow .4s;
+    cursor:pointer;
+  }
+  .tile img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    transition:transform .8s cubic-bezier(.2,.7,.2,1), filter .4s;
+    filter:saturate(.85) contrast(1.05);
+  }
+  .tile::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(10,13,18,0) 40%,rgba(10,13,18,.85) 100%);
+    pointer-events:none;
+  }
+  .tile-label{
+    position:absolute;left:18px;bottom:16px;right:18px;z-index:2;
+    color:#fff;
+    transform:translateY(8px);opacity:.85;transition:.4s;
+  }
+  .tile:hover{
+    transform:scale(1.04);z-index:5;
+    box-shadow:0 30px 70px -20px rgba(0,0,0,.8);
+  }
+  .tile:hover img{transform:scale(1.08);filter:saturate(1.1) contrast(1.05)}
+  .tile:hover .tile-label{transform:translateY(0);opacity:1}
+  .tile-label .t{font-family:'Space Grotesk';font-weight:600;font-size:16px;letter-spacing:-.01em}
+  .tile-label .d{font-size:12px;color:var(--ink-dim);margin-top:3px}
+
+  .t-1{grid-column:span 2;grid-row:span 2}
+  .t-2{grid-column:span 1;grid-row:span 1}
+  .t-3{grid-column:span 1;grid-row:span 2}
+  .t-4{grid-column:span 2;grid-row:span 1}
+  .t-5{grid-column:span 1;grid-row:span 1}
+  .t-6{grid-column:span 2;grid-row:span 1}
+  .t-7{grid-column:span 1;grid-row:span 1}
+
+  /* Stat-Tile im Mosaik */
+  .tile-stat{
+    background:linear-gradient(135deg,rgba(59,75,216,.15),rgba(34,211,238,.08));
+    border:1px solid rgba(34,211,238,.2);
+    display:flex;flex-direction:column;justify-content:space-between;
+    padding:20px;
+  }
+  .tile-stat .big{font-family:'Space Grotesk';font-size:42px;font-weight:600;letter-spacing:-.03em;color:var(--ink)}
+  .tile-stat .cap{font-size:12px;color:var(--ink-dim);line-height:1.4}
+
+  @media(max-width:800px){
+    .mosaic{grid-template-columns:repeat(2,1fr)}
+    .t-1,.t-3,.t-4,.t-6{grid-column:span 2!important;grid-row:span 1!important}
+  }
+
+  /* ---------- SDK / Code ---------- */
+  .sdk-wrap{
+    display:grid;grid-template-columns:1fr 1.1fr;gap:60px;align-items:center;
+  }
+  @media(max-width:900px){.sdk-wrap{grid-template-columns:1fr}}
+  .code-block{
+    background:rgba(15,20,28,.85);
+    backdrop-filter:blur(14px);
+    border:1px solid var(--line-strong);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.7);
+  }
+  .code-head{
+    display:flex;align-items:center;gap:10px;
+    padding:14px 18px;border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,.02);
+  }
+  .code-head .dot{width:11px;height:11px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{margin-left:12px;font-family:'Space Grotesk';font-size:13px;color:var(--ink-mute)}
+  .code-block pre{
+    padding:22px 24px;font-family:'Space Grotesk',monospace;font-size:13.5px;line-height:1.7;
+    color:var(--ink-dim);overflow-x:auto;
+  }
+  .tk-key{color:#9b8cff}
+  .tk-str{color:var(--cyan-soft)}
+  .tk-fn{color:var(--cyan)}
+  .tk-com{color:var(--ink-mute);font-style:italic}
+  .tk-num{color:#ffb86c}
+
+  .sdk-list{list-style:none;margin-top:24px;display:flex;flex-direction:column;gap:14px}
+  .sdk-list li{display:flex;gap:14px;color:var(--ink-dim);font-size:15px}
+  .sdk-list li svg{flex:none;margin-top:2px;color:var(--cyan)}
+  .sdk-list strong{color:var(--ink);font-weight:600}
+
+  /* ---------- Predictive Visual ---------- */
+  .predict{
+    background:linear-gradient(180deg,rgba(59,75,216,.06),transparent 60%);
+    border-top:1px solid var(--line);
+  }
+  .predict-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;
+  }
+  @media(max-width:900px){.predict-grid{grid-template-columns:1fr}}
+  .predict-vis{
+    background:rgba(15,20,28,.7);
+    backdrop-filter:blur(14px);
+    border:1px solid var(--line-strong);
+    border-radius:18px;padding:28px;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.7);
+  }
+  .predict-vis .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .predict-vis .badge{font-size:11px;color:var(--cyan);font-family:'Space Grotesk';letter-spacing:.05em;padding:4px 10px;border:1px solid rgba(34,211,238,.25);border-radius:100px;background:rgba(34,211,238,.06)}
+  .chart{position:relative;height:200px;margin:10px 0 18px}
+  .chart svg{width:100%;height:100%;overflow:visible}
+  .predict-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+  .ps-cell{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .ps-cell .v{font-family:'Space Grotesk';font-size:22px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+  .ps-cell .v.up{color:var(--cyan)}
+  .ps-cell .k{font-size:11px;color:var(--ink-mute);margin-top:2px;letter-spacing:.04em;text-transform:uppercase}
+
+  /* ---------- CTA ---------- */
+  .cta-section{padding:80px 0 120px}
+  .cta-box{
+    position:relative;
+    background:
+      radial-gradient(ellipse at top left,rgba(59,75,216,.35),transparent 60%),
+      radial-gradient(ellipse at bottom right,rgba(34,211,238,.18),transparent 60%),
+      rgba(15,20,28,.7);
+    backdrop-filter:blur(14px);
+    border:1px solid var(--line-strong);
+    border-radius:24px;
+    padding:72px 60px;
+    text-align:center;
+    overflow:hidden;
+    box-shadow:0 40px 100px -30px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .cta-box::before{
+    content:"";position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:48px 48px;
+    mask-image:radial-gradient(ellipse 60% 60% at 50% 50%,#000,transparent 80%);
+    pointer-events:none;
+  }
+  .cta-box h2{position:relative;font-size:clamp(32px,4.5vw,54px);margin-bottom:18px}
+  .cta-box p{position:relative;color:var(--ink-dim);font-size:18px;max-width:560px;margin:0 auto 32px}
+  .cta-box .cta-row{position:relative;justify-content:center}
+  @media(max-width:600px){.cta-box{padding:48px 24px}}
+
+  /* ---------- Footer ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:60px 0 40px;
+  }
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+  @media(max-width:760px){.foot-grid{grid-template-columns:1fr 1fr;gap:32px}}
+  .foot-brand p{color:var(--ink-mute);font-size:14px;margin-top:14px;max-width:280px}
+  footer h4{font-family:'Space Grotesk';font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:16px;font-weight:500}
+  footer ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  footer ul a{color:var(--ink-dim);text-decoration:none;font-size:14px;transition:.2s}
+  footer ul a:hover{color:var(--cyan)}
+  footer ul a:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px}
+  .foot-bottom{
+    border-top:1px solid var(--line);padding-top:24px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;
+    font-size:13px;color:var(--ink-mute);
+  }
+
+  /* ---------- Parallax deko ---------- */
+  .deco{position:absolute;pointer-events:none;will-change:transform}
+  .deco-line{
+    top:10%;right:-100px;width:300px;height:300px;
+    border:1px solid rgba(34,211,238,.12);
+    border-radius:50%;
+  }
+  .deco-line-2{
+    top:40%;left:-80px;width:200px;height:200px;
+    border:1px solid rgba(155,140,255,.1);
+    border-radius:50%;
+  }
+
+  /* ---------- Reveal ---------- */
+  .reveal{opacity:0;transform:translateY(30px);transition:opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ---------- Reduced motion ---------- */
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:opacity .3s ease!important}
+    .title .word>span{transform:none;opacity:1}
+    .reveal{opacity:1;transform:none}
+    .bg-blob,.deco{transform:none!important}
+    .float-card{animation:none!important}
+    .tile:hover{transform:none}
+    .tile:hover img{transform:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-layer" aria-hidden="true">
+  <div class="bg-grid"></div>
+  <div class="bg-blob blob-1" data-speed="0.15"></div>
+  <div class="bg-blob blob-2" data-speed="0.25"></div>
+  <div class="bg-blob blob-3" data-speed="0.18"></div>
+</div>
+
+<nav class="top" aria-label="Hauptnavigation">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+      <path d="M14 2 L26 14 L14 26 L2 14 Z" stroke="url(#g1)" stroke-width="1.6" fill="rgba(34,211,238,.08)"/>
+      <path d="M14 8 L20 14 L14 20 L8 14 Z" fill="url(#g1)"/>
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="28" y2="28">
+          <stop offset="0" stop-color="#22d3ee"/>
+          <stop offset="1" stop-color="#3b4bd8"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    Prisma
+  </a>
+  <ul>
+    <li><a href="#features">Produkt</a></li>
+    <li><a href="#mosaic">Anwendung</a></li>
+    <li><a href="#sdk">SDK</a></li>
+    <li><a href="#predict">Predictive</a></li>
+    <li><a href="#docs">Doku</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">
+    Console öffnen
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </a>
+</nav>
+
+<header class="hero">
+  <span class="deco deco-line" data-speed="0.3" aria-hidden="true"></span>
+  <span class="deco deco-line-2" data-speed="0.2" aria-hidden="true"></span>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow"><span class="dot"></span>Prisma 3.2 · Live seit Juni</span>
+        <h1 class="title" aria-label="Verhalten wird zu Vorhersage.">
+          <span class="word" style="--w:0"><span>Verhalten</span></span>
+          <span class="word" style="--w:1"><span>wird</span></span>
+          <span class="word" style="--w:2"><span>zu</span></span><br>
+          <span class="word" style="--w:3"><span class="accent">Vorhersage.</span></span>
+        </h1>
+        <p class="lede">
+          Prisma kombiniert Ereignis-Tracking, Cohort-Analyse und prädiktive Modelle in einer Pipeline. Sie verbinden das SDK, wir liefern innerhalb von 48 Stunden die ersten Insights — ohne Data-Engineering-Team, ohne Sampling, ohne Sampling-Fehler.
+        </p>
+        <div class="cta-row">
+          <a href="#cta" class="btn btn-primary">
+            SDK in 6 Minuten integrieren
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#sdk" class="btn btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="8 9 12 5 16 9"/><line x1="12" y1="5" x2="12" y2="15"/><path d="M5 19h14"/></svg>
+            Demo-Daten ansehen
+          </a>
+        </div>
+        <div class="hero-meta">
+          <div><span class="num">14 Mio.</span><span class="lab">Events / Tag verarbeitet</span></div>
+          <div><span class="num">340 ms</span><span class="lab">P95 Query-Latenz</span></div>
+          <div><span class="num">48 h</span><span class="lab">bis zum ersten Insight</span></div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Activation · Weekly Cohort</span>
+            <span class="panel-tag">LIVE</span>
+          </div>
+          <div class="spark" aria-hidden="true">
+            <div class="bar" style="height:38%;animation-delay:.1s"></div>
+            <div class="bar" style="height:52%;animation-delay:.15s"></div>
+            <div class="bar" style="height:44%;animation-delay:.2s"></div>
+            <div class="bar" style="height:65%;animation-delay:.25s"></div>
+            <div class="bar" style="height:58%;animation-delay:.3s"></div>
+            <div class="bar" style="height:78%;animation-delay:.35s"></div>
+            <div class="bar" style="height:71%;animation-delay:.4s"></div>
+            <div class="bar" style="height:88%;animation-delay:.45s"></div>
+            <div class="bar" style="height:82%;animation-delay:.5s"></div>
+            <div class="bar" style="height:96%;animation-delay:.55s"></div>
+            <div class="bar" style="height:91%;animation-delay:.6s"></div>
+            <div class="bar" style="height:99%;animation-delay:.65s"></div>
+          </div>
+          <div class="panel-foot">
+            <span>KW 23</span>
+            <span>KW 35</span>
+          </div>
+        </div>
+        <div class="float-card float-1">
+          <span class="pulse"></span>
+          <div>
+            <div class="k">+24,3 %</div>
+            <div class="l">Retention W4</div>
+          </div>
+        </div>
+        <div class="float-card float-2">
+          <div class="k">3.412</div>
+          <div class="l">aktive Nutzer · letzte Stunde</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="trust" style="padding:48px 0">
+  <div class="wrap">
+    <div class="trust-row">
+      <span class="trust-label">Vertraut von Produktteams bei</span>
+      <div class="trust-logos">
+        <span>Northwind</span>
+        <span>Helix&nbsp;Labs</span>
+        <span>ORBIT</span>
+        <span>Kantonswerk</span>
+        <span>Vela</span>
+        <span>Sternefeld</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features" style="padding-top:100px">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="section-num">01 — Plattform</div>
+      <h2>Vier Module, eine Pipeline, <em>kein Data-Team nötig.</em></h2>
+      <p class="section-sub">Prisma ersetzt die typische Tool-Kette aus Tracker, Warehouse, Notebook und BI-Dashboard. Sie definieren Ereignisse einmal, alle Modelle greifen auf dieselbe Wahrheit zu.</p>
+    </div>
+
+    <div class="features">
+      <article class="feature f-1 reveal" tabindex="0">
+        <div class="ico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+        </div>
+        <h3>Echtzeit-Ereignis-Tracking</h3>
+        <p>Capture-Aufrufe mit unter 8&nbsp;ms Overhead im Client. Batched, komprimiert, retries inklusive. Schema wird automatisch aus dem Traffic generiert — kein manuelles Mapping, keine verwaisten Properties.</p>
+        <span class="tag">SDK · JS / iOS / Android / Python / Go</span>
+      </article>
+
+      <article class="feature f-2 reveal" tabindex="0">
+        <div class="ico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </div>
+        <h3>Cohort-Analyse</h3>
+        <p>Frei definierbare Kohorten über beliebige Ereignis-Folgen. Retention-Tabellen in Sekunden, nicht Minuten — auch über 14&nbsp;Monate und 8&nbsp;Mio. Nutzer hinweg.</p>
+        <span class="tag">SQL-frei · visuell</span>
+      </article>
+
+      <article class="feature f-3 reveal" tabindex="0">
+        <div class="ico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        </div>
+        <h3>Live-Segmente</h3>
+        <p>Segmentiert nach Gerät, Land, Plan, Feature-Flag — synchron an Ihr CRM oder Ihren E-Mail-Dienst gesendet.</p>
+      </article>
+
+      <article class="feature f-4 reveal" tabindex="0">
+        <div class="ico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
+        </div>
+        <h3>Predictive Insights</h3>
+        <p>Pro-Nutzer-Vorhersage von Churn, Upgrade und Aktivierung. Trainiert auf Ihren Daten, aktualisiert alle 6 Stunden, inklusive Konfidenzintervall.</p>
+        <span class="tag">Modell v3 · AUC 0,87</span>
+      </article>
+
+      <article class="feature f-5 reveal" tabindex="0">
+        <div class="ico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <h3>Developer SDK</h3>
+        <p>TypeScript-first, 38&nbsp;KB gzipped, tree-shakable. Autocomplete für alle Events und Properties direkt in der IDE.</p>
+        <span class="tag">v3.2.1 · MIT</span>
+      </article>
+
+      <article class="feature f-6 reveal" tabindex="0">
+        <div class="ico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>Slack &amp; Webhook-Alerts</h3>
+        <p>Anomalien, Schwellenwerte und Cohort-Veränderungen landen automatisch im Kanal Ihrer Wahl — mit Deep-Link zurück ins Dashboard.</p>
+        <span class="tag">Native Integrationen · 12</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="mosaic" style="padding-top:80px">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="section-num">02 — Anwendung</div>
+      <h2>Vom rohen Event <em>zur Entscheidung.</em></h2>
+      <p class="section-sub">Sechs Arbeitsschritte, die ein Produktteam bei Northwind in einer typischen Woche mit Prisma durchläuft — vom ersten Klick bis zum geplanten Experiment.</p>
+    </div>
+
+    <div class="mosaic reveal">
+      <div class="tile t-1">
+        <img src="../assets/prisma-analytics-0.jpeg" alt="Authentisches Thai-Gericht" style="width:100%;height:100%;object-fit:cover">
+        <div class="tile-label">
+          <div class="t">01 · Event-Definition</div>
+          <div class="d">Schema-Editor, Autocomplete aus Live-Traffic</div>
+        </div>
+      </div>
+
+      <div class="tile t-2">
+        <img src="../assets/prisma-analytics-1.jpeg" alt="Authentisches Thai-Gericht" style="width:100%;height:100%;object-fit:cover">
+        <div class="tile-label">
+          <div class="t">02 · Cohort-Build</div>
+        </div>
+      </div>
+
+      <div class="tile t-3">
+        <img src="../assets/prisma-analytics-2.jpeg" alt="Authentisches Thai-Gericht" style="width:100%;height:100%;object-fit:cover">
+        <div class="tile-label">
+          <div class="t">03 · Funnel-Inspektion</div>
+          <div class="d">Schritt-für-Schritt, mit Zeit-zu-Konversion</div>
+        </div>
+      </div>
+
+      <div class="tile t-4 tile-stat">
+        <div>
+          <div class="cap" style="font-family:'Space Grotesk';color:var(--cyan);letter-spacing:.06em;font-size:11px;text-transform:uppercase">04 · Anomalie erkannt</div>
+        </div>
+        <div>
+          <div class="big">–18,4 %</div>
+          <div class="cap">Signup-Conversion in Region EU-Central, 14. Juni 07:42 Uhr. Automatisch geflaggt.</div>
+        </div>
+      </div>
+
+      <div class="tile t-5">
+        <img src="../assets/prisma-analytics-0.jpeg" alt="Authentisches Thai-Gericht" style="width:100%;height:100%;object-fit:cover">
+        <div class="tile-label">
+          <div class="t">05 · Vorhersage</div>
+        </div>
+      </div>
+
+      <div class="tile t-6">
+        <img src="../assets/prisma-analytics-1.jpeg" alt="Authentisches Thai-Gericht" style="width:100%;height:100%;object-fit:cover">
+        <div class="tile-label">
+          <div class="t">06 · Experiment</div>
+          <div class="d">Hypothese, Sample-Size, Signifikanz — vorausgefüllt</div>
+        </div>
+      </div>
+
+      <div class="tile t-7 tile-stat">
+        <div>
+          <div class="cap" style="font-family:'Space Grotesk';color:var(--cyan);letter-spacing:.06em;font-size:11px;text-transform:uppercase">07 · Slack-Alert</div>
+        </div>
+        <div>
+          <div class="big">07:43</div>
+          <div class="cap">UTC — ausgelöst an #product-eu</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sdk">
+  <div class="wrap">
+    <div class="sdk-wrap">
+      <div class="reveal">
+        <div class="section-num">03 — Integration</div>
+        <h2 style="font-size:clamp(30px,3.8vw,46px)">Ein SDK. <em>Vier Zeilen.</em> Lauffähig.</h2>
+        <p style="color:var(--ink-dim);font-size:17px;margin-bottom:8px">Der Prisma-Client ist TypeScript-first, 38&nbsp;KB gzipped und tree-shakbar. Autocomplete schlägt Ereignis-Namen und Properties direkt in der IDE vor — basierend auf dem Live-Schema Ihres Projekts.</p>
+        <ul class="sdk-list">
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <span><strong>Offline-Buffer</strong> bei mobilen Clients — bis zu 5.000 Events, dann Sync.</span>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <span><strong>PII-Redaktion</strong> auf Client-Seite — sensible Felder verlassen nie das Gerät.</span>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <span><strong>Consent-API</strong> für DSGVO, CCPA und TCF v2.2 — integriert in einen Aufruf.</span>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <span><strong>Source-Maps</strong> werden automatisch versioniert — auch bei Releases.</span>
+          </li>
+        </ul>
+        <div style="margin-top:32px">
+          <a href="#" class="btn btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24
+</a></div></div></div></div></section>
+<footer style="border-top:1px solid rgba(255,255,255,.12);padding:2.5rem 1.5rem;background:#0b0b0c;color:#e7e2d6;font-family:system-ui,-apple-system,sans-serif">
+  <div style="max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center">
+    <strong>Prisma Analytics</strong>
+    <nav style="display:flex;gap:1.25rem;font-size:.9rem;opacity:.85"><a href="#" style="color:inherit;text-decoration:none">Impressum</a><a href="#" style="color:inherit;text-decoration:none">Datenschutz</a><a href="#" style="color:inherit;text-decoration:none">Kontakt</a></nav>
+  </div>
+  <div style="max-width:1100px;margin:1rem auto 0;font-size:.8rem;opacity:.6">© 2026 Prisma Analytics. Alle Rechte vorbehalten.</div>
+</footer>
+</body>
+</html>

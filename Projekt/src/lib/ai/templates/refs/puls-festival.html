@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PULS — Drei Nächte im Industriekessel</title>
+<meta name="description" content="PULS Festival. 14.–16. August 2026. 40 Acts, 4 Floors, ein stillgelegter Stahlkessel in Brandenburg.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pitch:#08070a;
+  --pitch-2:#0f0d12;
+  --ink:#15131a;
+  --bone:#f3eee5;
+  --bone-dim:#a39e95;
+  --gold:#d4a24c;
+  --gold-bright:#f0c068;
+  --magenta:#ff2e6b;
+  --magenta-deep:#c4154d;
+  --rule:rgba(243,238,229,.10);
+  --rule-strong:rgba(243,238,229,.22);
+  --glass:rgba(15,13,18,.55);
+  --glass-border:rgba(243,238,229,.14);
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--pitch);
+  color:var(--bone);
+  font-family:'Inter',system-ui,sans-serif;
+  font-weight:400;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+
+/* ---------- Background atmosphere ---------- */
+.atmosphere{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(60% 50% at 80% 0%, rgba(255,46,107,.10), transparent 60%),
+    radial-gradient(50% 40% at 10% 90%, rgba(212,162,76,.08), transparent 60%),
+    radial-gradient(80% 60% at 50% 50%, rgba(20,15,25,1), var(--pitch) 80%);
+}
+.grain{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.35;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ---------- Layout primitives ---------- */
+.wrap{max-width:1320px;margin:0 auto;padding:0 28px}
+@media(max-width:640px){.wrap{padding:0 18px}}
+
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--bone-dim);
+  display:inline-flex;align-items:center;gap:10px;
+}
+.eyebrow::before{
+  content:"";width:24px;height:1px;background:var(--gold);
+}
+
+h1,h2,h3{
+  font-family:'Anton',sans-serif;
+  font-weight:400;
+  letter-spacing:-.005em;
+  line-height:.92;
+  text-transform:uppercase;
+}
+
+/* ---------- Top nav ---------- */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  background:var(--glass);
+  backdrop-filter:blur(14px) saturate(140%);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);
+  border-bottom:1px solid var(--glass-border);
+  box-shadow:inset 0 1px 0 rgba(243,238,229,.06);
+}
+.nav-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 28px;
+  max-width:1320px;margin:0 auto;
+}
+.brand{
+  font-family:'Anton',sans-serif;font-size:24px;letter-spacing:.04em;
+  display:flex;align-items:center;gap:10px;
+}
+.brand-dot{
+  width:10px;height:10px;background:var(--magenta);border-radius:50%;
+  box-shadow:0 0 14px var(--magenta);
+  animation:beat 1.6s var(--ease) infinite;
+}
+@keyframes beat{
+  0%,100%{transform:scale(1);opacity:1}
+  20%{transform:scale(1.35);opacity:.9}
+  40%{transform:scale(1);opacity:1}
+  60%{transform:scale(1.18);opacity:.95}
+}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{
+  font-size:13px;letter-spacing:.04em;color:var(--bone-dim);
+  transition:color .25s var(--ease);position:relative;
+}
+.nav-links a:hover{color:var(--bone)}
+.nav-links a::after{
+  content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;
+  background:var(--gold);transform:scaleX(0);transform-origin:left;
+  transition:transform .35s var(--ease);
+}
+.nav-links a:hover::after{transform:scaleX(1)}
+.nav-cta{
+  padding:10px 18px;border:1px solid var(--gold);color:var(--gold);
+  font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+  transition:background .3s var(--ease),color .3s var(--ease);
+}
+.nav-cta:hover{background:var(--gold);color:var(--pitch)}
+@media(max-width:880px){.nav-links a:not(.nav-cta){display:none}}
+
+/* ---------- Hero ---------- */
+.hero{
+  position:relative;
+  padding:160px 0 80px;
+  min-height:100vh;
+  display:flex;align-items:flex-end;
+}
+.hero-grid{
+  display:grid;grid-template-columns:1.4fr .9fr;gap:60px;align-items:end;
+  width:100%;
+}
+@media(max-width:980px){.hero-grid{grid-template-columns:1fr;gap:40px}}
+
+.hero-title{
+  font-size:clamp(72px,15vw,232px);
+  line-height:.82;
+  letter-spacing:-.02em;
+}
+.hero-title .l1{display:block;color:var(--bone)}
+.hero-title .l2{
+  display:block;
+  color:transparent;
+  -webkit-text-stroke:1.5px var(--gold);
+  text-stroke:1.5px var(--gold);
+  margin-left:.18em;
+}
+.hero-title .l3{
+  display:block;
+  background:linear-gradient(90deg,var(--magenta) 0%,var(--gold) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  margin-left:.36em;
+}
+
+.hero-meta{
+  border-top:1px solid var(--rule-strong);
+  padding-top:24px;
+  display:flex;flex-direction:column;gap:18px;
+}
+.hero-meta-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:1px solid var(--rule);
+  padding-bottom:14px;
+}
+.hero-meta-row .k{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--bone-dim);
+}
+.hero-meta-row .v{
+  font-family:'Anton',sans-serif;font-size:22px;letter-spacing:.02em;
+}
+.hero-meta-row .v em{color:var(--gold);font-style:normal}
+
+.hero-sub{
+  max-width:520px;font-size:15px;line-height:1.6;color:var(--bone-dim);
+  margin-top:8px;
+}
+.hero-sub strong{color:var(--bone);font-weight:500}
+
+.hero-cta-row{
+  display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:18px;
+}
+
+/* ---------- Magnetic CTA ---------- */
+.btn{
+  position:relative;display:inline-flex;align-items:center;gap:12px;
+  padding:18px 28px;
+  font-family:'Anton',sans-serif;font-size:18px;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--magenta);color:var(--pitch);
+  border:1px solid var(--magenta);
+  transition:transform .25s var(--ease),box-shadow .35s var(--ease),background .25s var(--ease);
+  will-change:transform;
+}
+.btn .btn-inner{
+  display:inline-flex;align-items:center;gap:12px;
+  transition:transform .2s var(--ease);
+  will-change:transform;
+}
+.btn:hover{
+  box-shadow:0 0 0 1px var(--magenta),0 18px 50px -10px rgba(255,46,107,.6),0 0 80px -20px rgba(255,46,107,.4);
+}
+.btn svg{width:18px;height:18px}
+.btn-ghost{
+  background:transparent;color:var(--bone);
+  border:1px solid var(--rule-strong);
+}
+.btn-ghost:hover{
+  background:transparent;color:var(--gold);border-color:var(--gold);
+  box-shadow:0 0 0 1px var(--gold),0 14px 40px -16px rgba(212,162,76,.5);
+}
+
+/* ---------- Marquee strip ---------- */
+.marquee{
+  border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  overflow:hidden;background:var(--pitch-2);
+  padding:18px 0;margin-top:60px;
+}
+.marquee-track{
+  display:flex;gap:60px;white-space:nowrap;
+  animation:slide 38s linear infinite;
+  font-family:'Anton',sans-serif;font-size:28px;letter-spacing:.04em;text-transform:uppercase;
+}
+.marquee-track span{display:inline-flex;align-items:center;gap:60px;color:var(--bone)}
+.marquee-track span::after{
+  content:"";display:inline-block;width:10px;height:10px;background:var(--magenta);border-radius:50%;
+}
+.marquee-track em{color:var(--gold);font-style:normal}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------- Section base ---------- */
+section{padding:120px 0;position:relative}
+@media(max-width:640px){section{padding:80px 0}}
+
+.section-head{
+  display:grid;grid-template-columns:1fr 1.4fr;gap:40px;align-items:end;
+  margin-bottom:60px;
+}
+@media(max-width:880px){.section-head{grid-template-columns:1fr;gap:24px}}
+.section-head h2{
+  font-size:clamp(48px,7vw,104px);
+}
+.section-head h2 em{font-style:normal;color:var(--gold)}
+.section-head .lede{
+  font-size:16px;line-height:1.65;color:var(--bone-dim);max-width:520px;
+}
+.section-head .lede strong{color:var(--bone);font-weight:500}
+
+/* ---------- Floors ---------- */
+.floors{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:0;
+  border-top:1px solid var(--rule-strong);
+  border-left:1px solid var(--rule-strong);
+}
+@media(max-width:760px){.floors{grid-template-columns:1fr}}
+.floor{
+  border-right:1px solid var(--rule-strong);
+  border-bottom:1px solid var(--rule-strong);
+  padding:36px 32px;
+  position:relative;
+  background:linear-gradient(180deg,rgba(15,13,18,.4),rgba(8,7,10,.6));
+  transition:background .4s var(--ease);
+}
+.floor:hover{background:linear-gradient(180deg,rgba(255,46,107,.06),rgba(8,7,10,.6))}
+.floor-num{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;
+  color:var(--bone-dim);margin-bottom:18px;display:flex;justify-content:space-between;
+}
+.floor-num span:last-child{color:var(--gold)}
+.floor h3{
+  font-size:42px;margin-bottom:8px;
+}
+.floor h3 .sub{
+  display:block;font-family:'Inter',sans-serif;font-weight:400;font-size:13px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--bone-dim);margin-top:6px;
+}
+.floor p{font-size:14px;color:var(--bone-dim);line-height:1.6;margin-top:14px;max-width:380px}
+.floor-stats{
+  display:flex;gap:24px;margin-top:24px;padding-top:18px;border-top:1px solid var(--rule);
+}
+.floor-stats div{display:flex;flex-direction:column;gap:4px}
+.floor-stats .n{font-family:'Anton',sans-serif;font-size:24px;color:var(--gold)}
+.floor-stats .l{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--bone-dim)}
+
+/* ---------- Lineup ---------- */
+.lineup{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+  border-top:1px solid var(--rule-strong);
+}
+@media(max-width:880px){.lineup{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.lineup{grid-template-columns:1fr}}
+.day{
+  border-right:1px solid var(--rule-strong);
+  padding:0;
+}
+.day:last-child{border-right:none}
+.day-head{
+  padding:24px 28px;border-bottom:1px solid var(--rule-strong);
+  background:var(--pitch-2);
+  position:sticky;top:60px;
+}
+.day-head .dnum{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--magenta);
+}
+.day-head .ddate{font-family:'Anton',sans-serif;font-size:32px;margin-top:4px}
+.day-head .ddesc{font-size:12px;color:var(--bone-dim);margin-top:4px}
+.act{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:14px 28px;
+  border-bottom:1px solid var(--rule);
+  transition:background .25s var(--ease),padding .25s var(--ease);
+  position:relative;
+}
+.act:hover{background:rgba(212,162,76,.06);padding-left:36px}
+.act:hover::before{
+  content:"";position:absolute;left:28px;top:50%;width:14px;height:1px;background:var(--gold);
+}
+.act-name{
+  font-family:'Anton',sans-serif;font-size:18px;letter-spacing:.02em;
+}
+.act-head{font-size:11px;color:var(--gold);font-family:'JetBrains Mono',monospace}
+.act-floor{
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--bone-dim);
+  font-family:'JetBrains Mono',monospace;
+}
+.act.headline .act-name{color:var(--magenta);font-size:22px}
+
+/* ---------- Mosaic gallery ---------- */
+.mosaic{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  grid-auto-rows:120px;
+  grid-auto-flow:dense;
+  gap:10px;
+}
+@media(max-width:880px){
+  .mosaic{grid-template-columns:repeat(4,1fr);grid-auto-rows:90px}
+}
+@media(max-width:540px){
+  .mosaic{grid-template-columns:repeat(2,1fr);grid-auto-rows:130px}
+}
+.tile{
+  position:relative;overflow:hidden;border:1px solid var(--rule);
+  background:var(--ink);
+  transition:transform .5s var(--ease),z-index 0s,box-shadow .5s var(--ease);
+}
+.tile img{
+  width:100%;height:100%;object-fit:cover;
+  filter:grayscale(.4) contrast(1.05) brightness(.85);
+  transition:filter .5s var(--ease),transform .8s var(--ease);
+}
+.tile:hover{
+  transform:scale(1.04);z-index:5;
+  box-shadow:0 30px 60px -20px rgba(0,0,0,.8),0 0 0 1px var(--gold);
+}
+.tile:hover img{
+  filter:grayscale(0) contrast(1.1) brightness(1);
+  transform:scale(1.08);
+}
+.tile-label{
+  position:absolute;left:14px;bottom:12px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--bone);
+  background:rgba(8,7,10,.7);backdrop-filter:blur(8px);
+  padding:6px 10px;border:1px solid var(--glass-border);
+  z-index:2;
+}
+.tile-label em{color:var(--gold);font-style:normal}
+.t-a{grid-column:span 3;grid-row:span 3}
+.t-b{grid-column:span 3;grid-row:span 2}
+.t-c{grid-column:span 2;grid-row:span 2}
+.t-d{grid-column:span 2;grid-row:span 2}
+.t-e{grid-column:span 2;grid-row:span 3}
+.t-f{grid-column:span 4;grid-row:span 2}
+.t-g{grid-column:span 2;grid-row:span 2}
+.t-h{grid-column:span 2;grid-row:span 2}
+.t-i{grid-column:span 2;grid-row:span 2}
+@media(max-width:540px){
+  .t-a,.t-b,.t-c,.t-d,.t-e,.t-f,.t-g,.t-h,.t-i{grid-column:span 2;grid-row:span 2}
+}
+
+/* ---------- Practical / tickets ---------- */
+.practical-grid{
+  display:grid;grid-template-columns:1.2fr 1fr;gap:40px;
+}
+@media(max-width:880px){.practical-grid{grid-template-columns:1fr}}
+.tickets{display:flex;flex-direction:column;gap:14px}
+.ticket{
+  background:var(--glass);
+  backdrop-filter:blur(14px) saturate(140%);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);
+  border:1px solid var(--glass-border);
+  box-shadow:inset 0 1px 0 rgba(243,238,229,.06);
+  padding:28px 30px;
+  display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;
+  transition:transform .35s var(--ease),border-color .35s var(--ease);
+}
+.ticket:hover{transform:translateY(-3px);border-color:var(--gold)}
+.ticket.featured{
+  border-color:var(--magenta);
+  background:linear-gradient(135deg,rgba(255,46,107,.12),var(--glass));
+}
+.ticket-tag{
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--magenta);margin-bottom:8px;
+}
+.ticket h3{font-size:30px;margin-bottom:4px}
+.ticket .desc{font-size:13px;color:var(--bone-dim);line-height:1.5;max-width:340px}
+.ticket-price{
+  text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px;
+}
+.ticket-price .p{font-family:'Anton',sans-serif;font-size:38px;color:var(--gold);line-height:1}
+.ticket-price .u{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;color:var(--bone-dim);text-transform:uppercase}
+.ticket-status{
+  display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);
+  margin-top:4px;
+}
+
+.info-card{
+  background:var(--glass);
+  backdrop-filter:blur(14px) saturate(140%);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);
+  border:1px solid var(--glass-border);
+  box-shadow:inset 0 1px 0 rgba(243,238,229,.06);
+  padding:32px;
+  height:fit-content;
+}
+.info-card h3{
+  font-size:24px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--rule);
+}
+.info-row{
+  display:grid;grid-template-columns:24px 1fr;gap:14px;
+  padding:14px 0;border-bottom:1px solid var(--rule);
+}
+.info-row:last-child{border-bottom:none}
+.info-row svg{width:20px;height:20px;color:var(--gold);stroke:currentColor;fill:none;stroke-width:1.4}
+.info-row .label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--bone-dim);margin-bottom:4px}
+.info-row .val{font-size:14px;line-height:1.5}
+.info-row .val strong{color:var(--gold);font-weight:500}
+
+/* ---------- Final CTA ---------- */
+.final{
+  text-align:center;padding:160px 0;
+  position:relative;
+  border-top:1px solid var(--rule-strong);
+  border-bottom:1px solid var(--rule-strong);
+  background:
+    radial-gradient(50% 60% at 50% 50%,rgba(255,46,107,.12),transparent 70%),
+    var(--pitch);
+}
+.final h2{
+  font-size:clamp(64px,12vw,180px);
+  line-height:.85;
+}
+.final h2 .a{color:var(--bone)}
+.final h2 .b{
+  color:transparent;-webkit-text-stroke:1.5px var(--gold);
+}
+.final h2 .c{
+  background:linear-gradient(90deg,var(--magenta),var(--gold));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.final p{
+  max-width:540px;margin:32px auto 40px;color:var(--bone-dim);font-size:16px;line-height:1.6;
+}
+
+/* ---------- Footer ---------- */
+footer{
+  padding:60px 0 40px;
+  border-top:1px solid var(--rule);
+}
+.foot-grid{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:50px;
+}
+@media(max-width:760px){.foot-grid{grid-template-columns:1fr 1fr;gap:30px}}
+.foot-brand{font-family:'Anton',sans-serif;font-size:48px;line-height:.9;margin-bottom:14px}
+.foot-brand em{font-style:normal;color:var(--magenta)}
+.foot-tag{font-size:13px;color:var(--bone-dim);max-width:280px;line-height:1.6}
+.foot-col h4{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:18px;
+}
+.foot-col a{
+  display:block;font-size:14px;color:var(--bone-dim);padding:6px 0;
+  transition:color .25s var(--ease);
+}
+.foot-col a:hover{color:var(--bone)}
+.foot-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:30px;border-top:1px solid var(--rule);
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-dim);
+  flex-wrap:wrap;gap:14px;
+}
+
+/* ---------- Reveal animations ---------- */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.stagger > *{
+  opacity:0;transform:translateY(16px);
+  transition:opacity .65s var(--ease),transform .65s var(--ease);
+  transition-delay:calc(var(--i,0) * 70ms);
+}
+.stagger.in > *{opacity:1;transform:none}
+
+/* ---------- Focus ---------- */
+a:focus-visible,button:focus-visible,.ticket:focus-visible,.act:focus-visible{
+  outline:2px solid var(--gold);outline-offset:3px;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:opacity .3s linear !important}
+  .reveal,.stagger > *{transform:none !important}
+  .marquee-track{animation:none}
+  .brand-dot{animation:none}
+  .tile:hover{transform:none}
+  .btn:hover{box-shadow:none}
+}
+</style>
+</head>
+<body>
+
+<div class="atmosphere" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ============ NAV ============ -->
+<header class="nav" role="banner">
+  <div class="nav-inner">
+    <a href="#top" class="brand" aria-label="PULS Festival — Startseite">
+      <span class="brand-dot" aria-hidden="true"></span>
+      PULS
+    </a>
+    <nav class="nav-links" aria-label="Hauptnavigation">
+      <a href="#floors">Floors</a>
+      <a href="#lineup">Lineup</a>
+      <a href="#galerie">Kessel</a>
+      <a href="#tickets">Tickets</a>
+      <a href="#tickets" class="nav-cta">Ticket sichern</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow reveal" style="margin-bottom:32px">14. – 16. August 2026 · Stahlwerk Brandenburg</p>
+        <h1 class="hero-title reveal">
+          <span class="l1">DREI</span>
+          <span class="l2">NÄCHTE</span>
+          <span class="l3">IM KESSEL</span>
+        </h1>
+      </div>
+      <aside class="hero-meta reveal">
+        <div class="hero-meta-row">
+          <span class="k">Edition</span>
+          <span class="v">N°<em> 07</em></span>
+        </div>
+        <div class="hero-meta-row">
+          <span class="k">Acts</span>
+          <span class="v">40 Live · DJ</span>
+        </div>
+        <div class="hero-meta-row">
+          <span class="k">Floors</span>
+          <span class="v">4 · <em>32 dB</em>差</span>
+        </div>
+        <div class="hero-meta-row">
+          <span class="k">Kessel-Volumen</span>
+          <span class="v">84.000 m³</span>
+        </div>
+        <p class="hero-sub">
+          Ein stillgelegter Hochofen. Vier Floors direkt im Stahlgerüst. <strong>40 Acts aus Berlin, Detroit und Birmingham</strong> über drei Nächte — bis der Kessel wieder glüht.
+        </p>
+        <div class="hero-cta-row">
+          <a href="#tickets" class="btn magnetic" id="magneticBtn" data-magnet>
+            <span class="btn-inner">
+              Tickets — ab 89 €
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </span>
+          </a>
+          <a href="#lineup" class="btn btn-ghost">
+            <span class="btn-inner">Lineup ansehen</span>
+          </a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>40 Acts <em>·</em> 4 Floors <em>·</em> 3 Nächte <em>·</em> 1 Kessel <em>·</em></span>
+    <span>40 Acts <em>·</em> 4 Floors <em>·</em> 3 Nächte <em>·</em> 1 Kessel <em>·</em></span>
+    <span>40 Acts <em>·</em> 4 Floors <em>·</em> 3 Nächte <em>·</em> 1 Kessel <em>·</em></span>
+  </div>
+</div>
+
+<!-- ============ FLOORS ============ -->
+<section id="floors">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="reveal">Vier <em>Floors</em><br>ein Stahlgerüst</h2>
+      <p class="lede reveal">
+        Jeder Floor sitzt in einem anderen Teil des ehemaligen Stahlwerks — vom Kesselboden über die Gießhalle bis zur Wartungsgalerie 22 Meter über dem Boden. <strong>Eigener Sound, eigene Atmosphäre, eigene Uhrzeit.</strong>
+      </p>
+    </div>
+
+    <div class="floors stagger">
+      <article class="floor" style="--i:0">
+        <div class="floor-num"><span>FLOOR 01</span><span>Hauptkessel</span></div>
+        <h3>KESSEL<span class="sub">Hardtechno · Schranz</span></h3>
+        <p>Mitten im 22 Meter hohen ehemaligen Hochofen 3. Betonboden, offener Himmel darüber, Schallpegel bis 32 dB über der Maschinenraumbasis.</p>
+        <div class="floor-stats">
+          <div><span class="n">142</span><span class="l">dB Peak</span></div>
+          <div><span class="n">04:00</span><span class="l">Ende Sa</span></div>
+          <div><span class="n">3.200</span><span class="l">Kapazität</span></div>
+        </div>
+      </article>
+
+      <article class="floor" style="--i:1">
+        <div class="floor-num"><span>FLOOR 02</span><span>Gießhalle West</span></div>
+        <h3>GIESS<span class="sub">Industrial · Acid</span></h3>
+        <p>Die ehemalige Gießhalle. Kranbahnen als DJ-Plattform, darunter 1.800 m² offene Fläche. Hier spielen die Birmingham- und Detroit-Legenden.</p>
+        <div class="floor-stats">
+          <div><span class="n">138</span><span class="l">dB Peak</span></div>
+          <div><span class="n">03:00</span><span class="l">Ende Sa</span></div>
+          <div><span class="n">2.400</span><span class="l">Kapazität</span></div>
+        </div>
+      </article>
+
+      <article class="floor" style="--i:2">
+        <div class="floor-num"><span>FLOOR 03</span><span>Wartung 22m</span></div>
+        <h3>STEG<span class="sub">Dub · Deep · Hypnotic</span></h3>
+        <p>22 Meter über dem Kesselboden, auf der ehemaligen Wartungsgalerie. Eng, dunkel, intim. Hier spielt die Berliner Dub-Szene von Mitternacht bis Sonnenaufgang.</p>
+        <div class="floor-stats">
+          <div><span class="n">128</span><span class="l">dB Peak</span></div>
+          <div><span class="n">06:00</span><span class="l">Ende Sa</span></div>
+          <div><span class="n">480</span><span class="l">Kapazität</span></div>
+        </div>
+      </article>
+
+      <article class="floor" style="--i:3">
+        <div class="floor-num"><span>FLOOR 04</span><span>Lagerhalle B</span></div>
+        <h3>BUNKER<span class="sub">Live · EBM · Wave</span></h3>
+        <p>Die ehemalige Lagerhalle für Gussformen. Hier treten die Live-Acts auf — analoge Synths, Drum-Machines, Vocals. Kein Laptop-Setup, kein Playback.</p>
+        <div class="floor-stats">
+          <div><span class="n">134</span><span class="l">dB Peak</span></div>
+          <div><span class="n">02:00</span><span class="l">Ende Sa</span></div>
+          <div><span class="n">1.100</span><span class="l">Kapazität</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LINEUP ============ -->
+<section id="lineup">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="reveal">Lineup<br><em>40 Acts</em></h2>
+      <p class="lede reveal">
+        Headliner und Geheimtipps aus drei Techno-Hauptstädten. <strong>Vollständiges Lineup mit Set-Zeiten</strong> erscheint am 14. Juli im Festival-Update. Unten stehend die ersten 24 bestätigten Acts.
+      </p>
+    </div>
+
+    <div class="lineup stagger">
+      <!-- Day 1 -->
+      <div class="day" style="--i:0">
+        <div class="day-head">
+          <div class="dnum">DAY 01 · FR</div>
+          <div class="ddate">14.08.26</div>
+          <div class="ddesc">Eröffnung — 20:00 bis 04:00</div>
+        </div>
+        <a class="act headline" href="#"><span class="act-name">HELENA HAUFF</span><span class="act-floor">Kessel</span></a>
+        <a class="act" href="#"><span class="act-name">SURGEON</span><span class="act-floor">Giess</span></a>
+        <a class="act" href="#"><span class="act-name">FJAAK (LIVE)</span><span class="act-floor">Bunker</span></a>
+        <a class="act" href="#"><span class="act-name">CERA KHIN</span><span class="act-floor">Steg</span></a>
+        <a class="act" href="#"><span class="act-name">PARRISH SMITH</span><span class="act-floor">Kessel</span></a>
+        <a class="act" href="#"><span class="act-name">LAKUTA</span><span class="act-floor">Giess</span></a>
+        <a class="act" href="#"><span class="act-name">KOBOSIL</span><span class="act-floor">Kessel</span></a>
+        <a class="act" href="#"><span class="act-name">NGLY</span><span class="act-floor">Steg</span></a>
+      </div>
+
+      <!-- Day 2 -->
+      <div class="day" style="--i:1">
+        <div class="day-head">
+          <div class="dnum">DAY 02 · SA</div>
+          <div class="ddate">15.08.26</div>
+          <div class="ddesc">Hauptnacht — 21:00 bis 06:00</div>
+        </div>
+        <a class="act headline" href="#"><span class="act-name">JEFF MILLS</span><span class="act-floor">Kessel</span></a>
+        <a class="act" href="#"><span class="act-name">REGIS</span><span class="act-floor">Giess</span></a>
+        <a class="act" href="#"><span class="act-name">MARCEL DETTMANN</span><span class="act-floor">Kessel</span></a>
+        <a class="act" href="#"><span class="act-name">SHED (LIVE)</span><span class="act-floor">Bunker</span></a>
+        <a class="act" href="#"><span class="act-name">VTSS</span><span class="act-floor">Kessel</span></a>
+        <a class="act" href="#"><span class="act-name">ABSOLUTE BODY CONTROL</span><span class="act-floor">Bunker</span></a>
+        <a class="act" href="#"><span class="act-name">RHYW</span><span class="act-floor">Giess</span></a>
+        <a class="act" href="#"><span class="act-name">SILVIE LOTO</span><span class="act-floor">Steg</span></a>
+      </div>
+
+      <!-- Day 3 -->
+      <div class="day" style="--i:2">
+        <div class="day-head">
+          <div class="dnum">DAY 03 · SO</div>
+          <div class="ddate">16.08.26</div>
+          <div class="ddesc">Abschluss — 20:00 bis 04:00</div>
+        </div>
+        <a class="act headline" href="#"><span class="act-name">DAX J</span><span class="act-floor">Kessel</span></a>
+        <a class="act" href="#"><span class="act-name">PLANETARY ASSAULT SYSTEMS</span><span class="act-floor">Giess</span></a>
+        <a class="act" href="#"><span class="act-name">NINA KRAVIZ</span><span class="act-floor">Kessel</span></a>
+        <a class="act" href="#"><span class="act-name">CUBALECTRIC (LIVE)</span><span class="act-floor">Bunker</span></a>
+        <a class="act" href="#"><span class="act-name">SNTS</span><span class="act-floor">Steg</span></a>
+        <a class="act" href="#"><span class="act-name">REBEKA</span><span class="act-floor">Bunker</span></a>
+        <a class="act" href="#"><span class="act-name">PFIRTER</span><span class="act-floor">Kessel</span></a>
+        <a class="act" href="#"><span class="act-name">ANSIA</span><span class="act-floor">Giess</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MOSAIC GALLERY ============ -->
+<section id="galerie">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="reveal">Der <em>Kessel</em><br>als Bühne</h2>
+      <p class="lede reveal">
+        Hochofen 3 wurde 1992 stillgelegt, 2018 entkernt, 2025 für PULS klanglich ertüchtigt. <strong>84.000 Kubikmeter roher Industrieraum</strong> — kein Studio-Fake, keine Konfetti-Kanonen, nur Stahl, Beton und Bass.
+      </p>
+    </div>
+
+    <div class="mosaic reveal">
+      <div class="tile t-a">
+        <img src="../assets/puls-festival-0.jpeg" alt="Blick in den Kessel — Hochofen 3 bei Nacht, rot glühendes Stahlgerüst">
+        <span class="tile-label"><em>Hochofen 3</em> · Kessel-Floor</span>
+      </div>
+      <div class="tile t-b">
+        <img src="../assets/puls-festival-1.jpeg" alt="Gießhalle bei laufendem Set — Menge vor der Kranbahn-DJ-Plattform">
+        <span class="tile-label"><em>Giesshalle West</em> · Floor 02</span>
+      </div>
+      <div class="tile t-c">
+        <img src="../assets/puls-festival-2.jpeg" alt="Wartungsgalerie in 22 Metern Höhe — Floor 03, enger Steg mit rotem Notlicht">
+        <span class="tile-label"><em>Steg</em> · 22 m ü. Boden</span>
+      </div>
+      <div class="tile t-d">
+        <img src="../assets/puls-festival-0.jpeg" alt="Detailaufnahme Stahlgerüst mit Scheinwerfern">
+        <span class="tile-label"><em>Stahlgerüst</em> · Detail</span>
+      </div>
+      <div class="tile t-e">
+        <img src="../assets/puls-festival-1.jpeg" alt="Tanzende Menge im Kessel bei Headliner-Set">
+        <span class="tile-label"><em>Kessel</em> · Samstag 02:14</span>
+      </div>
+      <div class="tile t-f">
+        <img src="../assets/puls-festival-2.jpeg" alt="Bunker-Floor in der Lagerhalle — Live-Act mit analoger Hardware">
+        <span class="tile-label"><em>Bunker</em> · Lagerhalle B · Live-Setup</span>
+      </div>
+      <div class="tile t-g">
+        <img src="../assets/puls-festival-d0.jpeg" alt="Blick nach oben durch die Kesselöffnung">
+        <span class="tile-label"><em>22 m</em> · Senkrechte</span>
+      </div>
+      <div class="tile t-h">
+        <img src="../assets/puls-festival-d1.jpeg" alt="Campingbereich vor dem Stahlwerk">
+        <span class="tile-label"><em>Camping A</em> · 800 m v. Kessel</span>
+      </div>
+      <div class="tile t-i">
+        <img src="../assets/puls-festival-d2.jpeg" alt="Scheinwerfer-Setup im Kessel">
+        <span class="tile-label"><em>Lichtarray</em> · 48 × 2 kW</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TICKETS + INFO ============ -->
+<section id="tickets">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="reveal">Tickets <em>&</em><br>Praktisches</h2>
+      <p class="lede reveal">
+        Vier Kategorien, gestaffelt nach Floor-Zugang. <strong>Phase-1-Tickets sind limitiert auf 2.400 Stück</strong> und nur bis 30. Juni verfügbar. Danach steigt der Preis um 30 €.
+      </p>
+    </div>
+
+    <div class="practical-grid">
+      <div class="tickets stagger">
+        <article class="ticket" style="--i:0">
+          <div>
+            <div class="ticket-tag">Tagesticket</div>
+            <h3>FREITAG</h3>
+            <p class="desc">Zugang zu allen 4 Floors am 14.08. ab 20:00. Inkl. Garderobe und Pfandsystem.</p>
+          </div>
+          <div class="ticket-price">
+            <span class="p">89 €</span>
+            <span class="u">inkl. Geb.</span>
+            <span class="ticket-status">Verfügbar</span>
+          </div>
+        </article>
+
+        <article class="ticket" style="--i:1">
+          <div>
+            <div class="ticket-tag">Tagesticket</div>
+            <h3>SAMSTAG</h3>
+            <p class="desc">Hauptnacht — Zugang zu allen 4 Floors am 15.08. ab 21:00. Längste Set-Dauer.</p>
+          </div>
+          <div class="ticket-price">
+            <span class="p">109 €</span>
+            <span class="u">inkl. Geb.</span>
+            <span class="ticket-status">Verfügbar</span>
+          </div>
+        </article>
+
+        <article class="ticket featured" style="--i:2">
+          <div>
+            <div class="ticket-tag">★ Beliebt — Restkontingent</div>
+            <h3>DREI-TAGE-PASS</h3>
+            <p class="desc">Alle drei Nächte, alle 4 Floors, freier Wechsel zwischen den Floors,优先 Zugang zum Steg (Floor 03).</p>
+          </div>
+          <div class="ticket-price">
+            <span class="p">239 €</span>
+            <span class="u">inkl. Geb.</span>
+            <span class="ticket-status">Nur 480 übrig</span>
+          </div>
+        </article>
+
+        <article class="ticket" style="--i:3">
+          <div>
+            <div class="ticket-tag">Kombi · inkl. Camping</div>
+            <h3>KESSEL-PASS</h3>
+            <p class="desc">3-Tage-Pass + Stellplatz auf Camping A (800 m vom Kessel) + Shuttle ab Hbf Brandenburg.</p>
+          </div>
+          <div class="ticket-price">
+            <span class="p">289 €</span>
+            <span class="u">inkl. Geb.</span>
+            <span class="ticket-status">Verfügbar</span>
+          </div>
+        </article>
+      </div>
+
+      <aside class="info-card reveal">
+        <h3>Anreise & Camping</h3>
+
+        <div class="info-row">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="14" height="12" rx="1"/><path d="M17 10h3v6h-3"/><circle cx="7" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+          <div>
+            <div class="label">Shuttle</div>
+            <div class="val">Alle 20 Min. ab <strong>Hbf Brandenburg</strong> — 8 Min. Fahrt. Inklusive im Ticket.</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4v5c0 4-3.5 7-8 9-4.5-2-8-5-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+          <div>
+            <div class="label">Camping A</div>
+            <div class="val">800 m vom Kessel. Zelt bis <strong>9 m²</strong>, Wohnmobil bis 7,5 t. Duschen, Wasser, Beleuchtung 24 h.</div>
+          </div>
+        </
+</div></aside></div></div></section></main>
+<footer style="border-top:1px solid rgba(255,255,255,.12);padding:2.5rem 1.5rem;background:#0b0b0c;color:#e7e2d6;font-family:system-ui,-apple-system,sans-serif">
+  <div style="max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center">
+    <strong>Puls Festival</strong>
+    <nav style="display:flex;gap:1.25rem;font-size:.9rem;opacity:.85"><a href="#" style="color:inherit;text-decoration:none">Impressum</a><a href="#" style="color:inherit;text-decoration:none">Datenschutz</a><a href="#" style="color:inherit;text-decoration:none">Kontakt</a></nav>
+  </div>
+  <div style="max-width:1100px;margin:1rem auto 0;font-size:.8rem;opacity:.6">© 2026 Puls Festival. Alle Rechte vorbehalten.</div>
+</footer>
+</body>
+</html>
