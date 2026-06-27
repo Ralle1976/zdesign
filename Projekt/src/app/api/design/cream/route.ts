@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
     const { message, projectId } = body as { message: string; projectId: string };
     const target = Number(body.target) > 0 ? Number(body.target) : 8;
     const maxRounds = Number(body.maxRounds) > 0 ? Number(body.maxRounds) : 3;
+    const model = typeof body.model === 'string' && body.model ? body.model : GEN_MODEL;
     if (!message || !projectId) {
       return NextResponse.json({ error: 'message and projectId are required' }, { status: 400 });
     }
@@ -63,7 +64,7 @@ export async function POST(req: NextRequest) {
       : '';
 
     const prompt = memoryBlock + imageBlock + generateHtmlPrompt(brief, message);
-    let html = cleanHtml(await callGemini(prompt, { model: GEN_MODEL, maxTokens: GEN_MAX_TOKENS, temperature: 0.6, timeoutMs: 300_000 }));
+    let html = cleanHtml(await callGemini(prompt, { model, maxTokens: GEN_MAX_TOKENS, temperature: 0.6, timeoutMs: 300_000 }));
     if (!html || !/<html/i.test(html)) {
       return NextResponse.json({ error: 'Gemini generate returned no valid HTML' }, { status: 502 });
     }
@@ -95,7 +96,7 @@ Aktueller Entwurf:
 ${html}
 
 Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
-      const refined = cleanHtml(await callGemini(refinePrompt, { model: GEN_MODEL, maxTokens: GEN_MAX_TOKENS, temperature: 0.4, timeoutMs: 300_000 }));
+      const refined = cleanHtml(await callGemini(refinePrompt, { model, maxTokens: GEN_MAX_TOKENS, temperature: 0.4, timeoutMs: 300_000 }));
       if (refined && /<html/i.test(refined)) html = refined;
     }
 
