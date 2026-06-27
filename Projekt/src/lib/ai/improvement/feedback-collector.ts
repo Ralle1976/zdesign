@@ -270,9 +270,9 @@ export async function getFeedbackStats(): Promise<FeedbackStats> {
         _compSum?: number
         _compCount?: number
       }
-      b.successRate = b.count > 0 ? ext._succ / b.count : 0
+      b.successRate = b.count > 0 ? (ext._succ ?? 0) / b.count : 0
       b.avgComposite =
-        ext._compCount > 0 ? ext._compSum / ext._compCount : 0
+        (ext._compCount ?? 0) > 0 ? (ext._compSum ?? 0) / (ext._compCount ?? 0) : 0
       delete ext._succ
       delete ext._compSum
       delete ext._compCount
