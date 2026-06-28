@@ -153,15 +153,10 @@ export function buildThaiFoodPrompts(theme: string, imagery?: string): string[] 
  */
 export function buildImagePrompts(theme: string, imagery?: string): string[] {
   const hay = `${theme} ${imagery || ''}`.toLowerCase();
-
-  // If the caller supplied rich imagery direction, honour it directly.
-  if (imagery && imagery.trim().length > 12) {
-    return [
-      `Editorial hero photograph: ${imagery}. Dramatic professional lighting, shallow depth of field, high resolution, magazine quality. Mood: ${theme}.`,
-      `Close-up detail photograph of: ${imagery}. Rich textures, natural light, photorealistic, crisp focus, premium feel. Mood: ${theme}.`,
-      `Atmospheric wide shot of: ${imagery}. Cinematic composition, warm tonal range, professional photography, inviting. Mood: ${theme}.`,
-    ];
-  }
+  // NOTE: do NOT shortcut on `imagery` — it's the imageryGuidance boilerplate
+  // (a style hint), NOT the subject. Using it as the subject feeds MiniMax
+  // "Themengerechte, hochwertige Bildwelt…" instead of the actual topic.
+  // The domain branches below derive the subject from `theme` (the real brief).
 
   if (/(coffee|espresso|roaster|café|cafe|barista)/.test(hay)) {
     return [
@@ -220,7 +215,57 @@ export function buildImagePrompts(theme: string, imagery?: string): string[] {
     ];
   }
 
-  // Generic editorial fallback for anything else.
+  if (/(law|legal|recht|anwalt|kanzlei|notar|jurist|finance|bank|consulting|corporate|steuer)/.test(hay)) {
+    return [
+      `Modern law firm conference room with leather chairs and a large wooden table, warm professional lighting, legal books on shelves behind, serious trustworthy atmosphere, professional interior photography.`,
+      `Close-up of a lawyer's hands reviewing documents at an elegant desk, pen, legal texts, warm wood, soft natural light from a window, professional editorial photography, depth of field.`,
+      `Classic law library or courthouse facade, stone columns, warm afternoon light conveying authority and tradition, architectural photography, dignified.`,
+    ];
+  }
+  if (/(yoga|meditation|wellness|mindful|achtsam|vinyasa|yin|atem)/.test(hay)) {
+    return [
+      `Serene yoga studio interior with wooden floor, large windows with soft morning light, plants, rolled yoga mats, peaceful and warm atmosphere, lifestyle photography.`,
+      `Close-up of hands in a meditation mudra on a wooden yoga block, warm natural light, calm and mindful, premium wellness photography, shallow depth of field.`,
+      `Group of yogis in a gentle pose on mats in a bright warm studio, morning sunlight streaming through windows, peaceful community atmosphere, lifestyle photography.`,
+    ];
+  }
+  if (/(crypto|web3|blockchain|bitcoin|ethereum|nft|defi|wallet|token)/.test(hay)) {
+    return [
+      `Abstract glowing 3D geometric network of connected nodes and data streams, deep dark background with cyan and violet light, futuristic blockchain visualization, digital art, cinematic.`,
+      `Close-up of a sleek hardware crypto wallet device on a dark reflective surface with subtle neon glow, premium tech product photography, dramatic lighting.`,
+      `Wide shot of an abstract digital landscape with floating transparent glass cards showing data, dark space background, particle effects, futuristic Web3 aesthetic, cinematic.`,
+    ];
+  }
+  if (/(analytics|saas|software|platform|dashboard|data|tracking|metric|product)/.test(hay)) {
+    return [
+      `Modern clean SaaS analytics dashboard on a laptop screen showing colorful charts and graphs, on a minimalist desk with a coffee cup, warm natural light, tech lifestyle photography.`,
+      `Close-up of a finger interacting with a data visualization on a tablet, clean UI with charts and numbers, shallow depth of field, professional product photography.`,
+      `Abstract geometric representation of data flow — connected nodes, lines, and bars in indigo and cyan on a dark background, clean tech aesthetic, digital art.`,
+    ];
+  }
+  if (/(festival|music|club|concert|techno|dj|party|nightlife|lineup|rave)/.test(hay)) {
+    return [
+      `Energetic crowd at an indoor techno festival with hands raised, fog machine haze, laser beams in blue and magenta cutting through the darkness, dramatic stage lighting, event photography.`,
+      `Close-up of a DJ's hands on a mixing console in a dark booth, LED lights reflecting on the equipment, backlit by stage lights, atmospheric music photography.`,
+      `Wide shot of a massive industrial warehouse venue at night with dramatic stage production, lasers, LED screens, silhouetted crowd, cinematic event photography, vivid colors.`,
+    ];
+  }
+  if (/(perfum|parfum|duft|fragrance|cosmetic|beauty|flacon)/.test(hay)) {
+    return [
+      `Elegant minimalist perfume flacons on a stone surface with soft directional light casting long dramatic shadows, ivory and gold tones, luxury product photography, editorial.`,
+      `Close-up of a glass perfume dropper with golden oil, botanical ingredients like bergamot and cedar around it, warm soft light, premium cosmetic still life photography.`,
+      `Atmospheric perfume atelier interior with shelves of ingredients, glass bottles, warm afternoon light through sheer curtains, artisanal craftsmanship, editorial photography.`,
+    ];
+  }
+  if (/(outdoor|hiking|berg|wandern|alpine|mountain|natur|adventure|guide)/.test(hay)) {
+    return [
+      `Breathtaking alpine mountain panorama at golden sunrise, sharp dramatic peaks with layered ridgelines, warm light flooding the valley, wide landscape photography, cinematic.`,
+      `Lone hiker with a backpack on a narrow ridge trail, dramatic peaks behind, golden hour light, sense of adventure and scale, outdoor lifestyle photography.`,
+      `Cozy mountain hut at dusk with warm lights in the windows, surrounded by dramatic peaks, clear sky with stars beginning to appear, atmospheric landscape photography.`,
+    ];
+  }
+
+  // Generic editorial fallback for anything else — uses `theme` as the subject.
   return [
     `Editorial hero photograph capturing the essence of: ${theme}. Dramatic professional lighting, strong composition, magazine quality, high resolution.`,
     `Close-up detail shot conveying the texture and craft of: ${theme}. Natural light, shallow depth of field, photorealistic, premium.`,

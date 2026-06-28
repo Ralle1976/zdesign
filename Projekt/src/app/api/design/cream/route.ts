@@ -75,22 +75,26 @@ export async function POST(req: NextRequest) {
     for (let round = 1; round <= maxRounds; round++) {
       const png = await renderHtmlToPng(html, { fullPage: true });
       if (!png) { trace.push({ round, score, problems: ['render failed'] }); break; }
-      const c = await critiqueRenderedGemini(png);
+      const c = await critiqueRenderedGemini(png, message);
       if (!c) { trace.push({ round, score, problems: ['critique failed'] }); break; }
       score = c.overall;
+      const cc = c.dimensions?.['contentCorrectness'] ?? 10;
       trace.push({ round, score, problems: c.problems.slice(0, 4) });
-      if (score >= target) break;
+      // Convergence: overall >= target AND contentCorrectness >= 7 (don't ship wrong-topic content).
+      if (score >= target && cc >= 7) break;
       if (round === maxRounds) break;
 
-      const refinePrompt = `Du bist Art Director UND Senior-Frontend-Engineer. Überarbeite dieses HTML. Ziel: ${target}/10 Agentur-Cream. Eine visuelle Experten-Analyse (${score}/10) ergab konkrete Probleme.
+      const contentWarning = cc < 7 ? `\nWICHTIG: Die Inhalte oder Bilder passen NICHT zum Thema! Thematisch falsche Bilder MÜSSEN durch thematisch korrekte ersetzt werden (du darfst neue <img src> URLs durch thematisch passende ersetzen — verwende https://images.unsplash.com/<photo-id> oder themenrelevante Bildbeschreibungen).` : '';
+      const refinePrompt = `Du bist Art Director UND Senior-Frontend-Engineer. Überarbeite dieses HTML. Ziel: ${target}/10 Agentur-Cream. Eine visuelle Experten-Analyse (${score}/10, contentCorrectness ${cc}/10) ergab konkrete Probleme.
 
 PROBLEME (behebe JEDEN):
 ${c.problems.map((p, i) => `${i + 1}. ${p}`).join('\n')}
 
 FIXES:
 ${c.fixes.map((f, i) => `${i + 1}. ${f}`).join('\n')}
+${contentWarning}
 
-REGELN: BEHALTE alle <img src="..."> URLs EXAKT (keine neuen Bilder, keine Unsplash). Kompaktes CSS, vollständige Datei mit </html>, letzter Token </html>. Mobile-first responsive, prefers-reduced-motion, semantisch.
+REGELN: Du darfst <img src> URLs durch thematisch PASSendere ersetzen, wenn die Kritik falsche Bilder bemängelt (verwende https://images.unsplash.com/<photo-id>). Kompaktes CSS, vollständige Datei mit </html>, letzter Token </html>. Mobile-first responsive, prefers-reduced-motion, semantisch.
 
 Aktueller Entwurf:
 ${html}

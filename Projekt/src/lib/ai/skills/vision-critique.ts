@@ -78,7 +78,12 @@ export interface VisionCritique {
   agencyLevel: boolean;
 }
 
-const CRITIQUE_PROMPT = `You are a senior art director evaluating a RENDERED landing page. Judge ONLY what you SEE visually — not the code. Be rigorous and honest, like a top agency creative director.
+/** Build the critique prompt, optionally with a brief for content-correctness checking. */
+function critiquePrompt(brief?: string): string {
+  const briefLine = brief
+    ? `\n- contentCorrectness (CRITICAL): The brief for this design is "${brief.slice(0, 300)}". Does the rendered page's TEXT, IMAGERY, and THEME match this brief? Is the content on-topic (e.g., a LAW FIRM shows legal imagery, NOT cosmetics or unrelated products)? Score 1-3 if the content/images are WRONG for the brief; 7-10 if everything matches.`
+    : '';
+  return `You are a senior art director evaluating a RENDERED landing page. Judge ONLY what you SEE visually — not the code. Be rigorous and honest, like a top agency creative director.
 
 Score each dimension 1-10 (10 = world-class agency work, 8 = solid agency, 6 = competent but generic, 4 = clearly flawed):
 - harmony (cohesive palette, rhythm, nothing clashes)
@@ -86,10 +91,11 @@ Score each dimension 1-10 (10 = world-class agency work, 8 = solid agency, 6 = c
 - typography (scale, contrast, breathing room)
 - imagery (photo quality, cropping, on-theme, integration)
 - layout (originality — custom vs generic template)
-- professionalism (WOW — would a paying client be impressed, is it agency-level?)
+- professionalism (WOW — would a paying client be impressed, is it agency-level?)${briefLine}
 
 Return STRICT JSON only:
-{"overall": <1-10>, "dimensions": {"harmony":N,"life":N,"typography":N,"imagery":N,"layout":N,"professionalism":N}, "problems": ["<3-5 concrete visual problems>"], "fixes": ["<3-5 specific actionable fixes>"], "agencyLevel": <true if overall>=8>}`;
+{"overall": <1-10>, "dimensions": {"harmony":N,"life":N,"typography":N,"imagery":N,"layout":N,"professionalism":N${brief ? ',"contentCorrectness":N' : ''}}, "problems": ["<3-5 concrete visual problems>"], "fixes": ["<3-5 specific actionable fixes>"], "agencyLevel": <true if overall>=8>}`;
+}
 
 /**
  * Ask GLM-5v-Turbo to visually critique a rendered design screenshot.
@@ -97,13 +103,12 @@ Return STRICT JSON only:
  */
 export async function critiqueRendered(
   png: Buffer,
-  opts: ZaiCallOptions = {}
+  opts: ZaiCallOptions = {},
+  brief?: string,
 ): Promise<VisionCritique | null> {
   const b64 = png.toString('base64');
   const callOpts: ZaiCallOptions = {
-    // glm-5v-turbo is NOT on the funded plan (HTTP 429); glm-4.6v is and
-    // works well for rendered-design critique. Override via opts.model if needed.
-    model: opts.model || ZAI_MODELS.visionAlt, // glm-4.6v
+    model: opts.model || ZAI_MODELS.visionAlt,
     responseFormat: 'json_object',
     maxTokens: 1500,
     temperature: 0.3,
@@ -111,7 +116,7 @@ export async function critiqueRendered(
     ...opts,
   };
   try {
-    const raw = await callZaiVision(CRITIQUE_PROMPT, b64, callOpts);
+    const raw = await callZaiVision(critiquePrompt(brief), b64, callOpts);
     const parsed = JSON.parse(raw);
     return {
       overall: clamp(parsed.overall),
@@ -138,15 +143,14 @@ export async function critiqueRendered(
  * it rated bad/off images 8/10). Gemini sees the rendered design and returns the
  * same VisionCritique shape. Falls back to null on failure (caller skips round).
  */
-export async function critiqueRenderedGemini(png: Buffer): Promise<VisionCritique | null> {
+export async function critiqueRenderedGemini(png: Buffer, brief?: string): Promise<VisionCritique | null> {
   const b64 = png.toString('base64');
   try {
-    const raw = await callGeminiMultimodal(CRITIQUE_PROMPT, b64, {
+    const raw = await callGeminiMultimodal(critiquePrompt(brief), b64, {
       maxTokens: 3000,
       temperature: 0.3,
       timeoutMs: 120_000,
     });
-    // Gemini may wrap JSON in markdown fences or preamble — extract the {...}.
     const match = raw.match(/\{[\s\S]*\}/);
     if (!match) return null;
     const parsed = JSON.parse(match[0]);
@@ -159,6 +163,9 @@ export async function critiqueRenderedGemini(png: Buffer): Promise<VisionCritiqu
         imagery: clamp(parsed.dimensions?.imagery),
         layout: clamp(parsed.dimensions?.layout),
         professionalism: clamp(parsed.dimensions?.professionalism),
+        ...(parsed.dimensions?.contentCorrectness !== undefined
+          ? { contentCorrectness: clamp(parsed.dimensions.contentCorrectness) }
+          : {}),
       },
       problems: Array.isArray(parsed.problems) ? parsed.problems.slice(0, 6) : [],
       fixes: Array.isArray(parsed.fixes) ? parsed.fixes.slice(0, 6) : [],
