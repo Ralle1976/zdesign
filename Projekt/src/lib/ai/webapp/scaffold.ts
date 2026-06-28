@@ -77,6 +77,7 @@ import { db } from './db';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: 'jwt' },
+  trustHost: true,
   pages: { signIn: '${p.auth.signInPath}' },
   providers: [
     Credentials({
@@ -261,6 +262,12 @@ export function envExample(): string {
 
 /** next.config + tsconfig (minimal). */
 export const nextConfig = `export default { reactStrictMode: false };\n`;
+
+/** middleware.ts — runs NextAuth's `auth` as middleware so the `authorized`
+ *  callback (guards /admin/* except sign-in) actually fires on navigation. */
+export const middlewareFile = `export { auth as middleware } from './lib/auth';
+export const config = { matcher: ['/admin/:path*'] };
+`;
 export const tsConfig = JSON.stringify({
   compilerOptions: { target: 'es2022', lib: ['dom', 'dom.iterable', 'esnext'], module: 'esnext', moduleResolution: 'bundler', jsx: 'preserve', strict: false, esModuleInterop: true, skipLibCheck: true, noEmit: true, paths: { '@/*': ['./*'] } },
   include: ['next-env.d.ts', '**/*.ts', '**/*.tsx'],

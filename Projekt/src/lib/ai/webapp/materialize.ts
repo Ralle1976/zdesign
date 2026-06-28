@@ -37,7 +37,8 @@ export function materialize(manifest: WebappProject): { path: string; files: str
   write('package.json', S.pkgJson(manifest));
   write('next.config.mjs', S.nextConfig);
   write('tsconfig.json', S.tsConfig);
-  write('.env', `DATABASE_URL="file:./dev.db"\nAUTH_SECRET="zdesign-webapp-${manifest.id}"\nWEBAPP_ADMIN_PASSWORD="demo1234"\nNEXTAUTH_URL="http://localhost:3000"\n`);
+  write('middleware.ts', S.middlewareFile);
+  write('.env', `DATABASE_URL="file:./dev.db"\nAUTH_SECRET="zdesign-webapp-${manifest.id}"\nWEBAPP_ADMIN_PASSWORD="demo1234"\n`);
   write('.env.example', S.envExample());
   write('next-env.d.ts', '/// <reference types="next" />\n/// <reference types="next/image-types/global" />\n');
 
