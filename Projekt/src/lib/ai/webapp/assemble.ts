@@ -19,14 +19,16 @@ import type {
   ApiRouteSpec,
 } from './types';
 
-/** module → Prisma model + standard fields (the reliable BaanBurrsi-class shapes). */
+/** module → Prisma model + standard fields. Every seeded model has `slug @unique`
+ *  (the seed's upsert key) + content fields optional, so free-form moduleContent
+ *  maps in without schema-mismatch failures. */
 const MODULE_MODEL: Partial<Record<ModuleKey, { model: string; fields: PrismaModelSpec['fields'] }>> = {
   serviceCatalog: {
     model: 'Treatment',
     fields: [
       { name: 'id', type: 'String @id @default(cuid())' },
       { name: 'slug', type: 'String @unique' },
-      { name: 'name', type: 'String' },
+      { name: 'name', type: 'String?' },
       { name: 'description', type: 'String?' },
       { name: 'duration', type: 'String?' },
       { name: 'priceLabel', type: 'String?' },
@@ -40,7 +42,8 @@ const MODULE_MODEL: Partial<Record<ModuleKey, { model: string; fields: PrismaMod
     model: 'MenuItem',
     fields: [
       { name: 'id', type: 'String @id @default(cuid())' },
-      { name: 'name', type: 'String' },
+      { name: 'slug', type: 'String @unique' },
+      { name: 'name', type: 'String?' },
       { name: 'description', type: 'String?' },
       { name: 'price', type: 'String?' },
       { name: 'category', type: 'String?' },
@@ -52,11 +55,13 @@ const MODULE_MODEL: Partial<Record<ModuleKey, { model: string; fields: PrismaMod
     model: 'Voucher',
     fields: [
       { name: 'id', type: 'String @id @default(cuid())' },
-      { name: 'code', type: 'String @unique' },
-      { name: 'title', type: 'String' },
+      { name: 'slug', type: 'String @unique' },
+      { name: 'title', type: 'String?' },
+      { name: 'name', type: 'String?' },
       { name: 'description', type: 'String?' },
       { name: 'value', type: 'String?' },
       { name: 'price', type: 'String?' },
+      { name: 'priceLabel', type: 'String?' },
       { name: 'active', type: 'Boolean @default(true)' },
       { name: 'createdAt', type: 'DateTime @default(now())' },
     ],
@@ -65,8 +70,10 @@ const MODULE_MODEL: Partial<Record<ModuleKey, { model: string; fields: PrismaMod
     model: 'Booking',
     fields: [
       { name: 'id', type: 'String @id @default(cuid())' },
-      { name: 'name', type: 'String' },
-      { name: 'email', type: 'String' },
+      { name: 'slug', type: 'String @unique' },
+      { name: 'name', type: 'String?' },
+      { name: 'title', type: 'String?' },
+      { name: 'email', type: 'String?' },
       { name: 'service', type: 'String?' },
       { name: 'date', type: 'String?' },
       { name: 'time', type: 'String?' },
@@ -79,7 +86,8 @@ const MODULE_MODEL: Partial<Record<ModuleKey, { model: string; fields: PrismaMod
     model: 'Media',
     fields: [
       { name: 'id', type: 'String @id @default(cuid())' },
-      { name: 'url', type: 'String' },
+      { name: 'slug', type: 'String @unique' },
+      { name: 'url', type: 'String?' },
       { name: 'alt', type: 'String?' },
       { name: 'type', type: 'String @default("image")' },
       { name: 'createdAt', type: 'DateTime @default(now())' },
