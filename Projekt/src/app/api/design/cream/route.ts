@@ -20,7 +20,7 @@ import { callGemini } from '@/lib/ai/gemini-direct';
 import { renderHtmlToPng, critiqueRenderedGemini } from '@/lib/ai/skills/vision-critique';
 import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
 
-const GEN_MODEL = 'gemini-2.5-pro';
+const GEN_MODEL = 'gemini-3.5-flash';
 const GEN_MAX_TOKENS = 65536; // 2.5-pro max incl. thinking — covers a full HTML page.
 
 export async function POST(req: NextRequest) {

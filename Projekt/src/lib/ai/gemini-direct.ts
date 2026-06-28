@@ -18,7 +18,7 @@
  * Env: GOOGLEAPIKEY (read at call time). No external deps. Never logs the key.
  */
 const DEFAULT_BASE = 'https://generativelanguage.googleapis.com/v1beta';
-const DEFAULT_MODEL = 'gemini-2.5-pro';
+const DEFAULT_MODEL = 'gemini-3.5-flash';
 const DEFAULT_MAX_TOKENS = 12000;
 const DEFAULT_TEMPERATURE = 0.4;
 const DEFAULT_TIMEOUT_MS = 300_000;
