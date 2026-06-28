@@ -114,6 +114,17 @@ Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
       if (refined && /<html/i.test(refined)) html = refined;
     }
 
+    // ── LEARNING FEEDBACK: record the outcome to DesignHistory so the brain-memory
+    //    learns from this generation (success → reinforcePositives; failure →
+    //    recallAntiPatterns next time). This makes the agent core self-improving.
+    try {
+      const { recordDesign } = await import('@/lib/ai/memory/history');
+      await recordDesign({ projectId, domain: brief.domain, html, composite: score, rootCause: score >= 8 ? '' : trace[trace.length - 1]?.problems?.join('; ')?.slice(0, 200) });
+      console.log(`[cream] learning feedback recorded: ${brief.domain} score ${score} (${score >= 8 ? 'positive' : 'negative'})`);
+    } catch (e) {
+      console.warn('[cream] learning feedback failed (non-blocking):', e instanceof Error ? e.message : e);
+    }
+
     return NextResponse.json({ html, score, rounds: trace.length, trace, projectId, model: GEN_MODEL });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'cream route failed';
