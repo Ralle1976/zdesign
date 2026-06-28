@@ -19,6 +19,8 @@ import { generateImagesMinimax, buildImagePrompts, buildThaiFoodPrompts, isMinim
 import { callGemini } from '@/lib/ai/gemini-direct';
 import { renderHtmlToPng, critiqueRenderedGemini } from '@/lib/ai/skills/vision-critique';
 import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
+import { pickTemplate } from '@/lib/ai/templates/registry';
+import { loadReferenceHtml, buildAdaptPrompt } from '@/lib/ai/templates/generate-from-reference';
 
 const GEN_MODEL = 'gemini-3.1-pro-preview'; // strongest available Pro for showcase cream
 const GEN_MAX_TOKENS = 65536; // 2.5-pro max incl. thinking — covers a full HTML page.
@@ -63,7 +65,15 @@ export async function POST(req: NextRequest) {
       ? `AUS DEM GEDÄCHTNIS — UNBEDINGT VERMEIDEN:\n${memory.items.map((i) => `- ${i.text}`).join('\n')}\n`
       : '';
 
-    const prompt = memoryBlock + imageBlock + generateHtmlPrompt(brief, message);
+    // GENERATE-FROM-REFERENCE: pick the best matching template + adapt it (high
+    // floor ~7 vs from-zero ~4-5). Falls back to generateHtmlPrompt if no match.
+    const template = pickTemplate(brief.domain);
+    const refHtml = template ? loadReferenceHtml(template) : '';
+    const generatePrompt = template && refHtml
+      ? buildAdaptPrompt(template, refHtml, message, brief.creative)
+      : generateHtmlPrompt(brief, message);
+    console.log(`[cream] generate-from-reference: ${template ? template.id : 'none (from-zero)'}`);
+    const prompt = memoryBlock + imageBlock + generatePrompt;
     let html = cleanHtml(await callGemini(prompt, { model, maxTokens: GEN_MAX_TOKENS, temperature: 0.6, timeoutMs: 300_000 }));
     if (!html || !/<html/i.test(html)) {
       return NextResponse.json({ error: 'Gemini generate returned no valid HTML' }, { status: 502 });
