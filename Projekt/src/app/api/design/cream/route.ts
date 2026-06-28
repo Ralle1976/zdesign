@@ -68,7 +68,17 @@ export async function POST(req: NextRequest) {
     // GENERATE-FROM-REFERENCE: pick the best matching template + adapt it (high
     // floor ~7 vs from-zero ~4-5). Falls back to generateHtmlPrompt if no match.
     const template = pickTemplate(brief.domain);
-    const refHtml = template ? loadReferenceHtml(template) : '';
+    let refHtml = template ? loadReferenceHtml(template) : '';
+    // CRITICAL: replace the reference's STALE bundled image paths with the NEW
+    // MiniMax URLs — otherwise the adapted design inherits the old (wrong) images
+    // from the reference template, ignoring the freshly generated ones.
+    if (refHtml && imageBlock) {
+      const newUrls = [...imageBlock.matchAll(/src="(https?:\/\/[^"]+)"/gi)].map((m) => m[1]);
+      const oldPaths = [...refHtml.matchAll(/src="(\.\.\/assets\/[^"]+)"/gi)].map((m) => m[1]);
+      for (let i = 0; i < Math.min(newUrls.length, oldPaths.length); i++) {
+        refHtml = refHtml.split(oldPaths[i]).join(newUrls[i]);
+      }
+    }
     const generatePrompt = template && refHtml
       ? buildAdaptPrompt(template, refHtml, message, brief.creative)
       : generateHtmlPrompt(brief, message);
