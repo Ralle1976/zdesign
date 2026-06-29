@@ -40,11 +40,15 @@ export interface ProviderStatus extends ProviderEntry {
   configured: boolean;
   /** Masked key (first 4 + last 4) or null when absent. */
   maskedKey: string | null;
+  /** The actual base URL from env (if set), for the UI to pre-fill. */
+  baseUrl: string | null;
 }
 
 export interface ProviderConfigFile {
   textProviderId: string;
   imageProviderId: string;
+  /** Provider for Speech-to-Text (can be different from textProviderId — e.g. OpenRouter Whisper). */
+  sttProviderId: string;
   /** Per-provider overrides keyed by provider id. */
   overrides: Record<
     string,
@@ -66,60 +70,57 @@ export interface ProviderConfigFile {
 export const PROVIDERS: ProviderEntry[] = [
   {
     id: 'zai',
-    name: 'Z.ai (Anthropic direct)',
+    name: 'Z.ai (GLM via Anthropic endpoint)',
     kind: 'text',
     envKey: 'ZAI_API_KEY',
     envBaseUrl: 'ZAI_BASE_URL',
-    defaultModel: process.env.ZAI_MODEL || 'claude-sonnet-4-20250514',
+    defaultModel: process.env.ZAI_MODEL || 'glm-5.2',
     models: [
-      { id: 'claude-sonnet-4-20250514', name: 'Claude Sonnet 4' },
-      { id: 'claude-opus-4-20250514', name: 'Claude Opus 4' },
-      { id: 'claude-3-5-sonnet-20241022', name: 'Claude 3.5 Sonnet' },
+      { id: 'glm-5.2', name: 'GLM-5.2 (default, strongest)' },
+      { id: 'glm-4.7', name: 'GLM-4.7 (fast)' },
+      { id: 'glm-5v-turbo', name: 'GLM-5v-Turbo (vision, NOT on plan)' },
+      { id: 'glm-4.6v', name: 'GLM-4.6v (vision)' },
+      { id: 'glm-asr-2512', name: 'GLM-ASR (Speech-to-Text)' },
+    ],
+  },
+  {
+    id: 'gemini',
+    name: 'Google Gemini (BYOK)',
+    kind: 'text',
+    envKey: 'GOOGLEAPIKEY',
+    defaultModel: 'gemini-3.1-pro-preview',
+    models: [
+      { id: 'gemini-3.1-pro-preview', name: 'Gemini 3.1 Pro Preview (strongest)' },
+      { id: 'gemini-3-pro-preview', name: 'Gemini 3 Pro Preview' },
+      { id: 'gemini-3.5-flash', name: 'Gemini 3.5 Flash (fast)' },
+      { id: 'gemini-3-flash-preview', name: 'Gemini 3 Flash Preview' },
+      { id: 'gemini-pro-latest', name: 'Gemini Pro (latest)' },
     ],
   },
   {
     id: 'openrouter',
-    name: 'OpenRouter',
+    name: 'OpenRouter (multi-model)',
     kind: 'text',
     envKey: 'OPENROUTER_API_KEY',
     envBaseUrl: 'OPENROUTER_BASE_URL',
-    defaultModel: 'anthropic/claude-sonnet-4',
+    defaultModel: 'openai/whisper-1',
     models: [
-      { id: 'anthropic/claude-sonnet-4', name: 'Claude Sonnet 4 (via OpenRouter)' },
-      { id: 'anthropic/claude-opus-4', name: 'Claude Opus 4 (via OpenRouter)' },
-      { id: 'openai/gpt-4o', name: 'GPT-4o (via OpenRouter)' },
-      { id: 'google/gemini-2.0-flash-001', name: 'Gemini 2.0 Flash (via OpenRouter)' },
+      { id: 'openai/whisper-1', name: 'Whisper (Speech-to-Text)' },
+      { id: 'deepseek/deepseek-chat-v3', name: 'DeepSeek V3 (free)' },
+      { id: 'qwen/qwen-2.5-72b-instruct', name: 'Qwen 2.5 72B (free)' },
+      { id: 'google/gemini-2.0-flash-exp:free', name: 'Gemini 2.0 Flash (free)' },
+      { id: 'meta-llama/llama-3.3-70b-instruct', name: 'Llama 3.3 70B (free)' },
     ],
   },
   {
     id: 'minimax',
-    name: 'MiniMax',
+    name: 'MiniMax (Images)',
     kind: 'image',
     envKey: 'MINIMAX_API_KEY',
-    envBaseUrl: 'MINIMAX_BASE_URL',
     defaultModel: 'image-01',
     models: [
       { id: 'image-01', name: 'MiniMax image-01' },
       { id: 'abab6.5s-image', name: 'abab6.5s image' },
-    ],
-  },
-  {
-    id: 'higgsfield',
-    name: 'Higgsfield',
-    kind: 'image',
-    envKey: 'HIGGSFIELD_API_TOKEN',
-    defaultModel: 'default',
-    models: [{ id: 'default', name: 'Higgsfield default' }],
-  },
-  {
-    id: 'replicate',
-    name: 'Replicate (FLUX)',
-    kind: 'image',
-    envKey: 'REPLICATE_API_TOKEN',
-    defaultModel: 'black-forest-labs/flux-schnell',
-    models: [
-      { id: 'black-forest-labs/flux-schnell', name: 'FLUX schnell' },
-      { id: 'black-forest-labs/flux-dev', name: 'FLUX dev' },
     ],
   },
 ];
@@ -131,6 +132,7 @@ const CONFIG_PATH = path.join(process.cwd(), 'data', 'provider-config.json');
 const DEFAULT_CONFIG: ProviderConfigFile = {
   textProviderId: 'zai',
   imageProviderId: 'minimax',
+  sttProviderId: 'openrouter',
   overrides: {},
 };
 
@@ -155,10 +157,12 @@ export function readProviderKey(provider: ProviderEntry): string | undefined {
 /** Build the status view (configured + maskedKey) for a provider entry. */
 export function toStatus(provider: ProviderEntry): ProviderStatus {
   const key = readProviderKey(provider);
+  const baseUrl = provider.envBaseUrl ? (process.env[provider.envBaseUrl] || null) : null;
   return {
     ...provider,
     configured: !!key,
     maskedKey: maskKey(key),
+    baseUrl,
   };
 }
 
@@ -172,6 +176,7 @@ export async function readConfig(): Promise<ProviderConfigFile> {
     return {
       textProviderId: parsed.textProviderId || DEFAULT_CONFIG.textProviderId,
       imageProviderId: parsed.imageProviderId || DEFAULT_CONFIG.imageProviderId,
+      sttProviderId: parsed.sttProviderId || DEFAULT_CONFIG.sttProviderId,
       overrides: parsed.overrides || {},
     };
   } catch {

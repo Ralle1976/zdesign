@@ -30,6 +30,7 @@ export async function GET() {
       selection: {
         textProviderId: config.textProviderId,
         imageProviderId: config.imageProviderId,
+        sttProviderId: config.sttProviderId,
       },
       overrides: config.overrides,
     });
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 });
   }
 
-  const { textProviderId, imageProviderId, overrides } = body;
+  const { textProviderId, imageProviderId, sttProviderId, overrides } = body;
 
   // Validate selection fields when provided.
   if (typeof textProviderId !== 'undefined') {
@@ -96,6 +97,8 @@ export async function POST(request: NextRequest) {
         typeof textProviderId === 'string' ? textProviderId : current.textProviderId,
       imageProviderId:
         typeof imageProviderId === 'string' ? imageProviderId : current.imageProviderId,
+      sttProviderId:
+        typeof sttProviderId === 'string' ? sttProviderId : current.sttProviderId,
       overrides:
         overrides && typeof overrides === 'object'
           ? (overrides as ProviderConfigFile['overrides'])

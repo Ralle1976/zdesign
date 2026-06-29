@@ -1938,8 +1938,8 @@ export function ChatPanel() {
           />
 
           <div className="flex items-center gap-0.5 mr-1.5 mb-1.5 shrink-0">
-            {/* Voice input button */}
-            {voiceSupported && (
+            {/* Voice input button — always render; check support on click */}
+            {true && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
