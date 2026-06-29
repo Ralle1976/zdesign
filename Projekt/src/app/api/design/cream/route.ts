@@ -15,7 +15,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { buildArtBrief, generateHtmlPrompt } from '@/lib/ai/skills/art-direction';
 import { recallAntiPatterns } from '@/lib/ai/memory/negative-memory';
-import { generateImagesMinimax, buildImagePrompts, buildThaiFoodPrompts, isMinimaxImageConfigured } from '@/lib/ai/image-minimax';
 import { callGemini } from '@/lib/ai/gemini-direct';
 import { renderHtmlToPng, critiqueRenderedGemini } from '@/lib/ai/skills/vision-critique';
 import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
@@ -39,25 +38,10 @@ export async function POST(req: NextRequest) {
     // ── 1) v1 GENERATE via Gemini ──────────────────────────────────────────
     const brief = buildArtBrief(message);
 
-    // bespoke MiniMax photos (kept; Gemini writes the markup around them)
+    // BILDER: keine MiniMax-Generierung mehr (unzuverlässig, oft falscher Content).
+    // Stattdessen liefert brief.imagery (imageryGuidance) domain-spezifische
+    // Unsplash-URLs direkt im Prompt → Gemini nutzt echte, kuratierte Fotos.
     let imageBlock = '';
-    if (isMinimaxImageConfigured()) {
-      try {
-        const hay = `${message} ${brief.imagery || ''}`.toLowerCase();
-        const isThai = /thai|pad thai|imbiss|kurry|curry|basil|nudel|noodle/.test(hay);
-        const imgPrompts = isThai ? buildThaiFoodPrompts(message, brief.imagery) : buildImagePrompts(message, brief.imagery);
-        const imgs = await generateImagesMinimax(imgPrompts, {}, 3);
-        const urls = imgs.map((i) => i.url).filter(Boolean);
-        if (urls.length > 0) {
-          imageBlock =
-            '\nBILDER (ECHTE FOTOS — VERWENDE NUR DIESE URLs 1:1):\n' +
-            urls.map((u, i) => `  Bild ${i + 1}: <img src="${u}" alt="" style="width:100%;height:auto;object-fit:cover">`).join('\n') +
-            '\n';
-        }
-      } catch (e) {
-        console.warn('[design/cream] image gen failed:', e instanceof Error ? e.message : e);
-      }
-    }
 
     // negative memory (avoid past failures)
     const memory = await recallAntiPatterns({ domain: brief.domain, maxTokens: 600 });

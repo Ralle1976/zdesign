@@ -50,7 +50,7 @@ export function buildAdaptPrompt(
     ``,
     `REGELN:`,
     `- Behalte ALLE CSS-Variablen, Verläufe, Schatten, Animationen (@keyframes), Bewegungen und die Layout-Struktur des Referenz-HTML bei.`,
-    `- Tausche nur: Titel, Texte, Sektions-Inhalte, thematisch passende <img alt> und Bildplatzierung. Bild-URLs: verwende thematisch passende Platzhalter (z. B. https://images.unsplash.com/<id>) oder belasse die Referenz-Struktur.`,
+    `- Tausche nur: Titel, Texte, Sektions-Inhalte. BILDER: VERWENDE NUR die Unsplash-URLs aus der ART DIRECTION oben (brief.imagery). ERSETZE ALLE <img src> im Referenz-HTML durch diese Unsplash-URLs. Keine MiniMax, keine AI-Bilder, keine anderen URLs.`,
     `- Schreibe KOMPAKTES CSS — die vollständige Datei mit </html> MUSS in eine Antwort passen. Letzter Token = </html>.`,
     `- Mobile-first responsive, prefers-reduced-motion, semantisch, alt-Texte.`,
     ``,

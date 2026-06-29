@@ -62,13 +62,39 @@ export function buildArtBrief(message: string): ArtBrief {
 }
 
 function imageryGuidance(domain: string): string {
-  if (domain.includes('spa') || domain.includes('wellness') || domain.includes('beauty') || domain.includes('food') || domain.includes('travel')) {
-    return 'Echte, atmosphärische Fotografie (relevant zum Thema), warmes natürliches Licht, weiche Schärfe, viel Raum um das Motiv. Nutze https://images.unsplash.com/<photo-id> (z. B. photo-1544161515-4ab6ce6db874, photo-1540555700478-4be289fbecef, photo-1600334089648-b0d9d3028eb2) als <img> mit object-fit:cover, dezentem warmen Schatten und passendem Rahmen. KEINE Platzhalter-Grafiken, KEINE Cliparts.';
+  const U = 'https://images.unsplash.com/';
+  const F = '?auto=format&fit=crop&w=1200&q=80';
+  if (domain.includes('spa') || domain.includes('wellness')) {
+    return `Echte Spa-Fotografie. VERWENDE NUR diese Unsplash-URLs als <img src> (mit object-fit:cover):\n${U}photo-1544161515-4ab6ce6db874${F}\n${U}photo-1540555700478-4be289fbecef${F}\n${U}photo-1600334089648-b0d9d3028eb2${F}\n${U}photo-1583847268964-b28dc8f51f92${F}\n${U}photo-1547058736-af8d4b1c1f2e${F}`;
   }
-  if (domain.includes('crypto') || domain.includes('tech') || domain.includes('music')) {
-    return 'Dunkle, dramatische Bildwelt oder abstrakte Gradient-Netze/Partikel (per CSS), Glows, keine generischen Stock-Office-Fotos.';
+  if (domain.includes('food') || domain.includes('coffee')) {
+    return `Echte Food-Fotografie. VERWENDE NUR diese Unsplash-URLs als <img src>:\n${U}photo-1574071318508-1cdbab80d002${F}\n${U}photo-1595708684082-a173bb3a06c5${F}\n${U}photo-1565299624946-b28f40a0ae38${F}\n${U}photo-1546069901-ba9599a7e63c${F}\n${U}photo-1551782450-a2132b4ba21d${F}`;
   }
-  return 'Themengerechte, hochwertige Bildwelt (https://images.unsplash.com) mit konsistenter Bildbearbeitung/Stimmung; KEINE generischen Stock-Office-Fotos, KEINE Cliparts.';
+  if (domain.includes('fashion') || domain.includes('beauty') || domain.includes('parfum')) {
+    return `Edle Beauty/Parfum-Fotografie. VERWENDE NUR diese Unsplash-URLs:\n${U}photo-1541643600914-78b084683601${F}\n${U}photo-1592945403244-b3fbafd7f539${F}\n${U}photo-1596462502278-27bfdc403348${F}\n${U}photo-1571781926291-c477ebfd024b${F}`;
+  }
+  if (domain.includes('portfolio') || domain.includes('creative') || domain.includes('architect')) {
+    return `Architektur-Fotografie. VERWENDE NUR diese Unsplash-URLs:\n${U}photo-1503387762-592deb58ef4e${F}\n${U}photo-1486718448742-163732cd1544${F}\n${U}photo-1545239351-ef35f43d514b${F}\n${U}photo-1497366216548-37526070297c${F}\n${U}photo-1486325212027-8081e485255e${F}`;
+  }
+  if (domain.includes('crypto') || domain.includes('web3')) {
+    return `Crypto/Tech-Fotografie. VERWENDE NUR diese Unsplash-URLs:\n${U}photo-1551288049-bebda4e38f71${F}\n${U}photo-1460925895917-afdab827c52f${F}\n${U}photo-1551434678-e076c223a692${F}\n${U}photo-1518186285589-2f7649de83e0${F}\n${U}photo-1639762681485-074b4f938ba6${F}`;
+  }
+  if (domain.includes('music') || domain.includes('festival') || domain.includes('nightlife')) {
+    return `Festival/Music-Fotografie. VERWENDE NUR diese Unsplash-URLs:\n${U}photo-1514525253161-7a46d19cd819${F}\n${U}photo-1470225620780-dba8ba36b745${F}\n${U}photo-1506157786151-b8491531f063${F}\n${U}photo-1493225457124-a3eb161ffa5f${F}\n${U}photo-1501386761578-eac5c94b800a${F}`;
+  }
+  if (domain.includes('travel') || domain.includes('nature') || domain.includes('outdoor')) {
+    return `Berg/Natur-Fotografie. VERWENDE NUR diese Unsplash-URLs:\n${U}photo-1464822759023-fed622ff2c3b${F}\n${U}photo-1469474968028-56623f02e42e${F}\n${U}photo-1454496522488-9855808a1415${F}\n${U}photo-1483728642387-6c3bdd6c93e5${F}\n${U}photo-1506905925346-21bda4d32df4${F}`;
+  }
+  if (domain.includes('law') || domain.includes('finance') || domain.includes('corporate')) {
+    return `Kanzlei/Corporate-Fotografie. VERWENDE NUR diese Unsplash-URLs:\n${U}photo-1589829545856-d10d557cf95f${F}\n${U}photo-1497366811353-6870744d04b2${F}\n${U}photo-1497366754035-f200968a6e72${F}\n${U}photo-1521587760476-6c12a4b040da${F}`;
+  }
+  if (domain.includes('health') || domain.includes('fitness') || domain.includes('yoga')) {
+    return `Yoga/Wellness-Fotografie. VERWENDE NUR diese Unsplash-URLs:\n${U}photo-1544367567-0f2fcb009e0b${F}\n${U}photo-1593810451137-5dc55105dace${F}\n${U}photo-1575052814086-f385e2e2ad1b${F}\n${U}photo-1518611012118-696072aa579a${F}\n${U}photo-1545205597-3d9d02c29597${F}`;
+  }
+  if (domain.includes('saas') || domain.includes('analytics')) {
+    return `SaaS/Analytics-Fotografie. VERWENDE NUR diese Unsplash-URLs:\n${U}photo-1551288049-bebda4e38f71${F}\n${U}photo-1460925895917-afdab827c52f${F}\n${U}photo-1551434678-e076c223a692${F}\n${U}photo-1518186285589-2f7649de83e0${F}`;
+  }
+  return `Themengerechte Fotografie von Unsplash (nur diese URLs, keine MiniMax/AI-Bilder):\n${U}photo-1497366754035-f200968a6e72${F}\n${U}photo-1545239351-ef35f43d514b${F}\n${U}photo-1469474968028-56623f02e42e${F}`;
 }
 
 function atmosphereGuidance(_domain: string): string {
