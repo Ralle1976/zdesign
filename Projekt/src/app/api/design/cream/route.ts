@@ -21,7 +21,7 @@ import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
 import { pickTemplate } from '@/lib/ai/templates/registry';
 import { loadReferenceHtml, buildAdaptPrompt } from '@/lib/ai/templates/generate-from-reference';
 
-const GEN_MODEL = 'gemini-3.1-pro-preview'; // strongest available Pro for showcase cream
+const GEN_MODEL = 'gemini-3.5-flash'; // fast + reliable (images come from Unsplash, not the model)
 const GEN_MAX_TOKENS = 65536; // 2.5-pro max incl. thinking — covers a full HTML page.
 
 export async function POST(req: NextRequest) {
