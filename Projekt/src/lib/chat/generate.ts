@@ -8,7 +8,6 @@
 // this shared logic runs, so the user gets feedback during the ~60-90s LLM
 // call instead of staring at a spinner.
 
-import ZAI from 'z-ai-web-dev-sdk';
 import { parseAIResponse, repairLLMJson } from '@/lib/ai-prompts';
 import { generateFallbackDesign, generateContextualFallback } from '@/lib/chat/fallback-templates';
 import { recallAntiPatterns } from '@/lib/ai/memory/negative-memory';
@@ -16,17 +15,9 @@ import { loadApprovedRecipeForTopic } from '@/lib/ai/skills/skill-memory';
 import { loadUserMemory, userMemoryToPromptBlock } from '@/lib/ai/memory/user-memory';
 import { deriveDesignDirection } from '@/lib/ai/fusion/design-direction';
 import { lessonsToPromptBlock, saveResult, maybeReflect } from '@/lib/ai/memory/lessons';
-
-// ============ ZAI Singleton (shared across requests in a process) ============
-
-let zaiInstance: ZAI | null = null;
-
-export async function getZAI(): Promise<ZAI> {
-  if (!zaiInstance) {
-    zaiInstance = await ZAI.create();
-  }
-  return zaiInstance;
-}
+// Use the funded Anthropic-endpoint callZai (NOT the z-ai-web-dev-sdk which
+// targets the OpenAI-compatible endpoint that doesn't accept the funded key).
+import { callZai, ZAI_MODELS } from '@/lib/ai/zai-direct';
 
 // ============ Types ============
 
@@ -115,22 +106,25 @@ export async function generateDesign(
   const maxRetries = 2;
 
   onProgress?.('calling-llm');
+  // Build a single prompt string from the messages array for callZai.
+  // callZai takes a single user-content string (no system/assistant roles),
+  // so we fold the system prompt + history into one prompt block.
+  const fullPrompt = messages.map(m => {
+    if (m.role === 'system') return `[SYSTEM]\n${m.content}`;
+    if (m.role === 'assistant') return `[ASSISTANT]\n${m.content}`;
+    return `[USER]\n${m.content}`;
+  }).join('\n\n');
+
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
-      const zai = await getZAI();
-      const timeoutMs = attempt === 0 ? LLM_TIMEOUT_FIRST : LLM_TIMEOUT_RETRY;
-
-      const completionPromise = zai.chat.completions.create({
-        messages,
-        thinking: { type: 'disabled' },
+      const response = await callZai(fullPrompt, {
+        model: ZAI_MODELS.text,
+        maxTokens: 16384,
+        temperature: 0.7,
+        timeoutMs: attempt === 0 ? 120000 : 90000,
+        maxRetries: 1,
       });
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('LLM timeout')), timeoutMs)
-      );
-
-      const completion = await Promise.race([completionPromise, timeoutPromise]);
-      rawResponse = completion.choices[0]?.message?.content || null;
-      tokensUsed = completion.usage?.total_tokens || 0;
+      rawResponse = response;
       break;
     } catch (llmError) {
       console.warn(

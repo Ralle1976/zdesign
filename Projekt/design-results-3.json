@@ -1,0 +1,47 @@
+[
+  {
+    "name": "08-portfolio",
+    "elapsed": 90,
+    "domInfo": {
+      "flexDir": 5,
+      "grid": 1,
+      "nav": 1,
+      "section": 3,
+      "headings": 12,
+      "bg": 56,
+      "buttons": 47
+    },
+    "pass": true,
+    "screenshot": "design-08-portfolio.png"
+  },
+  {
+    "name": "09-fashion",
+    "elapsed": 65,
+    "domInfo": {
+      "flexDir": 11,
+      "grid": 1,
+      "nav": 1,
+      "section": 3,
+      "headings": 11,
+      "bg": 77,
+      "buttons": 47
+    },
+    "pass": true,
+    "screenshot": "design-09-fashion.png"
+  },
+  {
+    "name": "10-nonprofit",
+    "elapsed": 70,
+    "domInfo": {
+      "flexDir": 9,
+      "grid": 2,
+      "nav": 1,
+      "section": 3,
+      "headings": 10,
+      "bg": 69,
+      "buttons": 47
+    },
+    "pass": true,
+    "screenshot": "design-10-nonprofit.png"
+  }
+]

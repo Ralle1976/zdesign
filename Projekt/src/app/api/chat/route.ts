@@ -188,8 +188,9 @@ NOTICE HOW:
 - backgroundImage uses gradient for modern look
 - fontSize uses clamp() for responsive typography
 
-COLORS: Primary #10b981, PrimaryDark #059669, Secondary #8b5cf6, Accent #06b6d4, Text #0f172a, TextSecondary #475569, Muted #94a3b8, BG #ffffff, Surface #f8fafc, Border #e2e8f0
-LAYOUT: Navâ†’Heroâ†’Featuresâ†’CTAâ†’Footer (landing pages), Sidebarâ†’Headerâ†’Statsâ†’Charts (dashboards)
+COLORS: DO NOT use hardcoded defaults. The DESIGN-DIRECTION block below (injected after this prompt) defines the VERBINDLICH palette and fonts for this topic. Use ONLY those colors. Never fall back to emerald/violet/cyan defaults — they are generic AI tells.
+NEUTRAL TOKENS (always safe): Text #0f172a, TextSecondary #475569, Muted #94a3b8, BG #ffffff, Surface #f8fafc, Border #e2e8f0 — these neutrals are fine, but the ACCENT/PRIMARY colors MUST come from the DESIGN-DIRECTION block.
+LAYOUT: Nav→Hero→Features→CTA→Footer (landing pages), Sidebar→Header→Stats→Charts (dashboards)
 
 DESIGN PRINCIPLES: Modern, clean, generous whitespace, rounded corners (borderRadius 10-16px), responsive flexbox/grid layouts, proper heading hierarchy, complete sections with real content.
 
@@ -197,7 +198,7 @@ MODERN PATTERNS TO USE:
 - Gradient backgrounds: "backgroundImage": "radial-gradient(circle at 30% 50%, rgba(16,185,129,0.08) 0%, transparent 50%)"
 - Soft layered shadows: "boxShadow": "0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06)"
 - Glassmorphism nav: "backgroundColor": "rgba(255,255,255,0.8)", "backdropFilter": "blur(12px)"
-- Gradient buttons: "background": "linear-gradient(135deg, #10b981, #06b6d4)"
+- Gradient buttons: "background": "linear-gradient(135deg, var(--accent), var(--accent-dark))" — use the topic palette tokens, not hardcoded hex
 - Responsive grids: "gridTemplateColumns": "repeat(auto-fit, minmax(280px, 1fr))"
 - Fluid typography: "fontSize": "clamp(28px, 4vw, 48px)"
 - maxWidth containers: "maxWidth": "1200px", "margin": "0 auto"

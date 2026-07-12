@@ -6,7 +6,6 @@ import { useI18n } from '@/i18n';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import type { ChatMessage, DesignQualityReport, DesignNode } from '@/types/design';
 import { deriveDesignDirection } from '@/lib/ai/fusion/design-direction';
-import { streamChat } from '@/lib/chat/streamClient';
 import {
   DESIGN_SYSTEMS,
   pickSystemForTopic,
@@ -1474,44 +1473,30 @@ export function ChatPanel() {
           return;
         }
 
-        // === Non-agent (chat) path — streaming (O3) ===
-        // (Agent mode always returns early above via the concept gate or
-        // runAgentGeneration, so this branch only handles the chat pipeline.)
-        //
-        // O3 (2026-07-04): use the SSE streaming endpoint so the user sees
-        // real progress during the ~60-90s LLM call instead of a static
-        // spinner. streamChat falls back to the JSON endpoint automatically
-        // if the stream is unavailable, so behavior is preserved.
-        const data = await streamChat(
-          {
+        // === Non-agent (chat) path — robust JSON fetch ===
+        // Uses /api/chat directly (not /api/chat/stream). The SSE stream was
+        // too fragile on Google Drive (Fast-Refresh destroys the async stream
+        // reader's state mid-flight). The JSON endpoint is synchronous: the
+        // fetch completes, the design is set in the store, done. The progress
+        // UI still shows the simulated stages during the wait.
+        const chatRes = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
             message: cleanText,
             projectId: currentProjectId,
             designTree: currentDesignTree.children && currentDesignTree.children.length > 0 ? currentDesignTree : undefined,
             designSystem: currentDesignSystem || undefined,
             history,
-            creativeMode: creativeModeRef.current,
-          },
-          (evt) => {
-            // O3: enrich the existing progress simulation with the real backend
-            // stage label so the user sees what the server is actually doing
-            // (e.g. "repairing JSON") instead of only a percentage ticker.
-            // We deliberately keep the simulation running for the percentage;
-            // this just updates the human-readable label.
-            const label = evt.label || evt.stage;
-            try {
-              setGenerationProgressRef.current({
-                stage: 'generating',
-                stageLabel: label,
-                percentage: 45,
-                message: evt.detail ? `${label} (${evt.detail})` : label,
-                startedAt: Date.now(),
-                estimatedTimeLeft: 30,
-              });
-            } catch {
-              // Progress UI is best-effort; never break generation on a UI hiccup.
-            }
-          }
-        );
+            fusion: fusionEnabledRef.current || undefined,
+          }),
+        });
+
+        if (!chatRes.ok) {
+          throw new Error(`Chat failed: status ${chatRes.status}`);
+        }
+
+        const data = await chatRes.json();
 
         {
           const aiMessage: ChatMessage = {
