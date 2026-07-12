@@ -665,6 +665,7 @@ export function ChatPanel() {
   const designSystem = useZDesignStore((s) => s.designSystem);
   const setDesignTree = useZDesignStore((s) => s.setDesignTree);
   const setDesignHTML = useZDesignStore((s) => s.setDesignHTML);
+  const designHTML = useZDesignStore((s) => s.designHTML);
   const setGenerationProgress = useZDesignStore((s) => s.setGenerationProgress);
   const resetGenerationProgress = useZDesignStore((s) => s.resetGenerationProgress);
   const setQualityReport = useZDesignStore((s) => s.setQualityReport);
@@ -794,6 +795,23 @@ export function ChatPanel() {
   useEffect(() => { setAgentModeRef.current = setAgentMode; }, [setAgentMode]);
   useEffect(() => { setFusionEnabledRef.current = setFusionEnabled; }, [setFusionEnabled]);
   useEffect(() => { tRef.current = t; }, [t]);
+
+  // ── Cream-Default: agentMode ON for new/empty projects ──
+  // When a project has NO design yet (empty canvas), we default to agentMode
+  // (= Cream HTML pipeline) so users get 8/10 quality out of the box instead of
+  // 4/10 JSON-trees. If the project already has a design (JSON or HTML), the
+  // user's existing mode is respected and agentMode stays off until toggled.
+  // Runs once per project load (guarded by projectId in deps).
+  useEffect(() => {
+    const hasNoDesign =
+      designMode === 'NODE_TREE' &&
+      (!designTree?.children || designTree.children.length === 0) &&
+      !designHTML;
+    if (hasNoDesign && !agentModeRef.current) {
+      setAgentMode(true);
+      agentModeRef.current = true;
+    }
+  }, [projectId, designMode, designTree, designHTML]);
   useEffect(() => { pendingConceptsRef.current = pendingConcepts; }, [pendingConcepts]);
   useEffect(() => { selectedConceptRef.current = selectedConcept; }, [selectedConcept]);
   useEffect(() => { systemOverrideRef.current = systemOverride; }, [systemOverride]);
@@ -1176,16 +1194,27 @@ export function ChatPanel() {
         systemCss = auto.rootCss;
       }
 
+      // ── REFINEMENT vs GENERATION ──
+      // If the canvas already shows HTML (designMode === 'HTML_ARTIFACT' with
+      // existing designHTML), treat this as a refinement request — pass the
+      // existing HTML + the user's change request to Cream. Otherwise it's a
+      // fresh generation. Both go to /api/design/cream with quick=true for speed.
+      const currentDesignHTML = useZDesignStore.getState().designHTML;
+      const currentDesignMode = useZDesignStore.getState().designMode;
+      const isRefinement = currentDesignMode === 'HTML_ARTIFACT' && !!currentDesignHTML && currentDesignHTML.length > 100;
+
       setIsGeneratingRef.current(true);
       startProgressSimulation();
 
       try {
-        const res = await fetch('/api/design/agent', {
+        const res = await fetch('/api/design/cream', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             message: cleanText,
             projectId: currentProjectId,
+            quick: true, // Skip vision-critique for chat UX (~30-60s instead of 90-180s)
+            ...(isRefinement ? { existingHtml: currentDesignHTML, changeRequest: cleanText } : {}),
             ...(concept ? { concept } : {}),
             ...(systemName ? { designSystemKey: systemName, designSystemCss: systemCss } : {}),
           }),
@@ -1194,17 +1223,19 @@ export function ChatPanel() {
         if (res.ok) {
           const data = await res.json();
           if (data.html) {
-            setDesignHTMLRef.current(data.html, data.trace, data.scores);
+            setDesignHTMLRef.current(data.html, undefined, undefined);
             const aiMessage: ChatMessage = {
               id: data.id || `ai-${Date.now()}`,
               projectId: currentProjectId,
               role: 'assistant',
-              content: data.message || 'Art-directeter Entwurf erstellt.',
+              content: data.message || (isRefinement ? 'Design verfeinert.' : 'HTML-Design generiert.'),
               metadata: {
                 agent: true,
+                cream: true,
                 mode: 'HTML_ARTIFACT',
-                trace: data.trace,
-                scores: data.scores,
+                score: data.score,
+                refinement: isRefinement,
+                quick: data.quick,
               } as unknown as ChatMessage['metadata'],
               createdAt: new Date(data.createdAt || Date.now()),
             };
@@ -1217,7 +1248,7 @@ export function ChatPanel() {
             id: data.id || `ai-${Date.now()}`,
             projectId: currentProjectId,
             role: 'assistant',
-            content: data.message || 'Agent lieferte kein HTML zurück.',
+            content: data.message || 'Cream lieferte kein HTML zurück.',
             metadata: { agent: true } as unknown as ChatMessage['metadata'],
             createdAt: new Date(data.createdAt || Date.now()),
           };
