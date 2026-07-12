@@ -29,6 +29,78 @@ import { db } from '@/lib/db';
 const GEN_MODEL = ZAI_MODELS.text; // 'glm-5.2'
 const GEN_MAX_TOKENS = 16384; // GLM-5.2 output cap — covers a full HTML page.
 
+// ── Deterministic Google Fonts injection ─────────────────────────────────────
+// Maps font-family declarations to Google Fonts <link> URLs. The LLM writes
+// font-family in CSS but frequently forgets the <link> tag — we fix that here.
+const GOOGLE_FONT_URLS: Record<string, string> = {
+  'Fraunces': 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap',
+  'Cormorant Garamond': 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap',
+  'Source Serif Pro': 'https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;600;700&display=swap',
+  'Poppins': 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap',
+  'Space Grotesk': 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap',
+  'Inter': 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
+  'Playfair Display': 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap',
+  'DM Serif Display': 'https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap',
+  'Lora': 'https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap',
+  'Bricolage Grotesque': 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&display=swap',
+};
+
+function ensureGoogleFonts(html: string, displayFont: string, bodyFont: string): string {
+  // Collect unique font names from the brief (strip fallbacks like "Georgia, serif")
+  const fontNames = new Set<string>();
+  for (const raw of [displayFont, bodyFont]) {
+    if (!raw) continue;
+    const first = raw.split(',')[0].trim().replace(/['"]/g, '');
+    fontNames.add(first);
+  }
+
+  // Build the combined <link> for fonts we know on Google Fonts
+  const fontsToLoad: string[] = [];
+  for (const name of fontNames) {
+    const url = GOOGLE_FONT_URLS[name];
+    if (url && !html.includes(encodeURIComponent(name).split('%20')[0])) {
+      fontsToLoad.push(url);
+    }
+  }
+
+  // Also scan the HTML for font-family declarations we haven't covered yet
+  const declaredFonts = [...html.matchAll(/font-family:\s*['"]?([^'"`,;]+)/gi)];
+  for (const m of declaredFonts) {
+    const name = m[1].trim();
+    const url = GOOGLE_FONT_URLS[name];
+    if (url && !fontsToLoad.includes(url) && !html.includes('fonts.googleapis.com')) {
+      fontsToLoad.push(url);
+    }
+  }
+
+  if (fontsToLoad.length === 0) return html;
+
+  // Check if a Google Fonts <link> is already present
+  if (html.includes('fonts.googleapis.com')) {
+    // Already has some Google Fonts link — check which fonts are missing
+    const existingLinks = [...html.matchAll(/href="(https:\/\/fonts\.googleapis\.com[^"]+)"/gi)];
+    const existingFonts = existingLinks.map(m => m[1]).join('');
+    const missing = fontsToLoad.filter(url => !existingFonts.includes(url));
+    if (missing.length === 0) return html;
+    // Add missing fonts as a combined link
+    const combinedHref = missing.join('&');
+    return html.replace(/(<head[^>]*>)/i, `$1\n    <link rel="preconnect" href="https://fonts.googleapis.com">\n    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n    <link href="${combinedHref}" rel="stylesheet">`);
+  }
+
+  // No Google Fonts link at all — inject preconnect + combined link after <head>
+  const combinedHref = fontsToLoad.join('&');
+  const injection = `\n    <link rel="preconnect" href="https://fonts.googleapis.com">\n    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n    <link href="${combinedHref}" rel="stylesheet">`;
+
+  if (/<head[^>]*>/i.test(html)) {
+    return html.replace(/(<head[^>]*>)/i, `$1${injection}`);
+  }
+  // No <head> tag — inject before <style> or at the start
+  if (/<style/i.test(html)) {
+    return html.replace(/(<style)/i, `${injection}\n    $1`);
+  }
+  return html;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -116,6 +188,14 @@ Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
     if (!html || !/<html/i.test(html)) {
       return NextResponse.json({ error: 'Z.ai generate returned no valid HTML' }, { status: 502 });
     }
+
+    // ── 1a) DETERMINISTIC FONT INJECTION ────────────────────────────────────
+    // The LLM frequently writes font-family:'Fraunces' in CSS but FORGETS to add
+    // the <link> to Google Fonts → browser falls back to Arial → design looks
+    // "stumpf" (bland) regardless of how good the copy/colors are. We don't trust
+    // the model on this — we inject the <link> deterministically based on the
+    // brief's declared fonts. Only injects if the font is not already linked.
+    html = ensureGoogleFonts(html, brief.fonts.display, brief.fonts.body);
 
     // ── 1b) ANTI-SLOP LINT: deterministic P0 check (Indigo, Emoji, Filler) ────
     // The vision-critic is probabilistic; the linter catches cardinal sins the
