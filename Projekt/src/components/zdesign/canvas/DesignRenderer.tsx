@@ -126,14 +126,35 @@ const NodeRenderer: React.FC<NodeRendererProps> = React.memo(
 
     // Image type renders as div with background-image (forced div: an <img> would
     // ignore background-image and render nothing for node.content).
+    //
+    // CRITICAL: background-image divs have NO intrinsic size — unlike <img>, they
+    // don't size themselves to the picture. When the LLM generates an image node
+    // inside a flex/grid container without an explicit width, the div collapses to
+    // 0px wide (confirmed in DOM: hero-image rendered 0×560). We force width:100%
+    // and a fallback aspect-ratio to guarantee the container is always visible.
+    // The node's own width/height (if set) takes precedence via interactiveStyle.
     if (node.type === 'image') {
+      const nodeWidth = cssStyle.width as string | undefined;
+      const nodeHeight = cssStyle.height as string | undefined;
+      // Only force width:100% if the LLM didn't set an explicit width.
+      // This prevents the 0px-collapse in flex/grid containers.
+      const forcedWidth = nodeWidth && nodeWidth !== 'auto' && nodeWidth !== '0px'
+        ? {}
+        : { width: '100%', minWidth: '100%' };
+      // Only set a fallback aspect-ratio if neither width nor height gives shape.
+      const forcedAspect = (!nodeHeight || nodeHeight === 'auto')
+        ? { aspectRatio: '16 / 10' }
+        : {};
       const imageStyle: React.CSSProperties = {
         ...interactiveStyle,
+        ...forcedWidth,
+        ...forcedAspect,
         backgroundImage: node.content
           ? `url("${node.content}")`
           : 'linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
       };
       return React.createElement(
         'div',

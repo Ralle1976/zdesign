@@ -24,6 +24,88 @@
 
 import type { ProviderConfig } from '@/lib/providers/registry';
 
+// ============ Prompt enrichment ============
+// Flux (and most image models) produce flat, generic results from a bare subject
+// description like "rustic bread loaf". Professional photography keywords are
+// needed for: depth of field, appetizing lighting, color richness, premium feel.
+// This function enriches WITHOUT diluting the LLM's specific subject.
+
+const FOOD_KEYWORDS = /\b(bread|loaf|croissant|cake|pastry|bakery|coffee|dish|food|meal|dessert|cuisine|restaurant|plate|drink|beverage|wine|cocktail|breakfast|brunch|dinner|lunch|appetizer|ingredient|fruit|vegetable|meat|seafood|chocolate|cheese|soup|salad|pizza|burger|sandwich|ice cream|gelato|confection|treat|delicacy|bakery|patisserie|boulangerie)\b/i;
+
+const PRODUCT_KEYWORDS = /\b(product|bottle|package|box|device|phone|laptop|watch|sneaker|shoe|bag|purse|wallet|glasses|jewelry|ring|necklace|earrings|perfume|cosmetic|skincare|furniture|chair|lamp|sofa|table|chair|decor|accessory|fashion|apparel|garment|clothing|wear|model wearing)\b/i;
+
+const PORTRAIT_KEYWORDS = /\b(person|people|woman|man|model|portrait|face|smile|worker|chef|barista|artisan|craftsman|professional|team|group|customer|client)\b/i;
+
+const LANDSCAPE_KEYWORDS = /\b(landscape|nature|mountain|forest|ocean|beach|sunset|sunrise|sky|clouds|field|meadow|garden|park|cityscape|skyline|street|architecture|building|interior|room|office|studio|space|venue|resort|spa|hotel|lobby)\b/i;
+
+function enrichImagePrompt(prompt: string): string {
+  // Don't double-enrich: if the prompt already has professional markers, leave it.
+  if (/\b(85mm|f\/1\.|depth of field|bokeh|professional|studio lighting|color graded|high-end commercial)\b/i.test(prompt)) {
+    return prompt;
+  }
+
+  const isFood = FOOD_KEYWORDS.test(prompt);
+  const isProduct = PRODUCT_KEYWORDS.test(prompt);
+  const isPortrait = PORTRAIT_KEYWORDS.test(prompt);
+  const isLandscape = LANDSCAPE_KEYWORDS.test(prompt);
+
+  // Build subject-specific enrichment
+  const enrichment: string[] = [];
+
+  if (isFood) {
+    enrichment.push(
+      'professional food photography',
+      'soft natural window light from the side',
+      'shallow depth of field with creamy bokeh',
+      'appetizing colors, steam and freshness visible',
+      'shot on 85mm macro lens, f/2.8',
+      'garnished and styled by a food stylist',
+      'warm inviting tones, high-end editorial quality'
+    );
+  } else if (isProduct) {
+    enrichment.push(
+      'professional product photography',
+      'softbox studio lighting with subtle reflections',
+      'clean composition, premium commercial quality',
+      'shot on 100mm macro, f/8, crisp detail',
+      'elegant shadows and highlights',
+      'high-end advertising aesthetic'
+    );
+  } else if (isPortrait) {
+    enrichment.push(
+      'professional portrait photography',
+      'soft Rembrandt lighting',
+      'shallow depth of field, blurred background',
+      'shot on 85mm portrait lens, f/1.8',
+      'natural authentic expression',
+      'cinematic color grading'
+    );
+  } else if (isLandscape) {
+    enrichment.push(
+      'professional architectural photography',
+      'golden hour natural lighting',
+      'wide-angle perspective with depth',
+      'shot on 24mm lens, f/8',
+      'rich atmospheric tones',
+      'editorial quality, magazine-grade'
+    );
+  } else {
+    // Generic enrichment for abstract/unknown subjects
+    enrichment.push(
+      'professional photography',
+      'dramatic lighting with soft shadows',
+      'high detail, sharp focus',
+      'rich colors, premium quality',
+      'editorial composition'
+    );
+  }
+
+  // Combine: subject first (preserves LLM intent), then enrichment
+  const result = `${prompt}, ${enrichment.join(', ')}`;
+  // Cap at 480 chars (Pollinations limit is 500, leave margin)
+  return result.slice(0, 480);
+}
+
 // ============ Types ============
 
 export interface ImageGenOptions {
@@ -215,8 +297,12 @@ export async function generateImageWithProvider(
   opts: ImageGenOptions = {}
 ): Promise<ImageGenSuccess | null> {
   const size = opts.size && /^\d+x\d+$/.test(opts.size) ? opts.size : '1024x1024';
-  const stylePrefix = opts.style && opts.style !== 'photorealistic' ? `${opts.style} style: ` : '';
-  const enhanced = stylePrefix + prompt.trim();
+  // Don't prepend mood tokens ("warm · handwerklich · eingeladen") to image
+  // prompts — they confuse the image model and dilute the actual subject.
+  // Instead, ENRICH the LLM's subject description with professional photography
+  // styling that Flux needs to produce appetizing, premium results (without this,
+  // Flux produces flat, dry, overbaked images that look like stock placeholders).
+  const enhanced = enrichImagePrompt(prompt.trim());
 
   const has = (k?: string): k is string => !!k && !!process.env[k] && process.env[k]!.trim().length > 0;
 

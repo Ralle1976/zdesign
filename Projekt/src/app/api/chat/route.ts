@@ -214,6 +214,11 @@ RULES:
 2. Use semantic HTML tags (header, nav, main, section, footer)
 3. Make designs COMPLETE and POLISHED
 4. type:"image" nodes: leave "content" empty (NO placeholder URLs); set meta.imagePrompt (vivid generation prompt: subject, mood, lighting), meta.alt, and meta.imageStatus: "pending". Real images are generated asynchronously.
+   CRITICAL for image nodes — set BOTH width and a sensible aspect ratio:
+   - Hero images: "width": "100%", "aspectRatio": "16/10" or "4/3" (LANDSCAPE, not portrait!)
+   - Feature/card images: "width": "100%", "aspectRatio": "4/3" or "16/9"
+   - NEVER set only height without width — the container will collapse to 0px wide.
+   - Prefer aspectRatio over fixed height. If you must use height, ALWAYS also set width: "100%".
 5. For landing pages: Nav â†’ Hero â†’ Features â†’ CTA â†’ Footer
 6. For dashboards: Sidebar â†’ Header â†’ Stats â†’ Charts
 7. Double-check your JSON is valid before returning`;
