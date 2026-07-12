@@ -18,8 +18,52 @@ model User {
   locale        String   @default("en")
   projects      ProjectMember[]
   comments      Comment[]
+  // --- O13 next-auth (2026-07-04) ---
+  // Credentials provider: bcrypt-hashed password (null for OAuth-only users).
+  password      String?
+  accounts      Account[]
+  sessions      Session[]
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+// --- O13 next-auth models (2026-07-04) ---
+// Standard next-auth Prisma adapter schema. SQLite has no native enum/json,
+// so type/provider/token use String. See:
+// https://next-auth.js.org/adapters/prisma
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
 model Project {
@@ -259,4 +303,19 @@ model DesignConsolidation {
   killSwitch       Boolean  @default(false)
   createdAt        DateTime @default(now())
   promotedAt       DateTime?
+}
+
+// ─── Universal Modular Backend ──────────────────────────────────────────
+// Generic record store: every module's data lives here as JSON. A module is
+// defined purely in CODE (id + field schema), so adding one needs NO migration
+// — runtime-modular, extensible anytime. The generation layer builds webapp
+// pages/features on top of these modules; the webapp emerges from the modules.
+model ModuleRecord {
+  id        String   @id @default(cuid())
+  moduleId  String
+  data      String   // JSON: field values, validated vs. the module's field schema
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([moduleId])
 }

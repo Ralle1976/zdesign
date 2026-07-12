@@ -1,28 +1,31 @@
-// Z.Design — CREAM route (GEMINI-driven): the autonomous cream pipeline, exposed
+// Z.Design — CREAM route (Z.ai-driven): the autonomous cream pipeline, exposed
 // for the zdesign_cream MCP tool.
 //
 // POST /api/design/cream { message, projectId, target?, maxRounds? }
-//   1. v1 GENERATE via Gemini 2.5 Pro (Z.Design's workflow: art-direction +
-//      creative-dna + memory + bespoke MiniMax images — but the heavy generation
-//      routed through Gemini, the cream lever).
-//   2. GEMINI VISION-CRITIQUE LOOP: Puppeteer renders the live HTML → Gemini
-//      critiques what it SEES (stricter than the too-lenient GLM-4.6v) → if
-//      score < target, refine via Gemini with the concrete fixes → repeat,
-//      bounded. Ship when ≥ target.
+//   1. v1 GENERATE via Z.ai GLM-5.2 (Z.Design's workflow: art-direction +
+//      creative-dna + memory + Unsplash imagery — generation via the funded
+//      Z.ai Anthropic endpoint, since Gemini is no longer available).
+//   2. Z.AI VISION-CRITIQUE LOOP: Puppeteer renders the live HTML → GLM-5v
+//      critiques what it SEES → if score < target, refine via Z.ai with the
+//      concrete fixes → repeat, bounded. Ship when ≥ target.
 //
-// Returns { html, score, rounds, trace, model: "gemini-2.5-pro" }.
+// Returns { html, score, rounds, trace, model }.
 
 import { NextRequest, NextResponse } from 'next/server';
 import { buildArtBrief, generateHtmlPrompt } from '@/lib/ai/skills/art-direction';
 import { recallAntiPatterns } from '@/lib/ai/memory/negative-memory';
-import { callGemini } from '@/lib/ai/gemini-direct';
-import { renderHtmlToPng, critiqueRenderedGemini } from '@/lib/ai/skills/vision-critique';
+import { loadUserMemory, userMemoryToPromptBlock } from '@/lib/ai/memory/user-memory';
+import { lessonsToPromptBlock, saveResult, maybeReflect } from '@/lib/ai/memory/lessons';
+import { callZai, ZAI_MODELS } from '@/lib/ai/zai-direct';
+import { renderHtmlToPng, critiqueRendered } from '@/lib/ai/skills/vision-critique';
 import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
 import { pickTemplate } from '@/lib/ai/templates/registry';
 import { loadReferenceHtml, buildAdaptPrompt } from '@/lib/ai/templates/generate-from-reference';
 
-const GEN_MODEL = 'gemini-3.5-flash'; // fast + reliable (images come from Unsplash, not the model)
-const GEN_MAX_TOKENS = 65536; // 2.5-pro max incl. thinking — covers a full HTML page.
+// Generation model: Z.ai GLM-5.2 (funded Anthropic endpoint — proven reliable
+// for ~27KB / ~110s design prompts). Gemini was removed (no API access).
+const GEN_MODEL = ZAI_MODELS.text; // 'glm-5.2'
+const GEN_MAX_TOKENS = 16384; // GLM-5.2 output cap — covers a full HTML page.
 
 export async function POST(req: NextRequest) {
   try {
@@ -48,6 +51,8 @@ export async function POST(req: NextRequest) {
     const memoryBlock = memory.items.length > 0
       ? `AUS DEM GEDÄCHTNIS — UNBEDINGT VERMEIDEN:\n${memory.items.map((i) => `- ${i.text}`).join('\n')}\n`
       : '';
+    // User preferences — inject so the cream pipeline respects them too.
+    const userMemoryBlock = userMemoryToPromptBlock(await loadUserMemory());
 
     // GENERATE-FROM-REFERENCE: pick the best matching template + adapt it (high
     // floor ~7 vs from-zero ~4-5). Falls back to generateHtmlPrompt if no match.
@@ -67,19 +72,19 @@ export async function POST(req: NextRequest) {
       ? buildAdaptPrompt(template, refHtml, message, brief.creative)
       : generateHtmlPrompt(brief, message);
     console.log(`[cream] generate-from-reference: ${template ? template.id : 'none (from-zero)'}`);
-    const prompt = memoryBlock + imageBlock + generatePrompt;
-    let html = cleanHtml(await callGemini(prompt, { model, maxTokens: GEN_MAX_TOKENS, temperature: 0.6, timeoutMs: 300_000 }));
+    const prompt = lessonsToPromptBlock() + userMemoryBlock + memoryBlock + imageBlock + generatePrompt;
+    let html = cleanHtml(await callZai(prompt, { model, maxTokens: GEN_MAX_TOKENS, temperature: 0.6, timeoutMs: 300_000 }));
     if (!html || !/<html/i.test(html)) {
-      return NextResponse.json({ error: 'Gemini generate returned no valid HTML' }, { status: 502 });
+      return NextResponse.json({ error: 'Z.ai generate returned no valid HTML' }, { status: 502 });
     }
 
-    // ── 2) GEMINI vision-critique refine loop ───────────────────────────────
+    // ── 2) Z.AI vision-critique refine loop ───────────────────────────────
     const trace: { round: number; score: number; problems: string[] }[] = [];
     let score = 0;
     for (let round = 1; round <= maxRounds; round++) {
       const png = await renderHtmlToPng(html, { fullPage: true });
       if (!png) { trace.push({ round, score, problems: ['render failed'] }); break; }
-      const c = await critiqueRenderedGemini(png, message);
+      const c = await critiqueRendered(png, {}, message);
       if (!c) { trace.push({ round, score, problems: ['critique failed'] }); break; }
       score = c.overall;
       const cc = c.dimensions?.['contentCorrectness'] ?? 10;
@@ -104,7 +109,7 @@ Aktueller Entwurf:
 ${html}
 
 Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
-      const refined = cleanHtml(await callGemini(refinePrompt, { model, maxTokens: GEN_MAX_TOKENS, temperature: 0.4, timeoutMs: 300_000 }));
+      const refined = cleanHtml(await callZai(refinePrompt, { model, maxTokens: GEN_MAX_TOKENS, temperature: 0.4, timeoutMs: 300_000 }));
       if (refined && /<html/i.test(refined)) html = refined;
     }
 
@@ -113,10 +118,35 @@ Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
     //    recallAntiPatterns next time). This makes the agent core self-improving.
     try {
       const { recordDesign } = await import('@/lib/ai/memory/history');
-      await recordDesign({ projectId, prompt: message, domain: brief.domain, composite: score, feedback: score >= 8 ? '' : trace[trace.length - 1]?.problems?.join('; ')?.slice(0, 200) });
+      await recordDesign({
+        projectId,
+        prompt: message,
+        domain: brief.domain,
+        composite: score,
+        feedback: score >= 8 ? '' : trace[trace.length - 1]?.problems?.join('; ')?.slice(0, 200),
+        // Capture the vision-critique's concrete problems as rootCause so
+        // recallAntiPatterns can learn from them on future runs.
+        rootCause: score >= 8 ? null : trace[trace.length - 1]?.problems?.join(' | ') ?? null,
+        sourceAgentId: 'design/cream',
+      });
       console.log(`[cream] learning feedback recorded: ${brief.domain} score ${score} (${score >= 8 ? 'positive' : 'negative'})`);
     } catch (e) {
       console.warn('[cream] learning feedback failed (non-blocking):', e instanceof Error ? e.message : e);
+    }
+
+    // Record outcome for the lessons reflect-loop (Graphify-style).
+    try {
+      await saveResult({
+        domain: brief.domain,
+        outcome: score >= 7 ? 'useful' : 'dead_end',
+        composite: score,
+        detail: score >= 7
+          ? `${brief.archetype} + ${brief.mood}`
+          : trace[trace.length - 1]?.problems?.[0] ?? 'low quality',
+      });
+      maybeReflect();
+    } catch {
+      // Non-fatal.
     }
 
     return NextResponse.json({ html, score, rounds: trace.length, trace, projectId, model: GEN_MODEL });

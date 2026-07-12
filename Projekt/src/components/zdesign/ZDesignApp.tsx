@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useZDesignStore } from '@/stores/zdesign-store';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useCollaboration } from '@/hooks/useCollaboration';
+import { useCapabilities } from '@/hooks/useCapabilities';
 import { TopToolbar } from './TopToolbar';
 import { ChatPanel } from './ChatPanel';
 import { CanvasArea } from './CanvasArea';
@@ -94,6 +95,12 @@ export function ZDesignApp() {
 
   // ============ Collaboration: hook (users, cursors, selections, emit/listen) ============
   const collab = useCollaboration(projectId, userId, userName);
+
+  // ============ Startup self-discovery: what can this app do? ============
+  // Loaded once on mount; the manifest lists features, providers, routes, db
+  // and auth status. Returned values are available to any child via props or
+  // context; the hook itself logs a console banner on success.
+  const { capabilities, error: capabilitiesError } = useCapabilities();
 
   // Refs for loop-protection during remote design sync
   const isRemoteUpdateRef = useRef(false);
@@ -361,7 +368,11 @@ export function ZDesignApp() {
             </ErrorBoundary>
           </TabsContent>
         </Tabs>
-        <StatusBar isSaving={isSaving} />
+        <StatusBar
+          isSaving={isSaving}
+          capabilities={capabilities}
+          capabilitiesError={capabilitiesError}
+        />
         <StatsBar />
       </div>
     );
@@ -437,7 +448,11 @@ export function ZDesignApp() {
           )}
         </ResizablePanelGroup>
       </div>
-      <StatusBar isSaving={isSaving} />
+      <StatusBar
+        isSaving={isSaving}
+        capabilities={capabilities}
+        capabilitiesError={capabilitiesError}
+      />
       <StatsBar />
     </div>
   );

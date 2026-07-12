@@ -14,6 +14,42 @@ import type { DesignRecipe } from '@/lib/ai/skills/skill-memory';
 import type { Concept } from './creative-director';
 import { pickCreativeAxes, renderCreativeBlock, type CreativeAxes } from './creative-diversity';
 
+// ─── Craft-Pflichten (BINDEND — der Vision-Critic prüft EXAKT diese Punkte) ───
+// Extracted as a constant so BOTH prompt paths (concept-first + default)
+// enforce the same concrete quality rules. These address the 4 recurring
+// weaknesses the GLM-5v vision-critic flagged: flat atmosphere, generic
+// layout, weak typography hierarchy, basic imagery integration.
+
+const CRAFT_DUTIES = [
+  ``,
+  `═══ CRAFT-PFLICHTEN (BINDEND — der Vision-Critic prüft EXAKT diese Punkte) ═══`,
+  ``,
+  `1. ATMOSPHÄRE & TIEFE (NICHT flach!):`,
+  `   - HINTERGRUND: KEINE flache Einfarbigkeit. Mindestens EIN subtiler Verlauf (radial-gradient oder linear-gradient mit 5-12% Opazität) auf body ODER hero. Beispiel: background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);`,
+  `   - SCHATTEN: Jede Card braucht MEHR als ein flacher Schatten. Nutze GESCHICHTEXTE Schatten: box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.04);`,
+  `   - TEXTUR: Ein SVG-Noise-Overlay (data-URI, opacity 0.03-0.05) auf body für Film-Korn. Beispiel: body::before { content:''; position:fixed; inset:0; background:url("data:image/svg+xml,..."); opacity:0.04; pointer-events:none; z-index:9999; }`,
+  `   - GLOW: Ein warmes radial-gradient (Akzentfarbe, 8% Opazität) hinter dem Hero-Heading oder CTA.`,
+  ``,
+  `2. LAYOUT (NICHT generisch!):`,
+  `   - HERO: KEIN zentrierter Text auf flachem Hintergrund. Nutze EINE von: (a) asymmetrisches Split (Bild 60% rechts, Text 40% links mit Versatz), (b) Full-bleed Hintergrundbild mit Overlay-Gradient + Text unten links, (c) Overlapping Card-Look (Text-Block überlappt das Bild um -80px).`,
+  `   - SECTION-ÜBERGÄNGE: KEINE harten Kanten zwischen Sektionen. Nutze subtile Farbwechsel (surface → bg) ODER einen diagonalen SVG-Separator ODER negative margin für Überlappung.`,
+  `   - FEATURE-GRID: KEIN gleichmäßiges 3-Spalten-Grid. Nutze ein BENTO-Grid (verschiedene Größen: 2fr 1fr 1fr 2fr) oder versetzte Cards mit unterschiedlichem Padding.`,
+  `   - WHITESPACE: Sektionen brauchen MINDESTENS 96px vertical padding (mobile 64px). Hero braucht 120-160px.`,
+  ``,
+  `3. TYPOGRAFIE-HIERARCHIE (KLARE Skala, ATEMRAUM):`,
+  `   - SKALA: H1 muss DEUTLICH größer sein als H2 (Faktor 1.5-1.8x). H2 → H3 ebenfalls 1.4x. Nutze clamp() für fluid scaling.`,
+  `   - KONTRAST: H1 font-weight 700-800, Body 400. H1 letterSpacing -0.02em bis -0.03em (enger, edel).`,
+  `   - ATEMRAUM: H1 braucht margin-bottom von 0.5-0.7em. Absätze brauchen line-height 1.7-1.8 und margin-bottom 1em.`,
+  `   - EYEBROW: Über jedem H2 ein kleines Label (12px, uppercase, 0.12em letterSpacing, Akzentfarbe, 600 weight) — das ist die editoriale Geste die es von Template unterscheidet.`,
+  `   - DISPLAY-FONT: Die H1 MUSS die Display-Schrift sein (var(--display-font)), nicht die Body-Schrift. Das ist der häufigste Fehler.`,
+  ``,
+  `4. BILDINTEGRATION (KREATIV, nicht platt):`,
+  `   - KEINE naked <img> in einer Card. Stattdessen: (a) Bild als background-image mit Gradient-Overlay, (b) Bild mit border-radius + object-fit:cover + skewed/rotated Transform, (c) Bild als Full-bleed Section-Hintergrund mit Text-Overlay.`,
+  `   - BEI Text-auf-Bild: IMMER einen Gradient-Overlay (linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.7) 100%)) damit Text lesbar bleibt.`,
+  `   - BILD-ANZAHL: Mindestens 3 thematisch passende Bilder (Hero, Feature-Section, Mood/Stimmung). KEINE Platzhalter-Bilder.`,
+  `   - ASPEKTVERHÄLTNIS: Nutze aspect-ratio CSS (z.B. aspect-ratio: 16/9 oder 4/3) für konsistente Bild-Container.`,
+].join('\n');
+
 export interface ArtBrief {
   domain: string;
   mood: string;
@@ -191,6 +227,7 @@ export function generateHtmlPrompt(brief: ArtBrief, message: string, existingHtm
       `HARMONIE — ein tragender Grundton, durchgängiger Rhythmus, 8px-Raster, großzügiger Atem; nichts beißt sich.`,
       `LEBEN — echte Atmosphäre (Verlauf/Schatten/Korn/Glow), echte Bildwelt, sanfte Bewegung (Hover, gestaffeltes Fade-in). Nicht flach.`,
       `AUSSTRAHLUNG — ein konsequenter Mood, Lichtführung, EINE Geste die im Gedächtnis bleibt (die SIGNATUR-GESTE); Zurückhaltung plus ein mutiger Akzent. Editorial, nicht Template.`,
+      CRAFT_DUTIES,
       ``,
       ANTI_SLOP_CRAFT,
       ``,
@@ -232,6 +269,7 @@ export function generateHtmlPrompt(brief: ArtBrief, message: string, existingHtm
     `HARMONIE — ein tragender Grundton, durchgängiger Rhythmus, 8px-Raster, großzügiger Atem; nichts beißt sich.`,
     `LEBEN — echte Atmosphäre (Verlauf/Schatten/Korn/Glow), echte Bildwelt, sanfte Bewegung (Hover, gestaffeltes Fade-in). Nicht flach.`,
     `AUSSTRAHLUNG — ein konsequenter Mood, Lichtführung, EINE Geste die im Gedächtnis bleibt; Zurückhaltung plus ein mutiger Akzent. Editorial, nicht Template.`,
+    CRAFT_DUTIES,
     ``,
     ANTI_SLOP_CRAFT,
     ``,

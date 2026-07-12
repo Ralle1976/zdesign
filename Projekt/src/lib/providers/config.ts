@@ -78,18 +78,20 @@ export async function getActiveTextProvider(): Promise<string> {
 /**
  * Resolve the active image provider id.
  *
- * Precedence: persisted override → env hint (MINIMAX_API_KEY → "minimax-image";
- * REPLICATE_API_TOKEN → "replicate") → registry default.
+ * Precedence (2026-07): persisted override → env hint (cheapest configured
+ * first) → registry default (Pollinations — always available, no key).
  */
 export async function getActiveImageProvider(): Promise<string> {
   const overrides = await loadOverrides();
   if (overrides.image) return overrides.image;
 
-  if (process.env.MINIMAX_API_KEY) return "minimax-image";
+  // Cheapest configured provider wins as the auto-default.
+  if (process.env.DEEPINFRA_API_KEY) return "deepinfra";
+  if (process.env.FAL_KEY) return "fal";
   if (process.env.REPLICATE_API_TOKEN) return "replicate";
 
   const def = getProviderRegistry().find((p) => p.type === "image" && p.active);
-  return def?.id ?? "minimax-image";
+  return def?.id ?? "pollinations";
 }
 
 /**

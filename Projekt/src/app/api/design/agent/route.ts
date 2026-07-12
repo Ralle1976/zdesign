@@ -30,6 +30,8 @@ import { appendTrace } from '@/lib/ai/skills/trace-store';
 import { runAudits } from '@/lib/audit/runner';
 import { recordDesign } from '@/lib/ai/memory/history';
 import { recallAntiPatterns } from '@/lib/ai/memory/negative-memory';
+import { loadUserMemory, userMemoryToPromptBlock } from '@/lib/ai/memory/user-memory';
+import { lessonsToPromptBlock, saveResult, maybeReflect } from '@/lib/ai/memory/lessons';
 
 /** Map deterministic lint P0 findings into the same shape as probabilistic
  *  critique refinements, so refine gets BOTH signals in one pass. */
@@ -154,6 +156,9 @@ export async function POST(request: NextRequest) {
             .map((i) => `- ${i.text}`)
             .join('\n')}\nKeines dieser Muster wiederholen.\n`
         : '';
+    // User preferences (editable in settings) — inject into every generation
+    // so the agent respects brand voice, color taboos, style preferences, etc.
+    const userMemoryBlock = userMemoryToPromptBlock(await loadUserMemory());
     trace.push({
       step: 'negative-memory',
       label: memory.items.length
@@ -246,7 +251,7 @@ export async function POST(request: NextRequest) {
       : '';
     for (let ga = 1; ga <= GEN_ATTEMPTS; ga++) {
       const raw = cleanHtml(
-        await callZai(rationalePrefix + memoryBlock + imageBlock + generateHtmlPrompt(brief, message, existing), {
+        await callZai(rationalePrefix + lessonsToPromptBlock() + userMemoryBlock + memoryBlock + imageBlock + generateHtmlPrompt(brief, message, existing), {
           maxTokens: 12000,
           temperature: ga === 1 ? 0.5 : 0.3,
           timeoutMs: 300_000,
@@ -465,9 +470,36 @@ export async function POST(request: NextRequest) {
         composite: bestComposite >= 0 ? bestComposite : null,
         palette: concept?.palette?.accent ?? null,
         projectId,
+        // Capture the Critique Theater's concrete diagnoses + fixes so the
+        // negative-memory layer can learn from them on future runs.
+        rootCause: bestTheater
+          ? bestTheater.perPanelist
+              .filter((p) => p.score < 7)
+              .map((p) => p.summary)
+              .join(' | ') || null
+          : null,
+        feedback: bestTheater?.refinements?.slice(0, 5).join(' ; ') ?? null,
+        sourceAgentId: 'design/agent',
       });
     } catch (e) {
       console.warn('[design/agent] recordDesign failed:', e instanceof Error ? e.message : e);
+    }
+
+    // Record the outcome for the lessons reflect-loop (Graphify-style).
+    try {
+      await saveResult({
+        domain: brief.domain,
+        outcome: bestComposite >= 7 ? 'useful' : 'dead_end',
+        composite: bestComposite >= 0 ? bestComposite : 5,
+        palette: concept?.palette?.accent ?? undefined,
+        concept: concept?.name ?? undefined,
+        detail: bestComposite >= 7
+          ? concept?.layoutApproach ?? brief.archetype
+          : bestTheater?.perPanelist?.find((p) => p.score < 7)?.summary ?? 'low quality',
+      });
+      maybeReflect();
+    } catch {
+      // Non-fatal.
     }
 
     // Surface the BEST round's per-panelist scores + composite. Map to the

@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import { useZDesignStore } from '@/stores/zdesign-store';
 import { useI18n } from '@/i18n';
 import { useTheme } from 'next-themes';
+import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -63,6 +64,7 @@ import {
 export function TopToolbar() {
   const { t, locale, setLocale } = useI18n();
   const { theme, setTheme } = useTheme();
+  const { data: session, status } = useSession();
   const projectName = useZDesignStore((s) => s.projectName);
   const setProject = useZDesignStore((s) => s.setProject);
   const projectId = useZDesignStore((s) => s.projectId);
@@ -566,6 +568,37 @@ export function TopToolbar() {
         </Tooltip>
 
         <Separator orientation="vertical" className="h-5 mx-0.5" />
+
+        {/* Account indicator (O13 next-auth) */}
+        {status === 'loading' ? null : session?.user ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 gap-2 px-2"
+                onClick={() => signOut({ callbackUrl: '/' })}
+              >
+                <div className="size-6 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-600 text-white flex items-center justify-center text-[10px] font-bold">
+                  {(session.user.name || session.user.email || '?').charAt(0).toUpperCase()}
+                </div>
+                <span className="text-xs max-w-[100px] truncate hidden sm:inline">
+                  {session.user.name || session.user.email}
+                </span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Sign out</TooltipContent>
+          </Tooltip>
+        ) : (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 text-xs"
+            onClick={() => (window.location.href = '/auth/signin')}
+          >
+            Sign in
+          </Button>
+        )}
 
         {/* Right panel toggle */}
         <Tooltip>
