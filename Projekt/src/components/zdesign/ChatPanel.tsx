@@ -796,18 +796,17 @@ export function ChatPanel() {
   useEffect(() => { setFusionEnabledRef.current = setFusionEnabled; }, [setFusionEnabled]);
   useEffect(() => { tRef.current = t; }, [t]);
 
-  // ── Cream-Default: agentMode ON for new/empty projects ──
-  // When a project has NO design yet (empty canvas), we default to agentMode
-  // (= Cream HTML pipeline) so users get 8/10 quality out of the box instead of
-  // 4/10 JSON-trees. If the project already has a design (JSON or HTML), the
-  // user's existing mode is respected and agentMode stays off until toggled.
+  // ── Cream-Default: agentMode ON for new/empty AND HTML-artifact projects ──
+  // agentMode should be ON in two cases:
+  //   1. Empty project (no design yet) → user gets Cream quality out of the box
+  //   2. Project with HTML_ARTIFACT design → subsequent messages refine via Cream
+  // It stays OFF only when the project has a JSON node-tree design (editor mode).
   // Runs once per project load (guarded by projectId in deps).
   useEffect(() => {
-    const hasNoDesign =
+    const hasJsonDesign =
       designMode === 'NODE_TREE' &&
-      (!designTree?.children || designTree.children.length === 0) &&
-      !designHTML;
-    if (hasNoDesign && !agentModeRef.current) {
+      designTree?.children && designTree.children.length > 0;
+    if (!hasJsonDesign && !agentModeRef.current) {
       setAgentMode(true);
       agentModeRef.current = true;
     }
