@@ -185,6 +185,12 @@ Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
       console.log(`[cream] generate-from-reference: ${template ? template.id : 'none (from-zero)'}`);
     }
     const prompt = lessonsToPromptBlock() + userMemoryBlock + memoryBlock + imageBlock + generatePrompt;
+
+    // ── GENERATE via Z.ai GLM-5.2 ──
+    // Note: Fusion (3-model panel) was tested for HTML generation but truncates
+    // at ~2KB — its panel→judge→synthesis architecture is built for reasoning,
+    // not large code generation. callZai produces reliable 30KB+ HTML.
+    // Fusion remains valuable for the concept/creative-direction phase (future).
     let html = cleanHtml(await callZai(prompt, { model, maxTokens: GEN_MAX_TOKENS, temperature: isRefinement ? 0.4 : 0.6, timeoutMs: 300_000 }));
     if (!html || !/<html/i.test(html)) {
       return NextResponse.json({ error: 'Z.ai generate returned no valid HTML' }, { status: 502 });
