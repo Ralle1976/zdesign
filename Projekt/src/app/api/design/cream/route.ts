@@ -22,6 +22,7 @@ import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
 import { pickTemplate } from '@/lib/ai/templates/registry';
 import { loadReferenceHtml, buildAdaptPrompt } from '@/lib/ai/templates/generate-from-reference';
 import { lintHtml } from '@/lib/ai/lint/anti-slop';
+import { replaceImagesWithGenerated } from '@/lib/ai/html-image-generator';
 import { db } from '@/lib/db';
 
 // Generation model: Z.ai GLM-5.2 (funded Anthropic endpoint — proven reliable
@@ -190,12 +191,25 @@ Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
     }
 
     // ── 1a) DETERMINISTIC FONT INJECTION ────────────────────────────────────
-    // The LLM frequently writes font-family:'Fraunces' in CSS but FORGETS to add
-    // the <link> to Google Fonts → browser falls back to Arial → design looks
-    // "stumpf" (bland) regardless of how good the copy/colors are. We don't trust
-    // the model on this — we inject the <link> deterministically based on the
-    // brief's declared fonts. Only injects if the font is not already linked.
     html = ensureGoogleFonts(html, brief.fonts.display, brief.fonts.body);
+
+    // ── 1b) REPLACE STOCK PHOTOS WITH GENERATED IMAGES ──────────────────────
+    // The LLM fills <img src> with hardcoded Unsplash URLs (identical for every
+    // bakery/law/spa). We replace them with individually generated images that
+    // match the design's domain and each image's local context (alt + heading).
+    // Skipped for refinements (the design already has its images).
+    if (!isRefinement) {
+      try {
+        const imgResult = await replaceImagesWithGenerated(html, brief.domain, 4);
+        html = imgResult.html;
+        if (imgResult.replaced > 0) {
+          console.log(`[cream] ${imgResult.replaced} images generated, ${imgResult.failed} failed`);
+        }
+      } catch (imgErr) {
+        // Image generation is non-fatal — keep Unsplash fallback if it fails.
+        console.warn('[cream] image generation failed (keeping stock):', imgErr instanceof Error ? imgErr.message : imgErr);
+      }
+    }
 
     // ── 1b) ANTI-SLOP LINT: deterministic P0 check (Indigo, Emoji, Filler) ────
     // The vision-critic is probabilistic; the linter catches cardinal sins the

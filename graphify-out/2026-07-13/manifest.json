@@ -55,8 +55,8 @@
     "semantic_hash": ""
   },
   "Projekt/next.config.ts": {
-    "mtime": 1783844751.469,
-    "ast_hash": "779b130d5b4de7191524268a6e581f52",
+    "mtime": 1783783872.502,
+    "ast_hash": "03661cbd4e02639d260def367334f019",
     "semantic_hash": ""
   },
   "Projekt/package.json": {
@@ -120,8 +120,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/app/api/chat/route.ts": {
-    "mtime": 1783848539.202,
-    "ast_hash": "29e7f0cd5d8a557e9c650da8e7a40f15",
+    "mtime": 1783201174.58,
+    "ast_hash": "896dcf6e2b0eae628ae421f7fb9f1ac5",
     "semantic_hash": ""
   },
   "Projekt/src/app/api/chat/stream/route.ts": {
@@ -170,8 +170,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/app/api/design/cream/route.ts": {
-    "mtime": 1783898538.987,
-    "ast_hash": "01800b136e0a0b26390b49e4cf02f3a5",
+    "mtime": 1783696051.77,
+    "ast_hash": "3358849dc4771aa8d9c54cac9087af33",
     "semantic_hash": ""
   },
   "Projekt/src/app/api/design/enhance/route.ts": {
@@ -620,8 +620,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/components/zdesign/ChatPanel.tsx": {
-    "mtime": 1783896351.234,
-    "ast_hash": "c9e80340cc1a7989babc60131fc50647",
+    "mtime": 1783783300.37,
+    "ast_hash": "fff8d1bca8d880f15c46ddc341b98b8c",
     "semantic_hash": ""
   },
   "Projekt/src/components/zdesign/CursorOverlay.tsx": {
@@ -720,8 +720,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/components/zdesign/canvas/DesignRenderer.tsx": {
-    "mtime": 1783847155.701,
-    "ast_hash": "7a3fcdd7da6ddfa1423f3dd723a8ed20",
+    "mtime": 1781766030.512,
+    "ast_hash": "e665854b74b926ac737324eda8a070b6",
     "semantic_hash": ""
   },
   "Projekt/src/components/zdesign/canvas/HtmlArtifactPreview.tsx": {
@@ -905,8 +905,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/lib/ai/image-providers.ts": {
-    "mtime": 1783848517.596,
-    "ast_hash": "dc13ba1af8cbee4279e00ccedc9813c8",
+    "mtime": 1783425677.507,
+    "ast_hash": "96a08ade04f0314efac7927e12998e8e",
     "semantic_hash": ""
   },
   "Projekt/src/lib/ai/image-replicate.ts": {
@@ -1240,8 +1240,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/lib/chat/generate.ts": {
-    "mtime": 1783844016.475,
-    "ast_hash": "d96e6fe1d48ce039d5ccbb2fe7cd5693",
+    "mtime": 1783696268.771,
+    "ast_hash": "a6684d6c5a3039ffa4873c83f884809c",
     "semantic_hash": ""
   },
   "Projekt/src/lib/chat/streamClient.ts": {
@@ -1375,13 +1375,13 @@
     "semantic_hash": ""
   },
   ".zcode/plans/plan-sess_403adc61-2e6f-4af2-942b-228a5326b01c.md": {
-    "mtime": 1783892544.709,
-    "ast_hash": "3a20ea80e3e31d4b74df88474f11c605",
+    "mtime": 1783694701.87,
+    "ast_hash": "ae7b0bc9aab3e192ef034f52f71cb031",
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1783885438.556,
-    "ast_hash": "0cbb034c8124984801338ad28b4efee4",
+    "mtime": 1783727925.835,
+    "ast_hash": "791fde915a9ad4551c8c39883bc41566",
     "semantic_hash": ""
   },
   "CONTRIBUTING.md": {
@@ -2167,131 +2167,6 @@
   "showcase/assets/vault3-2.jpeg": {
     "mtime": 1782552972.623,
     "ast_hash": "e116a3d4521019be2e415e3ac7dd9c6a",
-    "semantic_hash": ""
-  },
-  "Projekt/design-results-3.json": {
-    "mtime": 1783845609.523,
-    "ast_hash": "e133212ba8ebcf657673d6daf9f2c380",
-    "semantic_hash": ""
-  },
-  "Projekt/src/app/showcase/page.tsx": {
-    "mtime": 1783846134.077,
-    "ast_hash": "f7ab5c8fb4fc5c14fd049d8e43df9efa",
-    "semantic_hash": ""
-  },
-  "Projekt/_evidence_home.png": {
-    "mtime": 1783846582.281,
-    "ast_hash": "11339918c519b5625c8fc5c8784e7874",
-    "semantic_hash": ""
-  },
-  "Projekt/design-01-bakery.png": {
-    "mtime": 1783844266.844,
-    "ast_hash": "b6cab1d30aa202f2739532662db860c9",
-    "semantic_hash": ""
-  },
-  "Projekt/design-02-coffee.png": {
-    "mtime": 1783844377.732,
-    "ast_hash": "71c16ced507f1a667c2a1ed515e9b4ff",
-    "semantic_hash": ""
-  },
-  "Projekt/design-03-fitness.png": {
-    "mtime": 1783844457.866,
-    "ast_hash": "098b6ff374457d2b0114099d1e35ea13",
-    "semantic_hash": ""
-  },
-  "Projekt/design-04-law.png": {
-    "mtime": 1783844517.586,
-    "ast_hash": "fe1fe090745e7c2d86b5fd907fabab90",
-    "semantic_hash": ""
-  },
-  "Projekt/design-05-spa.png": {
-    "mtime": 1783844593.499,
-    "ast_hash": "08e2be1f2860c71ba8ad1a4936afbc82",
-    "semantic_hash": ""
-  },
-  "Projekt/design-06-restaurant.png": {
-    "mtime": 1783844650.399,
-    "ast_hash": "ada998e50926b5ed85e613b141d926e3",
-    "semantic_hash": ""
-  },
-  "Projekt/design-07-startup.png": {
-    "mtime": 1783844754.537,
-    "ast_hash": "a5299751f617607a346048f744856ce9",
-    "semantic_hash": ""
-  },
-  "Projekt/design-08-portfolio.png": {
-    "mtime": 1783845426.029,
-    "ast_hash": "0ea2bef021a522a54da931027e313da8",
-    "semantic_hash": ""
-  },
-  "Projekt/design-09-fashion.png": {
-    "mtime": 1783845514.788,
-    "ast_hash": "9f12a1e0f431099c24c6e47192e3ef6f",
-    "semantic_hash": ""
-  },
-  "Projekt/design-10-nonprofit.png": {
-    "mtime": 1783845607.338,
-    "ast_hash": "073e130cdb95091d82f27711c7cbe839",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase/design-01-bakery.png": {
-    "mtime": 1783844266.844,
-    "ast_hash": "b6cab1d30aa202f2739532662db860c9",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase/design-02-coffee.png": {
-    "mtime": 1783844377.732,
-    "ast_hash": "71c16ced507f1a667c2a1ed515e9b4ff",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase/design-03-fitness.png": {
-    "mtime": 1783844457.866,
-    "ast_hash": "098b6ff374457d2b0114099d1e35ea13",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase/design-04-law.png": {
-    "mtime": 1783844517.586,
-    "ast_hash": "fe1fe090745e7c2d86b5fd907fabab90",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase/design-05-spa.png": {
-    "mtime": 1783844593.499,
-    "ast_hash": "08e2be1f2860c71ba8ad1a4936afbc82",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase/design-06-restaurant.png": {
-    "mtime": 1783844650.399,
-    "ast_hash": "ada998e50926b5ed85e613b141d926e3",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase/design-07-startup.png": {
-    "mtime": 1783844754.537,
-    "ast_hash": "a5299751f617607a346048f744856ce9",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase/design-08-portfolio.png": {
-    "mtime": 1783845426.029,
-    "ast_hash": "0ea2bef021a522a54da931027e313da8",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase/design-09-fashion.png": {
-    "mtime": 1783845514.788,
-    "ast_hash": "9f12a1e0f431099c24c6e47192e3ef6f",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase/design-10-nonprofit.png": {
-    "mtime": 1783845607.338,
-    "ast_hash": "073e130cdb95091d82f27711c7cbe839",
-    "semantic_hash": ""
-  },
-  "Projekt/test-canvas-result.png": {
-    "mtime": 1783843636.023,
-    "ast_hash": "c45a1effac2d39ac11a7e2adb9a44437",
-    "semantic_hash": ""
-  },
-  "Projekt/test-render-check.png": {
-    "mtime": 1783843783.163,
-    "ast_hash": "5583cbf6a8b6433acfa2cfd400134369",
     "semantic_hash": ""
   }
 }

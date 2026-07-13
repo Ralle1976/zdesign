@@ -1,0 +1,1125 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brot & Zeit — Traditions-Bäckerei & Konditorei</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Mulish:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ivory:#f4ede1;
+    --ivory-soft:#faf5ea;
+    --paper:#efe6d4;
+    --ink:#1a1410;
+    --ink-soft:#3d2f24;
+    --ink-muted:#6b5a4a;
+    --gold:#b8893f;
+    --gold-bright:#d4a55a;
+    --gold-deep:#8a6328;
+    --line:rgba(26,20,16,.14);
+    --line-gold:rgba(184,137,63,.32);
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Mulish',sans-serif;
+    background:var(--ivory);
+    color:var(--ink);
+    line-height:1.6;
+    font-weight:300;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{display:block;max-width:100%;height:auto}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+  ::selection{background:var(--gold);color:var(--ivory)}
+
+  a:focus-visible,button:focus-visible{
+    outline:2px solid var(--gold);
+    outline-offset:4px;
+  }
+
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 48px;
+    transition:background .5s var(--ease),padding .4s var(--ease),border-color .4s;
+    border-bottom:1px solid transparent;
+  }
+  .nav.scrolled{
+    background:rgba(244,237,225,.92);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    padding:14px 48px;
+    border-bottom:1px solid var(--line);
+  }
+  .nav__brand{
+    font-family:'Cormorant Garamond',serif;
+    font-size:26px;font-weight:500;
+    letter-spacing:.04em;
+    color:var(--ink);
+  }
+  .nav__brand em{font-style:italic;color:var(--gold-deep);font-weight:400}
+  .nav__links{display:flex;gap:36px;align-items:center}
+  .nav__links a{
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:500;
+    position:relative;padding:6px 0;
+    transition:color .3s;
+  }
+  .nav__links a::after{
+    content:'';position:absolute;left:0;bottom:0;
+    width:0;height:1px;background:var(--gold);
+    transition:width .4s var(--ease);
+  }
+  .nav__links a:hover{color:var(--ink)}
+  .nav__links a:hover::after{width:100%}
+  .nav__cta{
+    padding:10px 22px;
+    border:1px solid var(--ink);
+    color:var(--ink);
+    font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    transition:all .35s var(--ease);
+  }
+  .nav__cta:hover{background:var(--ink);color:var(--ivory)}
+
+  .hero{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    min-height:100vh;
+    position:relative;
+  }
+  .hero__text{
+    padding:140px 80px 80px 80px;
+    display:flex;flex-direction:column;justify-content:center;
+    position:relative;
+    background:var(--ivory);
+  }
+  .hero__eyebrow{
+    display:flex;align-items:center;gap:14px;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold-deep);
+    margin-bottom:36px;
+    font-weight:500;
+  }
+  .hero__eyebrow::before{
+    content:'';width:42px;height:1px;background:var(--gold);
+  }
+  .hero__title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(56px,7.2vw,108px);
+    line-height:.95;
+    font-weight:400;
+    letter-spacing:-.015em;
+    color:var(--ink);
+    margin-bottom:36px;
+  }
+  .hero__title em{
+    font-style:italic;
+    font-weight:300;
+    color:var(--gold-deep);
+    display:block;
+  }
+  .hero__sub{
+    font-size:17px;line-height:1.7;
+    color:var(--ink-soft);
+    max-width:440px;
+    margin-bottom:48px;
+    font-weight:300;
+  }
+  .hero__actions{
+    display:flex;gap:24px;align-items:center;
+    margin-bottom:64px;
+  }
+  .btn-primary{
+    display:inline-flex;align-items:center;gap:14px;
+    padding:18px 36px;
+    background:var(--ink);
+    color:var(--ivory);
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    font-weight:500;
+    transition:all .4s var(--ease);
+    position:relative;
+  }
+  .btn-primary svg{transition:transform .4s var(--ease)}
+  .btn-primary:hover{
+    background:var(--gold-deep);
+    box-shadow:0 0 32px rgba(184,137,63,.45);
+  }
+  .btn-primary:hover svg{transform:translateX(6px)}
+  .btn-ghost{
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--ink);font-weight:500;
+    border-bottom:1px solid var(--ink);
+    padding:8px 0;
+    transition:color .3s,border-color .3s;
+  }
+  .btn-ghost:hover{color:var(--gold-deep);border-color:var(--gold)}
+
+  .hero__meta{
+    display:flex;gap:48px;
+    padding-top:32px;
+    border-top:1px solid var(--line);
+  }
+  .hero__meta-item span:first-child{
+    display:block;
+    font-family:'Cormorant Garamond',serif;
+    font-size:32px;font-weight:400;
+    color:var(--ink);
+    line-height:1;
+    margin-bottom:6px;
+  }
+  .hero__meta-item span:last-child{
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-muted);
+  }
+
+  .hero__image{
+    position:relative;
+    overflow:hidden;
+    background:var(--ink);
+  }
+  .hero__image img{
+    width:100%;height:100%;object-fit:cover;
+    border-radius:0;
+    filter:saturate(.92) contrast(1.02);
+  }
+  .hero__image-tag{
+    position:absolute;
+    bottom:40px;left:40px;
+    color:var(--ivory);
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+    display:flex;align-items:center;gap:12px;
+    z-index:2;
+  }
+  .hero__image-tag::before{
+    content:'';width:32px;height:1px;background:var(--gold-bright);
+  }
+  .hero__image-overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(26,20,16,.15) 0%,transparent 40%,transparent 60%,rgba(26,20,16,.55) 100%);
+    pointer-events:none;
+  }
+
+  .hero__seal{
+    position:absolute;
+    top:50%;right:-60px;
+    transform:translateY(-50%);
+    width:120px;height:120px;
+    z-index:5;
+    pointer-events:none;
+  }
+  .hero__seal svg{width:100%;height:100%;animation:spin 60s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .quote-strip{
+    padding:120px 80px;
+    background:var(--paper);
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .quote-strip__mark{
+    font-family:'Cormorant Garamond',serif;
+    font-size:140px;line-height:.5;
+    color:var(--gold);
+    opacity:.35;
+    margin-bottom:20px;
+    font-style:italic;
+  }
+  .quote-strip__text{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(28px,3.4vw,46px);
+    line-height:1.35;
+    font-weight:300;
+    font-style:italic;
+    color:var(--ink);
+    max-width:980px;margin:0 auto 28px;
+  }
+  .quote-strip__cite{
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--ink-muted);
+  }
+  .quote-strip__cite em{color:var(--gold-deep);font-style:normal}
+
+  .split{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    min-height:90vh;
+  }
+  .split--image-left .split__image{order:1}
+  .split--image-left .split__text{order:2}
+  .split__image{
+    position:relative;overflow:hidden;
+    background:var(--ink);
+  }
+  .split__image img{
+    width:100%;height:100%;object-fit:cover;
+    filter:saturate(.92);
+  }
+  .split__text{
+    padding:120px 80px;
+    display:flex;flex-direction:column;justify-content:center;
+    background:var(--ivory);
+    position:relative;
+  }
+  .split__eyebrow{
+    display:flex;align-items:center;gap:14px;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold-deep);
+    margin-bottom:32px;
+    font-weight:500;
+  }
+  .split__eyebrow::before{
+    content:'';width:42px;height:1px;background:var(--gold);
+  }
+  .split__title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(42px,4.6vw,68px);
+    line-height:1.05;
+    font-weight:400;
+    letter-spacing:-.01em;
+    color:var(--ink);
+    margin-bottom:32px;
+  }
+  .split__title em{font-style:italic;color:var(--gold-deep);font-weight:300}
+  .split__body{
+    font-size:16px;line-height:1.75;
+    color:var(--ink-soft);
+    max-width:480px;
+    margin-bottom:24px;
+  }
+  .split__body + .split__body{margin-bottom:40px}
+
+  .split__list{
+    list-style:none;
+    margin-top:8px;
+  }
+  .split__list li{
+    display:flex;align-items:flex-start;gap:18px;
+    padding:18px 0;
+    border-top:1px solid var(--line);
+    font-size:15px;color:var(--ink-soft);
+  }
+  .split__list li:last-child{border-bottom:1px solid var(--line)}
+  .split__list strong{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:500;color:var(--ink);
+    font-size:18px;
+    min-width:130px;
+  }
+  .split__list span{color:var(--ink-muted);font-size:13px;margin-left:auto}
+
+  .rituals{
+    padding:140px 80px;
+    background:var(--ivory-soft);
+    position:relative;
+  }
+  .rituals__head{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    margin-bottom:72px;
+    gap:60px;
+  }
+  .rituals__head-left{max-width:600px}
+  .rituals__title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(48px,5.4vw,82px);
+    line-height:1;
+    font-weight:400;
+    letter-spacing:-.015em;
+    margin-top:24px;
+  }
+  .rituals__title em{font-style:italic;color:var(--gold-deep);font-weight:300}
+  .rituals__intro{
+    font-size:15px;line-height:1.7;
+    color:var(--ink-soft);
+    max-width:380px;
+    padding-bottom:10px;
+  }
+
+  .rituals__grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  .ritual{
+    background:var(--ivory-soft);
+    padding:44px 36px 40px;
+    position:relative;
+    transition:background .5s var(--ease);
+    cursor:pointer;
+  }
+  .ritual:hover{background:var(--ivory)}
+  .ritual__num{
+    font-family:'Cormorant Garamond',serif;
+    font-size:13px;letter-spacing:.2em;
+    color:var(--gold-deep);
+    margin-bottom:32px;
+    font-style:italic;
+  }
+  .ritual__icon{
+    width:48px;height:48px;
+    margin-bottom:28px;
+    color:var(--ink);
+    transition:transform .5s var(--ease),color .3s;
+  }
+  .ritual:hover .ritual__icon{
+    color:var(--gold-deep);
+    transform:translateY(-4px);
+  }
+  .ritual__icon svg{width:100%;height:100%;stroke-width:1}
+  .ritual__name{
+    font-family:'Cormorant Garamond',serif;
+    font-size:26px;font-weight:500;
+    line-height:1.15;
+    margin-bottom:8px;
+    color:var(--ink);
+  }
+  .ritual__name-en{
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--ink-muted);
+    margin-bottom:18px;
+  }
+  .ritual__desc{
+    font-size:14px;line-height:1.65;
+    color:var(--ink-soft);
+    margin-bottom:24px;
+  }
+  .ritual__price{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+  }
+  .ritual__price-duration{
+    font-size:12px;color:var(--ink-muted);
+    letter-spacing:.06em;
+  }
+  .ritual__price-amount{
+    font-family:'Cormorant Garamond',serif;
+    font-size:22px;font-weight:500;
+    color:var(--ink);
+  }
+  .ritual__price-amount em{font-style:normal;color:var(--gold-deep);font-size:13px;margin-left:4px}
+
+  .dayspa{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    min-height:90vh;
+  }
+  .dayspa__text{
+    padding:120px 80px;
+    display:flex;flex-direction:column;justify-content:center;
+    background:var(--paper);
+    position:relative;
+  }
+  .dayspa__title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(44px,5vw,72px);
+    line-height:1.02;
+    font-weight:400;
+    letter-spacing:-.01em;
+    margin:24px 0 36px;
+  }
+  .dayspa__title em{font-style:italic;color:var(--gold-deep);font-weight:300}
+  .dayspa__body{
+    font-size:16px;line-height:1.75;
+    color:var(--ink-soft);
+    max-width:480px;
+    margin-bottom:48px;
+  }
+  .dayspa__packages{
+    display:flex;flex-direction:column;gap:0;
+  }
+  .pkg{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:center;
+    padding:24px 0;
+    border-top:1px solid var(--line);
+    gap:30px;
+    transition:padding .4s var(--ease);
+  }
+  .pkg:last-child{border-bottom:1px solid var(--line)}
+  .pkg:hover{padding-left:14px}
+  .pkg__name{
+    font-family:'Cormorant Garamond',serif;
+    font-size:24px;font-weight:500;
+    color:var(--ink);
+    margin-bottom:6px;
+  }
+  .pkg__name em{font-style:italic;color:var(--gold-deep);font-weight:400}
+  .pkg__detail{font-size:13px;color:var(--ink-muted);line-height:1.55}
+  .pkg__price{
+    font-family:'Cormorant Garamond',serif;
+    font-size:30px;font-weight:500;
+    color:var(--ink);
+    text-align:right;
+    white-space:nowrap;
+  }
+  .pkg__price small{
+    display:block;
+    font-family:'Mulish',sans-serif;
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-muted);font-weight:500;
+    margin-top:4px;
+  }
+  .dayspa__image{
+    position:relative;overflow:hidden;
+    min-height:600px;
+    background:var(--ink);
+  }
+  .dayspa__image img{
+    width:100%;height:100%;object-fit:cover;
+    filter:saturate(.92);
+  }
+
+  .glow-cta{
+    padding:160px 80px;
+    text-align:center;
+    background:var(--ink);
+    color:var(--ivory);
+    position:relative;
+    overflow:hidden;
+  }
+  .glow-cta::before{
+    content:'';
+    position:absolute;inset:0;
+    background:
+      radial-gradient(circle at 30% 40%,rgba(184,137,63,.18) 0%,transparent 50%),
+      radial-gradient(circle at 70% 60%,rgba(184,137,63,.12) 0%,transparent 55%);
+    pointer-events:none;
+  }
+  .glow-cta__eyebrow{
+    position:relative;
+    display:inline-flex;align-items:center;gap:14px;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold-bright);
+    margin-bottom:36px;
+    font-weight:500;
+  }
+  .glow-cta__eyebrow::before,
+  .glow-cta__eyebrow::after{
+    content:'';width:36px;height:1px;background:var(--gold);
+  }
+  .glow-cta__title{
+    position:relative;
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(52px,6.4vw,96px);
+    line-height:1.02;
+    font-weight:300;
+    margin-bottom:32px;
+    letter-spacing:-.015em;
+  }
+  .glow-cta__title em{
+    font-style:italic;
+    color:var(--gold-bright);
+    text-shadow:0 0 38px rgba(212,165,90,.55),0 0 80px rgba(184,137,63,.3);
+  }
+  .glow-cta__sub{
+    position:relative;
+    font-size:17px;line-height:1.7;
+    color:rgba(244,237,225,.72);
+    max-width:560px;margin:0 auto 56px;
+    font-weight:300;
+  }
+  .glow-cta__btn{
+    position:relative;
+    display:inline-flex;align-items:center;gap:16px;
+    padding:22px 48px;
+    background:var(--gold);
+    color:var(--ink);
+    font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+    font-weight:600;
+    transition:all .45s var(--ease);
+    box-shadow:0 0 0 rgba(184,137,63,0);
+  }
+  .glow-cta__btn:hover{
+    background:var(--gold-bright);
+    box-shadow:0 0 42px rgba(212,165,90,.6),0 0 90px rgba(184,137,63,.35);
+    transform:translateY(-2px);
+  }
+  .glow-cta__btn svg{transition:transform .4s var(--ease)}
+  .glow-cta__btn:hover svg{transform:translateX(6px)}
+
+  .glow-cta__hours{
+    position:relative;
+    margin-top:64px;
+    padding-top:40px;
+    border-top:1px solid rgba(244,237,225,.12);
+    display:inline-flex;gap:64px;
+    color:rgba(244,237,225,.7);
+    font-size:13px;
+    letter-spacing:.04em;
+  }
+  .glow-cta__hours strong{
+    display:block;
+    color:var(--gold-bright);
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    margin-bottom:8px;font-weight:500;
+  }
+
+  .footer{
+    background:var(--ink);
+    color:var(--ivory);
+    padding:80px 80px 40px;
+    border-top:1px solid rgba(244,237,225,.08);
+  }
+  .footer__grid{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr 1fr;
+    gap:60px;
+    margin-bottom:64px;
+  }
+  .footer__brand{
+    font-family:'Cormorant Garamond',serif;
+    font-size:32px;font-weight:500;
+    margin-bottom:18px;
+    letter-spacing:.02em;
+  }
+  .footer__brand em{font-style:italic;color:var(--gold-bright);font-weight:400}
+  .footer__tagline{
+    font-size:14px;line-height:1.7;
+    color:rgba(244,237,225,.6);
+    max-width:340px;
+    font-weight:300;
+  }
+  .footer__col h4{
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--gold-bright);
+    margin-bottom:22px;font-weight:500;
+  }
+  .footer__col ul{list-style:none}
+  .footer__col li{margin-bottom:12px}
+  .footer__col a{
+    font-size:14px;
+    color:rgba(244,237,225,.72);
+    transition:color .3s;
+    font-weight:300;
+  }
+  .footer__col a:hover{color:var(--gold-bright)}
+  .footer__col p{
+    font-size:14px;line-height:1.7;
+    color:rgba(244,237,225,.72);
+    font-weight:300;
+  }
+  .footer__bottom{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-top:32px;
+    border-top:1px solid rgba(244,237,225,.1);
+    font-size:12px;
+    color:rgba(244,237,225,.5);
+    letter-spacing:.04em;
+  }
+  .footer__bottom a{color:rgba(244,237,225,.5);transition:color .3s}
+  .footer__bottom a:hover{color:var(--gold-bright)}
+
+  .decor{
+    position:absolute;
+    pointer-events:none;
+    opacity:.5;
+    z-index:0;
+  }
+  .decor--leaf-1{
+    top:8%;right:-40px;
+    width:140px;height:140px;
+    color:var(--gold);
+    opacity:.18;
+  }
+  .decor--leaf-2{
+    bottom:10%;left:-30px;
+    width:100px;height:100px;
+    color:var(--gold-deep);
+    opacity:.15;
+  }
+
+  .reveal{
+    opacity:0;
+    transform:translateY(40px);
+    transition:opacity 1s var(--ease),transform 1s var(--ease);
+  }
+  .reveal.in{opacity:1;transform:translateY(0)}
+  .reveal-delay-1{transition-delay:.1s}
+  .reveal-delay-2{transition-delay:.2s}
+  .reveal-delay-3{transition-delay:.3s}
+
+  .magnetic{
+    transition:transform .35s var(--ease);
+    will-change:transform;
+  }
+
+  @media (max-width:1024px){
+    .nav{padding:18px 28px}
+    .nav.scrolled{padding:12px 28px}
+    .nav__links{display:none}
+    .hero{grid-template-columns:1fr}
+    .hero__text{padding:120px 32px 60px;min-height:60vh}
+    .hero__image{min-height:50vh;order:-1}
+    .hero__seal{display:none}
+    .quote-strip{padding:80px 32px}
+    .split{grid-template-columns:1fr}
+    .split__text{padding:80px 32px}
+    .split__image{min-height:50vh}
+    .split--image-left .split__image{order:0}
+    .split--image-left .split__text{order:0}
+    .rituals{padding:80px 32px}
+    .rituals__head{flex-direction:column;align-items:flex-start;gap:24px}
+    .rituals__grid{grid-template-columns:repeat(2,1fr)}
+    .dayspa{grid-template-columns:1fr}
+    .dayspa__text{padding:80px 32px}
+    .dayspa__image{min-height:400px}
+    .glow-cta{padding:100px 32px}
+    .glow-cta__hours{flex-direction:column;gap:24px}
+    .footer{padding:60px 32px 32px}
+    .footer__grid{grid-template-columns:1fr 1fr;gap:40px}
+    .footer__bottom{flex-direction:column;gap:14px;text-align:center}
+  }
+  @media (max-width:640px){
+    .hero__title{font-size:54px}
+    .hero__meta{flex-wrap:wrap;gap:24px}
+    .rituals__grid{grid-template-columns:1fr}
+    .footer__grid{grid-template-columns:1fr}
+    .nav__brand{font-size:22px}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.01ms !important;
+    }
+    .reveal{opacity:1;transform:none}
+    .hero__seal svg{animation:none}
+    .magnetic{transform:none !important}
+    [data-parallax]{transform:none !important}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav" aria-label="Hauptnavigation">
+  <a href="#" class="nav__brand">Brot & <em>·</em> Zeit</a>
+  <div class="nav__links">
+    <a href="#sortiment">Sortiment</a>
+    <a href="#brotpakete">Abos</a>
+    <a href="#kontakt">Filialen</a>
+    <a href="#kontakt">Galerie</a>
+  </div>
+  <a href="#vorbestellen" class="nav__cta magnetic">Brot vorbestellen</a>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero__text">
+    <div class="decor decor--leaf-1" data-parallax data-speed="0.25" aria-hidden="true">
+      <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M50 5 Q 30 30 30 55 Q 30 80 50 95 Q 70 80 70 55 Q 70 30 50 5 Z"/>
+        <path d="M50 5 L 50 95" stroke-width=".8"/>
+        <path d="M50 25 Q 40 30 38 38 M50 25 Q 60 30 62 38"/>
+        <path d="M50 45 Q 38 50 35 60 M50 45 Q 62 50 65 60"/>
+        <path d="M50 65 Q 40 70 38 78 M50 65 Q 60 70 62 78"/>
+      </svg>
+    </div>
+
+    <div class="hero__eyebrow reveal">Traditions-Bäckerei · seit 1924</div>
+    <h1 class="hero__title reveal reveal-delay-1">
+      Zeit schmeckt
+      <em>nach mehr.</em>
+    </h1>
+    <p class="hero__sub reveal reveal-delay-2">
+      Jeden Morgen um drei Uhr brennt unser Holzofen. Drei Generationen Handwerk, Natursauerteig aus dem Schwarzwald und 24 Stunden Geduld – bis ein Brot so knuspt, wie es von Natur aus sein sollte.
+    </p>
+    <div class="hero__actions reveal reveal-delay-3">
+      <a href="#vorbestellen" class="btn-primary magnetic">
+        Frisch abholen
+        <svg width="18" height="10" viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M1 5 H17 M12 1 L17 5 L12 9"/>
+        </svg>
+      </a>
+      <a href="#sortiment" class="btn-ghost">Sortiment ansehen</a>
+    </div>
+
+    <div class="hero__meta reveal reveal-delay-3">
+      <div class="hero__meta-item">
+        <span>24</span>
+        <span>Stunden Sauerteig-Führung</span>
+      </div>
+      <div class="hero__meta-item">
+        <span>4,9</span>
+        <span>Google · 860 Bewertungen</span>
+      </div>
+      <div class="hero__meta-item">
+        <span>100</span>
+        <span>Jahre Familientradition</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__image">
+    <img src="https://image.pollinations.ai/prompt/Frisch%20gebackenes%2C%20rustikales%20Landbrot%20mit%20Mehlstaub%20auf%20einem%20Holztisch.%20Professional%20photography%2C%20dramatic%20lighting%20with%20soft%20shadows%2C%20high%20detail%2C%20sharp%20focus%2C%20rich%20colors%2C%20premium%20quality%2C%20editorial%20composition?width=1024&height=768&seed=445765&nologo=true&model=flux" alt="Frisch gebackenes, rustikales Landbrot mit Mehlstaub auf einem Holztisch">
+    <div class="hero__image-overlay"></div>
+    <div class="hero__image-tag">Marktplatz 4 · Altstadt</div>
+  </div>
+
+  <div class="hero__seal" aria-hidden="true">
+    <svg viewBox="0 0 120 120" fill="none" stroke="var(--gold-bright)" stroke-width=".8">
+      <circle cx="60" cy="60" r="58"/>
+      <circle cx="60" cy="60" r="48"/>
+      <path d="M60 30 Q 50 45 50 60 Q 50 75 60 90 Q 70 75 70 60 Q 70 45 60 30" stroke-width=".7"/>
+      <text font-family="Cormorant Garamond" font-size="8" fill="var(--gold-bright)" stroke="none" letter-spacing="2">
+        <textPath href="#sealPath">BROT & ZEIT · SEIT 1924 · STEINOFEN · NATUR ·</textPath>
+      </text>
+      <path id="sealPath" d="M 60 60 m -42 0 a 42 42 0 1 1 84 0 a 42 42 0 1 1 -84 0" fill="none" stroke="none"/>
+    </svg>
+  </div>
+</header>
+
+<section class="quote-strip" aria-label="Zitat">
+  <div class="quote-strip__mark">"</div>
+  <p class="quote-strip__text reveal">
+    Ein ehrliches Brot braucht keine Zutatenliste. Es braucht Korn, Wasser, Salz und jemanden, der genau weiß, wann die Kruste bereit ist.
+  </p>
+  <div class="quote-strip__cite reveal reveal-delay-1">
+    Heinrich Vesper · <em>Chef-Bäcker & Inhaber in 3. Generation</em>
+  </div>
+</section>
+
+<section class="split split--image-left" id="philosophie">
+  <div class="split__image" data-parallax-img>
+    <img src="https://image.pollinations.ai/prompt/H%C3%A4nde%20eines%20B%C3%A4ckers%20beim%20Formen%20eines%20Brotes%20aus%20Natursauerteig%2C%20mit%20Mehl%20best%C3%A4ubt.%20Professional%20photography%2C%20dramatic%20lighting%20with%20soft%20shadows%2C%20high%20detail%2C%20sharp%20focus%2C%20rich%20colors%2C%20premium%20quality%2C%20editorial%20composition?width=1024&height=768&seed=266959&nologo=true&model=flux" alt="Hände eines Bäckers beim Formen eines Brotes aus Natursauerteig, mit Mehl bestäubt">
+  </div>
+  <div class="split__text">
+    <div class="decor decor--leaf-2" data-parallax data-speed="0.3" aria-hidden="true">
+      <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M50 5 Q 30 30 30 55 Q 30 80 50 95 Q 70 80 70 55 Q 70 30 50 5 Z"/>
+        <path d="M50 5 L 50 95" stroke-width=".8"/>
+      </svg>
+    </div>
+    <div class="split__eyebrow reveal">Handwerk · Die Kunst der Geduld</div>
+    <h2 class="split__title reveal reveal-delay-1">
+      Was die Natur gibt,
+      <em>nehmen wir ihr nicht weg.</em>
+    </h2>
+    <p class="split__body reveal reveal-delay-2">
+      Unser Sauerteig „Ida" wird seit 1924 geführt, Tag für Tag gefüttert und gepflegt. Keine Hefe aus der Tüte, keine Backenzyme, keine Zusätze. Nur Roggenmehl, Wasser und die Zeit, die ein Korn braucht, um zu reifen.
+    </p>
+    <p class="split__body reveal reveal-delay-2">
+      Wir mahlen unser Getreide im eigenen Steinmahlgang. So bleiben die Schalen, das Mehlkörper und der Keimling erhalten – und damit der ganze Geschmack des Feldes.
+    </p>
+    <ul class="split__list reveal reveal-delay-3">
+      <li>
+        <strong>Holzsteinofen</strong>
+        Beheizt mit Buchenholz aus lokaler Forstwirtschaft
+        <span>seit 1924</span>
+      </li>
+      <li>
+        <strong>Direktvermarktung</strong>
+        Bio-Demeter-Höfe · max. 40 km Umkreis
+        <span>aus der Region</span>
+      </li>
+      <li>
+        <strong>Ohne Zusätze</strong>
+        Keine Industriehefe, keine Enzyme, keine Konservierung
+        <span>naturbelassen</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="rituals" id="sortiment">
+  <div class="rituals__head">
+    <div class="rituals__head-left">
+      <div class="split__eyebrow reveal" style="margin-bottom:24px">Sortiment · Unsere Brotspezialitäten</div>
+      <h2 class="rituals__title reveal reveal-delay-1">
+        Vier Brote,
+        <em>eine Herkunft.</em>
+      </h2>
+    </div>
+    <p class="rituals__intro reveal reveal-delay-2">
+      Vom saftigen Sauerteig bis zur knusprigen Brezel – jedes unserer Backwerke reift in Ruhe und bäckt im heißen Stein. Preise inklusive frischer Verarbeitung und schonender Handhabung.
+    </p>
+  </div>
+
+  <div class="rituals__grid">
+    <article class="ritual reveal magnetic">
+      <div class="ritual__num">Nº 01</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <ellipse cx="24" cy="26" rx="16" ry="12"/>
+          <path d="M14 22 Q 18 18 24 18 Q 30 18 34 22" opacity=".6"/>
+          <path d="M20 24 L 21 26 M26 24 L 27 26" opacity=".5"/>
+          <path d="M16 28 L 17 30 M30 28 L 31 30" opacity=".5"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">Bauernbrot</h3>
+      <div class="ritual__name-en">Rustikales Roggen-Sauerteig</div>
+      <p class="ritual__desc">
+        Saftig, kräftig, mit tiefer Kruste. 70% Roggen und 30% Weizen, 24 Stunden kalt geführt. Schneidet sich wie Butter, hält eine Woche frisch.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">ca. 1.000 g Stück</span>
+        <span class="ritual__price-amount">6,80<em>€</em></span>
+      </div>
+    </article>
+
+    <article class="ritual reveal reveal-delay-1 magnetic">
+      <div class="ritual__num">Nº 02</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <ellipse cx="24" cy="26" rx="14" ry="11"/>
+          <path d="M16 24 Q 20 20 24 20 Q 28 20 32 24" opacity=".5"/>
+          <path d="M24 15 L 24 18 M20 16 L 21 18 M28 16 L 27 18" opacity=".6"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">Dinkellaib</h3>
+      <div class="ritual__name-en">Milder Dinkel mit Honig</div>
+      <p class="ritual__desc">
+        Leicht verdaulich, nussig, mit einem Hauch Akazienhonig. Schonend gebacken, ideal für eine empfindliche Ernährung. Beliebt bei Groß und Klein.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">ca. 800 g Stück</span>
+        <span class="ritual__price-amount">5,90<em>€</em></span>
+      </div>
+    </article>
+
+    <article class="ritual reveal reveal-delay-2 magnetic">
+      <div class="ritual__num">Nº 03</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <path d="M16 18 Q 24 12 32 18 Q 36 24 32 32 Q 24 38 16 32 Q 12 24 16 18 Z"/>
+          <path d="M20 22 Q 24 20 28 22" opacity=".6"/>
+          <path d="M20 28 Q 24 30 28 28" opacity=".6"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">Sonnenwecken</h3>
+      <div class="ritual__name-en">Sonnenblumen-Kürbiskern</div>
+      <p class="ritual__desc">
+        Ein Kraftpaket: 40% geröstete Sonnenblumenkerne und Kürbiskerne, eingebettet in weizenbetonten Teig. Knackig, herzhaft, ein echtes Sättigungsbrot.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">ca. 1.200 g Stück</span>
+        <span class="ritual__price-amount">7,40<em>€</em></span>
+      </div>
+    </article>
+
+    <article class="ritual reveal reveal-delay-3 magnetic">
+      <div class="ritual__num">Nº 04</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <path d="M24 12 Q 16 12 16 20 Q 16 24 20 26 Q 16 28 16 34 Q 16 40 24 40 Q 32 40 32 34 Q 32 28 28 26 Q 32 24 32 20 Q 32 12 24 12 Z"/>
+          <path d="M24 12 L 24 40" opacity=".5"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">Buttercroissant</h3>
+      <div class="ritual__name-en">Blätterteig mit Alpenbutter</div>
+      <p class="ritual__desc">
+        27 Schichten, drei Tage gekühlt geruht. Gebacken mit frischer Alpen-Sahnebutter aus dem Allgäu. Außen hauchzart, innen weich und duftend.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">Stück · frisch morgens</span>
+        <span class="ritual__price-amount">2,20<em>€</em></span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="dayspa" id="brotpakete">
+  <div class="dayspa__text">
+    <div class="split__eyebrow reveal">Abo · Frisch ins Haus</div>
+    <h2 class="dayspa__title reveal reveal-delay-1">
+      Brot, das zu
+      <em>Ihnen kommt.</em>
+    </h2>
+    <p class="dayspa__body reveal reveal-delay-2">
+      Drei Brotpakete für den Wochenvorrat. Jeden Freitag frisch gebacken, sicher verpackt und zur Abholung in unserer Hauptfiliale bereitgestellt. Keine Bindung, jederzeit kündbar.
+    </p>
+
+    <div class="dayspa__packages reveal reveal-delay-3">
+      <div class="pkg magnetic">
+        <div>
+          <div class="pkg__name">Klassik <em>— Für 1-2 Pers.</em></div>
+          <div class="pkg__detail">1x Bauernbrot · 4x Brötchen der Saison · 1x Croissant · wöchentlich</div>
+        </div>
+        <div class="pkg__price">18€ <small>pro Woche</small></div>
+      </div>
+      <div class="pkg magnetic">
+        <div>
+          <div class="pkg__name">Familie <em>— Für 3-4 Pers.</em></div>
+          <div class="pkg__detail">1x Sonnenwecken · 1x Dinkellaib · 8x Brötchen · 4x Croissant · wöchentlich</div>
+        </div>
+        <div class="pkg__price">32€ <small>pro Woche</small></div>
+      </div>
+      <div class="pkg magnetic">
+        <div>
+          <div class="pkg__name">Gourmet <em>— Zum Entdecken</em></div>
+          <div class="pkg__detail">2x Saisonbrot · 1x Kuchen des Monats · 6x Feingebäck · monatlich · als Geschenk möglich</div>
+        </div>
+        <div class="pkg__price">48€ <small>pro Monat</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="dayspa__image" data-parallax-img>
+    <img src="https://image.pollinations.ai/prompt/Ausgew%C3%A4hltes%2C%20frisches%20Brot%20und%20Kleingeb%C3%A4ck%20in%20einer%20traditionellen%20B%C3%A4ckerei%2C%20warm%20beleuchtet.%20Professional%20photography%2C%20dramatic%20lighting%20with%20soft%20shadows%2C%20high%20detail%2C%20sharp%20focus%2C%20rich%20colors%2C%20premium%20quality%2C%20editorial%20composition?width=1024&height=768&seed=797193&nologo=true&model=flux" alt="Ausgewähltes, frisches Brot und Kleingebäck in einer traditionellen Bäckerei, warm beleuchtet">
+  </div>
+</section>
+
+<section class="glow-cta" id="vorbestellen">
+  <div class="glow-cta__eyebrow reveal">Reservierung · Frisch gebacken für Sie</div>
+  <h2 class="glow-cta__title reveal reveal-delay-1">
+    Sichern Sie sich
+    <em>Ihren Laib.</em>
+  </h2>
+  <p class="glow-cta__sub reveal reveal-delay-2">
+    Da wir auf Hefe aus der Industrie verzichten, gehen unsere Brote langsamer auf – und sind schneller ausverkauft. Bestellen Sie vor, wir legen Ihren Laib zurück, bis Sie ihn abholen.
+  </p>
+  <a href="tel:+4908912345678" class="glow-cta__btn magnetic reveal reveal-delay-3">
+    +49 89 12 34 56 78
+    <svg width="20" height="10" viewBox="0 0 20 10" fill="none" stroke="currentColor" stroke-width="1.6">
+      <path d="M1 5 H18 M13 1 L18 5 L13 9"/>
+    </svg>
+  </a>
+
+  <div class="glow-cta__hours reveal reveal-delay-3">
+    <div>
+      <strong>Mo – Fr</strong>
+      06:30 – 18:00 Uhr
+    </div>
+    <div>
+      <strong>Sa</strong>
+      06:30 – 14:00 Uhr
+    </div>
+    <div>
+      <strong>Sonntag</strong>
+      07:30 – 11:00 Uhr
+    </div>
+  </div>
+</section>
+
+<footer class="footer" id="kontakt">
+  <div class="footer__grid">
+    <div class="footer__col">
+      <div class="footer__brand">Brot & <em>·</em> Zeit</div>
+      <p class="footer__tagline">
+        Eine Traditions-Bäckerei im Herzen der Altstadt. Wir backen, wie man es vor hundert Jahren tat – nur mit Händen, Hitze und der nötigen Zeit.
+      </p>
+    </div>
+    <div class="footer__col">
+      <h4>Hauptfiliale</h4>
+      <p>
+        Marktplatz 4<br>
+        80331 München<br>
+        Altstadt · U3 Marienplatz
+      </p>
+    </div>
+    <div class="footer__col">
+      <h4>Öffnungszeiten</h4>
+      <ul>
+        <li><a href="#">Mo – Fr · 6:30–18 Uhr</a></li>
+        <li><a href="#">Sa · 6:30–14 Uhr</a></li>
+        <li><a href="#">So · 7:30–11 Uhr</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h4>Kontakt</h4>
+      <ul>
+        <li><a href="tel:+4908912345678">+49 89 12 34 56 78</a></li>
+        <li><a href="mailto:hallo@brotnzeit.de">hallo@brotnzeit.de</a></li>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">Gutscheine</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <div>© 2025 Brot & Zeit Traditionsbäckerei · Alle Rechte vorbehalten</div>
+    <div>
+      <a href="#">Impressum</a> · <a href="#">Datenschutz</a> · <a href="#">AGB</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const nav = document.getElementById('nav');
+  let lastScroll = 0;
+  function onScrollNav(){
+    const y = window.scrollY;
+    if(y > 40) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+    lastScroll = y;
+  }
+  window.addEventListener('scroll', onScrollNav, {passive:true});
+
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    },{threshold:0.12, rootMargin:'0px 0px -40px 0px'});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));
+  }
+
+  if(!reduceMotion){
+    const magnetics = document.querySelectorAll('.magnetic');
+    magnetics.forEach(el=>{
+      el.addEventListener('mousemove', (e)=>{
+        const r = el.getBoundingClientRect();
+        const x = e.clientX - r.left - r.width/2;
+        const y = e.clientY - r.top - r.height/2;
+        el.style.transform = `translate(${x*0.15}px, ${y*0.2}px)`;
+      });
+      el.addEventListener('mouseleave', ()=>{
+        el.style.transform = '';
+      });
+    });
+
+    const parallaxEls = document.querySelectorAll('[data-parallax]');
+    const parallaxImgs = document.querySelectorAll('[data-parallax-img] img');
+    let ticking = false;
+    function updateParallax(){
+      const wh = window.innerHeight;
+      parallaxEls.forEach(el=>{
+        const speed = parseFloat(el.dataset.speed||0.2);
+        const r = el.getBoundingClientRect();
+        const offset = (r.top + r.height/2 - wh/2) * speed * -1;
+        el.style.transform = `translateY(${offset}px)`;
+      });
+      parallaxImgs.forEach(img=>{
+        const r = img.parentElement.getBoundingClientRect();
+        if(r.bottom > 0 && r.top < wh){
+          const offset = (r.top - wh/2) * 0.12;
+          img.style.transform = `translateY(${offset}px) scale(1.08)`;
+        }
+      });
+      ticking = false;
+    }
+    window.addEventListener('scroll', ()=>{
+      if(!ticking){
+        window.requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    }, {passive:true});
+    updateParallax();
+  }
+})();
+</script>
+</body>
+</html>
