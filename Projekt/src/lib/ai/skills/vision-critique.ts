@@ -39,8 +39,25 @@ export async function renderHtmlToPng(html: string, opts: RenderOpts = {}): Prom
   const settleMs = opts.settleMs ?? 1200;
   let browser: Browser | null = null;
   try {
+    // Puppeteer's bundled Chrome may not be downloaded. Fall back to the
+    // system Chrome installation (Windows) via PUPPETEER_EXECUTABLE_PATH or
+    // the well-known Program Files path. On Linux/CI the bundled one is used.
+    const executablePath =
+      process.env.PUPPETEER_EXECUTABLE_PATH ||
+      process.env.PUPPETEER_CHROMIUM_REVISION ||
+      (process.platform === 'win32'
+        ? [
+            'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+            'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+            `${process.env.LOCALAPPDATA}\\Google\\Chrome\\Application\\chrome.exe`,
+          ].find((p) => {
+            try { return require('fs').existsSync(p); } catch { return false; }
+          })
+        : undefined);
+
     browser = await puppeteer.launch({
       headless: true,
+      ...(executablePath ? { executablePath } : {}),
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',

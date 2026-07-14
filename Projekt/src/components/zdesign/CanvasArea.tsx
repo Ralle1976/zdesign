@@ -5,6 +5,8 @@ import { useZDesignStore } from '@/stores/zdesign-store';
 import { useI18n } from '@/i18n';
 import { DesignRenderer } from '@/components/zdesign/canvas/DesignRenderer';
 import { HtmlArtifactPreview } from '@/components/zdesign/canvas/HtmlArtifactPreview';
+import { CanvasPipelineStatus } from '@/components/zdesign/CanvasPipelineStatus';
+import { CanvasVariantGallery } from '@/components/zdesign/CanvasVariantGallery';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -443,15 +445,20 @@ export function CanvasArea() {
   const canvas = useZDesignStore((s) => s.canvas);
   const isGenerating = useZDesignStore((s) => s.isGenerating);
   const designTree = useZDesignStore((s) => s.designTree);
+  const pipelineSteps = useZDesignStore((s) => s.pipelineSteps);
+  const variantTracks = useZDesignStore((s) => s.variantTracks);
   const generationProgress = useZDesignStore((s) => s.generationProgress);
   const qualityReport = useZDesignStore((s) => s.qualityReport);
   const designMode = useZDesignStore((s) => s.designMode);
   const designHTML = useZDesignStore((s) => s.designHTML);
+  const variantGallery = useZDesignStore((s) => s.variantGallery);
   const hasDesign = designTree.children && designTree.children.length > 0;
-  const showHtml = designMode === 'HTML_ARTIFACT' && !!designHTML && !isGenerating;
+  const showVariantGallery = !isGenerating && !!variantGallery?.length;
+  const showHtml = designMode === 'HTML_ARTIFACT' && !!designHTML && !isGenerating && !showVariantGallery;
   const ViewportIcon = VIEWPORT_ICONS[canvas.viewport];
 
-  // Show progress indicator during generation
+  const showPipelineStatus =
+    isGenerating && (pipelineSteps.length > 0 || variantTracks.length > 0);
   const showProgress = isGenerating && generationProgress.stage !== 'idle';
 
   return (
@@ -463,7 +470,9 @@ export function CanvasArea() {
         </div>
       )}
 
-      {showHtml ? (
+      {showVariantGallery ? (
+        <CanvasVariantGallery />
+      ) : showHtml ? (
         /* === HTML ARTIFACT (agentic art-directed HTML, live iframe) === */
         <HtmlArtifactPreview html={designHTML!} viewport={canvas.viewport} />
       ) : hasDesign && !isGenerating ? (
@@ -471,8 +480,11 @@ export function CanvasArea() {
         <div className="flex-1 min-h-0 overflow-hidden">
           <DesignRenderer node={designTree} />
         </div>
+      ) : showPipelineStatus ? (
+        /* === AGENT PIPELINE (SSE live steps, incl. parallel variants) === */
+        <CanvasPipelineStatus />
       ) : showProgress ? (
-        /* === PROGRESS INDICATOR === */
+        /* === LEGACY PROGRESS INDICATOR (JSON chat path) === */
         <GenerationProgressIndicator />
       ) : isGenerating ? (
         /* === FALLBACK GENERATING STATE (no progress yet) === */

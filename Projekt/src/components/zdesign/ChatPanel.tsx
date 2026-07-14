@@ -50,6 +50,11 @@ import ReactMarkdown from 'react-markdown';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AIImageDialog } from './AIImageDialog';
 import { ResearchDialog } from './ResearchDialog';
+import { PipelineStatusPanel } from './PipelineStatusPanel';
+import { VariantGalleryPicker } from './VariantGalleryPicker';
+import type { DesignVariantResult } from '@/types/design';
+import { runAgentDesignStream } from '@/lib/chat/agent-stream-client';
+import type { Concept } from '@/lib/ai/skills/creative-director';
 
 const EXAMPLE_PROMPTS = [
   {
@@ -501,20 +506,8 @@ export async function generateImagesForDesign(tree: DesignNode, message: string)
 // runs. A separate small dropdown lets the user override the design system
 // (default = auto, routed by pickSystemForTopic).
 
-/** Subset of the Concept type from creative-director (only what the UI reads). */
-type ConceptCard = {
-  name: string;
-  bigIdea: string;
-  palette: {
-    bg: string;
-    surface: string;
-    primary: string;
-    accent: string;
-    text: string;
-    textMuted: string;
-    border: string;
-  };
-};
+/** Full creative-direction concept (passed through to the agent pipeline). */
+type ConceptCard = Concept;
 
 /** Swatch dots shown on each concept card — picks 3 representative colors. */
 function paletteDots(p: ConceptCard['palette']): string[] {
@@ -525,10 +518,14 @@ function ConceptPicker({
   concepts,
   onPick,
   onSkip,
+  onGenerateAll,
+  isGeneratingAll,
 }: {
   concepts: ConceptCard[];
   onPick: (c: ConceptCard) => void;
   onSkip: () => void;
+  onGenerateAll?: () => void;
+  isGeneratingAll?: boolean;
 }) {
   return (
     <motion.div
@@ -569,11 +566,27 @@ function ConceptPicker({
           </motion.button>
         ))}
       </div>
-      <div className="flex justify-end">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        {onGenerateAll && concepts.length >= 2 && (
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-[11px] px-2 gap-1 border-emerald-300 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-400"
+            disabled={isGeneratingAll}
+            onClick={onGenerateAll}
+          >
+            {isGeneratingAll ? (
+              <Loader2 className="size-3 animate-spin" />
+            ) : (
+              <LayoutDashboard className="size-3" />
+            )}
+            Alle 3 Richtungen generieren
+          </Button>
+        )}
         <Button
           size="sm"
           variant="ghost"
-          className="h-7 text-[11px] px-2 gap-1 text-muted-foreground"
+          className="h-7 text-[11px] px-2 gap-1 text-muted-foreground ml-auto"
           onClick={onSkip}
         >
           <SkipForward className="size-3" />
@@ -665,11 +678,27 @@ export function ChatPanel() {
   const designSystem = useZDesignStore((s) => s.designSystem);
   const setDesignTree = useZDesignStore((s) => s.setDesignTree);
   const setDesignHTML = useZDesignStore((s) => s.setDesignHTML);
+  const designHTML = useZDesignStore((s) => s.designHTML);
   const setGenerationProgress = useZDesignStore((s) => s.setGenerationProgress);
   const resetGenerationProgress = useZDesignStore((s) => s.resetGenerationProgress);
   const setQualityReport = useZDesignStore((s) => s.setQualityReport);
   const qualityReport = useZDesignStore((s) => s.qualityReport);
   const generationProgress = useZDesignStore((s) => s.generationProgress);
+  const creativeMode = useZDesignStore((s) => s.creativeMode);
+  const pipelineSteps = useZDesignStore((s) => s.pipelineSteps);
+  const variantTracks = useZDesignStore((s) => s.variantTracks);
+  const resetPipelineSteps = useZDesignStore((s) => s.resetPipelineSteps);
+  const applyPipelineEvent = useZDesignStore((s) => s.applyPipelineEvent);
+  const initVariantTracks = useZDesignStore((s) => s.initVariantTracks);
+  const clearVariantTracks = useZDesignStore((s) => s.clearVariantTracks);
+  const applyVariantPipelineEvent = useZDesignStore((s) => s.applyVariantPipelineEvent);
+  const finishVariantTrack = useZDesignStore((s) => s.finishVariantTrack);
+  const setPipelineVariantLabel = useZDesignStore((s) => s.setPipelineVariantLabel);
+  const variantGallery = useZDesignStore((s) => s.variantGallery);
+  const setVariantGallery = useZDesignStore((s) => s.setVariantGallery);
+  const applyVariantPick = useZDesignStore((s) => s.applyVariantPick);
+  const setPipelineCancelFn = useZDesignStore((s) => s.setPipelineCancelFn);
+  const cancelPipeline = useZDesignStore((s) => s.cancelPipeline);
 
   const [input, setInput] = useState('');
   const [isEnhancing, setIsEnhancing] = useState(false);
@@ -728,6 +757,8 @@ export function ChatPanel() {
   const [pendingConcepts, setPendingConcepts] = useState<ConceptCard[] | null>(null);
   const [selectedConcept, setSelectedConcept] = useState<ConceptCard | null>(null);
   const [systemOverride, setSystemOverride] = useState<string>('auto');
+  const [isGeneratingVariants, setIsGeneratingVariants] = useState(false);
+  const pipelineAbortRef = useRef<AbortController[]>([]);
 
   // Store actions the assistant may trigger on the client.
   const canvasMode = useZDesignStore((s) => s.canvas.mode);
@@ -746,6 +777,7 @@ export function ChatPanel() {
   const fusionEnabledRef = useRef(fusionEnabled);
   const agentModeRef = useRef(agentMode);
   const assistantModeRef = useRef(assistantMode);
+  const creativeModeRef = useRef(false);
   const setDesignHTMLRef = useRef(setDesignHTML);
 
   useEffect(() => { projectIdRef.current = projectId; }, [projectId]);
@@ -754,6 +786,7 @@ export function ChatPanel() {
   useEffect(() => { fusionEnabledRef.current = fusionEnabled; }, [fusionEnabled]);
   useEffect(() => { agentModeRef.current = agentMode; }, [agentMode]);
   useEffect(() => { assistantModeRef.current = assistantMode; }, [assistantMode]);
+  useEffect(() => { creativeModeRef.current = creativeMode; }, [creativeMode]);
   useEffect(() => { setDesignHTMLRef.current = setDesignHTML; }, [setDesignHTML]);
   useEffect(() => { designTreeRef.current = designTree; }, [designTree]);
   useEffect(() => { designSystemRef.current = designSystem; }, [designSystem]);
@@ -770,7 +803,58 @@ export function ChatPanel() {
   const setDesignModeRef = useRef(setDesignModeAction);
   const setAgentModeRef = useRef(setAgentMode);
   const setFusionEnabledRef = useRef(setFusionEnabled);
+  const resetPipelineStepsRef = useRef(resetPipelineSteps);
+  const applyPipelineEventRef = useRef(applyPipelineEvent);
+  const initVariantTracksRef = useRef(initVariantTracks);
+  const clearVariantTracksRef = useRef(clearVariantTracks);
+  const applyVariantPipelineEventRef = useRef(applyVariantPipelineEvent);
+  const finishVariantTrackRef = useRef(finishVariantTrack);
+  const setPipelineVariantLabelRef = useRef(setPipelineVariantLabel);
+  const setVariantGalleryRef = useRef(setVariantGallery);
+  const setPipelineCancelFnRef = useRef(setPipelineCancelFn);
   const tRef = useRef(t);
+
+  const isAbortError = (err: unknown) =>
+    (err instanceof DOMException && err.name === 'AbortError') ||
+    (err instanceof Error && /abort/i.test(err.message));
+
+  const releasePipelineAbort = useCallback(() => {
+    pipelineAbortRef.current = [];
+    setPipelineCancelFnRef.current(null);
+  }, []);
+
+  const stopPipelineGeneration = useCallback(
+    (cancelled = false) => {
+      releasePipelineAbort();
+      setIsGeneratingVariants(false);
+      setIsGeneratingRef.current(false);
+      clearVariantTracksRef.current();
+      setPipelineVariantLabelRef.current(null);
+      resetGenerationProgressRef.current();
+      if (cancelled) {
+        resetPipelineStepsRef.current();
+        addChatMessageRef.current({
+          id: `cancel-${Date.now()}`,
+          projectId: projectIdRef.current || '',
+          role: 'system',
+          content: locale === 'de' ? 'Generierung abgebrochen.' : 'Generation cancelled.',
+          createdAt: new Date(),
+        });
+      }
+    },
+    [releasePipelineAbort, locale],
+  );
+
+  const registerPipelineAbort = useCallback(
+    (controllers: AbortController[]) => {
+      pipelineAbortRef.current = controllers;
+      setPipelineCancelFnRef.current(() => {
+        controllers.forEach((c) => c.abort());
+        stopPipelineGeneration(true);
+      });
+    },
+    [stopPipelineGeneration],
+  );
 
   // Picker refs (read inside sendMessage without stale closures)
   const pendingConceptsRef = useRef(pendingConcepts);
@@ -790,7 +874,32 @@ export function ChatPanel() {
   useEffect(() => { setDesignModeRef.current = setDesignModeAction; }, [setDesignModeAction]);
   useEffect(() => { setAgentModeRef.current = setAgentMode; }, [setAgentMode]);
   useEffect(() => { setFusionEnabledRef.current = setFusionEnabled; }, [setFusionEnabled]);
+  useEffect(() => { resetPipelineStepsRef.current = resetPipelineSteps; }, [resetPipelineSteps]);
+  useEffect(() => { applyPipelineEventRef.current = applyPipelineEvent; }, [applyPipelineEvent]);
+  useEffect(() => { initVariantTracksRef.current = initVariantTracks; }, [initVariantTracks]);
+  useEffect(() => { clearVariantTracksRef.current = clearVariantTracks; }, [clearVariantTracks]);
+  useEffect(() => { applyVariantPipelineEventRef.current = applyVariantPipelineEvent; }, [applyVariantPipelineEvent]);
+  useEffect(() => { finishVariantTrackRef.current = finishVariantTrack; }, [finishVariantTrack]);
+  useEffect(() => { setPipelineVariantLabelRef.current = setPipelineVariantLabel; }, [setPipelineVariantLabel]);
+  useEffect(() => { setVariantGalleryRef.current = setVariantGallery; }, [setVariantGallery]);
+  useEffect(() => { setPipelineCancelFnRef.current = setPipelineCancelFn; }, [setPipelineCancelFn]);
   useEffect(() => { tRef.current = t; }, [t]);
+
+  // ── Cream-Default: agentMode ON for new/empty AND HTML-artifact projects ──
+  // agentMode should be ON in two cases:
+  //   1. Empty project (no design yet) → user gets Cream quality out of the box
+  //   2. Project with HTML_ARTIFACT design → subsequent messages refine via Cream
+  // It stays OFF only when the project has a JSON node-tree design (editor mode).
+  // Runs once per project load (guarded by projectId in deps).
+  useEffect(() => {
+    const hasJsonDesign =
+      designMode === 'NODE_TREE' &&
+      designTree?.children && designTree.children.length > 0;
+    if (!hasJsonDesign && !agentModeRef.current) {
+      setAgentMode(true);
+      agentModeRef.current = true;
+    }
+  }, [projectId, designMode, designTree, designHTML]);
   useEffect(() => { pendingConceptsRef.current = pendingConcepts; }, [pendingConcepts]);
   useEffect(() => { selectedConceptRef.current = selectedConcept; }, [selectedConcept]);
   useEffect(() => { systemOverrideRef.current = systemOverride; }, [systemOverride]);
@@ -1153,100 +1262,270 @@ export function ChatPanel() {
    * the body. Split out from sendMessage so the ConceptPicker can trigger it
    * AFTER the user picks/skips a concept.
    */
-  const runAgentGeneration = useCallback(
-    async (cleanText: string, currentProjectId: string) => {
-      const concept = selectedConceptRef.current;
-      const sysKey = systemOverrideRef.current;
-
-      // Resolve the design system: explicit override, else topic-routed auto.
-      let systemName: string | undefined;
-      let systemCss: string | undefined;
-      if (sysKey && sysKey !== 'auto') {
-        const ds = DESIGN_SYSTEMS[sysKey];
-        if (ds) {
-          systemName = ds.name;
-          systemCss = ds.rootCss;
-        }
-      } else {
-        const auto = pickSystemForTopic(cleanText);
-        systemName = auto.name;
-        systemCss = auto.rootCss;
+  const handleStreamFrame = useCallback(
+    (frame: { step: string; label?: string; detail?: string; composite?: number }) => {
+      if (!frame.step || frame.step === 'complete') return;
+      applyPipelineEventRef.current({
+        step: frame.step,
+        label: frame.label ?? frame.step,
+        detail: frame.detail,
+        composite: frame.composite,
+      });
+      if (frame.label) {
+        const stepCount = useZDesignStore.getState().pipelineSteps.length;
+        setGenerationProgressRef.current({
+          stage: 'generating',
+          stageLabel: frame.label,
+          percentage: Math.min(96, 8 + stepCount * 7),
+          message: frame.detail ?? frame.label,
+        });
       }
+    },
+    [],
+  );
+
+  const runAgentGeneration = useCallback(
+    async (cleanText: string, currentProjectId: string, conceptOverride?: ConceptCard | null) => {
+      const concept = conceptOverride ?? selectedConceptRef.current;
+
+      const currentDesignHTML = useZDesignStore.getState().designHTML;
+      const currentDesignMode = useZDesignStore.getState().designMode;
+      const isRefinement =
+        currentDesignMode === 'HTML_ARTIFACT' &&
+        !!currentDesignHTML &&
+        currentDesignHTML.length > 100;
 
       setIsGeneratingRef.current(true);
-      startProgressSimulation();
+      setVariantGalleryRef.current(null);
+      resetPipelineStepsRef.current();
+      const controller = new AbortController();
+      registerPipelineAbort([controller]);
+      setGenerationProgressRef.current({
+        stage: 'generating',
+        stageLabel: isRefinement ? 'Verfeinerung...' : 'Agent-Pipeline...',
+        percentage: 4,
+        message: isRefinement ? 'Änderung wird angewendet...' : 'Pipeline gestartet...',
+      });
 
       try {
-        const res = await fetch('/api/design/agent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: cleanText,
-            projectId: currentProjectId,
-            ...(concept ? { concept } : {}),
-            ...(systemName ? { designSystemKey: systemName, designSystemCss: systemCss } : {}),
-          }),
-        });
+        if (isRefinement) {
+          applyPipelineEventRef.current({
+            step: 'refine-start',
+            label: 'Verfeinerung läuft',
+            detail: cleanText.slice(0, 120),
+          });
 
-        if (res.ok) {
-          const data = await res.json();
-          if (data.html) {
-            setDesignHTMLRef.current(data.html, data.trace, data.scores);
-            const aiMessage: ChatMessage = {
-              id: data.id || `ai-${Date.now()}`,
+          const res = await fetch('/api/design/cream', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: cleanText,
               projectId: currentProjectId,
-              role: 'assistant',
-              content: data.message || 'Art-directeter Entwurf erstellt.',
-              metadata: {
-                agent: true,
-                mode: 'HTML_ARTIFACT',
-                trace: data.trace,
-                scores: data.scores,
-              } as unknown as ChatMessage['metadata'],
-              createdAt: new Date(data.createdAt || Date.now()),
-            };
-            addChatMessageRef.current(aiMessage);
-            stopProgressSimulation(true);
-            return;
+              quick: true,
+              existingHtml: currentDesignHTML,
+              changeRequest: cleanText,
+              ...(concept ? { concept } : {}),
+            }),
+          });
+
+          if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}));
+            throw new Error((errorData as { error?: string }).error ?? 'Refinement failed');
           }
-          // No html — surface whatever message came back.
-          const aiMessage: ChatMessage = {
+
+          const data = await res.json();
+          if (!data.html) throw new Error('Kein HTML in der Antwort');
+
+          applyPipelineEventRef.current({ step: 'refine-done', label: 'Verfeinert' });
+          applyPipelineEventRef.current({ step: 'complete', label: 'Fertig' });
+          setDesignHTMLRef.current(data.html, undefined, undefined);
+
+          addChatMessageRef.current({
             id: data.id || `ai-${Date.now()}`,
             projectId: currentProjectId,
             role: 'assistant',
-            content: data.message || 'Agent lieferte kein HTML zurück.',
-            metadata: { agent: true } as unknown as ChatMessage['metadata'],
+            content: data.message || 'Design verfeinert.',
+            metadata: { agent: true, cream: true, refinement: true } as ChatMessage['metadata'],
             createdAt: new Date(data.createdAt || Date.now()),
-          };
-          addChatMessageRef.current(aiMessage);
-          stopProgressSimulation(true);
-        } else {
-          const errorData = await res.json().catch(() => ({}));
-          const errorMessage: ChatMessage = {
-            id: `error-${Date.now()}`,
-            projectId: currentProjectId,
-            role: 'system',
-            content: `${tRef.current.common.error}: ${errorData.error || 'Unknown error'}`,
-            createdAt: new Date(),
-          };
-          addChatMessageRef.current(errorMessage);
-          stopProgressSimulation(false);
+          });
+          setGenerationProgressRef.current({
+            stage: 'complete',
+            stageLabel: 'Fertig',
+            percentage: 100,
+            message: 'Verfeinerung abgeschlossen',
+          });
+          setTimeout(() => resetGenerationProgressRef.current(), 1500);
+          return;
         }
-      } catch {
-        const errorMessage: ChatMessage = {
+
+        const complete = await runAgentDesignStream(
+          {
+            message: cleanText,
+            projectId: currentProjectId,
+            ...(concept ? { concept } : {}),
+          },
+          handleStreamFrame,
+          controller.signal,
+        );
+
+        applyPipelineEventRef.current({
+          step: 'complete',
+          label: 'Fertig',
+          detail: complete.message,
+        });
+
+        const scores = complete.scores as Parameters<typeof setDesignHTML>[2];
+        setDesignHTMLRef.current(complete.html, complete.trace, scores ?? null);
+
+        addChatMessageRef.current({
+          id: complete.id || `ai-${Date.now()}`,
+          projectId: currentProjectId,
+          role: 'assistant',
+          content: complete.message || 'HTML-Design generiert.',
+          metadata: {
+            agent: true,
+            mode: 'HTML_ARTIFACT',
+            scores: complete.scores,
+            trace: complete.trace,
+          } as ChatMessage['metadata'],
+          createdAt: new Date(complete.createdAt || Date.now()),
+        });
+
+        setGenerationProgressRef.current({
+          stage: 'complete',
+          stageLabel: 'Fertig',
+          percentage: 100,
+          message: complete.message,
+        });
+        setTimeout(() => resetGenerationProgressRef.current(), 2000);
+      } catch (err) {
+        if (isAbortError(err)) return;
+        const msg = err instanceof Error ? err.message : tRef.current.common.error;
+        addChatMessageRef.current({
           id: `error-${Date.now()}`,
           projectId: currentProjectId,
           role: 'system',
-          content: tRef.current.common.error,
+          content: `${tRef.current.common.error}: ${msg}`,
           createdAt: new Date(),
-        };
-        addChatMessageRef.current(errorMessage);
-        stopProgressSimulation(false);
+        });
+        setGenerationProgressRef.current({
+          stage: 'error',
+          stageLabel: 'Fehler',
+          percentage: 100,
+          message: msg,
+        });
       } finally {
+        releasePipelineAbort();
         setIsGeneratingRef.current(false);
       }
     },
-    [startProgressSimulation, stopProgressSimulation]
+    [handleStreamFrame, registerPipelineAbort, releasePipelineAbort, isAbortError],
+  );
+
+  const runAllConceptVariants = useCallback(
+    async (cleanText: string, currentProjectId: string, concepts: ConceptCard[]) => {
+      if (concepts.length === 0) return;
+      setIsGeneratingVariants(true);
+      setIsGeneratingRef.current(true);
+      setPendingConcepts(null);
+      setVariantGalleryRef.current(null);
+
+      const controllers = concepts.map(() => new AbortController());
+      registerPipelineAbort(controllers);
+
+      initVariantTracksRef.current(concepts.map((c) => c.name));
+      setPipelineVariantLabelRef.current(
+        `${concepts.length} Richtungen parallel`,
+      );
+      setGenerationProgressRef.current({
+        stage: 'generating',
+        stageLabel: '3 Richtungen parallel',
+        percentage: 4,
+        message: 'Alle Konzepte werden gleichzeitig generiert...',
+      });
+
+      const results = await Promise.all(
+        concepts.map(async (c, i): Promise<DesignVariantResult | null> => {
+          const onVariantFrame = (frame: {
+            step: string;
+            label?: string;
+            detail?: string;
+            composite?: number;
+          }) => {
+            if (!frame.step || frame.step === 'complete') return;
+            applyVariantPipelineEventRef.current(c.name, {
+              step: frame.step,
+              label: frame.label ?? frame.step,
+              detail: frame.detail,
+              composite: frame.composite,
+            });
+            const tracks = useZDesignStore.getState().variantTracks;
+            const doneCount = tracks.filter((t) => t.status === 'done').length;
+            setGenerationProgressRef.current({
+              stage: 'generating',
+              stageLabel: '3 Richtungen parallel',
+              percentage: Math.min(96, 8 + doneCount * 28),
+              message: frame.detail ?? frame.label ?? c.name,
+            });
+          };
+
+          try {
+            const complete = await runAgentDesignStream(
+              { message: cleanText, projectId: currentProjectId, concept: c },
+              onVariantFrame,
+              controllers[i].signal,
+            );
+            const composite =
+              typeof complete.scores?.composite === 'number'
+                ? complete.scores.composite
+                : undefined;
+            finishVariantTrackRef.current(c.name, { composite, status: 'done' });
+            applyVariantPipelineEventRef.current(c.name, {
+              step: 'complete',
+              label: 'Fertig',
+              detail: complete.message,
+            });
+            return {
+              conceptName: c.name,
+              bigIdea: c.bigIdea,
+              html: complete.html,
+              composite,
+              trace: complete.trace,
+              concept: c,
+            };
+          } catch (err) {
+            if (isAbortError(err)) return null;
+            console.warn('[variants] failed for', c.name, err);
+            finishVariantTrackRef.current(c.name, { status: 'error' });
+            return null;
+          }
+        }),
+      );
+
+      if (pipelineAbortRef.current.length === 0) return;
+
+      const collected = results.filter((r): r is DesignVariantResult => r !== null);
+
+      releasePipelineAbort();
+      clearVariantTracksRef.current();
+      setVariantGalleryRef.current(collected.length > 0 ? collected : null);
+      setIsGeneratingVariants(false);
+      setIsGeneratingRef.current(false);
+      setPipelineVariantLabelRef.current(null);
+      resetGenerationProgressRef.current();
+
+      if (collected.length > 0) {
+        addChatMessageRef.current({
+          id: `variants-${Date.now()}`,
+          projectId: currentProjectId,
+          role: 'assistant',
+          content: `${collected.length} Richtungen generiert — wähle im Canvas oder Chat.`,
+          metadata: { agent: true, variants: true } as ChatMessage['metadata'],
+          createdAt: new Date(),
+        });
+      }
+    },
+    [registerPipelineAbort, releasePipelineAbort, isAbortError],
   );
 
   const sendMessage = useCallback(
@@ -1459,21 +1738,17 @@ export function ChatPanel() {
           }
           // Re-acquire the lock + progress for the direct generation below.
           setIsGeneratingRef.current(true);
-          setGenerationProgressRef.current({
-            stage: 'generating',
-            stageLabel: 'Generating design...',
-            percentage: 30,
-            message: 'Creating your design...',
-          });
-          startProgressSimulation();
           await runAgentGeneration(cleanText, currentProjectId);
           return;
         }
 
-        // === Non-agent (chat) path — unchanged ===
-        // (Agent mode always returns early above via the concept gate or
-        // runAgentGeneration, so this branch only handles the chat pipeline.)
-        const res = await fetch('/api/chat', {
+        // === Non-agent (chat) path — robust JSON fetch ===
+        // Uses /api/chat directly (not /api/chat/stream). The SSE stream was
+        // too fragile on Google Drive (Fast-Refresh destroys the async stream
+        // reader's state mid-flight). The JSON endpoint is synchronous: the
+        // fetch completes, the design is set in the store, done. The progress
+        // UI still shows the simulated stages during the wait.
+        const chatRes = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1486,9 +1761,13 @@ export function ChatPanel() {
           }),
         });
 
-        if (res.ok) {
-          const data = await res.json();
+        if (!chatRes.ok) {
+          throw new Error(`Chat failed: status ${chatRes.status}`);
+        }
 
+        const data = await chatRes.json();
+
+        {
           const aiMessage: ChatMessage = {
             id: data.id || `ai-${Date.now()}`,
             projectId: currentProjectId,
@@ -1575,24 +1854,15 @@ export function ChatPanel() {
 
           // Stop progress with success
           stopProgressSimulation(true);
-        } else {
-          const errorData = await res.json().catch(() => ({}));
-          const errorMessage: ChatMessage = {
-            id: `error-${Date.now()}`,
-            projectId: currentProjectId,
-            role: 'system',
-            content: `${tRef.current.common.error}: ${errorData.error || 'Unknown error'}`,
-            createdAt: new Date(),
-          };
-          addChatMessageRef.current(errorMessage);
-          stopProgressSimulation(false);
         }
-      } catch {
+      } catch (sendError) {
+        // Diagnostic: surface the actual error that broke generation.
+        console.error('[sendMessage] CATCH:', sendError);
         const errorMessage: ChatMessage = {
           id: `error-${Date.now()}`,
           projectId: currentProjectId,
           role: 'system',
-          content: tRef.current.common.error,
+          content: `${tRef.current.common.error}: ${sendError instanceof Error ? sendError.message : 'Unknown error'}`,
           createdAt: new Date(),
         };
         addChatMessageRef.current(errorMessage);
@@ -1677,6 +1947,34 @@ export function ChatPanel() {
     void runAgentGeneration(stash.text, stash.projectId);
   }, [runAgentGeneration]);
 
+  const handleGenerateAllConcepts = useCallback(() => {
+    const stash = lastAgentMessageRef.current;
+    const concepts = pendingConceptsRef.current;
+    if (!stash || !concepts?.length) return;
+    lastAgentMessageRef.current = stash;
+    void runAllConceptVariants(stash.text, stash.projectId, concepts);
+  }, [runAllConceptVariants]);
+
+  const handlePickVariant = useCallback(
+    (v: DesignVariantResult) => {
+      const pid = projectIdRef.current;
+      if (!pid) return;
+      applyVariantPick(v);
+      if (v.concept?.name && v.concept?.bigIdea && v.concept?.palette) {
+        setSelectedConcept(v.concept as unknown as ConceptCard);
+      }
+      addChatMessage({
+        id: `pick-${Date.now()}`,
+        projectId: pid,
+        role: 'assistant',
+        content: `Richtung „${v.conceptName}" übernommen${v.composite ? ` (Score ${v.composite.toFixed(1)})` : ''}.`,
+        metadata: { agent: true, variantPick: v.conceptName } as ChatMessage['metadata'],
+        createdAt: new Date(),
+      });
+    },
+    [addChatMessage, applyVariantPick],
+  );
+
   const handleClearSelectedConcept = useCallback(() => {
     setSelectedConcept(null);
   }, []);
@@ -1694,7 +1992,10 @@ export function ChatPanel() {
   }, [isListening, startListening, stopListening]);
 
   const hasMessages = chatMessages.length > 0;
-  const showProgress = isGenerating && generationProgress.stage !== 'idle';
+  const showPipelineStatus =
+    isGenerating && (pipelineSteps.length > 0 || variantTracks.length > 0);
+  const showLegacyProgress =
+    isGenerating && pipelineSteps.length === 0 && generationProgress.stage !== 'idle';
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -1750,9 +2051,14 @@ export function ChatPanel() {
                   concepts={pendingConcepts}
                   onPick={handlePickConcept}
                   onSkip={handleSkipConcept}
+                  onGenerateAll={handleGenerateAllConcepts}
+                  isGeneratingAll={isGeneratingVariants}
                 />
               )}
-              {isGenerating && !showProgress && <TypingIndicator />}
+              {variantGallery && variantGallery.length > 0 && (
+                <VariantGalleryPicker variants={variantGallery} onPick={handlePickVariant} />
+              )}
+              {isGenerating && !showPipelineStatus && !showLegacyProgress && <TypingIndicator />}
             </div>
           </div>
 
@@ -1771,8 +2077,11 @@ export function ChatPanel() {
         </div>
       )}
 
-      {/* Generation Step Progress */}
-      {showProgress && <GenerationStepProgress />}
+      {/* Live pipeline status (agent SSE) or legacy simulated progress (JSON chat) */}
+      {showPipelineStatus && (
+        <PipelineStatusPanel onCancel={() => cancelPipeline()} />
+      )}
+      {showLegacyProgress && <GenerationStepProgress />}
 
       {/* Concept + Design-System pickers — Agent mode only */}
       {agentMode && (

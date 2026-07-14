@@ -1,5 +1,7 @@
 // Z.Design - Core Type Definitions
 
+import type { Concept } from '@/lib/ai/skills/creative-director';
+
 // ============ Design JSON Schema ============
 
 export interface DesignNode {
@@ -242,6 +244,17 @@ export interface ChatMessageMeta {
   usedFallback?: boolean;
   parseFailedRetryText?: string;
   templateUsed?: boolean;
+  /** Agent / HTML artifact pipeline */
+  agent?: boolean;
+  cream?: boolean;
+  refinement?: boolean;
+  variants?: boolean;
+  variantPick?: string;
+  mode?: string;
+  scores?: Record<string, unknown>;
+  trace?: Array<{ step: string; label: string; detail?: string }>;
+  assistant?: boolean;
+  assistantActions?: string[];
 }
 
 // ============ Project ============
@@ -374,4 +387,15 @@ export interface QualityIssue {
   message: string;
   nodeId?: string;
   autoFixable: boolean;
+}
+
+// ============ Variant Gallery (parallel concept directions) ============
+
+export interface DesignVariantResult {
+  conceptName: string;
+  bigIdea: string;
+  html: string;
+  composite?: number;
+  trace?: Array<{ step: string; label: string; detail?: string }>;
+  concept?: Concept;
 }

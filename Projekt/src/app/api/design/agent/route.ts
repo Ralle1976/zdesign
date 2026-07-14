@@ -16,7 +16,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { buildArtBrief, briefLabel, generateHtmlPrompt } from '@/lib/ai/skills/art-direction';
-import { axesLabel } from '@/lib/ai/skills/creative-diversity';
+import { axesLabel, pickCreativeAxes } from '@/lib/ai/skills/creative-diversity';
+import {
+  AGENCY_ANIMATIONS,
+  AGENCY_CONCEPT,
+  AGENCY_LAYOUT_SPECS,
+  AGENCY_PREMIUM_LUXE,
+  injectAgencyCraft,
+} from '@/lib/ai/skills/agency-craft';
+import { creativeSeed, isPremiumBrief } from '@/lib/ai/pipeline-intent';
 import { runCritiqueTheater, type TheaterResult } from '@/lib/ai/skills/critic-theater';
 import { refinePrompt } from '@/lib/ai/skills/refine';
 import { callZai } from '@/lib/ai/zai-direct';
@@ -30,6 +38,8 @@ import { appendTrace } from '@/lib/ai/skills/trace-store';
 import { runAudits } from '@/lib/audit/runner';
 import { recordDesign } from '@/lib/ai/memory/history';
 import { recallAntiPatterns } from '@/lib/ai/memory/negative-memory';
+import { loadUserMemory, userMemoryToPromptBlock } from '@/lib/ai/memory/user-memory';
+import { lessonsToPromptBlock, saveResult, maybeReflect } from '@/lib/ai/memory/lessons';
 
 /** Map deterministic lint P0 findings into the same shape as probabilistic
  *  critique refinements, so refine gets BOTH signals in one pass. */
@@ -99,7 +109,12 @@ function acceptHtmlDoc(raw: string): string {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { message, projectId, concept } = body as { message: string; projectId: string; concept?: Concept };
+    const { message, projectId, concept } = body as {
+      message: string;
+      projectId: string;
+      concept?: Concept;
+      existingHtml?: string;
+    };
 
     if (!message || !projectId) {
       return NextResponse.json({ error: 'message and projectId are required' }, { status: 400 });
@@ -114,10 +129,17 @@ export async function POST(request: NextRequest) {
     // 1) Art direction (deterministic, no Fusion call).
     const brief = buildArtBrief(message);
     if (concept) brief.concept = concept;
+    brief.creative = pickCreativeAxes(creativeSeed(message, concept));
+    const premium = isPremiumBrief(message, concept);
+    const agencyBlock =
+      AGENCY_LAYOUT_SPECS + AGENCY_ANIMATIONS + AGENCY_CONCEPT + (premium ? AGENCY_PREMIUM_LUXE : '');
     const directionLabel = briefLabel(brief);
     trace.push({ step: 'art-direction', label: `Art Direction`, detail: `${directionLabel}` });
     if (concept) {
       trace.push({ step: 'concept', label: `Konzept: ${concept.name}`, detail: concept.bigIdea });
+    }
+    if (premium) {
+      trace.push({ step: 'premium', label: 'Premium Luxe Mode', detail: 'Agency-Craft + Luxe-Specs aktiv' });
     }
     // KREATIV-DNA (anti-sameness / motion): surfaced in the trace so the user
     // sees WHICH structural gesture + motions + effect this design was built
@@ -154,6 +176,9 @@ export async function POST(request: NextRequest) {
             .map((i) => `- ${i.text}`)
             .join('\n')}\nKeines dieser Muster wiederholen.\n`
         : '';
+    // User preferences (editable in settings) — inject into every generation
+    // so the agent respects brand voice, color taboos, style preferences, etc.
+    const userMemoryBlock = userMemoryToPromptBlock(await loadUserMemory());
     trace.push({
       step: 'negative-memory',
       label: memory.items.length
@@ -238,7 +263,13 @@ export async function POST(request: NextRequest) {
     }
 
     const genStart = Date.now();
-    const existing = project.designMode === 'HTML_ARTIFACT' && project.designHTML ? project.designHTML : undefined;
+    const bodyExisting =
+      typeof body.existingHtml === 'string' && body.existingHtml.length > 100
+        ? body.existingHtml
+        : undefined;
+    const existing =
+      bodyExisting ??
+      (project.designMode === 'HTML_ARTIFACT' && project.designHTML ? project.designHTML : undefined);
     const GEN_ATTEMPTS = 3;
     let html = '';
     const rationalePrefix = designRationale
@@ -246,11 +277,20 @@ export async function POST(request: NextRequest) {
       : '';
     for (let ga = 1; ga <= GEN_ATTEMPTS; ga++) {
       const raw = cleanHtml(
-        await callZai(rationalePrefix + memoryBlock + imageBlock + generateHtmlPrompt(brief, message, existing), {
-          maxTokens: 12000,
-          temperature: ga === 1 ? 0.5 : 0.3,
-          timeoutMs: 300_000,
-        }),
+        await callZai(
+          rationalePrefix +
+            lessonsToPromptBlock() +
+            userMemoryBlock +
+            memoryBlock +
+            agencyBlock +
+            imageBlock +
+            generateHtmlPrompt(brief, message, existing),
+          {
+            maxTokens: 12000,
+            temperature: ga === 1 ? 0.5 : 0.3,
+            timeoutMs: 300_000,
+          },
+        ),
       );
       const out = acceptHtmlDoc(raw);
       if (out) {
@@ -263,6 +303,8 @@ export async function POST(request: NextRequest) {
       }
     }
     trace.push({ step: 'generate', label: `Entwurf v1 generiert`, detail: `${(html.length / 1024).toFixed(1)} KB in ${(((Date.now() - genStart) / 1000) | 0)}s` });
+
+    html = injectAgencyCraft(html);
 
     // 2b) Deterministic anti-slop floor: lint v1, collect P0 findings to merge
     //     into the first refine. This runs UNDER the probabilistic critique —
@@ -465,9 +507,36 @@ export async function POST(request: NextRequest) {
         composite: bestComposite >= 0 ? bestComposite : null,
         palette: concept?.palette?.accent ?? null,
         projectId,
+        // Capture the Critique Theater's concrete diagnoses + fixes so the
+        // negative-memory layer can learn from them on future runs.
+        rootCause: bestTheater
+          ? bestTheater.perPanelist
+              .filter((p) => p.score < 7)
+              .map((p) => p.summary)
+              .join(' | ') || null
+          : null,
+        feedback: bestTheater?.refinements?.slice(0, 5).join(' ; ') ?? null,
+        sourceAgentId: 'design/agent',
       });
     } catch (e) {
       console.warn('[design/agent] recordDesign failed:', e instanceof Error ? e.message : e);
+    }
+
+    // Record the outcome for the lessons reflect-loop (Graphify-style).
+    try {
+      await saveResult({
+        domain: brief.domain,
+        outcome: bestComposite >= 7 ? 'useful' : 'dead_end',
+        composite: bestComposite >= 0 ? bestComposite : 5,
+        palette: concept?.palette?.accent ?? undefined,
+        concept: concept?.name ?? undefined,
+        detail: bestComposite >= 7
+          ? concept?.layoutApproach ?? brief.archetype
+          : bestTheater?.perPanelist?.find((p) => p.score < 7)?.summary ?? 'low quality',
+      });
+      maybeReflect();
+    } catch {
+      // Non-fatal.
     }
 
     // Surface the BEST round's per-panelist scores + composite. Map to the

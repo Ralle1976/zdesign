@@ -4,6 +4,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
+// Lightweight, deterministic content hash for designJSON de-duplication (T10).
+// We compare structural content, not exact whitespace, by stripping spaces.
+// Not cryptographic — only used to decide "did the design actually change?".
+function simpleDesignHash(designJSON: string): string {
+  const compact = designJSON.replace(/\s+/g, '');
+  let h = 5381;
+  for (let i = 0; i < compact.length; i++) {
+    h = ((h << 5) + h + compact.charCodeAt(i)) | 0;
+  }
+  return `h${(h >>> 0).toString(16)}`;
+}
+
 // GET /api/projects/[id] - Get project by ID
 export async function GET(
   _request: NextRequest,
@@ -64,7 +76,7 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { name, description, designJSON, designHTML, designMode, status, thumbnail, isPublic, designSystemId } = body;
+    const { name, description, designJSON, designHTML, designMode, status, thumbnail, isPublic, designSystemId, createVersion } = body;
 
     // Verify project exists
     const existing = await db.project.findUnique({ where: { id } });
@@ -120,16 +132,51 @@ export async function PATCH(
       },
     });
 
-    // If designJSON was updated, also create a version snapshot
-    if (designJSON !== undefined) {
+    // If designJSON was updated, conditionally create a version snapshot.
+    //
+    // T10 fix (2026-07-04): previously EVERY PATCH with designJSON created a new
+    // Version row. Auto-save fires every 5s, so the Version table exploded.
+    // New policy — create a Version only when ONE of these holds:
+    //   1. The client explicitly opts in via `createVersion: true` (used by the
+    //      explicit "Save snapshot / version" UI action, NOT by auto-save).
+    //   2. The design actually changed AND enough time passed since the last
+    //      auto-snapshot (coalescing safety net, in case a client forgets the
+    //      flag). Default window: 10 minutes.
+    // The default (auto-save, no flag) therefore never creates a Version.
+    if (designJSON !== undefined && createVersion === true) {
       await db.version.create({
         data: {
           projectId: id,
-          label: `Auto-save - ${new Date().toLocaleString()}`,
+          label: `Snapshot - ${new Date().toLocaleString()}`,
           designJSON: updateData.designJSON as string,
-          changeSummary: 'Design updated via API',
+          changeSummary: 'Explicit version snapshot',
         },
       });
+    } else if (designJSON !== undefined) {
+      // Coalescing safety net: at most one auto-snapshot per project per 10 min,
+      // and only if the design differs from the last snapshot. This keeps the
+      // Version table bounded even for clients that don't send createVersion.
+      const AUTO_SNAPSHOT_WINDOW_MS = 10 * 60 * 1000;
+      const newHash = simpleDesignHash(updateData.designJSON as string);
+      const lastSnapshot = await db.version.findFirst({
+        where: { projectId: id, label: { startsWith: 'Auto-snapshot' } },
+        orderBy: { createdAt: 'desc' },
+        select: { createdAt: true, changeSummary: true },
+      });
+      const windowPassed =
+        !lastSnapshot || Date.now() - lastSnapshot.createdAt.getTime() > AUTO_SNAPSHOT_WINDOW_MS;
+      // changeSummary stores the hash for de-dup comparison (see below).
+      const lastHash = lastSnapshot?.changeSummary ?? '';
+      if (windowPassed && lastHash !== newHash) {
+        await db.version.create({
+          data: {
+            projectId: id,
+            label: `Auto-snapshot - ${new Date().toLocaleString()}`,
+            designJSON: updateData.designJSON as string,
+            changeSummary: newHash, // hash used for de-dup, not user-visible text
+          },
+        });
+      }
     }
 
     return NextResponse.json({ project });

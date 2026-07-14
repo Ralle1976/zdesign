@@ -16,6 +16,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import type { CanvasMode, ViewportSize } from '@/types/design';
+import type { CapabilitiesManifest } from '@/hooks/useCapabilities';
 
 const MODE_ICONS: Record<CanvasMode, typeof Sparkles> = {
   ai: Sparkles,
@@ -30,9 +31,12 @@ const VIEWPORT_ICONS: Record<ViewportSize, typeof Monitor> = {
 
 interface StatusBarProps {
   isSaving?: boolean;
+  /** Optional capabilities manifest surfaced by useCapabilities on app start. */
+  capabilities?: CapabilitiesManifest | null;
+  capabilitiesError?: string | null;
 }
 
-export function StatusBar({ isSaving = false }: StatusBarProps) {
+export function StatusBar({ isSaving = false, capabilities = null, capabilitiesError = null }: StatusBarProps) {
   const { t, locale } = useI18n();
   const canvas = useZDesignStore((s) => s.canvas);
   const isDirty = useZDesignStore((s) => s.isDirty);
@@ -98,10 +102,30 @@ export function StatusBar({ isSaving = false }: StatusBarProps) {
 
         <Separator orientation="vertical" className="h-3" />
 
+        {/* App capabilities (self-discovery: DB + provider count) */}
+        {capabilitiesError ? (
+          <div className="flex items-center gap-1.5 text-red-600" title={capabilitiesError}>
+            <span>capabilities: error</span>
+          </div>
+        ) : capabilities ? (
+          <div
+            className="flex items-center gap-1.5"
+            title={`providers: ${capabilities.providers.map((p) => p.id).join(', ') || 'none'}; features: ${capabilities.features.filter((f) => f.enabled).map((f) => f.key).join(', ')}`}
+          >
+            <span className={capabilities.database.connected ? 'text-emerald-600' : 'text-red-600'}>
+              db:{capabilities.database.connected ? 'ok' : 'down'}
+            </span>
+            <Separator orientation="vertical" className="h-3" />
+            <span>{capabilities.providers.length} providers</span>
+          </div>
+        ) : null}
+
+        <Separator orientation="vertical" className="h-3" />
+
         {/* Version */}
         <div className="flex items-center gap-1.5">
           <Clock className="size-3" />
-          <span>v0.1.0</span>
+          <span>v{capabilities?.version ?? '0.1.0'}</span>
         </div>
       </div>
     </footer>

@@ -28,6 +28,15 @@ import {
   briefLabel,
   generateHtmlPrompt,
 } from '@/lib/ai/skills/art-direction';
+import { axesLabel, pickCreativeAxes } from '@/lib/ai/skills/creative-diversity';
+import {
+  AGENCY_ANIMATIONS,
+  AGENCY_CONCEPT,
+  AGENCY_LAYOUT_SPECS,
+  AGENCY_PREMIUM_LUXE,
+  injectAgencyCraft,
+} from '@/lib/ai/skills/agency-craft';
+import { creativeSeed, isPremiumBrief } from '@/lib/ai/pipeline-intent';
 import {
   runCritiqueTheater,
   type TheaterResult,
@@ -51,6 +60,15 @@ import { enforceConceptTokens } from '@/lib/ai/skills/palette-enforcer';
 import { appendTrace } from '@/lib/ai/skills/trace-store';
 import { runAudits } from '@/lib/audit/runner';
 import { recordDesign } from '@/lib/ai/memory/history';
+import { recallAntiPatterns } from '@/lib/ai/memory/negative-memory';
+import { loadUserMemory, userMemoryToPromptBlock } from '@/lib/ai/memory/user-memory';
+import { lessonsToPromptBlock, saveResult, maybeReflect } from '@/lib/ai/memory/lessons';
+import {
+  generateImagesMinimax,
+  buildImagePrompts,
+  buildThaiFoodPrompts,
+  isMinimaxImageConfigured,
+} from '@/lib/ai/image-minimax';
 
 interface TraceStep {
   step: string;
@@ -150,10 +168,65 @@ export async function POST(request: NextRequest) {
         // 1) Art direction (deterministic).
         const brief = buildArtBrief(message);
         if (concept) brief.concept = concept;
+        brief.creative = pickCreativeAxes(creativeSeed(message, concept));
+        const premium = isPremiumBrief(message, concept);
+        const agencyBlock =
+          AGENCY_LAYOUT_SPECS + AGENCY_ANIMATIONS + AGENCY_CONCEPT + (premium ? AGENCY_PREMIUM_LUXE : '');
         const directionLabel = briefLabel(brief);
         pushTrace('art-direction', 'Art Direction', directionLabel);
         if (concept) {
           pushTrace('concept', `Konzept: ${concept.name}`, concept.bigIdea);
+        }
+        if (brief.creative) {
+          pushTrace(
+            'creative-dna',
+            `Kreativ-DNA: ${axesLabel(brief.creative)}`,
+            `Struktur ${brief.creative.archetype.name}`,
+          );
+        }
+        if (premium) {
+          pushTrace('premium', 'Premium Luxe Mode', 'Agency-Craft + Luxe-Specs aktiv');
+        }
+
+        const memory = await recallAntiPatterns({ domain: brief.domain, maxTokens: 800 });
+        const memoryBlock =
+          memory.items.length > 0
+            ? `\n\nAUS DEM GEDÄCHTNIS — vergangene Fehler für „${brief.domain}", UNBEDINGT VERMEIDEN:\n${memory.items
+                .map((i) => `- ${i.text}`)
+                .join('\n')}\n`
+            : '';
+        const userMemoryBlock = userMemoryToPromptBlock(await loadUserMemory());
+        if (memory.items.length > 0) {
+          pushTrace(
+            'negative-memory',
+            `Gedächtnis: ${memory.items.length} Muster vermeiden`,
+            memory.items
+              .map((i) => i.text.replace(/<[^>]+>/g, ''))
+              .slice(0, 3)
+              .join(' · '),
+          );
+        }
+
+        let imageBlock = '';
+        if (isMinimaxImageConfigured()) {
+          try {
+            const hay = `${message} ${brief.imagery || ''}`.toLowerCase();
+            const isThai = /thai|pad thai|imbiss|kurry|curry|basil|nudel|noodle/.test(hay);
+            const imgPrompts = isThai
+              ? buildThaiFoodPrompts(message, brief.imagery)
+              : buildImagePrompts(message, brief.imagery);
+            const imgs = await generateImagesMinimax(imgPrompts, {}, 3);
+            const urls = imgs.map((i) => i.url).filter(Boolean);
+            if (urls.length > 0) {
+              imageBlock =
+                '\nBILDER (ECHTE FOTOS — VERWENDE NUR DIESE URLs):\n' +
+                urls.map((u, i) => `  Bild ${i + 1}: ${u}`).join('\n') +
+                '\n';
+              pushTrace('images', 'Bilder generiert', `${urls.length} MiniMax-Fotos`);
+            }
+          } catch {
+            pushTrace('images', 'Bilder übersprungen', 'MiniMax nicht verfügbar');
+          }
         }
 
         // 1b) LEARN (load) — inject approved recipe as baseline.
@@ -214,10 +287,16 @@ export async function POST(request: NextRequest) {
 
         // 2) Generate v1 HTML (with up to GEN_ATTEMPTS retries).
         const genStart = Date.now();
-        const existing =
-          project.designMode === 'HTML_ARTIFACT' && project.designHTML
-            ? project.designHTML
+        const bodyExisting =
+          typeof (body as { existingHtml?: string }).existingHtml === 'string' &&
+          (body as { existingHtml: string }).existingHtml.length > 100
+            ? (body as { existingHtml: string }).existingHtml
             : undefined;
+        const existing =
+          bodyExisting ??
+          (project.designMode === 'HTML_ARTIFACT' && project.designHTML
+            ? project.designHTML
+            : undefined);
         const GEN_ATTEMPTS = 3;
         let html = '';
         const rationalePrefix = designRationale
@@ -233,7 +312,13 @@ export async function POST(request: NextRequest) {
         for (let ga = 1; ga <= GEN_ATTEMPTS; ga++) {
           const raw = cleanHtml(
             await callZai(
-              rationalePrefix + generateHtmlPrompt(brief, message, existing),
+              rationalePrefix +
+                lessonsToPromptBlock() +
+                userMemoryBlock +
+                memoryBlock +
+                agencyBlock +
+                imageBlock +
+                generateHtmlPrompt(brief, message, existing),
               {
                 maxTokens: 12000,
                 temperature: ga === 1 ? 0.5 : 0.3,
@@ -255,6 +340,8 @@ export async function POST(request: NextRequest) {
             );
           }
         }
+        html = injectAgencyCraft(html);
+
         send({
           step: 'generate-done',
           label: 'Entwurf v1 generiert',
@@ -504,6 +591,23 @@ export async function POST(request: NextRequest) {
             '[design/agent/stream] recordDesign failed:',
             e instanceof Error ? e.message : e,
           );
+        }
+
+        try {
+          await saveResult({
+            domain: brief.domain,
+            outcome: bestComposite >= 7 ? 'useful' : 'dead_end',
+            composite: bestComposite >= 0 ? bestComposite : 5,
+            palette: concept?.palette?.accent ?? undefined,
+            concept: concept?.name ?? undefined,
+            detail:
+              bestComposite >= 7
+                ? concept?.layoutApproach ?? brief.archetype
+                : bestTheater?.perPanelist?.find((p) => p.score < 7)?.summary ?? 'low quality',
+          });
+          maybeReflect();
+        } catch {
+          // non-fatal
         }
 
         // Surface best-round scores (legacy spa-style projection kept for UI).

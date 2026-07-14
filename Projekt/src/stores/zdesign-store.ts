@@ -1,4 +1,53 @@
 import { create } from 'zustand';
+
+export type PipelineStepStatus = 'pending' | 'active' | 'done' | 'error';
+
+export interface PipelineStep {
+  step: string;
+  label: string;
+  detail?: string;
+  status: PipelineStepStatus;
+  composite?: number;
+}
+
+export type VariantTrackStatus = 'pending' | 'running' | 'done' | 'error';
+
+export interface VariantPipelineTrack {
+  conceptName: string;
+  status: VariantTrackStatus;
+  steps: PipelineStep[];
+  composite?: number;
+}
+
+function applyStepEvent(
+  steps: PipelineStep[],
+  evt: { step: string; label?: string; detail?: string; composite?: number },
+): PipelineStep[] {
+  if (evt.step === 'complete') {
+    const next = steps.map((s) =>
+      s.status === 'active' ? { ...s, status: 'done' as const } : s,
+    );
+    next.push({
+      step: 'complete',
+      label: evt.label ?? 'Fertig',
+      detail: evt.detail,
+      status: 'done',
+    });
+    return next;
+  }
+  const next = steps.map((s) =>
+    s.status === 'active' ? { ...s, status: 'done' as const } : s,
+  );
+  const isStart = evt.step.endsWith('-start');
+  next.push({
+    step: evt.step,
+    label: evt.label ?? evt.step,
+    detail: evt.detail,
+    composite: evt.composite,
+    status: isStart ? 'active' : 'done',
+  });
+  return next;
+}
 import type {
   DesignNode,
   CanvasState,
@@ -15,6 +64,7 @@ import type {
   GenerationProgress,
   GenerationStage,
   DesignQualityReport,
+  DesignVariantResult,
 } from '@/types/design';
 import type { Locale } from '@/i18n/translations';
 
@@ -147,6 +197,42 @@ interface ZDesignState {
   designHTML: string | null;
   agentTrace: Array<{ step: string; label: string; detail?: string }>;
   agentScores: { harmony: number; life: number; radiance: number; hierarchy: number; craftsmanship: number } | null;
+
+  /** Live SSE pipeline steps shown during agent generation. */
+  pipelineSteps: PipelineStep[];
+  /** Per-concept tracks when generating all directions in parallel. */
+  variantTracks: VariantPipelineTrack[];
+  pipelineVariantLabel: string | null;
+  pipelineStartedAt: number | null;
+  resetPipelineSteps: () => void;
+  setPipelineVariantLabel: (label: string | null) => void;
+  initVariantTracks: (conceptNames: string[]) => void;
+  clearVariantTracks: () => void;
+  applyPipelineEvent: (evt: {
+    step: string;
+    label?: string;
+    detail?: string;
+    composite?: number;
+  }) => void;
+  applyVariantPipelineEvent: (
+    conceptName: string,
+    evt: { step: string; label?: string; detail?: string; composite?: number },
+  ) => void;
+  finishVariantTrack: (
+    conceptName: string,
+    result: { composite?: number; status?: 'done' | 'error' },
+  ) => void;
+
+  /** Results from parallel concept generation — shown in chat + canvas gallery. */
+  variantGallery: DesignVariantResult[] | null;
+  setVariantGallery: (results: DesignVariantResult[] | null) => void;
+  applyVariantPick: (variant: DesignVariantResult) => void;
+
+  /** Abort in-flight agent SSE streams (registered by ChatPanel). */
+  pipelineCancelFn: (() => void) | null;
+  setPipelineCancelFn: (fn: (() => void) | null) => void;
+  cancelPipeline: () => void;
+
   setDesignMode: (mode: 'NODE_TREE' | 'HTML_ARTIFACT') => void;
   setDesignHTML: (
     html: string,
@@ -337,6 +423,82 @@ export const useZDesignStore = create<ZDesignState>((set, get) => ({
   designHTML: null,
   agentTrace: [],
   agentScores: null,
+  pipelineSteps: [],
+  variantTracks: [],
+  pipelineVariantLabel: null,
+  pipelineStartedAt: null,
+  resetPipelineSteps: () =>
+    set({
+      pipelineSteps: [],
+      variantTracks: [],
+      pipelineVariantLabel: null,
+      pipelineStartedAt: Date.now(),
+    }),
+  setPipelineVariantLabel: (label) => set({ pipelineVariantLabel: label }),
+  initVariantTracks: (conceptNames) =>
+    set({
+      pipelineSteps: [],
+      variantTracks: conceptNames.map((name) => ({
+        conceptName: name,
+        status: 'running' as const,
+        steps: [],
+      })),
+      pipelineStartedAt: Date.now(),
+    }),
+  clearVariantTracks: () => set({ variantTracks: [] }),
+  applyPipelineEvent: (evt) =>
+    set((state) => ({
+      pipelineSteps: applyStepEvent(state.pipelineSteps, evt),
+    })),
+  applyVariantPipelineEvent: (conceptName, evt) =>
+    set((state) => ({
+      variantTracks: state.variantTracks.map((t) =>
+        t.conceptName === conceptName
+          ? { ...t, steps: applyStepEvent(t.steps, evt) }
+          : t,
+      ),
+    })),
+  finishVariantTrack: (conceptName, result) =>
+    set((state) => ({
+      variantTracks: state.variantTracks.map((t) =>
+        t.conceptName === conceptName
+          ? {
+              ...t,
+              status: result.status ?? 'done',
+              composite: result.composite ?? t.composite,
+              steps: t.steps.map((s) =>
+                s.status === 'active' ? { ...s, status: 'done' as const } : s,
+              ),
+            }
+          : t,
+      ),
+    })),
+  variantGallery: null,
+  setVariantGallery: (results) => set({ variantGallery: results }),
+  applyVariantPick: (variant) =>
+    set({
+      designMode: 'HTML_ARTIFACT',
+      designHTML: variant.html,
+      agentTrace: variant.trace ?? [],
+      agentScores: null,
+      variantGallery: null,
+      isDirty: true,
+    }),
+  pipelineCancelFn: null,
+  setPipelineCancelFn: (fn) => set({ pipelineCancelFn: fn }),
+  cancelPipeline: () => {
+    const fn = get().pipelineCancelFn;
+    if (fn) fn();
+    else {
+      set({
+        isGenerating: false,
+        pipelineSteps: [],
+        variantTracks: [],
+        pipelineVariantLabel: null,
+        generationProgress: defaultGenerationProgress,
+      });
+    }
+  },
   setDesignMode: (mode) => set({ designMode: mode }),
   setDesignHTML: (html, trace, scores) =>
     set({ designMode: 'HTML_ARTIFACT', designHTML: html, agentTrace: trace ?? [], agentScores: scores ?? null, isDirty: true }),
