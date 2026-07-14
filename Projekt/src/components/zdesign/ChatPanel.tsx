@@ -52,6 +52,7 @@ import { AIImageDialog } from './AIImageDialog';
 import { ResearchDialog } from './ResearchDialog';
 import { PipelineStatusPanel } from './PipelineStatusPanel';
 import { VariantGalleryPicker } from './VariantGalleryPicker';
+import { VariantGalleryRestoreButton } from './VariantGalleryRestoreButton';
 import type { DesignVariantResult } from '@/types/design';
 import { runAgentDesignStream } from '@/lib/chat/agent-stream-client';
 import type { Concept } from '@/lib/ai/skills/creative-director';
@@ -695,8 +696,10 @@ export function ChatPanel() {
   const finishVariantTrack = useZDesignStore((s) => s.finishVariantTrack);
   const setPipelineVariantLabel = useZDesignStore((s) => s.setPipelineVariantLabel);
   const variantGallery = useZDesignStore((s) => s.variantGallery);
+  const variantGalleryArchive = useZDesignStore((s) => s.variantGalleryArchive);
   const setVariantGallery = useZDesignStore((s) => s.setVariantGallery);
   const variantPreviewName = useZDesignStore((s) => s.variantPreviewName);
+  const variantPickedName = useZDesignStore((s) => s.variantPickedName);
   const setVariantPreviewName = useZDesignStore((s) => s.setVariantPreviewName);
   const applyVariantPick = useZDesignStore((s) => s.applyVariantPick);
   const setPipelineCancelFn = useZDesignStore((s) => s.setPipelineCancelFn);
@@ -2149,6 +2152,12 @@ export function ChatPanel() {
       )}
       {showLegacyProgress && <GenerationStepProgress />}
 
+      {variantGalleryArchive?.length && !variantGallery?.length && (
+        <div className="px-3 py-1.5 border-t bg-emerald-50/50 dark:bg-emerald-950/20">
+          <VariantGalleryRestoreButton />
+        </div>
+      )}
+
       {/* Concept + Design-System pickers — Agent mode only */}
       {agentMode && (
         <div className="px-3 py-1.5 flex flex-wrap items-center gap-1.5 border-b bg-muted/20">
@@ -2430,9 +2439,4 @@ export function ChatPanel() {
             content: `${t.research?.results || 'Found inspiration!'} Here's what I found for "${query}":\n\n${resultLines}`,
             createdAt: new Date(),
           };
-          addChatMessage(assistantMessage);
-        }}
-      />
-    </div>
-  );
-}
+          addCh

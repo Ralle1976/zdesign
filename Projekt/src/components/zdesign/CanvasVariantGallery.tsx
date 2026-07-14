@@ -15,6 +15,7 @@ export function CanvasVariantGallery() {
   const canvas = useZDesignStore((s) => s.canvas);
   const variantGallery = useZDesignStore((s) => s.variantGallery);
   const previewName = useZDesignStore((s) => s.variantPreviewName);
+  const pickedName = useZDesignStore((s) => s.variantPickedName);
   const setVariantPreviewName = useZDesignStore((s) => s.setVariantPreviewName);
   const applyVariantPick = useZDesignStore((s) => s.applyVariantPick);
   const addChatMessage = useZDesignStore((s) => s.addChatMessage);
@@ -87,6 +88,7 @@ export function CanvasVariantGallery() {
         <VariantGalleryPicker
           variants={variantGallery}
           previewName={previewed.conceptName}
+          pickedName={pickedName}
           onPreview={handlePreview}
           onConfirm={handleConfirm}
         />

@@ -10,12 +10,14 @@ export type { DesignVariantResult };
 export function VariantGalleryPicker({
   variants,
   previewName,
+  pickedName = null,
   onPreview,
   onConfirm,
   showConfirmOnCard = false,
 }: {
   variants: DesignVariantResult[];
   previewName: string | null;
+  pickedName?: string | null;
   onPreview: (v: DesignVariantResult) => void;
   onConfirm: (v: DesignVariantResult) => void;
   /** Chat compact mode: confirm button only on actively previewed card */
@@ -39,6 +41,7 @@ export function VariantGalleryPicker({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
         {variants.map((v) => {
           const isPreview = previewName === v.conceptName;
+          const wasPicked = pickedName === v.conceptName;
           return (
             <motion.div
               key={v.conceptName}
@@ -64,6 +67,11 @@ export function VariantGalleryPicker({
                   {isPreview && (
                     <span className="absolute top-1.5 left-1.5 text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-emerald-600 text-white">
                       Vorschau
+                    </span>
+                  )}
+                  {wasPicked && !isPreview && (
+                    <span className="absolute top-1.5 right-1.5 text-[9px] font-medium px-1.5 py-0.5 rounded bg-zinc-700/90 text-white">
+                      Zuletzt gewählt
                     </span>
                   )}
                 </div>
@@ -99,16 +107,3 @@ export function VariantGalleryPicker({
                     type="button"
                     size="sm"
                     className="w-full h-7 text-[10px] gap-1 mt-1 bg-emerald-600 hover:bg-emerald-700"
-                    onClick={() => onConfirm(v)}
-                  >
-                    Diese Richtung übernehmen
-                  </Button>
-                )}
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
-    </motion.div>
-  );
-}

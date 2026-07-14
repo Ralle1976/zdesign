@@ -225,11 +225,17 @@ interface ZDesignState {
 
   /** Results from parallel concept generation — shown in chat + canvas gallery. */
   variantGallery: DesignVariantResult[] | null;
+  /** Kept after pick so user can reopen the 3-way compare. */
+  variantGalleryArchive: DesignVariantResult[] | null;
+  /** Last committed concept name (highlights preview when gallery reopens). */
+  variantPickedName: string | null;
   /** Concept name currently previewed (not yet committed). */
   variantPreviewName: string | null;
   setVariantGallery: (results: DesignVariantResult[] | null) => void;
   setVariantPreviewName: (name: string | null) => void;
   applyVariantPick: (variant: DesignVariantResult) => void;
+  restoreVariantGallery: () => void;
+  clearVariantGalleryArchive: () => void;
 
   /** Abort in-flight agent SSE streams (registered by ChatPanel). */
   pipelineCancelFn: (() => void) | null;
@@ -477,22 +483,58 @@ export const useZDesignStore = create<ZDesignState>((set, get) => ({
       ),
     })),
   variantGallery: null,
+  variantGalleryArchive: null,
+  variantPickedName: null,
   variantPreviewName: null,
   setVariantGallery: (results) =>
-    set({
+    set((state) => ({
       variantGallery: results,
-      variantPreviewName: results?.[0]?.conceptName ?? null,
-    }),
+      ...(results?.length
+        ? {
+            variantGalleryArchive: results,
+            variantPreviewName: results[0].conceptName,
+            variantPickedName: null,
+          }
+        : {}),
+    })),
   setVariantPreviewName: (name) => set({ variantPreviewName: name }),
   applyVariantPick: (variant) =>
+    set((state) => {
+      const archive =
+        state.variantGallery?.length
+          ? state.variantGallery
+          : state.variantGalleryArchive;
+      return {
+        designMode: 'HTML_ARTIFACT',
+        designHTML: variant.html,
+        agentTrace: variant.trace ?? [],
+        agentScores: null,
+        variantGallery: null,
+        variantPreviewName: null,
+        variantGalleryArchive: archive,
+        variantPickedName: variant.conceptName,
+        isDirty: true,
+      };
+    }),
+  restoreVariantGallery: () =>
+    set((state) => {
+      const archive = state.variantGalleryArchive;
+      if (!archive?.length) return {};
+      const preview =
+        state.variantPickedName &&
+        archive.some((v) => v.conceptName === state.variantPickedName)
+          ? state.variantPickedName
+          : archive[0].conceptName;
+      return {
+        variantGallery: archive,
+        variantPreviewName: preview,
+      };
+    }),
+  clearVariantGalleryArchive: () =>
     set({
-      designMode: 'HTML_ARTIFACT',
-      designHTML: variant.html,
-      agentTrace: variant.trace ?? [],
-      agentScores: null,
-      variantGallery: null,
+      variantGalleryArchive: null,
+      variantPickedName: null,
       variantPreviewName: null,
-      isDirty: true,
     }),
   pipelineCancelFn: null,
   setPipelineCancelFn: (fn) => set({ pipelineCancelFn: fn }),

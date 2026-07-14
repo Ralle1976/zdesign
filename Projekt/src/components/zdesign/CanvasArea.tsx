@@ -7,6 +7,7 @@ import { DesignRenderer } from '@/components/zdesign/canvas/DesignRenderer';
 import { HtmlArtifactPreview } from '@/components/zdesign/canvas/HtmlArtifactPreview';
 import { CanvasPipelineStatus } from '@/components/zdesign/CanvasPipelineStatus';
 import { CanvasVariantGallery } from '@/components/zdesign/CanvasVariantGallery';
+import { VariantGalleryRestoreButton } from '@/components/zdesign/VariantGalleryRestoreButton';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -474,7 +475,12 @@ export function CanvasArea() {
         <CanvasVariantGallery />
       ) : showHtml ? (
         /* === HTML ARTIFACT (agentic art-directed HTML, live iframe) === */
-        <HtmlArtifactPreview html={designHTML!} viewport={canvas.viewport} />
+        <div className="flex-1 min-h-0 flex flex-col relative">
+          <div className="absolute top-3 left-3 z-20">
+            <VariantGalleryRestoreButton showDismiss />
+          </div>
+          <HtmlArtifactPreview html={designHTML!} viewport={canvas.viewport} />
+        </div>
       ) : hasDesign && !isGenerating ? (
         /* === DESIGN RENDERED (node tree) === */
         <div className="flex-1 min-h-0 overflow-hidden">
