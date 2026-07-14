@@ -696,6 +696,8 @@ export function ChatPanel() {
   const setPipelineVariantLabel = useZDesignStore((s) => s.setPipelineVariantLabel);
   const variantGallery = useZDesignStore((s) => s.variantGallery);
   const setVariantGallery = useZDesignStore((s) => s.setVariantGallery);
+  const variantPreviewName = useZDesignStore((s) => s.variantPreviewName);
+  const setVariantPreviewName = useZDesignStore((s) => s.setVariantPreviewName);
   const applyVariantPick = useZDesignStore((s) => s.applyVariantPick);
   const setPipelineCancelFn = useZDesignStore((s) => s.setPipelineCancelFn);
   const cancelPipeline = useZDesignStore((s) => s.cancelPipeline);
@@ -1519,7 +1521,7 @@ export function ChatPanel() {
           id: `variants-${Date.now()}`,
           projectId: currentProjectId,
           role: 'assistant',
-          content: `${collected.length} Richtungen generiert — wähle im Canvas oder Chat.`,
+          content: `${collected.length} Richtungen generiert — **Vorschau** im Canvas (groß), dann „Übernehmen“. Klick auf Karte = nur ansehen.`,
           metadata: { agent: true, variants: true } as ChatMessage['metadata'],
           createdAt: new Date(),
         });
@@ -1955,6 +1957,64 @@ export function ChatPanel() {
     void runAllConceptVariants(stash.text, stash.projectId, concepts);
   }, [runAllConceptVariants]);
 
+  // URL demo: ?demo=pipeline (1 Richtung) | ?demo=variants (3 parallel) — watch live on canvas + chat
+  const DEMO_PROMPT =
+    'Premium luxury watch landing page — editorial hero, heritage story, dark luxury aesthetic, cinematic product photography';
+  const demoStageRef = useRef<'idle' | 'started' | 'done'>('idle');
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || demoStageRef.current !== 'idle' || !projectId) return;
+    const demo = new URLSearchParams(window.location.search).get('demo');
+    if (demo !== 'pipeline' && demo !== 'variants') return;
+
+    demoStageRef.current = 'started';
+    setAgentMode(true);
+    agentModeRef.current = true;
+
+    addChatMessage({
+      id: `demo-banner-${Date.now()}`,
+      projectId,
+      role: 'system',
+      content:
+        demo === 'variants'
+          ? '🎬 Live-Demo: 3 Richtungen parallel — Konzepte werden geladen, dann startet die Pipeline im Canvas.'
+          : '🎬 Live-Demo: Agent-Pipeline — Konzepte werden geladen, erste Richtung startet automatisch.',
+      createdAt: new Date(),
+    });
+
+    void sendMessage(DEMO_PROMPT);
+  }, [projectId, sendMessage, addChatMessage]);
+
+  useEffect(() => {
+    if (demoStageRef.current !== 'started' || typeof window === 'undefined') return;
+    const demo = new URLSearchParams(window.location.search).get('demo');
+    if (!demo || !pendingConcepts?.length) return;
+
+    if (demo === 'variants' && !isGeneratingVariants && !isGenerating) {
+      demoStageRef.current = 'done';
+      handleGenerateAllConcepts();
+      return;
+    }
+
+    if (demo === 'pipeline' && !isGenerating) {
+      demoStageRef.current = 'done';
+      handlePickConcept(pendingConcepts[0]);
+    }
+  }, [
+    pendingConcepts,
+    isGenerating,
+    isGeneratingVariants,
+    handleGenerateAllConcepts,
+    handlePickConcept,
+  ]);
+
+  const handlePreviewVariant = useCallback(
+    (v: DesignVariantResult) => {
+      setVariantPreviewName(v.conceptName);
+    },
+    [setVariantPreviewName],
+  );
+
   const handlePickVariant = useCallback(
     (v: DesignVariantResult) => {
       const pid = projectIdRef.current;
@@ -2056,7 +2116,13 @@ export function ChatPanel() {
                 />
               )}
               {variantGallery && variantGallery.length > 0 && (
-                <VariantGalleryPicker variants={variantGallery} onPick={handlePickVariant} />
+                <VariantGalleryPicker
+                  variants={variantGallery}
+                  previewName={variantPreviewName}
+                  onPreview={handlePreviewVariant}
+                  onConfirm={handlePickVariant}
+                  showConfirmOnCard
+                />
               )}
               {isGenerating && !showPipelineStatus && !showLegacyProgress && <TypingIndicator />}
             </div>

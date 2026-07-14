@@ -225,7 +225,10 @@ interface ZDesignState {
 
   /** Results from parallel concept generation — shown in chat + canvas gallery. */
   variantGallery: DesignVariantResult[] | null;
+  /** Concept name currently previewed (not yet committed). */
+  variantPreviewName: string | null;
   setVariantGallery: (results: DesignVariantResult[] | null) => void;
+  setVariantPreviewName: (name: string | null) => void;
   applyVariantPick: (variant: DesignVariantResult) => void;
 
   /** Abort in-flight agent SSE streams (registered by ChatPanel). */
@@ -474,7 +477,13 @@ export const useZDesignStore = create<ZDesignState>((set, get) => ({
       ),
     })),
   variantGallery: null,
-  setVariantGallery: (results) => set({ variantGallery: results }),
+  variantPreviewName: null,
+  setVariantGallery: (results) =>
+    set({
+      variantGallery: results,
+      variantPreviewName: results?.[0]?.conceptName ?? null,
+    }),
+  setVariantPreviewName: (name) => set({ variantPreviewName: name }),
   applyVariantPick: (variant) =>
     set({
       designMode: 'HTML_ARTIFACT',
@@ -482,6 +491,7 @@ export const useZDesignStore = create<ZDesignState>((set, get) => ({
       agentTrace: variant.trace ?? [],
       agentScores: null,
       variantGallery: null,
+      variantPreviewName: null,
       isDirty: true,
     }),
   pipelineCancelFn: null,
