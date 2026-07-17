@@ -14,12 +14,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { getProviderById, maskKey, readProviderKey } from '@/lib/ai/provider-config';
+import { getProviderById, maskKey, readProviderKey, bustEnvLocalCache } from '@/lib/ai/provider-config';
+import { bustTextLLMConfigCache } from '@/lib/ai/call-text-llm';
+import { requireAdmin } from '@/lib/auth-guard';
 
 const ENV_PATH = path.join(process.cwd(), '.env.local');
 
 // POST — write key to .env.local
 export async function POST(request: NextRequest) {
+  const authError = requireAdmin(request);
+  if (authError) return authError;
   let body: { providerId?: unknown; apiKey?: unknown };
   try {
     body = (await request.json()) as { providerId?: unknown; apiKey?: unknown };
@@ -50,7 +54,13 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await upsertEnvEntry(provider.envKey, apiKey.trim());
+    const trimmed = apiKey.trim();
+    await upsertEnvEntry(provider.envKey, trimmed);
+    bustEnvLocalCache();
+    bustTextLLMConfigCache();
+    // Hot-inject so "Test" works without a dev-server restart (Next only
+    // loads .env.local at process start).
+    process.env[provider.envKey] = trimmed;
     // Do NOT return the key. Confirm with the masked form only.
     return NextResponse.json({
       providerId,
@@ -69,6 +79,8 @@ export async function POST(request: NextRequest) {
 
 // GET — masked key only
 export async function GET(request: NextRequest) {
+  const authError = requireAdmin(request);
+  if (authError) return authError;
   const providerId = request.nextUrl.searchParams.get('providerId');
   if (!providerId) {
     return NextResponse.json(

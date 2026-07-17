@@ -337,7 +337,11 @@ export const DesignRenderer: React.FC<DesignRendererProps> = React.memo(
 
     const updateSelectionRect = useCallback(() => {
       if (selectedId && canvasRef.current) {
-        const el = canvasRef.current.querySelector(`[data-node-id="${selectedId}"]`);
+        // Security: avoid CSS-selector interpolation — LLM-generated node IDs
+        // could contain quotes/brackets that break querySelector or enable
+        // selector injection. Use attribute-based lookup instead.
+        const all = canvasRef.current.querySelectorAll('[data-node-id]');
+        const el = Array.from(all).find((e) => e.getAttribute('data-node-id') === selectedId);
         if (el) {
           setSelectionRect(el.getBoundingClientRect());
         } else {

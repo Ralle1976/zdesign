@@ -18,6 +18,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useZDesignStore } from '@/stores/zdesign-store';
 import type { Concept } from '@/lib/ai/skills/creative-director';
+import { LearningPanel } from '@/components/zdesign/LearningPanel';
 
 interface HtmlArtifactPreviewProps {
   html: string;
@@ -109,12 +110,24 @@ export function HtmlArtifactPreview({
   const [refining, setRefining] = useState(false);
   const [refineError, setRefineError] = useState<string | null>(null);
   const [showTrace, setShowTrace] = useState(false);
+  const [showLearning, setShowLearning] = useState(false);
 
   const storeProjectId = useZDesignStore((s) => s.projectId);
   const setDesignHTML = useZDesignStore((s) => s.setDesignHTML);
   const agentTrace = useZDesignStore((s) => s.agentTrace);
   const agentScores = useZDesignStore((s) => s.agentScores);
   const effectiveProjectId = projectId ?? storeProjectId;
+
+  const traceDomain = useMemo(() => {
+    const art = agentTrace.find((s) => s.step === 'art-direction');
+    return art?.detail?.split(' — ')[0]?.trim();
+  }, [agentTrace]);
+
+  const traceComposite = useMemo(() => {
+    const theater = [...agentTrace].reverse().find((s) => s.step.startsWith('theater-round'));
+    const m = theater?.detail?.match(/(\d+\.?\d*)\s*\/\s*10/);
+    return m ? parseFloat(m[1]) : null;
+  }, [agentTrace]);
 
   // Re-mount the iframe when the HTML changes so srcDoc reliably reloads.
   const srcDoc = useMemo(() => html, [html]);
@@ -294,12 +307,12 @@ export function HtmlArtifactPreview({
           title="Design-Vorschau"
           srcDoc={srcDoc}
           onLoad={() => setLoaded(true)}
-          // sandbox: allow same-origin so the iframe can apply its <style>/<script>
-          // and load Google Fonts / images; no allow-scripts from untrusted sources
-          // would be safer, but generated CSS needs none and we keep allow-scripts
-          // off by NOT listing it (scripts still run? sandbox defaults: without
-          // allow-scripts, scripts do NOT execute — which is fine, CSS-only render).
-          sandbox="allow-same-origin"
+          // CRITICAL SECURITY: allow-scripts WITHOUT allow-same-origin.
+          // The iframe renders LLM-generated HTML which is untrusted. With both
+          // tokens the sandbox is effectively disabled — scripts could access
+          // parent cookies, /api/* endpoints with user credentials, localStorage.
+          // allow-scripts alone runs scripts in an opaque origin (no cookie/api access).
+          sandbox="allow-scripts"
           className="absolute inset-0 h-full w-full border-0 bg-white"
         />
 
@@ -314,20 +327,41 @@ export function HtmlArtifactPreview({
           {showControls ? '× Tuning' : '⚙ Tuning'}
         </button>
 
+        {/* --- learning panel toggle --- */}
+        <button
+          type="button"
+          onClick={() => setShowLearning((v) => !v)}
+          className="absolute top-2 right-2 z-20 rounded-md bg-black/60 px-2 py-1 text-xs font-medium text-white hover:bg-black/80 transition-colors"
+          aria-expanded={showLearning}
+          title="Lern-Panel & Feedback"
+        >
+          {showLearning ? '× Lernen' : '📚 Lernen'}
+        </button>
+
         {/* --- brain / process trace toggle (P1: makes the memory visible) --- */}
         {agentTrace.length > 0 && (
           <button
             type="button"
             onClick={() => setShowTrace((v) => !v)}
-            className="absolute top-2 right-2 z-20 rounded-md bg-black/60 px-2 py-1 text-xs font-medium text-white hover:bg-black/80 transition-colors"
+            className="absolute top-2 right-[5.5rem] z-20 rounded-md bg-black/60 px-2 py-1 text-xs font-medium text-white hover:bg-black/80 transition-colors"
             aria-expanded={showTrace}
             title="Agent-Prozess & Gedächtnis"
           >
             {showTrace ? '× Prozess' : '🧠 Prozess'}
           </button>
         )}
+        {showLearning && (
+          <div className="absolute top-9 right-2 z-30 w-72 max-h-[70%] overflow-auto">
+            <LearningPanel
+              projectId={effectiveProjectId ?? undefined}
+              domain={traceDomain ?? undefined}
+              composite={traceComposite}
+            />
+          </div>
+        )}
+
         {showTrace && agentTrace.length > 0 && (
-          <div className="absolute top-9 right-2 z-30 w-72 max-h-[70%] overflow-auto rounded-lg border border-black/10 bg-white/95 p-3 shadow-xl backdrop-blur text-xs text-foreground space-y-1.5">
+          <div className="absolute top-9 right-[19rem] z-30 w-72 max-h-[70%] overflow-auto rounded-lg border border-black/10 bg-white/95 p-3 shadow-xl backdrop-blur text-xs text-foreground space-y-1.5">
             <div className="font-semibold text-[11px] uppercase tracking-wide text-muted-foreground">
               Agent-Schritte
             </div>

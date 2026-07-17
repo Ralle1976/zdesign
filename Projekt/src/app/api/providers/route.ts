@@ -19,9 +19,13 @@ import {
   writeConfig,
   type ProviderConfigFile,
 } from '@/lib/ai/provider-config';
+import { bustTextLLMConfigCache } from '@/lib/ai/call-text-llm';
+import { requireAdmin } from '@/lib/auth-guard';
 
 // GET — full registry + current selection
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const authError = requireAdmin(request);
+  if (authError) return authError;
   try {
     const config = await readConfig();
     const providers = PROVIDERS.map(toStatus);
@@ -45,6 +49,8 @@ export async function GET() {
 
 // POST — update active selection / overrides
 export async function POST(request: NextRequest) {
+  const authError = requireAdmin(request);
+  if (authError) return authError;
   let body: Record<string, unknown>;
   try {
     body = (await request.json()) as Record<string, unknown>;
@@ -67,6 +73,14 @@ export async function POST(request: NextRequest) {
     if (typeof imageProviderId !== 'string' || !getProviderById(imageProviderId)) {
       return NextResponse.json(
         { error: `Unknown imageProviderId: ${String(imageProviderId)}` },
+        { status: 400 },
+      );
+    }
+  }
+  if (typeof sttProviderId !== 'undefined') {
+    if (typeof sttProviderId !== 'string' || !getProviderById(sttProviderId)) {
+      return NextResponse.json(
+        { error: `Unknown sttProviderId: ${String(sttProviderId)}` },
         { status: 400 },
       );
     }
@@ -105,10 +119,12 @@ export async function POST(request: NextRequest) {
           : current.overrides,
     };
     await writeConfig(next);
+    bustTextLLMConfigCache();
     return NextResponse.json({
       selection: {
         textProviderId: next.textProviderId,
         imageProviderId: next.imageProviderId,
+        sttProviderId: next.sttProviderId,
       },
       overrides: next.overrides,
     });
