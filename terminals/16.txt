@@ -1,0 +1,20 @@
+---
+pid: 28408
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "$proj = Invoke-RestMethod -Uri \"http://localhost:3020/api/projects\" -Method GET -TimeoutSec 60; $id = $proj.projects[0].id; \"PROJECT=$id\"; $body = @{ message = \"Minimal hero card test\"; projectId = $id } | ConvertTo-Json; $req = [System.Net.HttpWebRequest]::Create(\"http://localhost:3020/api/design/agent/stream\"); $req.Method = \"POST\"; $req.ContentType = \"application/json\"; $bytes = [Text.Encoding]::UTF8.GetBytes($body); $req.GetRequestStream().Write($bytes,0,$bytes.Length); $req.Timeout = 60000; $resp = $req.GetResponse(); $sr = New-Object IO.StreamReader($resp.GetResponseStream()); $buf = \"\"; $frames = @(); $deadline = (Get-Date).AddSeconds(60); while((Get-Date) -lt $deadline -and $frames.Count -lt 5) { $line = $sr.ReadLine(); if($line -match '^data:\\s*(.+)') { $frames += $Matches[1] }; if($frames.Count -ge 5) { break } }; $resp.Close(); \"FRAMES:\"; $frames | ForEach-Object { $_ }"
+started_at: 2026-07-14T21:06:06.232Z
+running_for_ms: 86400014 
+---
+PROJECT=cmricdbno0000l0zc7jm756oq
+FRAMES:
+{"step":"art-direction","label":"Art Direction","detail":"default-editorial-mono - editorial � kontraststark � zeitlos"}
+{"step":"creative-dna","label":"Kreativ-DNA: Split-Screen � Scroll-Reveal Fade-Up + Kinetische Typografie � Film-/Papier-Korn","detail":"Struktur Split-Screen"}
+{"step":"negative-memory","label":"Gedchtnis: 8 Muster vermeiden","detail":"avoid (default-editorial-mono): failure � Default-Indigo/Violett als Akzent (#6366f1, #818cf8) - stattdessen eine markenspezifische Palette whlen � "Trust\"-Purple/Blau-Gradient - stattdessen einen bewussten, markenfarbenen Verlauf oder Vollton"}
+{"step":"images","label":"Bilder generiert","detail":"3 MiniMax-Fotos"}
+{"step":"generate-start","label":"Entwurf wird generiert","detail":"3 Versuche � default-editorial-mono - editorial � kontraststark � zeitlos"}
+
+---
+exit_code: -1
+elapsed_ms: 86400014
+ended_at: 2026-07-15T21:06:24.148Z
+---

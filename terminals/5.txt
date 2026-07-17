@@ -1,0 +1,21 @@
+---
+pid: 33916
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "Set-Location \"G:\\Andere Computer\\Mein Computer\\Desktop\\Z.Design\\Projekt\"; npm run dev"
+started_at: 2026-07-14T20:52:39.594Z
+running_for_ms: 86400014 
+---
+npm : Die Datei "C:\Program Files\nodejs\npm.ps1" kann nicht geladen werden, da die Ausfhrung von Skripts auf diesem 
+System deaktiviert ist. Weitere Informationen finden Sie unter "about_Execution_Policies" 
+(https:/go.microsoft.com/fwlink/?LinkID=135170).
+In Zeile:1 Zeichen:75
++ ... \Andere Computer\Mein Computer\Desktop\Z.Design\Projekt"; npm run dev
++                                                               ~~~
+    + CategoryInfo          : Sicherheitsfehler: (:) [], PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess
+
+---
+exit_code: -1
+elapsed_ms: 86400014
+ended_at: 2026-07-15T20:52:42.321Z
+---

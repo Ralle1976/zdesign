@@ -22,15 +22,22 @@ export interface GeneratedImage {
   provider: string;
 }
 
+import { getProviderById, readProviderKey } from '@/lib/ai/provider-config';
+
+function minimaxKey(): string | undefined {
+  const p = getProviderById('minimax');
+  return p ? readProviderKey(p) : process.env.MINIMAX_API_KEY?.trim();
+}
+
 export function isMinimaxImageConfigured(): boolean {
-  return !!process.env.MINIMAX_API_KEY;
+  return !!minimaxKey();
 }
 
 export async function generateImageMinimax(
   prompt: string,
   opts: MinimaxImageOpts = {},
 ): Promise<GeneratedImage> {
-  const key = process.env.MINIMAX_API_KEY;
+  const key = minimaxKey();
   if (!key) throw new Error('MINIMAX_API_KEY not set');
 
   const model = opts.model || 'image-01';

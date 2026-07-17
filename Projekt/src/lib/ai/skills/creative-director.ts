@@ -137,11 +137,15 @@ export async function generateConcepts(
   userMessage: string,
   call: CallFn,
   count: number = 3,
+  opts?: { creativeMode?: boolean },
 ): Promise<Concept[]> {
   try {
     if (count < 1) count = 1;
     const prompt = buildDirectorPrompt(briefSummary, userMessage, count);
-    const raw = await call(prompt, { maxTokens: 3000, temperature: 0.9 });
+    const raw = await call(prompt, {
+      maxTokens: 3000,
+      temperature: opts?.creativeMode ? 0.95 : 0.9,
+    });
     if (!raw || !raw.trim()) return [];
 
     // Strip accidental markdown fences / preamble before jsonrepair.

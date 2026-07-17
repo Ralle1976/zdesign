@@ -2,15 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { transcribeViaOpenRouter, isSttConfigured } from '@/lib/ai/stt-openrouter';
 import { transcribeViaZai, isZaiSttConfigured } from '@/lib/ai/stt-zai';
+import { readConfig } from '@/lib/ai/provider-config';
 
 // Server-side Speech-to-Text fallback (used when the browser has no native
 // SpeechRecognition, e.g. Firefox, or for consistent quality on deployment).
 // Web Speech API remains the primary path (browser-native, free, no key).
 //
-// Provider order (try in sequence, fail over on error):
-//   1. Z.ai GLM-ASR (glm-asr-2512) — plan-native, no extra cost. PREFERRED.
-//   2. OpenRouter Whisper — fallback if Z.ai is unconfigured or errors.
-//   3. 503 if neither provider is available.
+// Uses sttProviderId from data/provider-config.json (Provider-UI → Tab Audio).
+// Falls back to the other STT provider on error if configured.
 //
 // Accepts the audio payload from useVoiceInput in two shapes:
 //   - JSON: { audioBase64, format?, language? }      (current hook default)
@@ -76,29 +75,41 @@ export async function POST(request: NextRequest) {
       language = bodyLang;
     }
 
-    // Provider order: Z.ai GLM-ASR first (plan-native, no extra cost), then
-    // OpenRouter Whisper as fallback. 503 only if both are unavailable/error.
+    const config = await readConfig();
+    const openRouterModel =
+      config.overrides?.openrouter?.model || OPENROUTER_STT_MODEL;
+    const primary = config.sttProviderId;
+    const fallback = primary === 'zai' ? 'openrouter' : 'zai';
+
+    const tryProvider = async (id: string): Promise<string | undefined> => {
+      if (id === 'zai' && zaiOk) {
+        return transcribeViaZai(audioBuffer, { language });
+      }
+      if (id === 'openrouter' && openRouterOk) {
+        return transcribeViaOpenRouter(audioBuffer, {
+          language,
+          model: openRouterModel,
+        });
+      }
+      return undefined;
+    };
+
     let transcript: string | undefined;
     let lastError: unknown = null;
 
-    if (zaiOk) {
-      try {
-        transcript = await transcribeViaZai(audioBuffer, { language });
-      } catch (e) {
-        lastError = e;
-        console.error('[Voice Transcription API] Z.ai ASR failed, falling back:', e);
-      }
+    try {
+      transcript = await tryProvider(primary);
+    } catch (e) {
+      lastError = e;
+      console.error(`[Voice Transcription API] ${primary} STT failed, falling back:`, e);
     }
 
-    if (!transcript && openRouterOk) {
+    if (!transcript) {
       try {
-        transcript = await transcribeViaOpenRouter(audioBuffer, {
-          language,
-          model: OPENROUTER_STT_MODEL,
-        });
+        transcript = await tryProvider(fallback);
       } catch (e) {
         lastError = e;
-        console.error('[Voice Transcription API] OpenRouter STT failed:', e);
+        console.error(`[Voice Transcription API] ${fallback} STT failed:`, e);
       }
     }
 

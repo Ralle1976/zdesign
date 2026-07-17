@@ -1,0 +1,78 @@
+---
+pid: 29272
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "G:; cd \"G:\\Andere Computer\\Mein Computer\\Desktop\\Z.Design\\Projekt\"; node scripts/run-visible-design-tests.mjs 2>&1"
+started_at: 2026-07-15T10:54:34.543Z
+running_for_ms: 37999987 
+---
+
+=== Z.Design Visible Tests ===
+Server: http://localhost:3020
+Output: G:\Andere Computer\Mein Computer\Desktop\Z.Design\showcase\test-runs\2026-07-15-10-54-35
+
+Learning API: 0 Rezepte, LESSONS 27 Zeilen
+
+
+▶ Test: Thai Street Food Imbiss
+  Projekt: cmrlyqwmk0001l0ogvd4r0k85
+  [thai-food] art-direction: Art Direction — asian-spa-thai-wellness — seren · warm · edel · asiatisch
+  [thai-food] experience-mode: Erlebnis-Modus — App-Shell (View-Navigation)
+  [thai-food] creative-dna: Kreativ-DNA: Split-Screen · Scroll-Reveal Fade-Up + Text-Gradient + Glow · Neon-Glow — Struktur Split-Screen
+  [thai-food] premium: Premium Luxe Mode — Agency-Craft + Luxe-Specs aktiv
+  [thai-food] negative-memory: Gedächtnis: 9 Muster vermeiden — avoid (asian-spa-thai-wellness): failure · avoid (asian-spa-
+  [thai-food] generate-start: Entwurf wird generiert — Multi-Pass · asian-spa-thai-wellness — seren · warm · edel ·
+  [thai-food] reference-rag: Referenz-Stil geladen — Orathai Thai Spa
+  [thai-food] ia-start: IA-Struktur (Pass 1) — asian-spa-thai-wellness
+
+▶ Test: Architektur-Atelier
+  Projekt: cmrlytqpc0003l0ogjtmp7vd2
+node :   ✗ Fehler: zai-direct: all 3 attempts failed: zai-direct HTTP 200: {"id":"msg_2026071518562636352139f2ea414f"
+,"type":"message","role":"assistant","model":"glm-5.2","content":[{"type":"thinking","thinking":"1.  **Analyze the 
+Request:**\n    *   **Role:** Information A
+In Zeile:1 Zeichen:69
++ ... top\Z.Design\Projekt"; node scripts/run-visible-design-tests.mjs 2>&1
++                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  ✗ Fehler: z...* Information A:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  [architektur-studio] art-direction: Art Direction — fashion-beauty — edgy · luxuriös · reduziert
+  [architektur-studio] experience-mode: Erlebnis-Modus — App-Shell (View-Navigation)
+  [architektur-studio] creative-dna: Kreativ-DNA: Magazin-Editorial · Stagger-Fade (Listen) + Magnetischer CTA · Glassmorphism — Struktur Magazin-Editorial
+  [architektur-studio] premium: Premium Luxe Mode — Agency-Craft + Luxe-Specs aktiv
+  [architektur-studio] negative-memory: Gedächtnis: 8 Muster vermeiden — avoid (fashion-beauty): failure · Default-Indigo/Violett als
+  [architektur-studio] generate-start: Entwurf wird generiert — Multi-Pass · fashion-beauty — edgy · luxuriös · reduziert
+  [architektur-studio] reference-rag: Referenz-Stil geladen — Maison Lumen
+  [architektur-studio] ia-start: IA-Struktur (Pass 1) — fashion-beauty
+  [architektur-studio] ia-done: IA-Struktur fertig — 2 Views · Atelier Lichteck
+  [architektur-studio] images-first: Bilder zuerst — Palette-Lock
+  [architektur-studio] images-first-done: Bilder gesperrt — 1 generiert · 0 Fallback
+  [architektur-studio] global-css: Shared CSS (Pass 2a) — Tokens + Nav
+  [architektur-studio] view-start: View: Atelier — Pass 2b · 1/2
+  [architektur-studio] view-start: View: Projekte — Pass 2b · 2/2
+  [architektur-studio] assemble: Shell zusammenbauen (Pass 3) — 2 Sections
+  [architektur-studio] multi-pass-done: Multi-Pass fertig — 20.6 KB · Template maison-lumen
+  [architektur-studio] generate: Multi-Pass Pipeline — 2 Views · 1 Bilder · Ref maison-lumen
+  [architektur-studio] generate-done: Entwurf v1 generiert — 22.1 KB in 184s
+  [architektur-studio] theater-round-1: Theater Runde 1 — Designer 3 · Critic 2 · Brand 5 · A11y 5 · Copy 3 → Ø 3.5
+  [architektur-studio] audit: Accessibility-Audit — 17 Checks, 4 auto-gefixt
+  [architektur-studio] lint: Anti-Slop final — 0 P0-Funde verbleibend
+  ✓ Fertig in 218.3s · 22.6 KB · Score 3.47
+
+▶ Test: SaaS Analytics
+  Projekt: cmrlyyfkh000hl0ogz6kdl11j
+  [saas-analytics] art-direction: Art Direction — tech-saas — modern · präzise · technisch
+  [saas-analytics] experience-mode: Erlebnis-Modus — App-Shell (View-Navigation)
+  [saas-analytics] creative-dna: Kreativ-DNA: Horizontal-Scroll-Sektion · Cursor-Magnet + Parallax-Tiefe · Glassmorphism — Struktur Horizontal-Scroll-Sektion
+  [saas-analytics] negative-memory: Gedächtnis: 8 Muster vermeiden — avoid (tech-saas): failure · Default-Indigo/Violett als Akze
+  [saas-analytics] generate-start: Entwurf wird generiert — Multi-Pass · tech-saas — modern · präzise · technisch
+  [saas-analytics] reference-rag: Referenz-Stil geladen — Prisma Analytics
+  [saas-analytics] ia-start: IA-Struktur (Pass 1) — tech-saas
+  ✗ Fehler: zai-direct: all 3 attempts failed: zai-direct HTTP 200: {"id":"msg_2026071519014272879c1b1e144773","type"
+
+=== FERTIG ===
+:"message","role":"assistant","model":"glm-5.2","content":[{"type":"thinking","thinking":"1.  **Analyze the 
+Request:**\n    *   **Role:** Information A
+Galerie: file:///G:/Andere Computer/Mein Computer/Desktop/Z.Design/showcase/test-runs/2026-07-15-10-54-35/index.html
+Report:  G:\Andere Computer\Mein Computer\Desktop\Z.Design\showcase\test-runs\2026-07-15-10-54-35\report.json
+Ergebnis: 1/3 erfolgreich
+

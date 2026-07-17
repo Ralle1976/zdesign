@@ -1,0 +1,12 @@
+---
+pid: 40760
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "G:; cd \"G:\\Andere Computer\\Mein Computer\\Desktop\\Z.Design\\Projekt\"; node node_modules/typescript/bin/tsc --noEmit --pretty false 2>&1 | Select-String \"error TS\""
+started_at: 2026-07-15T21:26:56.400Z
+running_for_ms: 49996    
+---
+
+src/lib/ai/fresh-images.ts(82,3): error TS2741: Property 'generated' is missing in type '{ html: string; replaced: 
+number; failed: number; }' but required in type '{ html: string; generated: number; failed: number; }'.
+
+

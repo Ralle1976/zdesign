@@ -61,7 +61,7 @@ export function VariantGalleryPicker({
                   <iframe
                     title={v.conceptName}
                     srcDoc={v.html}
-                    sandbox="allow-scripts"
+                    sandbox="allow-same-origin allow-scripts"
                     className="w-[200%] h-[200%] origin-top-left scale-50 pointer-events-none border-0"
                   />
                   {isPreview && (
@@ -107,3 +107,16 @@ export function VariantGalleryPicker({
                     type="button"
                     size="sm"
                     className="w-full h-7 text-[10px] gap-1 mt-1 bg-emerald-600 hover:bg-emerald-700"
+                    onClick={() => onConfirm(v)}
+                  >
+                    Diese Richtung übernehmen
+                  </Button>
+                )}
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+}

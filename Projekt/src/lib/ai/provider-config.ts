@@ -10,8 +10,40 @@
  * NO Prisma, NO z-ai-web-dev-sdk. Pure fs + env.
  */
 
-import { promises as fs } from 'fs';
+import { promises as fs, readFileSync, existsSync, statSync } from 'fs';
 import path from 'path';
+
+const ENV_LOCAL_PATH = path.join(process.cwd(), '.env.local');
+let envLocalMtime = 0;
+const envLocalCache: Record<string, string> = {};
+
+/** Call after writing .env.local so the next read picks up fresh values. */
+export function bustEnvLocalCache(): void {
+  envLocalMtime = 0;
+}
+
+function readEnvLocalValue(key: string): string | undefined {
+  try {
+    if (!existsSync(ENV_LOCAL_PATH)) return undefined;
+    const mtime = statSync(ENV_LOCAL_PATH).mtimeMs;
+    if (mtime !== envLocalMtime) {
+      envLocalMtime = mtime;
+      for (const k of Object.keys(envLocalCache)) delete envLocalCache[k];
+      const raw = readFileSync(ENV_LOCAL_PATH, 'utf-8');
+      for (const line of raw.split('\n')) {
+        const t = line.trim();
+        if (!t || t.startsWith('#')) continue;
+        const eq = t.indexOf('=');
+        if (eq <= 0) continue;
+        envLocalCache[t.slice(0, eq).trim()] = t.slice(eq + 1).trim();
+      }
+    }
+    const v = envLocalCache[key];
+    return v?.trim() || undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 // ============ Types ============
 
@@ -113,6 +145,19 @@ export const PROVIDERS: ProviderEntry[] = [
     ],
   },
   {
+    id: 'xai',
+    name: 'xAI Grok',
+    kind: 'text',
+    envKey: 'XAI_API_KEY',
+    envBaseUrl: 'XAI_BASE_URL',
+    defaultModel: 'grok-4.5',
+    models: [
+      { id: 'grok-4.5', name: 'Grok 4.5 (strongest)' },
+      { id: 'grok-build-0.1', name: 'Grok Build 0.1 (agentic coding)' },
+      { id: 'grok-4.3', name: 'Grok 4.3 (fast)' },
+    ],
+  },
+  {
     id: 'minimax',
     name: 'MiniMax (Images)',
     kind: 'image',
@@ -121,6 +166,18 @@ export const PROVIDERS: ProviderEntry[] = [
     models: [
       { id: 'image-01', name: 'MiniMax image-01' },
       { id: 'abab6.5s-image', name: 'abab6.5s image' },
+    ],
+  },
+  {
+    id: 'xai-imagine',
+    name: 'xAI Grok Imagine',
+    kind: 'image',
+    envKey: 'XAI_API_KEY',
+    envBaseUrl: 'XAI_BASE_URL',
+    defaultModel: 'grok-imagine-image',
+    models: [
+      { id: 'grok-imagine-image', name: 'Grok Imagine ($0.02/img)' },
+      { id: 'grok-imagine-image-quality', name: 'Grok Imagine Quality ($0.05/img)' },
     ],
   },
 ];
@@ -148,16 +205,32 @@ export function maskKey(key: string | undefined): string | null {
   return `${trimmed.slice(0, 4)}...${trimmed.slice(-4)}`;
 }
 
+const PROVIDER_DEFAULT_BASE_URL: Partial<Record<string, string>> = {
+  openrouter: 'https://openrouter.ai/api/v1',
+  zai: 'https://api.z.ai/api/anthropic',
+  xai: 'https://api.x.ai/v1',
+  'xai-imagine': 'https://api.x.ai/v1',
+};
+
 /** Read the env value for a provider's key (server-side only). */
 export function readProviderKey(provider: ProviderEntry): string | undefined {
   if (!provider.envKey) return undefined;
-  return process.env[provider.envKey];
+  const v = process.env[provider.envKey]?.trim() || readEnvLocalValue(provider.envKey);
+  return v || undefined;
+}
+
+export function resolveProviderBaseUrl(provider: ProviderEntry): string | null {
+  if (provider.envBaseUrl) {
+    const fromEnv = process.env[provider.envBaseUrl]?.trim();
+    if (fromEnv) return fromEnv;
+  }
+  return PROVIDER_DEFAULT_BASE_URL[provider.id] ?? null;
 }
 
 /** Build the status view (configured + maskedKey) for a provider entry. */
 export function toStatus(provider: ProviderEntry): ProviderStatus {
   const key = readProviderKey(provider);
-  const baseUrl = provider.envBaseUrl ? (process.env[provider.envBaseUrl] || null) : null;
+  const baseUrl = resolveProviderBaseUrl(provider);
   return {
     ...provider,
     configured: !!key,

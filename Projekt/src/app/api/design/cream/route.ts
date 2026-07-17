@@ -19,92 +19,24 @@ import { creativeSeed, isPremiumBrief } from '@/lib/ai/pipeline-intent';
 import { recallAntiPatterns } from '@/lib/ai/memory/negative-memory';
 import { loadUserMemory, userMemoryToPromptBlock } from '@/lib/ai/memory/user-memory';
 import { lessonsToPromptBlock, saveResult, maybeReflect } from '@/lib/ai/memory/lessons';
-import { callZai, ZAI_MODELS } from '@/lib/ai/zai-direct';
+import { callTextLLM } from '@/lib/ai/call-text-llm';
 import { renderHtmlToPng, critiqueRendered } from '@/lib/ai/skills/vision-critique';
 import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
 import { pickTemplate } from '@/lib/ai/templates/registry';
 import { loadReferenceHtml, buildAdaptPrompt } from '@/lib/ai/templates/generate-from-reference';
 import { lintHtml } from '@/lib/ai/lint/anti-slop';
-import { replaceImagesWithGenerated } from '@/lib/ai/html-image-generator';
+import { ensureDesignImages } from '@/lib/ai/ensure-design-images';
 import { injectAgencyCraft, AGENCY_LAYOUT_SPECS, AGENCY_ANIMATIONS, AGENCY_CONCEPT, AGENCY_PREMIUM_LUXE } from '@/lib/ai/skills/agency-craft';
+import { ensureGoogleFonts } from '@/lib/ai/ensure-google-fonts';
+import { ensureExperienceRuntime } from '@/lib/ai/experience-stack';
+import { ensureAppShell } from '@/lib/ai/app-shell';
+import { detectExperienceMode } from '@/lib/ai/pipeline-intent';
 import { db } from '@/lib/db';
 
 // Generation model: Z.ai GLM-5.2 (funded Anthropic endpoint — proven reliable
 // for ~27KB / ~110s design prompts). Gemini was removed (no API access).
-const GEN_MODEL = ZAI_MODELS.text; // 'glm-5.2'
+const GEN_MODEL = undefined; // resolved from provider-config via callTextLLM
 const GEN_MAX_TOKENS = 16384; // GLM-5.2 output cap — covers a full HTML page.
-
-// ── Deterministic Google Fonts injection ─────────────────────────────────────
-// Maps font-family declarations to Google Fonts <link> URLs. The LLM writes
-// font-family in CSS but frequently forgets the <link> tag — we fix that here.
-const GOOGLE_FONT_URLS: Record<string, string> = {
-  'Fraunces': 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap',
-  'Cormorant Garamond': 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap',
-  'Source Serif Pro': 'https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;600;700&display=swap',
-  'Poppins': 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap',
-  'Space Grotesk': 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap',
-  'Inter': 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
-  'Playfair Display': 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap',
-  'DM Serif Display': 'https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap',
-  'Lora': 'https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap',
-  'Bricolage Grotesque': 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&display=swap',
-};
-
-function ensureGoogleFonts(html: string, displayFont: string, bodyFont: string): string {
-  // Collect unique font names from the brief (strip fallbacks like "Georgia, serif")
-  const fontNames = new Set<string>();
-  for (const raw of [displayFont, bodyFont]) {
-    if (!raw) continue;
-    const first = raw.split(',')[0].trim().replace(/['"]/g, '');
-    fontNames.add(first);
-  }
-
-  // Build the combined <link> for fonts we know on Google Fonts
-  const fontsToLoad: string[] = [];
-  for (const name of fontNames) {
-    const url = GOOGLE_FONT_URLS[name];
-    if (url && !html.includes(encodeURIComponent(name).split('%20')[0])) {
-      fontsToLoad.push(url);
-    }
-  }
-
-  // Also scan the HTML for font-family declarations we haven't covered yet
-  const declaredFonts = [...html.matchAll(/font-family:\s*['"]?([^'"`,;]+)/gi)];
-  for (const m of declaredFonts) {
-    const name = m[1].trim();
-    const url = GOOGLE_FONT_URLS[name];
-    if (url && !fontsToLoad.includes(url) && !html.includes('fonts.googleapis.com')) {
-      fontsToLoad.push(url);
-    }
-  }
-
-  if (fontsToLoad.length === 0) return html;
-
-  // Check if a Google Fonts <link> is already present
-  if (html.includes('fonts.googleapis.com')) {
-    // Already has some Google Fonts link — check which fonts are missing
-    const existingLinks = [...html.matchAll(/href="(https:\/\/fonts\.googleapis\.com[^"]+)"/gi)];
-    const existingFonts = existingLinks.map(m => m[1]).join('');
-    const missing = fontsToLoad.filter(url => !existingFonts.includes(url));
-    if (missing.length === 0) return html;
-    // Add missing fonts as a combined link
-    const combinedHref = missing.join('&');
-    return html.replace(/(<head[^>]*>)/i, `$1\n    <link rel="preconnect" href="https://fonts.googleapis.com">\n    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n    <link href="${combinedHref}" rel="stylesheet">`);
-  }
-
-  // No Google Fonts link at all — inject preconnect + combined link after <head>
-  const combinedHref = fontsToLoad.join('&');
-  const injection = `\n    <link rel="preconnect" href="https://fonts.googleapis.com">\n    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n    <link href="${combinedHref}" rel="stylesheet">`;
-
-  if (/<head[^>]*>/i.test(html)) {
-    return html.replace(/(<head[^>]*>)/i, `$1${injection}`);
-  }
-  // No <head> tag — inject before <style> or at the start
-  if (/<style/i.test(html)) {
-    return html.replace(/(<style)/i, `${injection}\n    $1`);
-  }
-  return html;
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -137,6 +69,7 @@ export async function POST(req: NextRequest) {
     // ── 1) v1 GENERATE via Z.ai GLM-5.2 ─────────────────────────────────────
     const briefText = message || changeRequest || 'design refinement';
     const brief = buildArtBrief(briefText);
+    brief.experienceMode = detectExperienceMode(briefText, concept);
     if (concept) {
       brief.concept = concept;
       brief.creative = pickCreativeAxes(creativeSeed(briefText, concept));
@@ -220,9 +153,9 @@ Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
     // ── GENERATE via Z.ai GLM-5.2 ──
     // Note: Fusion (3-model panel) was tested for HTML generation but truncates
     // at ~2KB — its panel→judge→synthesis architecture is built for reasoning,
-    // not large code generation. callZai produces reliable 30KB+ HTML.
+    // not large code generation. callTextLLM produces reliable 30KB+ HTML.
     // Fusion remains valuable for the concept/creative-direction phase (future).
-    let html = cleanHtml(await callZai(prompt, { model, maxTokens: GEN_MAX_TOKENS, temperature: isRefinement ? 0.4 : 0.6, timeoutMs: 300_000 }));
+    let html = cleanHtml(await callTextLLM(prompt, { model, maxTokens: GEN_MAX_TOKENS, temperature: isRefinement ? 0.4 : 0.6, timeoutMs: 300_000 }));
     if (!html || !/<html/i.test(html)) {
       return NextResponse.json({ error: 'Z.ai generate returned no valid HTML' }, { status: 502 });
     }
@@ -235,6 +168,10 @@ Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
     // This is the deterministic "finishing touch" — guarantees a craft floor
     // regardless of what the LLM produced.
     html = injectAgencyCraft(html);
+    html =
+      brief.experienceMode === 'app-shell'
+        ? ensureAppShell(html, 'app-shell')
+        : ensureExperienceRuntime(html);
 
     // ── 1b) REPLACE STOCK PHOTOS WITH GENERATED IMAGES ──────────────────────
     // The LLM fills <img src> with hardcoded Unsplash URLs (identical for every
@@ -243,10 +180,19 @@ Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
     // Skipped for refinements (the design already has its images).
     if (!isRefinement) {
       try {
-        const imgResult = await replaceImagesWithGenerated(html, brief.domain, 4);
+        const imgResult = await ensureDesignImages(html, {
+          domain: brief.domain,
+          message,
+          mood: brief.mood,
+          palette: brief.palette,
+          tryGenerate: true,
+          maxGenerate: 4,
+        });
         html = imgResult.html;
-        if (imgResult.replaced > 0) {
-          console.log(`[cream] ${imgResult.replaced} images generated, ${imgResult.failed} failed`);
+        if (imgResult.injected > 0 || imgResult.generated > 0) {
+          console.log(
+            `[cream] images: ${imgResult.injected} injected, ${imgResult.generated} generated`,
+          );
         }
       } catch (imgErr) {
         // Image generation is non-fatal — keep Unsplash fallback if it fails.
@@ -316,7 +262,7 @@ Aktueller Entwurf:
 ${html}
 
 Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
-        const refined = cleanHtml(await callZai(refinePrompt, { model, maxTokens: GEN_MAX_TOKENS, temperature: 0.4, timeoutMs: 300_000 }));
+        const refined = cleanHtml(await callTextLLM(refinePrompt, { model, maxTokens: GEN_MAX_TOKENS, temperature: 0.4, timeoutMs: 300_000 }));
         if (refined && /<html/i.test(refined)) html = refined;
         // Lint problems are one-shot — clear after first refine to avoid repetition.
         lintProblems = [];

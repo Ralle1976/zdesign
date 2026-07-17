@@ -1,0 +1,20 @@
+---
+pid: 31636
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "Get-NetTCPConnection -LocalPort 3020 -State Listen -ErrorAction SilentlyContinue | Select-Object LocalPort, OwningProcess; try { (Invoke-WebRequest -Uri \"http://localhost:3020/\" -UseBasicParsing -TimeoutSec 15).StatusCode } catch { \"DOWN\" }"
+started_at: 2026-07-14T21:02:57.893Z
+running_for_ms: 86400015 
+---
+
+LocalPort OwningProcess
+--------- -------------
+     3020         26804
+200
+
+
+
+---
+exit_code: -1
+elapsed_ms: 86400015
+ended_at: 2026-07-15T21:03:15.794Z
+---

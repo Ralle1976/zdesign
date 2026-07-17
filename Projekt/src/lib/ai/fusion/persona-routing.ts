@@ -37,7 +37,7 @@ export const PERSONA_MODEL_MAP: Record<PersonaRole, PersonaPreference> = {
   'creative-director': { preferredProviderId: 'anthropic-default', preferredModel: 'claude-sonnet-4-20250514' },
   'ux-architect': { preferredProviderId: 'anthropic-default', preferredModel: 'claude-sonnet-4-20250514' },
   'visual-designer': { preferredProviderId: 'openai-default', preferredModel: 'gpt-4o' },
-  'innovation-agent': { preferredProviderId: 'openrouter-default', preferredModel: 'google/gemini-2.0-flash-001' },
+  'innovation-agent': { preferredProviderId: 'xai-default', preferredModel: 'grok-4.5' },
   'critique-agent': { preferredProviderId: 'anthropic-default', preferredModel: 'claude-opus-4-20250514' },
   'synthesis-agent': { preferredProviderId: 'openai-default', preferredModel: 'gpt-4o' },
 };

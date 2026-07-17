@@ -22,7 +22,7 @@
 //     model: 'flux-schnell',
 //   });
 
-import type { ProviderConfig } from '@/lib/providers/registry';
+import { readProviderKey, getProviderById } from '@/lib/ai/provider-config';
 
 // ============ Prompt enrichment ============
 // Flux (and most image models) produce flat, generic results from a bare subject
@@ -288,6 +288,48 @@ async function replicateImage(
 // ─── Minimax image-01 (Premium, uses the existing MINIMAX_API_KEY) ────────────
 // https://api.minimax.io/v1/image_generation — model "image-01"
 // High-quality text-to-image with custom aspect ratios. ~16s/image.
+async function xaiImagineImage(
+  prompt: string,
+  size: string,
+  model: string,
+  apiKey: string,
+): Promise<ImageGenSuccess | null> {
+  try {
+    const base = (process.env.XAI_BASE_URL || 'https://api.x.ai/v1').replace(/\/+$/, '');
+    const [w, h] = size.split('x').map((n) => parseInt(n, 10) || 1024);
+    const aspect =
+      w > h * 1.3 ? '16:9' : h > w * 1.3 ? '9:16' : w === h ? '1:1' : '4:3';
+    const res = await fetch(`${base}/images/generations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: model || 'grok-imagine-image',
+        prompt,
+        aspect_ratio: aspect,
+        response_format: 'url',
+      }),
+      signal: AbortSignal.timeout(120_000),
+    });
+    if (!res.ok) {
+      console.warn('[image-providers] xai-imagine non-OK:', res.status);
+      return null;
+    }
+    const data = (await res.json()) as {
+      data?: Array<{ url?: string; b64_json?: string }>;
+    };
+    const first = data.data?.[0];
+    const url = first?.url ?? (first?.b64_json ? `data:image/png;base64,${first.b64_json}` : null);
+    if (!url) return null;
+    return { url, provider: 'xai-imagine', model: model || 'grok-imagine-image', free: false };
+  } catch (e) {
+    console.warn('[image-providers] xai-imagine failed:', e instanceof Error ? e.message : e);
+    return null;
+  }
+}
+
 async function minimaxImage(prompt: string, aspect: string, apiKey: string): Promise<ImageGenSuccess | null> {
   try {
     const res = await fetch('https://api.minimax.io/v1/image_generation', {
@@ -350,6 +392,11 @@ export async function generateImageWithProvider(
   const enhanced = enrichImagePrompt(prompt.trim());
 
   const has = (k?: string): k is string => !!k && !!process.env[k] && process.env[k]!.trim().length > 0;
+  const xaiImagineEntry = getProviderById('xai-imagine');
+  const xaiTextEntry = getProviderById('xai');
+  const xaiKey =
+    (xaiImagineEntry ? readProviderKey(xaiImagineEntry) : undefined) ||
+    (xaiTextEntry ? readProviderKey(xaiTextEntry) : undefined);
 
   // Build the ordered list of providers to try.
   // 1. User-selected provider first (if configured).
@@ -378,10 +425,16 @@ export async function generateImageWithProvider(
       id: 'minimax',
       run: () => minimaxImage(enhanced, aspect, process.env.MINIMAX_API_KEY!),
     });
+  const addXaiImagine = () =>
+    candidates.push({
+      id: 'xai-imagine',
+      run: () => xaiImagineImage(enhanced, size, opts.model ?? 'grok-imagine-image', xaiKey!),
+    });
 
   // User selection first.
   const sel = opts.provider;
-  if (sel === 'minimax' && has('MINIMAX_API_KEY')) addMinimax();
+  if (sel === 'xai-imagine' && xaiKey) addXaiImagine();
+  else if (sel === 'minimax' && has('MINIMAX_API_KEY')) addMinimax();
   else if (sel === 'deepinfra' && has('DEEPINFRA_API_KEY')) addDeepinfra();
   else if (sel === 'fal' && has('FAL_KEY')) addFal();
   else if (sel === 'replicate' && has('REPLICATE_API_TOKEN')) addReplicate();
@@ -393,6 +446,7 @@ export async function generateImageWithProvider(
   // because it's already configured (user's coding plan) and produces premium
   // quality images (~16s/image). DeepInfra/fal/Replicate are cheaper but need
   // separate keys. Pollinations is always-last free fallback.
+  if (sel !== 'xai-imagine' && xaiKey) addXaiImagine();
   if (sel !== 'minimax' && has('MINIMAX_API_KEY')) addMinimax();
   if (sel !== 'deepinfra' && has('DEEPINFRA_API_KEY')) addDeepinfra();
   if (sel !== 'fal' && has('FAL_KEY')) addFal();
@@ -460,6 +514,18 @@ export const IMAGE_PROVIDER_CATALOGUE: ImageProviderCatalogueEntry[] = [
     endpoint: 'https://fal.run',
     quota: 'pay per image',
     defaultModel: 'fal-ai/flux/schnell',
+  },
+  {
+    id: 'xai-imagine',
+    name: 'xAI Grok Imagine',
+    models: [
+      { id: 'grok-imagine-image', label: 'Grok Imagine', pricing: '~$0.02/img' },
+      { id: 'grok-imagine-image-quality', label: 'Grok Imagine Quality', pricing: '~$0.05/img' },
+    ],
+    apiKeyEnv: 'XAI_API_KEY',
+    endpoint: 'https://api.x.ai/v1',
+    quota: 'pay per image',
+    defaultModel: 'grok-imagine-image',
   },
   {
     id: 'replicate',

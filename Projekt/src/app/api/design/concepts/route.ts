@@ -2,7 +2,7 @@
 //
 // POST /api/design/concepts { message, count? }
 //   → buildArtBrief(message) → briefLabel(brief) as the short brief summary
-//   → generateConcepts(briefLabel, message, callZai, count ?? 3)
+//   → generateConcepts(briefLabel, message, callTextLLM, count ?? 3)
 //   → { concepts: Concept[] }
 //
 // Returns 400 on missing message. Never 500s on a model/parse failure —
@@ -12,12 +12,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { buildArtBrief, briefLabel } from '@/lib/ai/skills/art-direction';
 import { generateConcepts, type Concept } from '@/lib/ai/skills/creative-director';
-import { callZai } from '@/lib/ai/zai-direct';
+import { callTextLLM } from '@/lib/ai/call-text-llm';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { message, count } = (body ?? {}) as { message?: string; count?: number };
+    const { message, count, creativeMode } = (body ?? {}) as {
+      message?: string;
+      count?: number;
+      creativeMode?: boolean;
+    };
 
     if (!message || !message.trim()) {
       return NextResponse.json(
@@ -34,7 +38,9 @@ export async function POST(request: NextRequest) {
 
     const n = typeof count === 'number' && count > 0 ? Math.min(count, 6) : 3;
 
-    const concepts: Concept[] = await generateConcepts(summary, message, callZai, n);
+    const concepts: Concept[] = await generateConcepts(summary, message, callTextLLM, n, {
+      creativeMode: !!creativeMode,
+    });
 
     return NextResponse.json({ concepts });
   } catch (error) {

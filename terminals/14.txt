@@ -1,0 +1,19 @@
+---
+pid: 32932
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "Set-Location \"G:\\Andere Computer\\Mein Computer\\Desktop\\Z.Design\\Projekt\"; & \"C:\\Program Files\\nodejs\\node.exe\" \".\\node_modules\\typescript\\bin\\tsc\" --noEmit --pretty false 2>&1 | Select-Object -First 30; if ($LASTEXITCODE -eq 0) { \"TSC_OK\" } else { \"TSC_FAIL exit=$LASTEXITCODE\" }"
+started_at: 2026-07-14T21:04:15.990Z
+running_for_ms: 86400001 
+---
+src/components/zdesign/CanvasVariantGallery.tsx(27,21): error TS2353: Object literal may only specify known properties, and 'agent' does not exist in type 'ChatMessageMeta'.
+src/components/zdesign/ChatPanel.tsx(1494,15): error TS2322: Type 'Concept' is not assignable to type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type 'Concept'.
+src/components/zdesign/ChatPanel.tsx(1964,28): error TS2352: Conversion of type 'Record<string, unknown>' to type 'Concept' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'Record<string, unknown>' is missing the following properties from type 'Concept': name, bigIdea, narrative, signatureVisual, and 5 more.
+TSC_FAIL exit=2
+
+---
+exit_code: -1
+elapsed_ms: 86400001
+ended_at: 2026-07-15T21:04:34.763Z
+---

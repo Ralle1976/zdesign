@@ -52,6 +52,7 @@ import { AIImageDialog } from './AIImageDialog';
 import { ResearchDialog } from './ResearchDialog';
 import { PipelineStatusPanel } from './PipelineStatusPanel';
 import { VariantGalleryPicker } from './VariantGalleryPicker';
+import { VariantInlinePreview } from './VariantInlinePreview';
 import { VariantGalleryRestoreButton } from './VariantGalleryRestoreButton';
 import type { DesignVariantResult } from '@/types/design';
 import { runAgentDesignStream } from '@/lib/chat/agent-stream-client';
@@ -1368,6 +1369,9 @@ export function ChatPanel() {
             message: cleanText,
             projectId: currentProjectId,
             ...(concept ? { concept } : {}),
+            skipVision: false,
+            maxTheaterRounds: creativeModeRef.current ? 2 : 2,
+            creativeMode: creativeModeRef.current,
           },
           handleStreamFrame,
           controller.signal,
@@ -1476,7 +1480,14 @@ export function ChatPanel() {
 
           try {
             const complete = await runAgentDesignStream(
-              { message: cleanText, projectId: currentProjectId, concept: c },
+              {
+                message: cleanText,
+                projectId: currentProjectId,
+                concept: c,
+                skipVision: true,
+                maxTheaterRounds: 1,
+                creativeMode: creativeModeRef.current,
+              },
               onVariantFrame,
               controllers[i].signal,
             );
@@ -1524,7 +1535,7 @@ export function ChatPanel() {
           id: `variants-${Date.now()}`,
           projectId: currentProjectId,
           role: 'assistant',
-          content: `${collected.length} Richtungen generiert — **Vorschau** im Canvas (groß), dann „Übernehmen“. Klick auf Karte = nur ansehen.`,
+          content: `${collected.length} Richtungen generiert — **Vorschau**, dann „Übernehmen“. Tipp: Eine einzelne Karte wählen liefert oft höhere Qualität (Vision-Kritik) als der 3er-Vergleich.`,
           metadata: { agent: true, variants: true } as ChatMessage['metadata'],
           createdAt: new Date(),
         });
@@ -1717,7 +1728,11 @@ export function ChatPanel() {
             const cres = await fetch('/api/design/concepts', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ message: cleanText, count: 3 }),
+              body: JSON.stringify({
+                message: cleanText,
+                count: 3,
+                creativeMode: creativeModeRef.current,
+              }),
             });
             const cdata = await cres.json().catch(() => ({}));
             const concepts: ConceptCard[] = Array.isArray(cdata.concepts)
@@ -1763,6 +1778,7 @@ export function ChatPanel() {
             designSystem: currentDesignSystem || undefined,
             history,
             fusion: fusionEnabledRef.current || undefined,
+            creativeMode: creativeModeRef.current || undefined,
           }),
         });
 
@@ -1939,7 +1955,7 @@ export function ChatPanel() {
       setSelectedConcept(c);
       setPendingConcepts(null);
       if (!stash) return;
-      void runAgentGeneration(stash.text, stash.projectId);
+      void runAgentGeneration(stash.text, stash.projectId, c);
     },
     [runAgentGeneration]
   );
@@ -2013,6 +2029,10 @@ export function ChatPanel() {
 
   const handlePreviewVariant = useCallback(
     (v: DesignVariantResult) => {
+      const state = useZDesignStore.getState();
+      if (!state.variantGallery?.length && state.variantGalleryArchive?.length) {
+        state.restoreVariantGallery();
+      }
       setVariantPreviewName(v.conceptName);
     },
     [setVariantPreviewName],
@@ -2119,13 +2139,20 @@ export function ChatPanel() {
                 />
               )}
               {variantGallery && variantGallery.length > 0 && (
-                <VariantGalleryPicker
-                  variants={variantGallery}
-                  previewName={variantPreviewName}
-                  onPreview={handlePreviewVariant}
-                  onConfirm={handlePickVariant}
-                  showConfirmOnCard
-                />
+                <>
+                  <VariantGalleryPicker
+                    variants={variantGallery}
+                    previewName={variantPreviewName}
+                    pickedName={variantPickedName}
+                    onPreview={handlePreviewVariant}
+                    onConfirm={handlePickVariant}
+                    showConfirmOnCard
+                  />
+                  <VariantInlinePreview
+                    variants={variantGallery}
+                    previewName={variantPreviewName}
+                  />
+                </>
               )}
               {isGenerating && !showPipelineStatus && !showLegacyProgress && <TypingIndicator />}
             </div>
@@ -2439,4 +2466,9 @@ export function ChatPanel() {
             content: `${t.research?.results || 'Found inspiration!'} Here's what I found for "${query}":\n\n${resultLines}`,
             createdAt: new Date(),
           };
-          addCh
+          addChatMessage(assistantMessage);
+        }}
+      />
+    </div>
+  );
+}

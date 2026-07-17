@@ -18,16 +18,23 @@
 // route returns ({ id, message, html, mode, trace, scores, projectId }) so a
 // client can swap the fetch target 1:1 and just consume events incrementally.
 //
-// The heavy lifting reuses the SAME functions as the sync route (callZai,
+// The heavy lifting reuses the SAME functions as the sync route (callTextLLM,
 // runCritiqueTheater, buildArtBrief, runAudits, etc.) so behavior is identical.
 
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import {
+  applyConceptToBrief,
   buildArtBrief,
   briefLabel,
   generateHtmlPrompt,
 } from '@/lib/ai/skills/art-direction';
+import { ensureGoogleFonts } from '@/lib/ai/ensure-google-fonts';
+import { ensureExperienceRuntime } from '@/lib/ai/experience-stack';
+import { ensureAppShell } from '@/lib/ai/app-shell';
+import { detectExperienceMode, experienceModeLabel } from '@/lib/ai/pipeline-intent';
+import { ensureDesignImages, countVisibleImages } from '@/lib/ai/ensure-design-images';
+import { renderHtmlToPng, critiqueRendered } from '@/lib/ai/skills/vision-critique';
 import { axesLabel, pickCreativeAxes } from '@/lib/ai/skills/creative-diversity';
 import {
   AGENCY_ANIMATIONS,
@@ -42,7 +49,7 @@ import {
   type TheaterResult,
 } from '@/lib/ai/skills/critic-theater';
 import { refinePrompt } from '@/lib/ai/skills/refine';
-import { callZai } from '@/lib/ai/zai-direct';
+import { callTextLLM } from '@/lib/ai/call-text-llm';
 import type { Concept } from '@/lib/ai/skills/creative-director';
 import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
 import {
@@ -69,12 +76,16 @@ import {
   buildThaiFoodPrompts,
   isMinimaxImageConfigured,
 } from '@/lib/ai/image-minimax';
+import { runMultiPassPipeline } from '@/lib/ai/multi-pass-pipeline';
 
 interface TraceStep {
   step: string;
   label: string;
   detail?: string;
 }
+
+const GEN_MAX_TOKENS = 16384;
+const VISION_TARGET = 7.5;
 
 /** Map deterministic lint P0 findings into refine-shaped strings. */
 function lintToRefinements(findings: LintFinding[]): string[] {
@@ -137,7 +148,17 @@ export async function POST(request: NextRequest) {
           message,
           projectId,
           concept,
-        } = body as { message: string; projectId: string; concept?: Concept };
+          skipVision = false,
+          maxTheaterRounds = 2,
+          creativeMode = false,
+        } = body as {
+          message: string;
+          projectId: string;
+          concept?: Concept;
+          skipVision?: boolean;
+          maxTheaterRounds?: number;
+          creativeMode?: boolean;
+        };
 
         if (!message || !projectId) {
           send({ step: 'error', message: 'message and projectId are required' });
@@ -166,14 +187,18 @@ export async function POST(request: NextRequest) {
         };
 
         // 1) Art direction (deterministic).
-        const brief = buildArtBrief(message);
-        if (concept) brief.concept = concept;
+        let brief = buildArtBrief(message);
+        if (concept) brief = applyConceptToBrief(brief, concept);
         brief.creative = pickCreativeAxes(creativeSeed(message, concept));
+        brief.experienceMode = detectExperienceMode(message, concept);
         const premium = isPremiumBrief(message, concept);
-        const agencyBlock =
-          AGENCY_LAYOUT_SPECS + AGENCY_ANIMATIONS + AGENCY_CONCEPT + (premium ? AGENCY_PREMIUM_LUXE : '');
+        // With a concept, skip generic layout specs — they fight layoutApproach.
+        const agencyBlock = concept
+          ? AGENCY_ANIMATIONS + AGENCY_CONCEPT + (premium ? AGENCY_PREMIUM_LUXE : '')
+          : AGENCY_LAYOUT_SPECS + AGENCY_ANIMATIONS + AGENCY_CONCEPT + (premium ? AGENCY_PREMIUM_LUXE : '');
         const directionLabel = briefLabel(brief);
         pushTrace('art-direction', 'Art Direction', directionLabel);
+        pushTrace('experience-mode', 'Erlebnis-Modus', experienceModeLabel(brief.experienceMode!));
         if (concept) {
           pushTrace('concept', `Konzept: ${concept.name}`, concept.bigIdea);
         }
@@ -207,8 +232,13 @@ export async function POST(request: NextRequest) {
           );
         }
 
+        // Pre-generate images only for single-pass fallback (multi-pass uses images-first).
         let imageBlock = '';
-        if (isMinimaxImageConfigured()) {
+        const willTryMultiPass = !(
+          typeof (body as { existingHtml?: string }).existingHtml === 'string' &&
+          (body as { existingHtml: string }).existingHtml.length > 100
+        ) && !(project.designMode === 'HTML_ARTIFACT' && project.designHTML);
+        if (!willTryMultiPass && isMinimaxImageConfigured()) {
           try {
             const hay = `${message} ${brief.imagery || ''}`.toLowerCase();
             const isThai = /thai|pad thai|imbiss|kurry|curry|basil|nudel|noodle/.test(hay);
@@ -257,7 +287,7 @@ export async function POST(request: NextRequest) {
             `kein Marketing-Blabla.`;
           try {
             designRationale = (
-              await callZai(rationalePrompt, {
+              await callTextLLM(rationalePrompt, {
                 maxTokens: 800,
                 temperature: 0.7,
                 thinking: true,
@@ -285,7 +315,8 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        // 2) Generate v1 HTML (with up to GEN_ATTEMPTS retries).
+        // 2) Generate v1 HTML — multi-pass (IA → images-first → views → shell)
+        //    with single-pass fallback on failure.
         const genStart = Date.now();
         const bodyExisting =
           typeof (body as { existingHtml?: string }).existingHtml === 'string' &&
@@ -306,41 +337,72 @@ export async function POST(request: NextRequest) {
         send({
           step: 'generate-start',
           label: 'Entwurf wird generiert',
-          detail: `${GEN_ATTEMPTS} Versuche · ${directionLabel}`,
+          detail: `Multi-Pass · ${directionLabel}`,
         });
 
-        for (let ga = 1; ga <= GEN_ATTEMPTS; ga++) {
-          const raw = cleanHtml(
-            await callZai(
-              rationalePrefix +
-                lessonsToPromptBlock() +
-                userMemoryBlock +
-                memoryBlock +
-                agencyBlock +
-                imageBlock +
-                generateHtmlPrompt(brief, message, existing),
-              {
-                maxTokens: 12000,
-                temperature: ga === 1 ? 0.5 : 0.3,
-                timeoutMs: 300_000,
-              },
-            ),
+        const multiPass = await runMultiPassPipeline(
+          {
+            brief,
+            message,
+            concept,
+            existingHtml: existing,
+            creativeMode,
+            rationalePrefix,
+            memoryBlock,
+            userMemoryBlock,
+            lessonsBlock: lessonsToPromptBlock(),
+            onProgress: (step, label, detail) => pushTrace(step, label, detail),
+          },
+          callTextLLM,
+        );
+
+        if (multiPass?.html) {
+          html = enforceConceptTokens(multiPass.html, concept);
+          pushTrace(
+            'generate',
+            'Multi-Pass Pipeline',
+            `${multiPass.ia.views.length} Views · ${multiPass.imageCount} Bilder${multiPass.templateId ? ` · Ref ${multiPass.templateId}` : ''}`,
           );
-          const out = acceptHtmlDoc(raw);
-          if (out) {
-            html = enforceConceptTokens(out, concept);
-            break;
-          }
-          console.warn(
-            `[design/agent/stream] generate attempt ${ga}/${GEN_ATTEMPTS} invalid (len ${raw.length}), retrying`,
-          );
-          if (ga === GEN_ATTEMPTS) {
-            throw new Error(
-              'Die Generierung lieferte nach mehreren Versuchen kein vollständiges HTML-Dokument. Bitte erneut versuchen.',
+        } else {
+          pushTrace('generate-fallback', 'Single-Pass Fallback', `${GEN_ATTEMPTS} Versuche`);
+          for (let ga = 1; ga <= GEN_ATTEMPTS; ga++) {
+            const raw = cleanHtml(
+              await callTextLLM(
+                rationalePrefix +
+                  lessonsToPromptBlock() +
+                  userMemoryBlock +
+                  memoryBlock +
+                  agencyBlock +
+                  imageBlock +
+                  generateHtmlPrompt(brief, message, existing),
+                {
+                  maxTokens: GEN_MAX_TOKENS,
+                  temperature: ga === 1 ? (creativeMode ? 0.62 : 0.55) : creativeMode ? 0.42 : 0.35,
+                  timeoutMs: 300_000,
+                },
+              ),
             );
+            const out = acceptHtmlDoc(raw);
+            if (out) {
+              html = enforceConceptTokens(out, concept);
+              break;
+            }
+            console.warn(
+              `[design/agent/stream] generate attempt ${ga}/${GEN_ATTEMPTS} invalid (len ${raw.length}), retrying`,
+            );
+            if (ga === GEN_ATTEMPTS) {
+              throw new Error(
+                'Die Generierung lieferte nach mehreren Versuchen kein vollständiges HTML-Dokument. Bitte erneut versuchen.',
+              );
+            }
           }
         }
+        html = ensureGoogleFonts(html, brief.fonts.display, brief.fonts.body);
         html = injectAgencyCraft(html);
+        html =
+          brief.experienceMode === 'app-shell'
+            ? ensureAppShell(html, 'app-shell')
+            : ensureExperienceRuntime(html);
 
         send({
           step: 'generate-done',
@@ -366,7 +428,7 @@ export async function POST(request: NextRequest) {
         }
 
         // 3) Critique Theater: ≤3 rounds, ship_best.
-        const MAX_ROUNDS = 3;
+        const MAX_ROUNDS = Math.max(1, Math.min(3, maxTheaterRounds));
         const THRESHOLD = 8.0;
         let bestHtml = html;
         let bestComposite = -1;
@@ -376,7 +438,7 @@ export async function POST(request: NextRequest) {
         for (let round = 1; round <= MAX_ROUNDS; round++) {
           let theater: TheaterResult;
           try {
-            theater = await runCritiqueTheater(html, brief, callZai, {
+            theater = await runCritiqueTheater(html, brief, callTextLLM, {
               threshold: THRESHOLD,
             });
           } catch (e) {
@@ -422,8 +484,8 @@ export async function POST(request: NextRequest) {
           let refinedOk = false;
           try {
             const refRaw = cleanHtml(
-              await callZai(refinePrompt(html, merged, brief), {
-                maxTokens: 12000,
+              await callTextLLM(refinePrompt(html, merged, brief), {
+                maxTokens: GEN_MAX_TOKENS,
                 temperature: 0.4,
                 timeoutMs: 300_000,
               }),
@@ -475,7 +537,94 @@ export async function POST(request: NextRequest) {
         // ship_best.
         html = bestHtml;
 
-        // 3a) AUDIT loop (auto-fix contrast / a11y on best draft).
+        // 3a) Vision critique (1 round) — sees the rendered page, not just HTML text.
+        if (!skipVision) {
+          try {
+            const png = await renderHtmlToPng(html, { fullPage: true });
+            if (png) {
+              const vision = await critiqueRendered(png, {}, message);
+              if (vision && vision.overall < VISION_TARGET && vision.problems.length > 0) {
+                send({
+                  step: 'vision-critique',
+                  label: 'Vision-Kritik',
+                  detail: `${vision.overall.toFixed(1)}/10 — ${vision.problems.slice(0, 2).join(' · ')}`,
+                  composite: Number(vision.overall.toFixed(2)),
+                });
+                const visionRefinements = [
+                  ...vision.problems.map((p) => `VISION: ${p}`),
+                  ...vision.fixes.map((f) => `FIX: ${f}`),
+                  'ALLE bestehenden <img src="https://..."> Tags und Fotos BEHALTEN — nicht entfernen.',
+                ];
+                const refRaw = cleanHtml(
+                  await callTextLLM(refinePrompt(html, visionRefinements, brief), {
+                    maxTokens: GEN_MAX_TOKENS,
+                    temperature: 0.35,
+                    timeoutMs: 300_000,
+                  }),
+                );
+                const visionHtml = acceptHtmlDoc(refRaw);
+                if (visionHtml && countVisibleImages(visionHtml) >= countVisibleImages(html)) {
+                  html = enforceConceptTokens(
+                    ensureGoogleFonts(visionHtml, brief.fonts.display, brief.fonts.body),
+                    concept,
+                  );
+                  html = injectAgencyCraft(html);
+                  html =
+                    brief.experienceMode === 'app-shell'
+                      ? ensureAppShell(html, 'app-shell')
+                      : ensureExperienceRuntime(html);
+                  send({
+                    step: 'vision-refine',
+                    label: 'Nach Vision verfeinert',
+                    detail: `Score-Ziel ${VISION_TARGET}`,
+                  });
+                }
+              } else if (vision) {
+                send({
+                  step: 'vision-critique',
+                  label: 'Vision-Kritik',
+                  detail: `${vision.overall.toFixed(1)}/10 — kein Refine nötig`,
+                  composite: Number(vision.overall.toFixed(2)),
+                });
+              }
+            }
+          } catch (visionErr) {
+            console.warn(
+              '[design/agent/stream] vision-critique skipped:',
+              visionErr instanceof Error ? visionErr.message : visionErr,
+            );
+          }
+        }
+
+        // 3b) Images — inject curated Unsplash if missing, then optional AI upgrade.
+        if (!bodyExisting && !existing) {
+          try {
+            const imgFinal = await ensureDesignImages(html, {
+              domain: brief.domain,
+              message,
+              mood: brief.mood,
+              palette: brief.palette,
+              tryGenerate: true,
+              maxGenerate: 6,
+              forceFresh: true,
+            });
+            html = enforceConceptTokens(imgFinal.html, concept);
+            if (imgFinal.injected > 0 || imgFinal.generated > 0) {
+              send({
+                step: 'images-final',
+                label: 'Bilder gesichert',
+                detail: `${imgFinal.injected} eingefügt · ${imgFinal.generated} generiert`,
+              });
+            }
+          } catch (imgErr) {
+            console.warn(
+              '[design/agent/stream] ensureDesignImages failed:',
+              imgErr instanceof Error ? imgErr.message : imgErr,
+            );
+          }
+        }
+
+        // 3c) AUDIT loop (auto-fix contrast / a11y on best draft).
         try {
           const audit = runAudits(html);
           html = audit.html;
@@ -503,7 +652,7 @@ export async function POST(request: NextRequest) {
               html,
               briefLabel(brief),
               bestTheater.summary,
-              callZai,
+              callTextLLM,
             );
             if (recipe) {
               const existingRecipe =

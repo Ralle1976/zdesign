@@ -16,7 +16,7 @@ import type { ArtBrief } from './art-direction';
 /** Cap the existing HTML we pass into refine. We send head+tokens (the part the
  *  model must preserve verbatim) plus the tail (the part most edits target).
  *  ~6KB is well under the threshold where GLM-5.2 starts dropping output. */
-const HTML_BUDGET = 6000;
+const HTML_BUDGET = 18000;
 
 function digestHtml(html: string): string {
   if (html.length <= HTML_BUDGET) return html;

@@ -77,6 +77,7 @@ export function TopToolbar() {
   const toggleRightPanel = useZDesignStore((s) => s.toggleRightPanel);
   const creativeMode = useZDesignStore((s) => s.creativeMode);
   const setCreativeMode = useZDesignStore((s) => s.setCreativeMode);
+  const designMode = useZDesignStore((s) => s.designMode);
   const activeProviderId = useZDesignStore((s) => s.activeProviderId);
   const providerConfigOpen = useZDesignStore((s) => s.providerConfigOpen);
   const setProviderConfigOpen = useZDesignStore((s) => s.setProviderConfigOpen);
@@ -343,10 +344,18 @@ export function TopToolbar() {
               </span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom" className="max-w-[200px]">
-            {creativeMode
-              ? (locale === 'de' ? 'Kreativ-Modus: Mehrstufige Generierung für vielfältigere Designs' : 'Creative Mode: Multi-pass generation for more diverse designs')
-              : (locale === 'de' ? 'Kreativ-Modus aktivieren für experimentellere Designs' : 'Enable Creative Mode for more experimental designs')}
+          <TooltipContent side="bottom" className="max-w-[260px]">
+            {designMode === 'HTML_ARTIFACT' || creativeMode
+              ? locale === 'de'
+                ? creativeMode
+                  ? 'Kreativ AN: mutigere Konzepte + mehr Theater-Runden im Agent-Pfad (Bot muss an sein).'
+                  : 'Kreativ AUS: Agent-Pfad mit Konzept-Wahl — zuerst 3 Richtungen, dann HTML-Pipeline.'
+                : creativeMode
+                  ? 'Creative ON: bolder concepts + extra critique rounds in Agent path (Bot must be on).'
+                  : 'Creative OFF: Agent path with concept picker first, then HTML pipeline.'
+              : locale === 'de'
+                ? 'Kreativ-Modus: experimentellere JSON-Node-Designs (nur wenn Agent/Bot aus ist).'
+                : 'Creative Mode: more experimental JSON node designs (only when Agent/Bot is off).'}
           </TooltipContent>
         </Tooltip>
 

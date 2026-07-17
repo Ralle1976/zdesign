@@ -1,0 +1,2562 @@
+{
+  "Projekt/.zscripts/build.sh": {
+    "mtime": 1778580364.0,
+    "ast_hash": "020c91b48659ec19832ebf9b46195285",
+    "semantic_hash": ""
+  },
+  "Projekt/.zscripts/dev.sh": {
+    "mtime": 1778580364.0,
+    "ast_hash": "df4ff7f2700c6c362271d3b0f1c489b4",
+    "semantic_hash": ""
+  },
+  "Projekt/.zscripts/mini-services-build.sh": {
+    "mtime": 1778580364.0,
+    "ast_hash": "09b913012e021bd85af4effa673afdb1",
+    "semantic_hash": ""
+  },
+  "Projekt/.zscripts/mini-services-install.sh": {
+    "mtime": 1778580364.0,
+    "ast_hash": "0c1796293ee7a35615930db861987c91",
+    "semantic_hash": ""
+  },
+  "Projekt/.zscripts/mini-services-start.sh": {
+    "mtime": 1778580365.0,
+    "ast_hash": "41884a489d1c760ab740528862e32753",
+    "semantic_hash": ""
+  },
+  "Projekt/.zscripts/start.sh": {
+    "mtime": 1778580365.0,
+    "ast_hash": "d729606f02f26d32949c445b54b23f57",
+    "semantic_hash": ""
+  },
+  "Projekt/components.json": {
+    "mtime": 1778580365.0,
+    "ast_hash": "44a51b28bb75baa05a3557e6a612c0ed",
+    "semantic_hash": ""
+  },
+  "Projekt/eslint.config.mjs": {
+    "mtime": 1778580365.0,
+    "ast_hash": "ac19e4b067f4dbcde9ae67db96106680",
+    "semantic_hash": ""
+  },
+  "Projekt/mini-services/collab-service/index.ts": {
+    "mtime": 1781216669.0,
+    "ast_hash": "51322dda6bce16e45ebe15faa0b77345",
+    "semantic_hash": ""
+  },
+  "Projekt/mini-services/collab-service/package.json": {
+    "mtime": 1781216669.0,
+    "ast_hash": "cc0a7960d836ec13cabd7e3334716781",
+    "semantic_hash": ""
+  },
+  "Projekt/next-env.d.ts": {
+    "mtime": 1782819228.489,
+    "ast_hash": "d0f8375ae1199dc7acd3977fc33b78b8",
+    "semantic_hash": ""
+  },
+  "Projekt/next.config.ts": {
+    "mtime": 1784062651.974,
+    "ast_hash": "230087b84662b2a82c5c02a3b0340c51",
+    "semantic_hash": ""
+  },
+  "Projekt/package.json": {
+    "mtime": 1782067260.439,
+    "ast_hash": "f4d56816ea2855193ad7416474136c04",
+    "semantic_hash": ""
+  },
+  "Projekt/postcss.config.mjs": {
+    "mtime": 1778580365.0,
+    "ast_hash": "675899342e765a4d16acd75a53389101",
+    "semantic_hash": ""
+  },
+  "Projekt/scripts/eval-memory-guards.ts": {
+    "mtime": 1782506152.625,
+    "ast_hash": "5379388e2e941e90f1c6c7faec0df6e8",
+    "semantic_hash": ""
+  },
+  "Projekt/scripts/eval-memory.ts": {
+    "mtime": 1782501987.09,
+    "ast_hash": "461c5f65413169ade52515c99b724f7b",
+    "semantic_hash": ""
+  },
+  "Projekt/scripts/gepa-run.ts": {
+    "mtime": 1782250204.572,
+    "ast_hash": "ac00362ba7566f454fc946827c7babd5",
+    "semantic_hash": ""
+  },
+  "Projekt/scripts/probe-sse-stream.ts": {
+    "mtime": 1781561441.989,
+    "ast_hash": "b73843e81a1eea975877fab1da772ae3",
+    "semantic_hash": ""
+  },
+  "Projekt/scripts/retry-failed-tests.mjs": {
+    "mtime": 1784113347.995,
+    "ast_hash": "2daba2a711ca57beb78b700cd96782a7",
+    "semantic_hash": ""
+  },
+  "Projekt/scripts/run-visible-design-tests.mjs": {
+    "mtime": 1784112872.095,
+    "ast_hash": "e51032c5988afd55659556fc79f6f2ad",
+    "semantic_hash": ""
+  },
+  "Projekt/scripts/test-pdf-export.ts": {
+    "mtime": 1781473001.173,
+    "ast_hash": "4c4f6a63bd9008809019a547d01248c4",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/agents/route.ts": {
+    "mtime": 1782338592.902,
+    "ast_hash": "b0ad82bdf3ca0190e7f7766f6fd6bf7f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/assistant/route.ts": {
+    "mtime": 1782313146.905,
+    "ast_hash": "fc5c0e8146d340a1a71e7987ca3b13c8",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/auth/[...nextauth]/route.ts": {
+    "mtime": 1784062886.22,
+    "ast_hash": "8b95d24771a46f3cd9e954c16c1e7425",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/auth/register/route.ts": {
+    "mtime": 1784062886.406,
+    "ast_hash": "06152a39aef0215e2809ea4de870a527",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/capabilities/route.ts": {
+    "mtime": 1784062886.659,
+    "ast_hash": "b94a586a3cd90be1b966c5e202ef0467",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/chat/route.ts": {
+    "mtime": 1784062886.856,
+    "ast_hash": "29e7f0cd5d8a557e9c650da8e7a40f15",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/chat/stream/route.ts": {
+    "mtime": 1784062887.104,
+    "ast_hash": "d0ffe6b6bdb34a0303078daca255b05a",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/creative/route.ts": {
+    "mtime": 1781276754.0,
+    "ast_hash": "86f7fb984357cd0f522ef5fe7e4be24c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design-systems/[id]/route.ts": {
+    "mtime": 1781215844.0,
+    "ast_hash": "8862d9954339ed5f1fe161ed979aec98",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design-systems/route.ts": {
+    "mtime": 1781215844.0,
+    "ast_hash": "205e734abf242a93c4540651ddecc2f8",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design/agent/route.ts": {
+    "mtime": 1784150816.522,
+    "ast_hash": "f352abf1c78028465dcbde29f084d30f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design/agent/stream/route.ts": {
+    "mtime": 1784150812.103,
+    "ast_hash": "5c8ffc6847ce81eb6dab8161b351ae5f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design/analyze/route.ts": {
+    "mtime": 1781215690.0,
+    "ast_hash": "a0b0585eb925334aff59cffaa101b27c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design/batch/route.ts": {
+    "mtime": 1782551077.013,
+    "ast_hash": "982867da7f0c21206410d8710775071f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design/concepts/route.ts": {
+    "mtime": 1784068400.343,
+    "ast_hash": "6587551585a591a5ea12762aeb31b352",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design/cream/route.ts": {
+    "mtime": 1784098803.927,
+    "ast_hash": "c0943147b8a05c941f9aa9a9a9e3d742",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design/enhance/route.ts": {
+    "mtime": 1781370411.0,
+    "ast_hash": "5648f1cec6f35a70a714cce0b0e387d5",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design/evaluate/route.ts": {
+    "mtime": 1781374758.0,
+    "ast_hash": "05e343deb755a4cd5fab151315996b45",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design/feedback/route.ts": {
+    "mtime": 1784100024.948,
+    "ast_hash": "6885b0407e5fba075563ebcdde089bd7",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design/generate/route.ts": {
+    "mtime": 1781370432.0,
+    "ast_hash": "a82eea34f77018fcccb59ff723d0fc59",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design/image/route.ts": {
+    "mtime": 1784062888.098,
+    "ast_hash": "c9714cf51ec92147f9c18a0716aacae2",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design/import/route.ts": {
+    "mtime": 1781365079.0,
+    "ast_hash": "f40798ccc18c991cf1710d532f934c60",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design/learning/route.ts": {
+    "mtime": 1784100024.893,
+    "ast_hash": "08c67a468acb7f1b08a428258fbeb610",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/design/research/route.ts": {
+    "mtime": 1781241963.0,
+    "ast_hash": "2835acf481ebc3021c51f1df52a260a5",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/export/pdf/health/route.ts": {
+    "mtime": 1781472413.216,
+    "ast_hash": "3116d323c9157e99de92efbdc2ce82a4",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/export/route.ts": {
+    "mtime": 1781558554.706,
+    "ast_hash": "d54f560b2706e404d127c607972f5819",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/export/zip/route.ts": {
+    "mtime": 1781542339.49,
+    "ast_hash": "80d51c7489d6e8a2fa3a199fdec6e9a7",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/mcp/route.ts": {
+    "mtime": 1782340971.196,
+    "ast_hash": "5af799dbfbe99f6a0cae51b27d832ac0",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/memory/recall/route.ts": {
+    "mtime": 1782501852.846,
+    "ast_hash": "a7831e4c4ee5c5348357f8cc2ca53c9d",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/projects/[id]/route.ts": {
+    "mtime": 1784062888.52,
+    "ast_hash": "0a67e41ca2c906ef30b58aeeccc870bd",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/projects/[id]/versions/[versionId]/route.ts": {
+    "mtime": 1781216663.0,
+    "ast_hash": "270fdbea865c65e733522af4f2f9b5dc",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/projects/[id]/versions/route.ts": {
+    "mtime": 1781216655.0,
+    "ast_hash": "582a5b23bca57f3468c9cecbb9dabc2c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/projects/route.ts": {
+    "mtime": 1781215845.0,
+    "ast_hash": "96d023f767f136c64d86f6daa3c604af",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/providers/keys/route.ts": {
+    "mtime": 1784068416.018,
+    "ast_hash": "f0d771e6d0ebd32a34569763d38b4c1d",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/providers/models/route.ts": {
+    "mtime": 1782378069.605,
+    "ast_hash": "39ae992c9f5d7938caa646d987ab7a00",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/providers/rate-limits/route.ts": {
+    "mtime": 1782338611.102,
+    "ast_hash": "4b111da120a545a370dba2c78392a0c1",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/providers/route.ts": {
+    "mtime": 1784068395.597,
+    "ast_hash": "5f0c94d9e0c4c7f8c0ada5c1ce475d6d",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/providers/test/route.ts": {
+    "mtime": 1782378054.93,
+    "ast_hash": "4b6127561530be0810bebdc443b72b13",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/providers/verify/route.ts": {
+    "mtime": 1781364094.0,
+    "ast_hash": "622ad11538c300e58d9098d8c9124c8e",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/route.ts": {
+    "mtime": 1784062888.802,
+    "ast_hash": "aaf7ba8f77b0b92932482d1f9ee1f659",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/stats/route.ts": {
+    "mtime": 1782336752.15,
+    "ast_hash": "791cf1c051f53e5bd74c9ffcbda653c0",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/style-presets/route.ts": {
+    "mtime": 1782338636.108,
+    "ast_hash": "d2fbf996f8e6146f692d1227c664157d",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/templates/route.ts": {
+    "mtime": 1781215845.0,
+    "ast_hash": "1aa84e28f7963d250aecd4a0ee5ea250",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/templates/seed/route.ts": {
+    "mtime": 1782338643.053,
+    "ast_hash": "6f36a91356343471b36e9ed2b9a39505",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/user-memory/route.ts": {
+    "mtime": 1782340020.439,
+    "ast_hash": "0185c7cbc889c05008feaf9c28552d1e",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/voice/transcribe/route.ts": {
+    "mtime": 1784066659.719,
+    "ast_hash": "86053d74edf478d7073403629daed948",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/webapp/emit/route.ts": {
+    "mtime": 1782635245.504,
+    "ast_hash": "d2d5967f43ec815c44a1cb44752db502",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/api/webapp/orchestrate/route.ts": {
+    "mtime": 1782639208.643,
+    "ast_hash": "b021c75bf2ad8a216847fca675a2f0be",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/auth/signin/page.tsx": {
+    "mtime": 1784062889.104,
+    "ast_hash": "d6e731929aa7fad7c5cf0248145c2ea7",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/error.tsx": {
+    "mtime": 1781545620.963,
+    "ast_hash": "5db2a211c67738a7675211205309fa69",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/global-error.tsx": {
+    "mtime": 1781545636.135,
+    "ast_hash": "e0fd311c540a188eeb01ce08365b5feb",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/layout.tsx": {
+    "mtime": 1784062889.369,
+    "ast_hash": "b4f42ebdb86c104e1237f404153c9783",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/page.tsx": {
+    "mtime": 1781242258.0,
+    "ast_hash": "44db3feeb94c4c74bfd2fa5ddf65d82e",
+    "semantic_hash": ""
+  },
+  "Projekt/src/app/showcase/page.tsx": {
+    "mtime": 1784062889.691,
+    "ast_hash": "4164da56c108d48dd5822c658d95511f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/providers.tsx": {
+    "mtime": 1784062889.811,
+    "ast_hash": "1d9efdb0773467d503170b8c704dce00",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/accordion.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "6f5ac2a39c951069d52ef56e1375d70a",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/alert-dialog.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "0a52d56b575340a3297c172f22d797ae",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/alert.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "8e59179ed2f0f6e33320d0081b9782fa",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/aspect-ratio.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "be7a9b030095db724fb3d9ca4e62293c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/avatar.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "19bc4411b724fb504c65550b61a453b1",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/badge.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "8162fc70aeb50791309f57f8f845d533",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/breadcrumb.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "14763038175abd2410d97d8166c89480",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/button.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "7cf5063b66e3ea629115772120bc57e7",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/calendar.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "92c5e0827022c5fc482a151e58467cee",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/card.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "a1468e2e35dfde14b63b4308cd20d2c2",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/carousel.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "b28bf29b5dccd43ddfa5fd7d38e8517f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/chart.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "79030ea8a0db990faf5a06180d40b274",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/checkbox.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "9de07e415989a8ae7695361a9e5bd5b0",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/collapsible.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "3280feca735918afc1e61fa59ba6e3f3",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/command.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "5632786c44eaa58e5110088afcfb48a6",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/context-menu.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "ae9a7bdee410df0b5d0380784c3a2d16",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/dialog.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "48a74bc4e6b2a9609c91582cae95730f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/drawer.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "d2f77e51ad7cefcf112c855235a172dc",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/dropdown-menu.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "61ed555c8e1fdeb8556a276a1721c8d4",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/form.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "06437ddc30eab3a60f7a561dbc2970ba",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/hover-card.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "a1010352934f4cdf860caa32491a3706",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/input-otp.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "2598c4a03345f4d67397f90c3fbbaddb",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/input.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "a516f41f19d79cbedfb354e893706d87",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/label.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "14f124762142b39a666ce10d3b42d28c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/menubar.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "f3836779da2e4f6a90dd7f2755f4c61e",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/navigation-menu.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "bea6b8a7ef7d7e7d5dc09afe7631fb59",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/pagination.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "c00a637aa821284c8d400e2b84003e31",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/popover.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "d7255316c532c766cee7792d775e4d0f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/progress.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "d0578ee4fb52d86376172c83fb67a9ba",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/radio-group.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "42634c5e24aebafa3f4ce9c91960dbfe",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/resizable.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "e6bc37b4f3397d034e51f987d66ebd48",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/scroll-area.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "360243727fcdcb4d509af4516aaa9d0d",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/select.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "bc5bd729efe33ebe26ea6aceeb18dded",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/separator.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "07b35dc35f811b26a1ee3982582ba9fb",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/sheet.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "638d6ec8d932fb7adbcd6f58ad1d8475",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/sidebar.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "9e981c1011ccf51eca1f6cb20fa599fd",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/skeleton.tsx": {
+    "mtime": 1778580365.0,
+    "ast_hash": "ee5017bac14efeda715feaceb488382a",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/slider.tsx": {
+    "mtime": 1778580366.0,
+    "ast_hash": "d72c2e0760fae2d1d586db1f8e2c50f9",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/sonner.tsx": {
+    "mtime": 1778580366.0,
+    "ast_hash": "6ea1f5a74a5c8a3463d405fcd3099771",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/switch.tsx": {
+    "mtime": 1778580366.0,
+    "ast_hash": "f93349e0eb061fc4e6c055ded4cff087",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/table.tsx": {
+    "mtime": 1778580366.0,
+    "ast_hash": "531bf830b5f3b399abe3fd453157cdb7",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/tabs.tsx": {
+    "mtime": 1778580366.0,
+    "ast_hash": "65854b541abbc3c9f39cb075d4cb43ca",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/textarea.tsx": {
+    "mtime": 1778580366.0,
+    "ast_hash": "04f9af2a78672f7018b16db2bcec5036",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/toast.tsx": {
+    "mtime": 1778580366.0,
+    "ast_hash": "5bd1197d5cb25b2a6ca592850f0d8062",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/toaster.tsx": {
+    "mtime": 1778580366.0,
+    "ast_hash": "b36ad9f6793e952195dbec2c7dd4c0ee",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/toggle-group.tsx": {
+    "mtime": 1778580366.0,
+    "ast_hash": "a68b5be2c6b0ce6526a95d195b448810",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/toggle.tsx": {
+    "mtime": 1778580366.0,
+    "ast_hash": "df65c0dfce4225ad57a1901b01580f54",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/ui/tooltip.tsx": {
+    "mtime": 1778580366.0,
+    "ast_hash": "9f753bf8201bd05dae554f6808586391",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/AIImageDialog.tsx": {
+    "mtime": 1781217577.0,
+    "ast_hash": "2543c60ecc33723dc14f5520f139ddde",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/AccessibilityScanner.tsx": {
+    "mtime": 1781374939.0,
+    "ast_hash": "e0201e5bf9f1d056ed11210e4904ed90",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/AgentActivityPanel.tsx": {
+    "mtime": 1781277047.0,
+    "ast_hash": "ee279cca58c9e21d09dbe48650349d27",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/AnnotationsPanel.tsx": {
+    "mtime": 1781216760.0,
+    "ast_hash": "b2560b1382557752f7f76fc411db511d",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/CanvasArea.tsx": {
+    "mtime": 1784067650.781,
+    "ast_hash": "e388f80e5a1cd63baab804c2313c40e2",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/CanvasPipelineStatus.tsx": {
+    "mtime": 1784062890.189,
+    "ast_hash": "662b589e11989a8c645eab276e4ef1c1",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/CanvasVariantGallery.tsx": {
+    "mtime": 1784064549.492,
+    "ast_hash": "26f12787074839c1c223ea466ccff823",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/ChatPanel.tsx": {
+    "mtime": 1784067727.916,
+    "ast_hash": "7edea54e5b41dc27156947b231280920",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/CursorOverlay.tsx": {
+    "mtime": 1781216732.0,
+    "ast_hash": "61c44b57410f7c9be7ac0d04da570ae7",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/DesignSystemManager.tsx": {
+    "mtime": 1781218172.0,
+    "ast_hash": "ba31930ff551430987e7e038462d99d6",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/ErrorBoundary.tsx": {
+    "mtime": 1781545604.599,
+    "ast_hash": "8157b38f8486a806b83610d4c2579ebc",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/Gallery.tsx": {
+    "mtime": 1784069091.762,
+    "ast_hash": "0e66bc109f6a3e8fe892d0325ee71c9e",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/LearningPanel.tsx": {
+    "mtime": 1784100024.843,
+    "ast_hash": "765f25ec9874e5b0afa6f937b18e7b67",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/NewProjectDialog.tsx": {
+    "mtime": 1781242147.0,
+    "ast_hash": "9cd55d9c1c09dcf48074982361db2824",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/PipelineStatusPanel.tsx": {
+    "mtime": 1784062891.034,
+    "ast_hash": "4124540924bcd660763507627f3144bd",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/PresenceBar.tsx": {
+    "mtime": 1781546578.981,
+    "ast_hash": "ad27eb7ad3d4abd036160fd45d3699fd",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/PropsPanel.tsx": {
+    "mtime": 1784062891.515,
+    "ast_hash": "033bd540bbf17a02097839916da35c16",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/ProviderSettingsPage.tsx": {
+    "mtime": 1784066655.515,
+    "ast_hash": "76e0ceaaca0dd09154956206bebc4a88",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/ResearchDialog.tsx": {
+    "mtime": 1781242269.0,
+    "ast_hash": "3b47974bffc586866e41090da5efe894",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/StatsBar.tsx": {
+    "mtime": 1782336769.869,
+    "ast_hash": "03393433f16661cbcef4f831129128bd",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/StatusBar.tsx": {
+    "mtime": 1784062891.783,
+    "ast_hash": "f3a9dc275a0d25f3ac38e9d3ecea4178",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/StyleSelector.tsx": {
+    "mtime": 1781297627.0,
+    "ast_hash": "66ab9418324f3fd37c8249c9408dbb0c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/TemplateHub.tsx": {
+    "mtime": 1782338702.485,
+    "ast_hash": "737c18b44e65566b0787c15776b3cb78",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/TopToolbar.tsx": {
+    "mtime": 1784067651.072,
+    "ast_hash": "5248993d6e86d28d0c087a874e9a4351",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/UserPreferencesPanel.tsx": {
+    "mtime": 1782340033.679,
+    "ast_hash": "7ae5cf4127d2accadf5124c266687498",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/VariantGalleryPicker.tsx": {
+    "mtime": 1784067717.826,
+    "ast_hash": "dd3e3d20dadbc012d7c311f628ae748c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/VariantGalleryRestoreButton.tsx": {
+    "mtime": 1784064537.65,
+    "ast_hash": "e7dde63f0bcbb79e8567cf8192a4ea5e",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/VariantInlinePreview.tsx": {
+    "mtime": 1784066625.11,
+    "ast_hash": "4f422818363d7404340fb953eb62b506",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/VersionTree.tsx": {
+    "mtime": 1781216832.0,
+    "ast_hash": "ff0cc4788dc5b7a71c01ebf8c6a6a0d7",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/ZDesignApp.tsx": {
+    "mtime": 1784062892.343,
+    "ast_hash": "7ce30fdf638b6563f1361f5ce3b750da",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/canvas/AnnotationPin.tsx": {
+    "mtime": 1781216162.0,
+    "ast_hash": "3d952b4fcd3252bcdd923d5577c65230",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/canvas/CanvasToolbar.tsx": {
+    "mtime": 1781216211.0,
+    "ast_hash": "267041f1e9ce549949a0af2832f6f33f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/canvas/DesignRenderer.tsx": {
+    "mtime": 1784062892.545,
+    "ast_hash": "f5c4ed573a0f08de18b6d066a1a8ef7a",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/canvas/HtmlArtifactPreview.tsx": {
+    "mtime": 1784100287.321,
+    "ast_hash": "a418206519cf9f7648a856ccd0569186",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/canvas/SelectionOverlay.tsx": {
+    "mtime": 1781386168.0,
+    "ast_hash": "83843f96c64f41b0f5eda60e3406f73f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/canvas/ViewportFrame.tsx": {
+    "mtime": 1781386133.0,
+    "ast_hash": "7f109df7113a1d3f6c02cd3b64f5c0d5",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/canvas/index.ts": {
+    "mtime": 1781216293.0,
+    "ast_hash": "9fbe6007bad487b929b5d7bb7b78b193",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/canvas/nodeTypeMap.ts": {
+    "mtime": 1781216109.0,
+    "ast_hash": "5cda42f9e264e201556bd456aa4e3ce7",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/canvas/styleMapper.ts": {
+    "mtime": 1781708907.546,
+    "ast_hash": "709052f92d17d22f755a17c67cd92fae",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/pipeline-ui.tsx": {
+    "mtime": 1784062892.721,
+    "ast_hash": "16179d1e3cccb143ac1a65f887e8de0e",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/props-editors.tsx": {
+    "mtime": 1784062892.909,
+    "ast_hash": "29ff129e04bfa8d3b41040f63b02e7ce",
+    "semantic_hash": ""
+  },
+  "Projekt/src/components/zdesign/provider-settings/shared.tsx": {
+    "mtime": 1784066633.419,
+    "ast_hash": "7fc8521b66e768599673811e234f4517",
+    "semantic_hash": ""
+  },
+  "Projekt/src/hooks/use-mobile.ts": {
+    "mtime": 1778580366.0,
+    "ast_hash": "209b5193af16624cdd89d3591480dd48",
+    "semantic_hash": ""
+  },
+  "Projekt/src/hooks/use-toast.ts": {
+    "mtime": 1778580366.0,
+    "ast_hash": "9ba64fc4134b167b51e5e1070a510a00",
+    "semantic_hash": ""
+  },
+  "Projekt/src/hooks/useCapabilities.ts": {
+    "mtime": 1784062893.038,
+    "ast_hash": "93911577ec4f0255605f79c613efef7c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/hooks/useCollaboration.ts": {
+    "mtime": 1781708934.574,
+    "ast_hash": "99ca968208b36f83f25214c2374ed94a",
+    "semantic_hash": ""
+  },
+  "Projekt/src/hooks/useVoiceInput.ts": {
+    "mtime": 1782250143.032,
+    "ast_hash": "9d465072f2a6cb0e572b140942dc5819",
+    "semantic_hash": ""
+  },
+  "Projekt/src/i18n/index.ts": {
+    "mtime": 1782338709.794,
+    "ast_hash": "dbcbc9f29bad84f6c4bbd601c5aae28b",
+    "semantic_hash": ""
+  },
+  "Projekt/src/i18n/provider.tsx": {
+    "mtime": 1781216086.0,
+    "ast_hash": "e1195544f696031d959c6a739ca6b6a2",
+    "semantic_hash": ""
+  },
+  "Projekt/src/i18n/translations.ts": {
+    "mtime": 1781354872.0,
+    "ast_hash": "036e8225a8f2ef7b0b0ccd7af01b17ff",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/accessibility.ts": {
+    "mtime": 1781374976.0,
+    "ast_hash": "08e6e6f0e49ada2c2d4e2af5e2f9010e",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai-prompts.ts": {
+    "mtime": 1781763478.064,
+    "ast_hash": "d78c18deebe9a4f12ef0ea220e1d5fba",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/agents/index.ts": {
+    "mtime": 1781276362.0,
+    "ast_hash": "9fd22e9b0cd67659746371dfcfbcb5da",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/agents/orchestra.ts": {
+    "mtime": 1781635000.321,
+    "ast_hash": "3730c01bc80bd32907d560b64350c87b",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/agents/skill-packs.ts": {
+    "mtime": 1781276262.0,
+    "ast_hash": "96983175c1457032b1e55ae7be1de11d",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/agents/style-dna.ts": {
+    "mtime": 1781276301.0,
+    "ast_hash": "dc40741146ee83453896bf9bb69c6017",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/agents/types.ts": {
+    "mtime": 1781276208.0,
+    "ast_hash": "3e6ea85eb152838d519c288976edc9d4",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/api-registry.ts": {
+    "mtime": 1784062893.25,
+    "ast_hash": "1cf3acc4ad3354569615fa551da6fb70",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/app-shell.ts": {
+    "mtime": 1784098762.514,
+    "ast_hash": "5c29546d9f66f44954aca8f44f0c60a3",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/call-text-llm.ts": {
+    "mtime": 1784068364.403,
+    "ast_hash": "5b54e6458c4b204799369e34c3888470",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/ensure-design-images.ts": {
+    "mtime": 1784150788.818,
+    "ast_hash": "91f37712504016d08b7434a9973ea827",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/ensure-google-fonts.ts": {
+    "mtime": 1784066914.063,
+    "ast_hash": "6d0fb85d6e04e7b26b687db999e3f079",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/experience-stack.ts": {
+    "mtime": 1784069079.486,
+    "ast_hash": "86aa576708abd0d99958f86ade15eafc",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/fresh-images.ts": {
+    "mtime": 1784150775.873,
+    "ast_hash": "a5599c714aa6b93b24fe15272bae268e",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/fusion/design-direction.ts": {
+    "mtime": 1784150789.109,
+    "ast_hash": "fb36a4787fd178f10028f1b4fa2fe327",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/fusion/fusion-client.ts": {
+    "mtime": 1782287368.811,
+    "ast_hash": "939bd8d1055833afc6dcff6f11b862be",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/fusion/fusion-pipeline.ts": {
+    "mtime": 1781732026.056,
+    "ast_hash": "bac9bea9311e40c8dbd2063a3a221f85",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/fusion/index.ts": {
+    "mtime": 1781731810.024,
+    "ast_hash": "20bdb1542b4aae6749380743efdec6f0",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/fusion/persona-routing.ts": {
+    "mtime": 1784068388.442,
+    "ast_hash": "a6ca2cf552ddc280b6077208f2f1fac9",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/fusion/remote-fusion.ts": {
+    "mtime": 1782069667.825,
+    "ast_hash": "016bb273488c90f0be41bf3e83ebb65d",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/fusion/schemas.ts": {
+    "mtime": 1782069040.827,
+    "ast_hash": "6e6c8a9dd52cfd41a2ccd40361328685",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/gemini-direct.ts": {
+    "mtime": 1782600540.663,
+    "ast_hash": "4f1f91bc3da0df8987f5a16bbf6950ce",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/gepa/optimizer.ts": {
+    "mtime": 1782250452.982,
+    "ast_hash": "c0a5a2bb9a5a95611eef55f9b0a81610",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/health-check.ts": {
+    "mtime": 1784068372.933,
+    "ast_hash": "9533093f30324a7d68875f52a99a0512",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/html-image-generator.ts": {
+    "mtime": 1784150776.163,
+    "ast_hash": "1ac87a7f99c5bdd590eab4a8c9f59c1a",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/image-gen.ts": {
+    "mtime": 1782341393.468,
+    "ast_hash": "8db138f35cb59832a08727221826f798",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/image-harmony.ts": {
+    "mtime": 1784098762.295,
+    "ast_hash": "a8460df97039b7cbe3f9a41186bfe9ae",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/image-minimax.ts": {
+    "mtime": 1784067717.826,
+    "ast_hash": "636c2acb2a6cddd9979136f886954a5c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/image-providers.ts": {
+    "mtime": 1784068388.326,
+    "ast_hash": "307b6f13871a8f6ce175ed6a156e80e0",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/image-replicate.ts": {
+    "mtime": 1782374373.915,
+    "ast_hash": "6358b64a411c90d6286e2e629185eac2",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/image-router.ts": {
+    "mtime": 1784062893.706,
+    "ast_hash": "8dd87508c0756d5fca96f7410662103b",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/images-first.ts": {
+    "mtime": 1784150788.817,
+    "ast_hash": "ed217b648e682f65866546d2a139f6ec",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/improvement/correlation-engine.ts": {
+    "mtime": 1782340505.444,
+    "ast_hash": "109d4172b005380af6d4f7884591f4c7",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/improvement/effectiveness-tracker.ts": {
+    "mtime": 1782341772.494,
+    "ast_hash": "c5f31f119598302f3191e66fed220505",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/improvement/feedback-collector.ts": {
+    "mtime": 1782549038.78,
+    "ast_hash": "bf7c53cd028040b80e4f3f07af1c5bc8",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/improvement/gepa-extended.ts": {
+    "mtime": 1782341833.968,
+    "ast_hash": "8e3c3d61366d9270a4ca2bfda626f3fd",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/improvement/patch-applier.test.ts": {
+    "mtime": 1782340405.797,
+    "ast_hash": "56d4df46ebec9c644a2bfab6b99f764c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/improvement/patch-applier.ts": {
+    "mtime": 1782340385.777,
+    "ast_hash": "d62148fe131172d820cbc30c541a6d8f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/improvement/patch-disclosure.ts": {
+    "mtime": 1782341869.996,
+    "ast_hash": "79ffeeea3638cf3ef997e1708b206bdc",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/improvement/patch-proposer.test.ts": {
+    "mtime": 1782340518.299,
+    "ast_hash": "ac97686c017c13a1efcce98ed9010734",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/improvement/patch-proposer.ts": {
+    "mtime": 1782340501.296,
+    "ast_hash": "723c814656df4326bea4715c29a173e0",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/lint/anti-slop-craft.ts": {
+    "mtime": 1782298540.768,
+    "ast_hash": "4b6497f6cff129d29671513bdb7cc576",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/lint/anti-slop.ts": {
+    "mtime": 1782242682.124,
+    "ast_hash": "0d01a3e95f9ffb1d8249625b98c7b917",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/lint/design-qc.ts": {
+    "mtime": 1782540918.473,
+    "ast_hash": "a2bf723888443a99e033d036a68f2ee3",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/lint/diversity-guard.ts": {
+    "mtime": 1782544506.353,
+    "ast_hash": "6bf8d3af95772ca2f7d42568e402e70e",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/memory/consolidation.ts": {
+    "mtime": 1782506040.432,
+    "ast_hash": "20a69b30304f867d74d7849067120c53",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/memory/context-manager.ts": {
+    "mtime": 1782340032.588,
+    "ast_hash": "de9f51d8fd8cd2ba27ad9d613cfd39a8",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/memory/history.ts": {
+    "mtime": 1782540686.513,
+    "ast_hash": "179c79fd9ee1bb7c7320990ef7733ecd",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/memory/lessons.ts": {
+    "mtime": 1784062893.908,
+    "ast_hash": "3150d0fe2a2cda1bd006ac2041ba18c1",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/memory/memory-sanitizer.ts": {
+    "mtime": 1782505422.847,
+    "ast_hash": "3cc9b85c62278c8b459807c0a75d365f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/memory/negative-memory.ts": {
+    "mtime": 1782541044.23,
+    "ast_hash": "5af7a50d24150a648a7ec33fba74b9a3",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/memory/progressive-disclosure.ts": {
+    "mtime": 1782340032.718,
+    "ast_hash": "c046ad67c720a9a5ad279b34cac1fca7",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/memory/secret-redactor.ts": {
+    "mtime": 1782541309.804,
+    "ast_hash": "081fc17f6906151e13241d50b1cb0688",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/memory/user-memory.ts": {
+    "mtime": 1782340016.277,
+    "ast_hash": "82c794ea5be1b87c1fe4d26427b8d71d",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/multi-pass-pipeline.ts": {
+    "mtime": 1784150816.516,
+    "ast_hash": "2d2624b4c650c1863adeba56569c96f5",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/nextgen/contracts.ts": {
+    "mtime": 1782628689.317,
+    "ast_hash": "a29875cf8056d2208d0e94518773e154",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/nextgen/emitter.ts": {
+    "mtime": 1782628726.335,
+    "ast_hash": "536cb0f5775612774368851777cafbfc",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/pipeline-intent.ts": {
+    "mtime": 1784098755.139,
+    "ast_hash": "e73c87d1c1147aad2892abe46c57f4ed",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/provider-config.ts": {
+    "mtime": 1784068373.049,
+    "ast_hash": "4a54f3a21a1f66696d9791c3801d936d",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/provider.ts": {
+    "mtime": 1782338115.037,
+    "ast_hash": "35c1d32d8f2d0b289e8204c5d0677f7a",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/providers/anthropic-provider.ts": {
+    "mtime": 1781275852.0,
+    "ast_hash": "5f6cbb6f7fd2c858d892cc19b2133088",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/providers/index.ts": {
+    "mtime": 1784068388.442,
+    "ast_hash": "31ecb4c9a3a7b4aaa261763fbaaf196a",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/providers/minimax-provider.ts": {
+    "mtime": 1781298188.0,
+    "ast_hash": "12f160cbb2a54f4f4260a876200d7417",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/providers/openai-provider.ts": {
+    "mtime": 1781275840.0,
+    "ast_hash": "63b85d059c74e11b36b346f56e85b490",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/providers/openrouter-provider.ts": {
+    "mtime": 1781298155.0,
+    "ast_hash": "ee0c5cae3e9154f7dfe4570ab28bb083",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/providers/registry.ts": {
+    "mtime": 1784068419.551,
+    "ast_hash": "88ddbb89f4640dfb2b9c2c8b76c98368",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/providers/types.ts": {
+    "mtime": 1784068388.442,
+    "ast_hash": "9da843c095da99d065f080878aecbefd",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/providers/xai-provider.ts": {
+    "mtime": 1784068364.403,
+    "ast_hash": "5a81538e1d3bb5aa9a4d0b8eca665708",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/providers/zai-provider.ts": {
+    "mtime": 1782338726.64,
+    "ast_hash": "b93cd07817b9f1da78372bf22638e1b5",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/reference-rag.ts": {
+    "mtime": 1784099992.554,
+    "ast_hash": "2f7dea63cf3163bd69bf5c3c610f9794",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/skills/agency-craft.ts": {
+    "mtime": 1784062894.162,
+    "ast_hash": "beb4a1aa11d5cc6ff46e9e692cbb278c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/skills/art-direction.ts": {
+    "mtime": 1784150808.045,
+    "ast_hash": "ac3e30aea5b3ae28166d0cfbc584f200",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/skills/creative-director.ts": {
+    "mtime": 1784067645.155,
+    "ast_hash": "b65addab62c880094ece0b7b2599f276",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/skills/creative-diversity.ts": {
+    "mtime": 1782550922.23,
+    "ast_hash": "8c9ae37a92a88f86a13794c0116b36f2",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/skills/critic-theater.ts": {
+    "mtime": 1782341670.813,
+    "ast_hash": "9b8fa701e42e836220016a633c89193c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/skills/critique.ts": {
+    "mtime": 1782077035.975,
+    "ast_hash": "9df73c8522d1450e4d1e64290b467050",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/skills/palette-enforcer.ts": {
+    "mtime": 1782337938.804,
+    "ast_hash": "928f6a58afaeb7b2bba279a844c25a63",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/skills/panelists.ts": {
+    "mtime": 1782341406.952,
+    "ast_hash": "08c352c310db2e4cb2a2de2d2eb4b5f3",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/skills/refine.ts": {
+    "mtime": 1784066914.063,
+    "ast_hash": "e6296c5c37fe9c6f814fba078dff7613",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/skills/skill-memory.ts": {
+    "mtime": 1782501930.557,
+    "ast_hash": "687bde5b6d4da43e584c7d2fb5ee9dca",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/skills/trace-store.ts": {
+    "mtime": 1782336536.311,
+    "ast_hash": "cf2121bb4c74075649a16c347598fa47",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/skills/vision-critique.ts": {
+    "mtime": 1784062894.496,
+    "ast_hash": "fed541568e46bceb7c5e50fd6573be3c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/stt-openrouter.ts": {
+    "mtime": 1782250159.27,
+    "ast_hash": "47337cbdf41d3eed59eb1705cc30f699",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/stt-zai.ts": {
+    "mtime": 1782341384.167,
+    "ast_hash": "180018c7bf58bd4e8cbc65b95081abb5",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/templates/generate-from-reference.ts": {
+    "mtime": 1782758482.118,
+    "ast_hash": "a94d896781568d8d8286aa3efeb454c1",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/templates/registry.ts": {
+    "mtime": 1782563248.546,
+    "ast_hash": "3d3ba0ca283bffa2131d29ef7057475d",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/templates/types.ts": {
+    "mtime": 1782563178.176,
+    "ast_hash": "91a3c5f5689c613979f7057bbc2d880f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/ultra-quality.ts": {
+    "mtime": 1784150775.873,
+    "ast_hash": "5f5792e76e51e276468b394d3983f046",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/webapp/assemble.ts": {
+    "mtime": 1782637029.402,
+    "ast_hash": "8dc233d00c289d941be5d5301444c31f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/webapp/materialize.ts": {
+    "mtime": 1782639068.754,
+    "ast_hash": "8ba18b05abc1ed7d8239c49ff0881532",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/webapp/orchestrator.ts": {
+    "mtime": 1782639321.11,
+    "ast_hash": "6b83e2315f73c4fdd322b6f82a274f8c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/webapp/scaffold.ts": {
+    "mtime": 1782638753.257,
+    "ast_hash": "1e8b9117373f6e541d32daef54b07074",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/webapp/types.ts": {
+    "mtime": 1782635570.958,
+    "ast_hash": "1a483fb6e02a688073ba2dcb09d731d3",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/xai-direct.ts": {
+    "mtime": 1784068364.356,
+    "ast_hash": "2e832c3ae64132eef4207a6df87d2ad0",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/zai-direct.ts": {
+    "mtime": 1782341392.96,
+    "ast_hash": "7969f8a0b6497974c6075b4467f1df66",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/audit/accessibility.ts": {
+    "mtime": 1782336784.707,
+    "ast_hash": "a687ac8520e8d083680038a178e22a5f",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/audit/content.ts": {
+    "mtime": 1782339221.196,
+    "ast_hash": "25ac81ccf14c13dd91a3138f56c7ad35",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/audit/design-rhythm.ts": {
+    "mtime": 1782339267.957,
+    "ast_hash": "90e3dacb1aff02f4724f17ac726145cc",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/audit/performance.ts": {
+    "mtime": 1782339215.816,
+    "ast_hash": "b3d9359648aa6620391ecfe30178b61d",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/audit/runner.ts": {
+    "mtime": 1782339265.046,
+    "ast_hash": "8d126b1f3bdc2b8bcec3e24a6e7cb0ab",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/audit/seo.ts": {
+    "mtime": 1782339220.37,
+    "ast_hash": "4088af57e10b639e201af050271c4db5",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/auth.ts": {
+    "mtime": 1784062894.691,
+    "ast_hash": "a58aca46f8add16aa73d644d3f838193",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/chat/agent-stream-client.ts": {
+    "mtime": 1784062894.911,
+    "ast_hash": "e5d7e639e8c1f3127657ae6b5ae595cd",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/chat/fallback-templates.ts": {
+    "mtime": 1784062895.049,
+    "ast_hash": "bef3fcdb4e51956916ff1c2d669d8603",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/chat/generate.ts": {
+    "mtime": 1784062895.191,
+    "ast_hash": "3c8e9f82473fe8fbc06f7a7be751d13a",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/chat/streamClient.ts": {
+    "mtime": 1784062895.319,
+    "ast_hash": "bbe52d5732e11ca1cb6186198eb35f0e",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/db.ts": {
+    "mtime": 1778580366.0,
+    "ast_hash": "91eb0a5e8e2f120bf0913d91d1a82ecd",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/design-systems/systems.ts": {
+    "mtime": 1784098771.421,
+    "ast_hash": "099758089137bfc3a73de95a2dae3e6a",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/export/__tests__/pdf-generator.test.ts": {
+    "mtime": 1781472915.644,
+    "ast_hash": "44525b73e16c22d92ab8950abbf3e8a3",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/export/__tests__/pdf-integration.test.ts": {
+    "mtime": 1781472973.861,
+    "ast_hash": "14ba74c3ea9d3ed04c87480a7c36a3cd",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/export/pdf-generator.ts": {
+    "mtime": 1783236187.973,
+    "ast_hash": "d771b7fd722cbd0b04b13b782982a573",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/export/zip-generator.ts": {
+    "mtime": 1781542423.802,
+    "ast_hash": "5910aedb223eca5328e8e14421ef3ef6",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/logger.ts": {
+    "mtime": 1782336733.444,
+    "ast_hash": "ba622d6fb08b62d6ecb918f521af00f1",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/providers/config.ts": {
+    "mtime": 1784062895.511,
+    "ast_hash": "bd8404322d21e099f1b9f86b6016170b",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/providers/health-check.ts": {
+    "mtime": 1782378033.897,
+    "ast_hash": "34e34402c0c6f4ea77a19b858c13e218",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/providers/registry.ts": {
+    "mtime": 1784068395.419,
+    "ast_hash": "f283f0f76eda180206e46b3527e4088e",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/registry.ts": {
+    "mtime": 1782338130.115,
+    "ast_hash": "db4983b81b0571a9db3ead21379408ec",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/utils.ts": {
+    "mtime": 1778580366.0,
+    "ast_hash": "5a6fd53fdcf2be529e9cc0b718fde352",
+    "semantic_hash": ""
+  },
+  "Projekt/src/mcp/server.ts": {
+    "mtime": 1782573184.071,
+    "ast_hash": "659f0871009faf2cb557f2aa3929eb0c",
+    "semantic_hash": ""
+  },
+  "Projekt/src/stores/zdesign-store.ts": {
+    "mtime": 1784064538.249,
+    "ast_hash": "91a9184654eedad65e148c40ae11f8e3",
+    "semantic_hash": ""
+  },
+  "Projekt/src/types/design.ts": {
+    "mtime": 1784063295.934,
+    "ast_hash": "540ed29ef7ff25c1b1913d44057f9607",
+    "semantic_hash": ""
+  },
+  "Projekt/src/types/speech-recognition.d.ts": {
+    "mtime": 1781242284.0,
+    "ast_hash": "8935cec2560b939ea3017c747b98921a",
+    "semantic_hash": ""
+  },
+  "Projekt/tailwind.config.ts": {
+    "mtime": 1778580366.0,
+    "ast_hash": "d8540179b01d61e5116ad3e288a21207",
+    "semantic_hash": ""
+  },
+  "Projekt/tests/context-manager.test.ts": {
+    "mtime": 1782340057.15,
+    "ast_hash": "824c6c5f094f6d6d74ff35ebaffd32bb",
+    "semantic_hash": ""
+  },
+  "Projekt/tests/correlation-engine.sanity.test.ts": {
+    "mtime": 1782340521.003,
+    "ast_hash": "974951d584128c6c51bcb6a6a1e41734",
+    "semantic_hash": ""
+  },
+  "Projekt/tests/feedback-collector.test.ts": {
+    "mtime": 1782340358.46,
+    "ast_hash": "42c35a5913c6d36bf733a539532ad022",
+    "semantic_hash": ""
+  },
+  "Projekt/tests/phase6/phase6-smoke.test.ts": {
+    "mtime": 1782340690.852,
+    "ast_hash": "4b83e035ce74b419f1a855d0e58cb1e8",
+    "semantic_hash": ""
+  },
+  "Projekt/tests/pipeline-integration.mjs": {
+    "mtime": 1784063201.399,
+    "ast_hash": "c7a1db32df99ff113415990630d46ee1",
+    "semantic_hash": ""
+  },
+  "Projekt/tests/pipeline-store-logic.mjs": {
+    "mtime": 1784063056.191,
+    "ast_hash": "d4b62214a242888434ec85e6bf8a1b6b",
+    "semantic_hash": ""
+  },
+  "Projekt/tests/progressive-disclosure.test.ts": {
+    "mtime": 1782340052.06,
+    "ast_hash": "9e396c106d70e5277feb6b7e7da9ff79",
+    "semantic_hash": ""
+  },
+  "Projekt/tsconfig.json": {
+    "mtime": 1782338428.524,
+    "ast_hash": "4ada5ca05bc5c7e643f17163b8a21506",
+    "semantic_hash": ""
+  },
+  "deploy/publish-showcase.sh": {
+    "mtime": 1782568888.898,
+    "ast_hash": "84faeb15f24c17f4be0896eaffafeb3d",
+    "semantic_hash": ""
+  },
+  "mcps/tasks/tools/create.json": {
+    "mtime": 1784099954.24,
+    "ast_hash": "7fb56c0340f33a52d7b09f43a759b212",
+    "semantic_hash": ""
+  },
+  "mcps/tasks/tools/delete.json": {
+    "mtime": 1784099954.589,
+    "ast_hash": "cb444113ce586cff0ba5332962363ec9",
+    "semantic_hash": ""
+  },
+  "mcps/tasks/tools/get_results.json": {
+    "mtime": 1784099954.821,
+    "ast_hash": "2c0252b05fbdb96a8033392b8509b4ed",
+    "semantic_hash": ""
+  },
+  "mcps/tasks/tools/list.json": {
+    "mtime": 1784099954.469,
+    "ast_hash": "d6135f54aabed39d17a2ffe9cfe728e1",
+    "semantic_hash": ""
+  },
+  "mcps/tasks/tools/pause.json": {
+    "mtime": 1784099954.7,
+    "ast_hash": "f2caa9731fb5eafaba1a7db8455b76e2",
+    "semantic_hash": ""
+  },
+  "mcps/tasks/tools/update.json": {
+    "mtime": 1784099954.366,
+    "ast_hash": "e9bf02c130f1734f68a6044e8c6d60f4",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/architektur-studio-meta.json": {
+    "mtime": 1784113236.128,
+    "ast_hash": "7018f6127bef3f0f88b7cef2f622a796",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/architektur-studio-trace.json": {
+    "mtime": 1784113236.062,
+    "ast_hash": "9682110e9d6d9cfe1e5f03de4f50eee3",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/learning-snapshot.json": {
+    "mtime": 1784112884.613,
+    "ast_hash": "f94553f97e0cc2906b5c244d9d874e71",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/report.json": {
+    "mtime": 1784114089.574,
+    "ast_hash": "acd5ad42a44767ac47af58d62a86450c",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/saas-analytics-trace.json": {
+    "mtime": 1784114089.477,
+    "ast_hash": "d99fa00b366524cacbaa7e204d3df389",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/thai-food-trace.json": {
+    "mtime": 1784113704.004,
+    "ast_hash": "81114127d71192adb93a6ed2a33b4ef4",
+    "semantic_hash": ""
+  },
+  ".github/workflows/ci.yml": {
+    "mtime": 1782548692.295,
+    "ast_hash": "db61ce2ac8c8a526704915a3fc17d2fe",
+    "semantic_hash": ""
+  },
+  "AGENTS.md": {
+    "mtime": 1784116695.798,
+    "ast_hash": "4cd750691372f4379ead0c5f6e1ed721",
+    "semantic_hash": ""
+  },
+  "CONTRIBUTING.md": {
+    "mtime": 1782341511.46,
+    "ast_hash": "9505210ee38ed52204e85dfcacf9d934",
+    "semantic_hash": ""
+  },
+  "Projekt/public/robots.txt": {
+    "mtime": 1778580365.0,
+    "ast_hash": "f9dff89adf98833e676de2205921996a",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/gepa/soul-guidance.md": {
+    "mtime": 1782253251.836,
+    "ast_hash": "afe038012564e096d9a1000c0f0f0083",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/templates/refs/alpenpfad.html": {
+    "mtime": 1782761120.554,
+    "ast_hash": "6b048bbee1fa180d6d6cc5cedba12441",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/templates/refs/forno-nero.html": {
+    "mtime": 1782761120.562,
+    "ast_hash": "3d592193a82bc416cbff8daa789a4b7b",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/templates/refs/kanzlei-nordstern.html": {
+    "mtime": 1782761120.572,
+    "ast_hash": "59b2b522ece7e19ad8584f23f6181aa2",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/templates/refs/maison-lumen.html": {
+    "mtime": 1782761120.58,
+    "ast_hash": "dbabfdb63f6c555e892a861cd7af20b1",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/templates/refs/orathai-thai-spa.html": {
+    "mtime": 1782761120.588,
+    "ast_hash": "f3790f6aa8489dd6c20c8aac2e71531e",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/templates/refs/prisma-analytics.html": {
+    "mtime": 1782761120.597,
+    "ast_hash": "235e6226e67ace381710f4f4745162c5",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/templates/refs/puls-festival.html": {
+    "mtime": 1782761120.605,
+    "ast_hash": "f15b1636f33fd4d1098012687f3e3b07",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/templates/refs/sattva-yoga.html": {
+    "mtime": 1782761120.614,
+    "ast_hash": "ca511cf6f49247b774fb431ab0c3d8e4",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/templates/refs/studio-beton.html": {
+    "mtime": 1782761120.623,
+    "ast_hash": "1368cc820424a3dac34e2cea78bc2647",
+    "semantic_hash": ""
+  },
+  "Projekt/src/lib/ai/templates/refs/vault3.html": {
+    "mtime": 1782761120.631,
+    "ast_hash": "76712344008bb235fc31caab1ad77cb5",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1782341469.431,
+    "ast_hash": "3b499beb1eabbc35d51d8c4a9e3f5781",
+    "semantic_hash": ""
+  },
+  "Showcase.md": {
+    "mtime": 1782516948.962,
+    "ast_hash": "794c61dbef527902e62d3929f250ea25",
+    "semantic_hash": ""
+  },
+  "agent-tools/70f767e8-90ad-4818-a567-f860b45ee588.txt": {
+    "mtime": 1784112857.662,
+    "ast_hash": "53388d6b1db247c07880ab1d787fd4e1",
+    "semantic_hash": ""
+  },
+  "docs/wiki/Architecture.md": {
+    "mtime": 1782343225.414,
+    "ast_hash": "d3cb1046632be2aa050af6e1d6ef8ce2",
+    "semantic_hash": ""
+  },
+  "docs/wiki/Home.md": {
+    "mtime": 1782343192.719,
+    "ast_hash": "3e433a75c9e9b5e333c43d62b38b2ccb",
+    "semantic_hash": ""
+  },
+  "docs/wiki/Workflow.md": {
+    "mtime": 1782343251.024,
+    "ast_hash": "025b7b180998d492047c33143464f3c3",
+    "semantic_hash": ""
+  },
+  "examples/bluetenwerk-floristik.html": {
+    "mtime": 1782516303.334,
+    "ast_hash": "e8828509b4ab91351d00b3911715919a",
+    "semantic_hash": ""
+  },
+  "examples/casa-verde-jungle-lodge.html": {
+    "mtime": 1782410847.82,
+    "ast_hash": "9ccd608136494c5aa29249fab7ecc647",
+    "semantic_hash": ""
+  },
+  "examples/ember-smoke-cocktail-bar.html": {
+    "mtime": 1782410848.301,
+    "ast_hash": "5f635a636cfd4e4fa34406eed65d50c1",
+    "semantic_hash": ""
+  },
+  "examples/fougere-botanical-studio.html": {
+    "mtime": 1782410849.152,
+    "ast_hash": "fe1f8ede00bb340554bdb9858d4491a8",
+    "semantic_hash": ""
+  },
+  "examples/holzwerk-manufaktur-tischlerei.html": {
+    "mtime": 1782516302.77,
+    "ast_hash": "b92519220a470f11227ec84f8f33ff58",
+    "semantic_hash": ""
+  },
+  "examples/iron-temple-strength-gym.html": {
+    "mtime": 1782410849.861,
+    "ast_hash": "d9eae4a467bafab32a3260256d918a71",
+    "semantic_hash": ""
+  },
+  "examples/linienraum-architekten.html": {
+    "mtime": 1782516304.118,
+    "ast_hash": "9bd9d6e269db0a0723515698294d5844",
+    "semantic_hash": ""
+  },
+  "examples/nordic-light-coffee-roasters.html": {
+    "mtime": 1782411605.528,
+    "ast_hash": "ab05b95248854a871cabf621c7a211aa",
+    "semantic_hash": ""
+  },
+  "examples/pulse-performance-coaching.html": {
+    "mtime": 1782516303.661,
+    "ast_hash": "bb36d44cd41e8b390460ec97734fa74f",
+    "semantic_hash": ""
+  },
+  "examples/saltbreak-surf-co.html": {
+    "mtime": 1782411557.825,
+    "ast_hash": "70438ef1b65fad452f60d7ffcba6112f",
+    "semantic_hash": ""
+  },
+  "examples/thai-imbiss-street-fire.html": {
+    "mtime": 1782341414.094,
+    "ast_hash": "0050d24c81c3214ab1d7f7c9ac769115",
+    "semantic_hash": ""
+  },
+  "examples/thai-imbiss-temple-dark.html": {
+    "mtime": 1782341414.101,
+    "ast_hash": "8ea87f02d3e5a9ad07719d4fbd8f7b55",
+    "semantic_hash": ""
+  },
+  "examples/thai-imbiss-tropical-pop.html": {
+    "mtime": 1782341414.112,
+    "ast_hash": "f6ae65cb61ca9ae4f5af74d05287165a",
+    "semantic_hash": ""
+  },
+  "showcase/AGENTS.md": {
+    "mtime": 1783727925.581,
+    "ast_hash": "9a13432d7d341f21a6866940f8ae7c27",
+    "semantic_hash": ""
+  },
+  "showcase/designs/alpenpfad.html": {
+    "mtime": 1782736383.92,
+    "ast_hash": "a63c2072dea3d8e25a0af28c43887f46",
+    "semantic_hash": ""
+  },
+  "showcase/designs/fitnessstudio-iron.html": {
+    "mtime": 1782824218.285,
+    "ast_hash": "564cdaa3ec7cbb928507959e02e17361",
+    "semantic_hash": ""
+  },
+  "showcase/designs/florist-blutenwerk.html": {
+    "mtime": 1782760883.546,
+    "ast_hash": "2e32f57de3b662b4ad7c1d7c905bd553",
+    "semantic_hash": ""
+  },
+  "showcase/designs/forno-nero.html": {
+    "mtime": 1782736383.88,
+    "ast_hash": "0009204a67d1cb9ded903bf2d317a4c2",
+    "semantic_hash": ""
+  },
+  "showcase/designs/immobilienmakler-vista.html": {
+    "mtime": 1782760720.58,
+    "ast_hash": "41c3f1882cd4a861c652969c577f9978",
+    "semantic_hash": ""
+  },
+  "showcase/designs/kanzlei-nordstern.html": {
+    "mtime": 1782736383.928,
+    "ast_hash": "c1634a204bd0c26d979fb0b82f275720",
+    "semantic_hash": ""
+  },
+  "showcase/designs/maison-lumen.html": {
+    "mtime": 1782736383.888,
+    "ast_hash": "a70488ba7680b69d52274c9f6a8d7b17",
+    "semantic_hash": ""
+  },
+  "showcase/designs/orathai-thai-spa.html": {
+    "mtime": 1782758226.264,
+    "ast_hash": "6689f77edc7a4a96caf9ca71f3d06a37",
+    "semantic_hash": ""
+  },
+  "showcase/designs/prisma-analytics.html": {
+    "mtime": 1782736383.942,
+    "ast_hash": "e263760fb4c2e8811e10d653053ea8a6",
+    "semantic_hash": ""
+  },
+  "showcase/designs/puls-festival.html": {
+    "mtime": 1782736383.912,
+    "ast_hash": "5707ddaf5470ec3a45d1fbc1099ddffe",
+    "semantic_hash": ""
+  },
+  "showcase/designs/restaurant-mediterran.html": {
+    "mtime": 1782823455.34,
+    "ast_hash": "a0a27a5c9dbb0f5ff2dca542bc89cd79",
+    "semantic_hash": ""
+  },
+  "showcase/designs/sattva-yoga.html": {
+    "mtime": 1782758227.323,
+    "ast_hash": "2d12b99a66015f6724caeafab371e9af",
+    "semantic_hash": ""
+  },
+  "showcase/designs/studio-beton.html": {
+    "mtime": 1782736383.896,
+    "ast_hash": "7a422efe79ffe2eb0c85934ac24e3981",
+    "semantic_hash": ""
+  },
+  "showcase/designs/vault3.html": {
+    "mtime": 1782736507.699,
+    "ast_hash": "41feb1fe1b643bdcc7349f59e19f7079",
+    "semantic_hash": ""
+  },
+  "showcase/designs/zahnarztpraxis-smile.html": {
+    "mtime": 1782823980.468,
+    "ast_hash": "fe05d0bc6023bd5ddbcb9ad9d60ae9c5",
+    "semantic_hash": ""
+  },
+  "showcase/docker-compose.yml": {
+    "mtime": 1782568618.668,
+    "ast_hash": "0f81d8b111f460b29e8bc02cce96d80b",
+    "semantic_hash": ""
+  },
+  "showcase/index.html": {
+    "mtime": 1782552975.776,
+    "ast_hash": "61c4539572c6313f77da64f0fc0d021c",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/architektur-studio.html": {
+    "mtime": 1784113236.01,
+    "ast_hash": "b22ad7f053e812193b53bb29a9100f55",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/index.html": {
+    "mtime": 1784114089.635,
+    "ast_hash": "63281cd635c13ac639b3062c61697e30",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/saas-analytics.html": {
+    "mtime": 1784114089.429,
+    "ast_hash": "7dcc445ec7a4f79b9d32d2ae0b76429e",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/thai-food.html": {
+    "mtime": 1784113703.959,
+    "ast_hash": "43960885d391d42c41136792cee183d8",
+    "semantic_hash": ""
+  },
+  "terminals/1.txt": {
+    "mtime": 1784147638.791,
+    "ast_hash": "ebf1e0724f332298cee258cbab3a9f75",
+    "semantic_hash": ""
+  },
+  "terminals/10.txt": {
+    "mtime": 1784149306.23,
+    "ast_hash": "ba98d89605a5351d7400c9bb9efc4cbf",
+    "semantic_hash": ""
+  },
+  "terminals/11.txt": {
+    "mtime": 1784149341.498,
+    "ast_hash": "80b36d211c67184f8a118bebaf95a9b8",
+    "semantic_hash": ""
+  },
+  "terminals/12.txt": {
+    "mtime": 1784149372.512,
+    "ast_hash": "6c6d9c868b473229442985482c48691a",
+    "semantic_hash": ""
+  },
+  "terminals/13.txt": {
+    "mtime": 1784149395.794,
+    "ast_hash": "b236cf845b103e0db323562d3a9124b8",
+    "semantic_hash": ""
+  },
+  "terminals/14.txt": {
+    "mtime": 1784149474.763,
+    "ast_hash": "5c2726c0b1f40b89b73387a640a90853",
+    "semantic_hash": ""
+  },
+  "terminals/15.txt": {
+    "mtime": 1784149474.763,
+    "ast_hash": "7867f08bbbcee64773f4c47812fbcd7f",
+    "semantic_hash": ""
+  },
+  "terminals/16.txt": {
+    "mtime": 1784149584.149,
+    "ast_hash": "780d079aaad3c3411a4ffaa00fe268f7",
+    "semantic_hash": ""
+  },
+  "terminals/17.txt": {
+    "mtime": 1784149618.898,
+    "ast_hash": "03ee308d4edca492a34416539327bb0f",
+    "semantic_hash": ""
+  },
+  "terminals/18.txt": {
+    "mtime": 1784149656.539,
+    "ast_hash": "4ac19e8fa10763b9d7b899e10d9e8c8a",
+    "semantic_hash": ""
+  },
+  "terminals/19.txt": {
+    "mtime": 1784149713.558,
+    "ast_hash": "e97a8d82ad0176e7af8f662b871a9526",
+    "semantic_hash": ""
+  },
+  "terminals/2.txt": {
+    "mtime": 1784148331.071,
+    "ast_hash": "1d5daa6115d1d5651ef5ba6f3d9ffaf5",
+    "semantic_hash": ""
+  },
+  "terminals/20.txt": {
+    "mtime": 1784149777.345,
+    "ast_hash": "eb21c5f6d4085f8edbbd05b1a190eb74",
+    "semantic_hash": ""
+  },
+  "terminals/21.txt": {
+    "mtime": 1784125450.5,
+    "ast_hash": "15c432f4cb27177546ff7005873f26e5",
+    "semantic_hash": ""
+  },
+  "terminals/22.txt": {
+    "mtime": 1784125446.641,
+    "ast_hash": "54cbd180701ff163b137b7d7e3ce84d0",
+    "semantic_hash": ""
+  },
+  "terminals/23.txt": {
+    "mtime": 1784125451.042,
+    "ast_hash": "f26a92fcb70af64b31a1947ad21bf522",
+    "semantic_hash": ""
+  },
+  "terminals/24.txt": {
+    "mtime": 1784125448.087,
+    "ast_hash": "da82e1ccd305dbdf0cad022fa2a523b7",
+    "semantic_hash": ""
+  },
+  "terminals/25.txt": {
+    "mtime": 1784125448.774,
+    "ast_hash": "ce435da0dbfba96d2c5afe08f3d96963",
+    "semantic_hash": ""
+  },
+  "terminals/26.txt": {
+    "mtime": 1784125449.096,
+    "ast_hash": "a1eb772ef9f1f930d2301a267ea1d75a",
+    "semantic_hash": ""
+  },
+  "terminals/27.txt": {
+    "mtime": 1784125450.746,
+    "ast_hash": "7dc329d8481d80fc8655b643f451d0f2",
+    "semantic_hash": ""
+  },
+  "terminals/28.txt": {
+    "mtime": 1784125446.995,
+    "ast_hash": "cc62860a0d3a5def221ec9ddf6180340",
+    "semantic_hash": ""
+  },
+  "terminals/29.txt": {
+    "mtime": 1784125450.469,
+    "ast_hash": "dc4ac2dd47a95062533471ed5ababf58",
+    "semantic_hash": ""
+  },
+  "terminals/3.txt": {
+    "mtime": 1784148559.672,
+    "ast_hash": "5729931e5e8354b47af243a33b29908d",
+    "semantic_hash": ""
+  },
+  "terminals/30.txt": {
+    "mtime": 1784125450.812,
+    "ast_hash": "3000ef6b993f016a4677ca05d11dc62e",
+    "semantic_hash": ""
+  },
+  "terminals/31.txt": {
+    "mtime": 1784134937.591,
+    "ast_hash": "1ee0ab9def650116a5a5d10fb0d3e561",
+    "semantic_hash": ""
+  },
+  "terminals/32.txt": {
+    "mtime": 1784150881.742,
+    "ast_hash": "48b2cf3848b56738c3f6d9ab4e98c569",
+    "semantic_hash": ""
+  },
+  "terminals/4.txt": {
+    "mtime": 1784148696.093,
+    "ast_hash": "a8b294653dc62e03c8b259345297769e",
+    "semantic_hash": ""
+  },
+  "terminals/5.txt": {
+    "mtime": 1784148762.321,
+    "ast_hash": "81d2d374c2ef7da03c83b5b7f3e76d51",
+    "semantic_hash": ""
+  },
+  "terminals/6.txt": {
+    "mtime": 1784148857.224,
+    "ast_hash": "087852674916108c467a00afea5f71e5",
+    "semantic_hash": ""
+  },
+  "terminals/7.txt": {
+    "mtime": 1784149057.444,
+    "ast_hash": "dcfc0b04b2dbb92a298d3f67b1838461",
+    "semantic_hash": ""
+  },
+  "terminals/8.txt": {
+    "mtime": 1784149156.554,
+    "ast_hash": "7834eb8313532cb9533499793917c60b",
+    "semantic_hash": ""
+  },
+  "terminals/9.txt": {
+    "mtime": 1784149192.162,
+    "ast_hash": "e065fb6261c106b7f6ef3b72721d0fda",
+    "semantic_hash": ""
+  },
+  "Projekt/public/logo.svg": {
+    "mtime": 1778580365.0,
+    "ast_hash": "42f46ee1967225126315578016f0f9b6",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/showcase-bluetenwerk-floristik.jpg": {
+    "mtime": 1782516880.365,
+    "ast_hash": "55d8e0999428fa70776c91308796d5e9",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/showcase-casa-verde-jungle-lodge.jpg": {
+    "mtime": 1782413707.082,
+    "ast_hash": "d3e2836e3b96990033838735ea47caba",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/showcase-ember-smoke-cocktail-bar.jpg": {
+    "mtime": 1782413709.726,
+    "ast_hash": "fdae3eb58788d2e042f9a719a1626c46",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/showcase-fougere-botanical-studio.jpg": {
+    "mtime": 1782413712.696,
+    "ast_hash": "3ad7ab657682968f1c0fd9581df7b10d",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/showcase-fresh-garden-minimax.jpg": {
+    "mtime": 1782400208.927,
+    "ast_hash": "1de8abebfc26b9056989839699d64cbd",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/showcase-holzwerk-manufaktur-tischlerei.jpg": {
+    "mtime": 1782516852.014,
+    "ast_hash": "464edc44e9e62964eb4654776058c226",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/showcase-iron-temple-strength-gym.jpg": {
+    "mtime": 1782413717.014,
+    "ast_hash": "5dc4079e01e5b438ef1cabeb71a002b1",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/showcase-linienraum-architekten.jpg": {
+    "mtime": 1782516882.915,
+    "ast_hash": "e58c7b64d3d2c99bf3337e1dfda5ca21",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/showcase-nordic-light-coffee-roasters.jpg": {
+    "mtime": 1782413714.749,
+    "ast_hash": "a0b050922e2c506fa8dbce5d53b88585",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/showcase-pulse-performance-coaching.jpg": {
+    "mtime": 1782516881.56,
+    "ast_hash": "69323b285d689c8d36935a17a2f44ca4",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/showcase-saltbreak-surf-co.jpg": {
+    "mtime": 1782413719.533,
+    "ast_hash": "b389f47547dfabcc79227f63666e501a",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/showcase-street-fire-minimax.jpg": {
+    "mtime": 1782400206.484,
+    "ast_hash": "1e18f5d05cfc238a44be80004aef0f9b",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/ui-main.png": {
+    "mtime": 1782366144.238,
+    "ast_hash": "cc22969573fd94275422b40e5000585b",
+    "semantic_hash": ""
+  },
+  "examples/images/bluetenwerk-floristik/img-1.jpeg": {
+    "mtime": 1782516303.086,
+    "ast_hash": "68230061e9961a5fed77d8a1666b1491",
+    "semantic_hash": ""
+  },
+  "examples/images/bluetenwerk-floristik/img-2.jpeg": {
+    "mtime": 1782516303.198,
+    "ast_hash": "7cc2c79627fe8175dc33cc7dd899fc75",
+    "semantic_hash": ""
+  },
+  "examples/images/bluetenwerk-floristik/img-3.jpeg": {
+    "mtime": 1782516303.33,
+    "ast_hash": "f8e48cd2c20a592e13bcadeca72b8549",
+    "semantic_hash": ""
+  },
+  "examples/images/casa-verde-jungle-lodge/img-1.jpeg": {
+    "mtime": 1782410847.422,
+    "ast_hash": "d12f67e8725ed883546828e87012fbcd",
+    "semantic_hash": ""
+  },
+  "examples/images/casa-verde-jungle-lodge/img-2.jpeg": {
+    "mtime": 1782410847.61,
+    "ast_hash": "28be39d15d041fa8ffda48bbf3964af8",
+    "semantic_hash": ""
+  },
+  "examples/images/casa-verde-jungle-lodge/img-3.jpeg": {
+    "mtime": 1782410847.796,
+    "ast_hash": "64acd812cd29070451b46892f8c1d976",
+    "semantic_hash": ""
+  },
+  "examples/images/ember-smoke-cocktail-bar/img-1.jpeg": {
+    "mtime": 1782410848.094,
+    "ast_hash": "36f2a2727fa751b01c6c35301d790ae5",
+    "semantic_hash": ""
+  },
+  "examples/images/ember-smoke-cocktail-bar/img-2.jpeg": {
+    "mtime": 1782410848.276,
+    "ast_hash": "0cc1b9c18af77252ce1da895c54f5216",
+    "semantic_hash": ""
+  },
+  "examples/images/fougere-botanical-studio/img-1.jpeg": {
+    "mtime": 1782410848.6,
+    "ast_hash": "bb08100fba19d3575c03eb985e3bff28",
+    "semantic_hash": ""
+  },
+  "examples/images/fougere-botanical-studio/img-2.jpeg": {
+    "mtime": 1782410848.931,
+    "ast_hash": "e3408bb437cf56b696ddccaf57546610",
+    "semantic_hash": ""
+  },
+  "examples/images/fougere-botanical-studio/img-3.jpeg": {
+    "mtime": 1782410849.131,
+    "ast_hash": "079eb1a864faede24679e1b19b9c1f5a",
+    "semantic_hash": ""
+  },
+  "examples/images/holzwerk-manufaktur-tischlerei/img-1.jpeg": {
+    "mtime": 1782516302.487,
+    "ast_hash": "342b764bfd019b6bfd759dad2684e503",
+    "semantic_hash": ""
+  },
+  "examples/images/holzwerk-manufaktur-tischlerei/img-2.jpeg": {
+    "mtime": 1782516302.601,
+    "ast_hash": "a776a2da4afcdbd9e6675ab4ec9d68c5",
+    "semantic_hash": ""
+  },
+  "examples/images/holzwerk-manufaktur-tischlerei/img-3.jpeg": {
+    "mtime": 1782516302.767,
+    "ast_hash": "00c7cfe33d40ec3f3e5e944b4b8fa5ae",
+    "semantic_hash": ""
+  },
+  "examples/images/iron-temple-strength-gym/img-1.jpeg": {
+    "mtime": 1782410849.682,
+    "ast_hash": "9ebb45c1f5fc1a687fd897084352ef32",
+    "semantic_hash": ""
+  },
+  "examples/images/iron-temple-strength-gym/img-2.jpeg": {
+    "mtime": 1782410849.845,
+    "ast_hash": "0a21ff3ac5150a24167f128790a6153f",
+    "semantic_hash": ""
+  },
+  "examples/images/linienraum-architekten/img-1.jpeg": {
+    "mtime": 1782516303.867,
+    "ast_hash": "aaf038c2121f9f0679fec571de421344",
+    "semantic_hash": ""
+  },
+  "examples/images/linienraum-architekten/img-2.jpeg": {
+    "mtime": 1782516303.983,
+    "ast_hash": "07ccc2ca2627d669e2df83888eb02629",
+    "semantic_hash": ""
+  },
+  "examples/images/linienraum-architekten/img-3.jpeg": {
+    "mtime": 1782516304.115,
+    "ast_hash": "d7ec29af4fe43778ffb55de61e94e4f4",
+    "semantic_hash": ""
+  },
+  "examples/images/nordic-light-coffee-roasters/img-1.jpeg": {
+    "mtime": 1782411017.257,
+    "ast_hash": "38477563d5ed5bd86b1c024fea7f7602",
+    "semantic_hash": ""
+  },
+  "examples/images/nordic-light-coffee-roasters/img-2.jpeg": {
+    "mtime": 1782411017.455,
+    "ast_hash": "e14acc826691ea4d035e0c4543ea70dc",
+    "semantic_hash": ""
+  },
+  "examples/images/nordic-light-coffee-roasters/img-3.jpeg": {
+    "mtime": 1782411017.56,
+    "ast_hash": "c657860e4b1f35a992f34f38d3f3256c",
+    "semantic_hash": ""
+  },
+  "examples/images/nordic-light-coffee-roasters/img-4.jpeg": {
+    "mtime": 1782411605.524,
+    "ast_hash": "339ab1c0f83d0f6b3b94f119d4425f8e",
+    "semantic_hash": ""
+  },
+  "examples/images/pulse-performance-coaching/img-1.jpeg": {
+    "mtime": 1782516303.547,
+    "ast_hash": "89c1f83d3150938fb787f825432e74a3",
+    "semantic_hash": ""
+  },
+  "examples/images/pulse-performance-coaching/img-2.jpeg": {
+    "mtime": 1782516303.656,
+    "ast_hash": "34f0372c076c27ee1771567f36a6f7b4",
+    "semantic_hash": ""
+  },
+  "examples/images/saltbreak-surf-co/img-1.jpeg": {
+    "mtime": 1782411539.881,
+    "ast_hash": "460fb6a84769604334f49cc1ad4b8877",
+    "semantic_hash": ""
+  },
+  "examples/images/saltbreak-surf-co/img-2.jpeg": {
+    "mtime": 1782411540.082,
+    "ast_hash": "95c1225d122875b35dd0c8a4b6bf2938",
+    "semantic_hash": ""
+  },
+  "examples/images/saltbreak-surf-co/img-3.jpeg": {
+    "mtime": 1782411540.261,
+    "ast_hash": "43a591b8c1ab44120c4f351b8fef54e0",
+    "semantic_hash": ""
+  },
+  "examples/images/saltbreak-surf-co/img-4.jpeg": {
+    "mtime": 1782411557.804,
+    "ast_hash": "b7b31ce5dbb9622f3d0728872f917979",
+    "semantic_hash": ""
+  },
+  "showcase/assets/alpenpfad-0.jpeg": {
+    "mtime": 1782552973.464,
+    "ast_hash": "1e1910f5933b98ac1039e77bc824af77",
+    "semantic_hash": ""
+  },
+  "showcase/assets/alpenpfad-2.jpeg": {
+    "mtime": 1782552973.614,
+    "ast_hash": "fa7120aef00b044908e0b86b0f7bf617",
+    "semantic_hash": ""
+  },
+  "showcase/assets/alpenpfad-3.jpeg": {
+    "mtime": 1782552973.754,
+    "ast_hash": "1fac3a40aea38e21addfd48a40f949da",
+    "semantic_hash": ""
+  },
+  "showcase/assets/alpenpfad-cream-1.jpeg": {
+    "mtime": 1782577780.607,
+    "ast_hash": "eda6518116954a8693a302f51562b48d",
+    "semantic_hash": ""
+  },
+  "showcase/assets/alpenpfad-cream-2.jpeg": {
+    "mtime": 1782577795.442,
+    "ast_hash": "97efe900f29af50f8362c72c44d3ede9",
+    "semantic_hash": ""
+  },
+  "showcase/assets/alpenpfad-d0.jpeg": {
+    "mtime": 1782553208.031,
+    "ast_hash": "d393964978ebfcb900015257ca68decf",
+    "semantic_hash": ""
+  },
+  "showcase/assets/forno-nero-1.jpeg": {
+    "mtime": 1782552971.107,
+    "ast_hash": "31a6eeebaa9d1f95469eba60a868e6e5",
+    "semantic_hash": ""
+  },
+  "showcase/assets/forno-nero-cream-1.jpeg": {
+    "mtime": 1782577814.071,
+    "ast_hash": "74c86402daa43d61f93d352c8182d687",
+    "semantic_hash": ""
+  },
+  "showcase/assets/forno-nero-cream-2.jpeg": {
+    "mtime": 1782577829.662,
+    "ast_hash": "4a1548fa0224b42cc91a29847028937e",
+    "semantic_hash": ""
+  },
+  "showcase/assets/forno-nero-cream-3.jpeg": {
+    "mtime": 1782577847.028,
+    "ast_hash": "a86fb51fbf84ad6183f3608148fee127",
+    "semantic_hash": ""
+  },
+  "showcase/assets/forno-nero-d0.jpeg": {
+    "mtime": 1782553227.229,
+    "ast_hash": "da3b0f19c2db1afd14fa13d2c603c5df",
+    "semantic_hash": ""
+  },
+  "showcase/assets/kanzlei-nordstern-0.jpeg": {
+    "mtime": 1782552973.988,
+    "ast_hash": "07adfed791799c8bea7ef79127d35f05",
+    "semantic_hash": ""
+  },
+  "showcase/assets/kanzlei-nordstern-1.jpeg": {
+    "mtime": 1782552974.115,
+    "ast_hash": "6e40d0b627053552b2925340a1511365",
+    "semantic_hash": ""
+  },
+  "showcase/assets/kanzlei-nordstern-2.jpeg": {
+    "mtime": 1782552974.246,
+    "ast_hash": "b7f021ea8e1a98f5dbe5206be5add2b2",
+    "semantic_hash": ""
+  },
+  "showcase/assets/kanzlei-nordstern-cream-1.jpeg": {
+    "mtime": 1782577864.181,
+    "ast_hash": "2fe61f97acf7fd949ef100d86d486efb",
+    "semantic_hash": ""
+  },
+  "showcase/assets/kanzlei-nordstern-cream-2.jpeg": {
+    "mtime": 1782577879.221,
+    "ast_hash": "9b98718eff98940092dcbfa2f6fbd624",
+    "semantic_hash": ""
+  },
+  "showcase/assets/kanzlei-nordstern-cream-3.jpeg": {
+    "mtime": 1782577897.794,
+    "ast_hash": "4e3721b0cdad13112867a927e7cdd3fc",
+    "semantic_hash": ""
+  },
+  "showcase/assets/maison-lumen-0.jpeg": {
+    "mtime": 1782552971.261,
+    "ast_hash": "80a248988b061950eceb3472aa064dc3",
+    "semantic_hash": ""
+  },
+  "showcase/assets/maison-lumen-1.jpeg": {
+    "mtime": 1782552971.412,
+    "ast_hash": "b33916a645e83cb45cd5efdfc7e80e90",
+    "semantic_hash": ""
+  },
+  "showcase/assets/maison-lumen-cream-1.jpeg": {
+    "mtime": 1782577912.558,
+    "ast_hash": "039650e04121d18e06ab51b0f1f1ada5",
+    "semantic_hash": ""
+  },
+  "showcase/assets/maison-lumen-cream-2.jpeg": {
+    "mtime": 1782577927.902,
+    "ast_hash": "00168162cb87a7a00058e0a359d933de",
+    "semantic_hash": ""
+  },
+  "showcase/assets/maison-lumen-cream-3.jpeg": {
+    "mtime": 1782577943.897,
+    "ast_hash": "186d85f1f5a7b678b4c01f78f5227d35",
+    "semantic_hash": ""
+  },
+  "showcase/assets/orathai-thai-spa-0.jpeg": {
+    "mtime": 1782552969.953,
+    "ast_hash": "81f3694b2ad8ba9d8a91f82b3b140037",
+    "semantic_hash": ""
+  },
+  "showcase/assets/orathai-thai-spa-1.jpeg": {
+    "mtime": 1782552970.12,
+    "ast_hash": "e6e804c2f7d69ab0dbbb0d606013fc3b",
+    "semantic_hash": ""
+  },
+  "showcase/assets/orathai-thai-spa-2.jpeg": {
+    "mtime": 1782552970.279,
+    "ast_hash": "96be93b48d661db2c398e04f47bbfabb",
+    "semantic_hash": ""
+  },
+  "showcase/assets/orathai-thai-spa-cream-1.jpeg": {
+    "mtime": 1782579590.023,
+    "ast_hash": "859e7e05c0aea91512da10b7bafa2d56",
+    "semantic_hash": ""
+  },
+  "showcase/assets/orathai-thai-spa-cream-3.jpeg": {
+    "mtime": 1782579605.407,
+    "ast_hash": "61f108abfbbfefe438f5792da6638c7b",
+    "semantic_hash": ""
+  },
+  "showcase/assets/orathai-thai-spa-cream-4.jpeg": {
+    "mtime": 1782579620.763,
+    "ast_hash": "9a912efa2fcd55ffac712ba80b9017a7",
+    "semantic_hash": ""
+  },
+  "showcase/assets/orathai-thai-spa-cream-5.jpeg": {
+    "mtime": 1782579636.154,
+    "ast_hash": "faf8deb4281f34642ce4827271035256",
+    "semantic_hash": ""
+  },
+  "showcase/assets/prisma-analytics-0.jpeg": {
+    "mtime": 1782552975.324,
+    "ast_hash": "6e188a8c7ec1d711ee975b2fb6230269",
+    "semantic_hash": ""
+  },
+  "showcase/assets/prisma-analytics-1.jpeg": {
+    "mtime": 1782552975.469,
+    "ast_hash": "99fa5e014eb1f1ff252eb2de51fa6c56",
+    "semantic_hash": ""
+  },
+  "showcase/assets/prisma-analytics-2.jpeg": {
+    "mtime": 1782552975.768,
+    "ast_hash": "62f77dcf3d94d71e930923701db99e2c",
+    "semantic_hash": ""
+  },
+  "showcase/assets/prisma-analytics-cream-1.jpeg": {
+    "mtime": 1782579651.194,
+    "ast_hash": "b6680b1711f33b4b7efef5a7700daed6",
+    "semantic_hash": ""
+  },
+  "showcase/assets/prisma-analytics-cream-2.jpeg": {
+    "mtime": 1782579665.881,
+    "ast_hash": "4b3f12964199ce53e2fdba3c9ee9da2b",
+    "semantic_hash": ""
+  },
+  "showcase/assets/prisma-analytics-cream-3.jpeg": {
+    "mtime": 1782579680.736,
+    "ast_hash": "6a6a4207106988b8227a0839f4907003",
+    "semantic_hash": ""
+  },
+  "showcase/assets/puls-festival-0.jpeg": {
+    "mtime": 1782552972.77,
+    "ast_hash": "43d34e60871aaf4f751b3864b904f875",
+    "semantic_hash": ""
+  },
+  "showcase/assets/puls-festival-1.jpeg": {
+    "mtime": 1782552973.08,
+    "ast_hash": "7a5da1c80c97eebc61bb2a90c20ebf37",
+    "semantic_hash": ""
+  },
+  "showcase/assets/puls-festival-2.jpeg": {
+    "mtime": 1782552973.251,
+    "ast_hash": "9e14a0056470b9c2754c26382d44195f",
+    "semantic_hash": ""
+  },
+  "showcase/assets/puls-festival-cream-1.jpeg": {
+    "mtime": 1782577959.862,
+    "ast_hash": "d400c2293d919d92c966f10d0bc6d557",
+    "semantic_hash": ""
+  },
+  "showcase/assets/puls-festival-cream-2.jpeg": {
+    "mtime": 1782578055.206,
+    "ast_hash": "27b3354421571287bb4b04a09c5fe926",
+    "semantic_hash": ""
+  },
+  "showcase/assets/puls-festival-cream-3.jpeg": {
+    "mtime": 1782578075.179,
+    "ast_hash": "2ae1d8a9ef4ed540c25534925d8d7e87",
+    "semantic_hash": ""
+  },
+  "showcase/assets/puls-festival-d0.jpeg": {
+    "mtime": 1782553243.607,
+    "ast_hash": "d5980585c8cb2c121cddb53e2aba269e",
+    "semantic_hash": ""
+  },
+  "showcase/assets/puls-festival-d1.jpeg": {
+    "mtime": 1782553262.888,
+    "ast_hash": "57d5c7b03742ebbd6744b24ecca3f0f9",
+    "semantic_hash": ""
+  },
+  "showcase/assets/puls-festival-d2.jpeg": {
+    "mtime": 1782553278.994,
+    "ast_hash": "b6a148003728259908dd3eb5d2b33859",
+    "semantic_hash": ""
+  },
+  "showcase/assets/sattva-yoga-0.jpeg": {
+    "mtime": 1782552974.468,
+    "ast_hash": "eb4b1511c868660b89fc6a768d4e0c23",
+    "semantic_hash": ""
+  },
+  "showcase/assets/sattva-yoga-1.jpeg": {
+    "mtime": 1782552975.186,
+    "ast_hash": "edb7a901026a6d3b238d869f1e37b56c",
+    "semantic_hash": ""
+  },
+  "showcase/assets/sattva-yoga-cream-1.jpeg": {
+    "mtime": 1782578090.148,
+    "ast_hash": "8873ecb63b7dc67c3c9c28549cd6f486",
+    "semantic_hash": ""
+  },
+  "showcase/assets/sb-refine-0.jpeg": {
+    "mtime": 1782560713.744,
+    "ast_hash": "026b5ef11f77da8f5520f9b27399c2a2",
+    "semantic_hash": ""
+  },
+  "showcase/assets/sb-refine-1.jpeg": {
+    "mtime": 1782560713.739,
+    "ast_hash": "847d5f5aed73be28cd819142814c8208",
+    "semantic_hash": ""
+  },
+  "showcase/assets/sb-refine-2.jpeg": {
+    "mtime": 1782560713.791,
+    "ast_hash": "ac3ffe10c64c865487017575cfea65b2",
+    "semantic_hash": ""
+  },
+  "showcase/assets/studio-beton-0.jpeg": {
+    "mtime": 1782552971.649,
+    "ast_hash": "5e1c872434e80e1784f9267a29b97f4b",
+    "semantic_hash": ""
+  },
+  "showcase/assets/studio-beton-2.jpeg": {
+    "mtime": 1782552971.804,
+    "ast_hash": "a11fa3b137e72bb675434011a65df1c3",
+    "semantic_hash": ""
+  },
+  "showcase/assets/studio-beton-6.jpeg": {
+    "mtime": 1782552971.964,
+    "ast_hash": "fb2baa37e29a4492920c0eda22aa453a",
+    "semantic_hash": ""
+  },
+  "showcase/assets/studio-beton-cream-1.jpeg": {
+    "mtime": 1782578104.949,
+    "ast_hash": "d9dc3bcfa48331a7a8f125847f9938fe",
+    "semantic_hash": ""
+  },
+  "showcase/assets/studio-beton-cream-2.jpeg": {
+    "mtime": 1782578120.34,
+    "ast_hash": "4ad49196714f1c7798880b387db27639",
+    "semantic_hash": ""
+  },
+  "showcase/assets/studio-beton-cream-3.jpeg": {
+    "mtime": 1782578139.392,
+    "ast_hash": "06da273294a28d2459fb8e76374b4166",
+    "semantic_hash": ""
+  },
+  "showcase/assets/studio-beton-cream-fresh-1.jpeg": {
+    "mtime": 1782686589.959,
+    "ast_hash": "243045a69ab588af64448b23dbf4f427",
+    "semantic_hash": ""
+  },
+  "showcase/assets/studio-beton-cream-fresh-2.jpeg": {
+    "mtime": 1782686590.53,
+    "ast_hash": "4943e7d4d4cfb435274beebd79e76399",
+    "semantic_hash": ""
+  },
+  "showcase/assets/studio-beton-cream-fresh-3.jpeg": {
+    "mtime": 1782686590.945,
+    "ast_hash": "74ed2955ac4aea66011a948f6030030f",
+    "semantic_hash": ""
+  },
+  "showcase/assets/studio-beton-d0.jpeg": {
+    "mtime": 1782553294.481,
+    "ast_hash": "850c6a6d509ba2f5f60f3bc7f44441a9",
+    "semantic_hash": ""
+  },
+  "showcase/assets/vault3-0.jpeg": {
+    "mtime": 1782552972.126,
+    "ast_hash": "c569518208dc3fca82fc2c069c11f73b",
+    "semantic_hash": ""
+  },
+  "showcase/assets/vault3-1.jpeg": {
+    "mtime": 1782552972.475,
+    "ast_hash": "a0ec8acf30cdfa29f2eddf33280fb1eb",
+    "semantic_hash": ""
+  },
+  "showcase/assets/vault3-2.jpeg": {
+    "mtime": 1782552972.623,
+    "ast_hash": "e116a3d4521019be2e415e3ac7dd9c6a",
+    "semantic_hash": ""
+  }
+}

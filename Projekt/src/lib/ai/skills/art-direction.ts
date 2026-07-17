@@ -10,6 +10,9 @@
 import { deriveDesignDirection, type DesignDirective } from '../fusion/design-direction';
 import { pickSystemForTopic, type DesignSystem } from '@/lib/design-systems/systems';
 import { ANTI_SLOP_CRAFT } from '@/lib/ai/lint/anti-slop-craft';
+import { ULTRA_QUALITY_BAR } from '@/lib/ai/ultra-quality';
+import { getExperiencePrompt } from '@/lib/ai/app-shell';
+import type { ExperienceMode } from '@/lib/ai/pipeline-intent';
 import type { DesignRecipe } from '@/lib/ai/skills/skill-memory';
 import type { Concept } from './creative-director';
 import { pickCreativeAxes, renderCreativeBlock, type CreativeAxes } from './creative-diversity';
@@ -74,6 +77,8 @@ export interface ArtBrief {
    *  the motion+effect parts are rendered (motion-only), so it never fights the
    *  concept's own layoutApproach. */
   creative?: CreativeAxes;
+  /** App-Shell (view navigation) vs scroll-cinematic. Default: app-shell. */
+  experienceMode?: ExperienceMode;
 }
 
 /**
@@ -81,6 +86,28 @@ export interface ArtBrief {
  * intelligence is in the curated direction library + the medium-specific
  * imagery/atmosphere guidance below.
  */
+/** Merge a Creative-Director concept into the brief (palette/fonts for critic + refine). */
+export function applyConceptToBrief(brief: ArtBrief, concept: Concept): ArtBrief {
+  return {
+    ...brief,
+    concept,
+    palette: {
+      ...brief.palette,
+      background: concept.palette.bg,
+      surface: concept.palette.surface,
+      primary: concept.palette.primary,
+      accent: concept.palette.accent,
+      text: concept.palette.text,
+      textMuted: concept.palette.textMuted,
+      border: concept.palette.border,
+    },
+    fonts: {
+      display: concept.fonts.display,
+      body: concept.fonts.body,
+    },
+  };
+}
+
 export function buildArtBrief(message: string): ArtBrief {
   const d = deriveDesignDirection(message);
   return {
@@ -97,17 +124,28 @@ export function buildArtBrief(message: string): ArtBrief {
   };
 }
 
+/** Curated Unsplash URLs for post-processing image injection. */
+export function getCuratedImageUrls(domain: string): string[] {
+  const text = imageryGuidance(domain);
+  return [...text.matchAll(/https:\/\/images\.unsplash\.com\/[^\s\n]+/g)].map((m) => m[0]);
+}
+
 function imageryGuidance(domain: string): string {
   const U = 'https://images.unsplash.com/';
   const F = '?auto=format&fit=crop&w=1200&q=80';
-  if (domain.includes('spa') || domain.includes('wellness')) {
+  // FIX: check health/fitness BEFORE spa/wellness — the domain string
+  // "health-fitness-wellness" contains "wellness" but should NOT get spa images.
+  if (domain.includes('health') || domain.includes('fitness') || domain.includes('yoga')) {
+    return `Yoga/Fitness-Fotografie. VERWENDE NUR diese Unsplash-URLs:\n${U}photo-1544367567-0f2fcb009e0b${F}\n${U}photo-1593810451137-5dc55105dace${F}\n${U}photo-1575052814086-f385e2e2ad1b${F}\n${U}photo-1518611012118-696072aa579a${F}\n${U}photo-1545205597-3d9d02c29597${F}`;
+  }
+  if (domain.includes('spa')) {
     return `Echte Spa-Fotografie. VERWENDE NUR diese Unsplash-URLs als <img src> (mit object-fit:cover):\n${U}photo-1544161515-4ab6ce6db874${F}\n${U}photo-1540555700478-4be289fbecef${F}\n${U}photo-1600334089648-b0d9d3028eb2${F}\n${U}photo-1583847268964-b28dc8f51f92${F}\n${U}photo-1547058736-af8d4b1c1f2e${F}`;
   }
   if (domain.includes('food') || domain.includes('coffee')) {
     return `Echte Food-Fotografie. VERWENDE NUR diese Unsplash-URLs als <img src>:\n${U}photo-1574071318508-1cdbab80d002${F}\n${U}photo-1595708684082-a173bb3a06c5${F}\n${U}photo-1565299624946-b28f40a0ae38${F}\n${U}photo-1546069901-ba9599a7e63c${F}\n${U}photo-1551782450-a2132b4ba21d${F}`;
   }
   if (domain.includes('fashion') || domain.includes('beauty') || domain.includes('parfum')) {
-    return `Edle Beauty/Parfum-Fotografie. VERWENDE NUR diese Unsplash-URLs:\n${U}photo-1541643600914-78b084683601${F}\n${U}photo-1592945403244-b3fbafd7f539${F}\n${U}photo-1596462502278-27bfdc403348${F}\n${U}photo-1571781926291-c477ebfd024b${F}`;
+    return `Edle Beauty/Parfum-Fotografie. VERWENDE NUR diese Unsplash-URLs als <img src> (object-fit:cover, alt-Text Pflicht):\n${U}photo-1541643600914-78b084683601${F}\n${U}photo-1592945403244-b3fbafd7f539${F}\n${U}photo-1596462502278-27bfdc403348${F}\n${U}photo-1571781926291-c477ebfd024b${F}\n${U}photo-1615634260162-c4d3e62f2b62${F}`;
   }
   if (domain.includes('portfolio') || domain.includes('creative') || domain.includes('architect')) {
     return `Architektur-Fotografie. VERWENDE NUR diese Unsplash-URLs:\n${U}photo-1503387762-592deb58ef4e${F}\n${U}photo-1486718448742-163732cd1544${F}\n${U}photo-1545239351-ef35f43d514b${F}\n${U}photo-1497366216548-37526070297c${F}\n${U}photo-1486325212027-8081e485255e${F}`;
@@ -123,9 +161,6 @@ function imageryGuidance(domain: string): string {
   }
   if (domain.includes('law') || domain.includes('finance') || domain.includes('corporate')) {
     return `Kanzlei/Corporate-Fotografie. VERWENDE NUR diese Unsplash-URLs:\n${U}photo-1589829545856-d10d557cf95f${F}\n${U}photo-1497366811353-6870744d04b2${F}\n${U}photo-1497366754035-f200968a6e72${F}\n${U}photo-1521587760476-6c12a4b040da${F}`;
-  }
-  if (domain.includes('health') || domain.includes('fitness') || domain.includes('yoga')) {
-    return `Yoga/Wellness-Fotografie. VERWENDE NUR diese Unsplash-URLs:\n${U}photo-1544367567-0f2fcb009e0b${F}\n${U}photo-1593810451137-5dc55105dace${F}\n${U}photo-1575052814086-f385e2e2ad1b${F}\n${U}photo-1518611012118-696072aa579a${F}\n${U}photo-1545205597-3d9d02c29597${F}`;
   }
   if (domain.includes('saas') || domain.includes('analytics')) {
     return `SaaS/Analytics-Fotografie. VERWENDE NUR diese Unsplash-URLs:\n${U}photo-1551288049-bebda4e38f71${F}\n${U}photo-1460925895917-afdab827c52f${F}\n${U}photo-1551434678-e076c223a692${F}\n${U}photo-1518186285589-2f7649de83e0${F}`;
@@ -151,6 +186,7 @@ export function briefLabel(b: ArtBrief): string {
  * craft instructions (the critique step scores exactly these).
  */
 export function generateHtmlPrompt(brief: ArtBrief, message: string, existingHtml?: string): string {
+  const experienceBlock = getExperiencePrompt(brief.experienceMode ?? 'app-shell');
   const sys = brief.system;
   const recipe = brief.learnedRecipe;
   const recipeBlock = recipe
@@ -197,7 +233,7 @@ export function generateHtmlPrompt(brief: ArtBrief, message: string, existingHtm
     ].join('\n');
     const motionLine = concept.motion ? `\nBEWEGUNG (Motion als Teil der Inszenierung): ${concept.motion}` : ``;
     return [
-      `Du bist Art Director UND Senior-Frontend-Engineer. EINE vollständige HTML-Datei: HTML5 + inline <style> + minimales inline <script>. Keine Builds, keine Frameworks.`,
+      `Du bist Art Director UND Senior-Frontend-Engineer. EINE vollständige HTML-Datei: HTML5 + inline <style> + <script>. CDN-Libraries via <script src> erlaubt (GSAP, vanilla JS). Kein npm/Build-Schritt.`,
       ``,
       `═══════════════════════════════════════════════════════════════`,
       `KONZEPT: ${concept.name} — BIG IDEA: ${concept.bigIdea}.`,
@@ -229,10 +265,15 @@ export function generateHtmlPrompt(brief: ArtBrief, message: string, existingHtm
       `AUSSTRAHLUNG — ein konsequenter Mood, Lichtführung, EINE Geste die im Gedächtnis bleibt (die SIGNATUR-GESTE); Zurückhaltung plus ein mutiger Akzent. Editorial, nicht Template.`,
       CRAFT_DUTIES,
       ``,
+      experienceBlock,
+      ``,
+      ULTRA_QUALITY_BAR,
+      ``,
       ANTI_SLOP_CRAFT,
       ``,
-      `TECHNIK: 5 Sektionen (Hero, Leistungen, Preise, Über uns/Stimmung, Kontakt) — ABER ordne sie dem Konzept-Layout unter. Mobile-first responsive. Semantisches HTML, alt-Texte, prefers-reduced-motion. Inline-SVG für Deko, keine Emoji-Icons.`,
-      `KOMPAKTHEIT & VOLLSTÄNDIGKEIT (BINDEND): Schreibe KOMPRIMIERTES CSS — kurze Regeln, keine repetitiven Resets, fasse zusammen (z. B. gemeinsame Display/Font/Color in einer Regel). KEINE langen Base-Resets. Das Ziel: die VOLLSTÄNDIGE Datei mit schließendem </body></html> MUSS in einer Antwort passen. Gib NIEMALS ein unvollständiges Dokument — wenn der Platz knapp wird, kürze Deko/CSS, nie die Schluss-Tags. Der letzte Token MUSS </html> sein.`,
+      `BILDER-PFLICHT (BINDEND): Mindestens 4 echte <img> — NUR frisch generierte URLs aus dem Prompt (kein Unsplash). Einheitliche Farbgebung (Palette ${cp.bg}/${cp.accent}). figure/img mit object-fit:cover, Gradient-Overlay bei Text auf Bild.`,
+      `TECHNIK: Mobile-first responsive. Semantisches HTML, alt-Texte, prefers-reduced-motion. Inline-SVG für Deko, keine Emoji-Icons.`,
+      `VOLLSTÄNDIGKEIT (BINDEND): VOLLSTÄNDIGE Datei mit </body></html>. Wenn Platz knapp wird: redundantes CSS kürzen — NIEMALS <img>-Tags, <script>-Blöcke, Interaktionen oder Schluss-Tags weglassen. Das schließende </html> MUSS das letzte Element sein.`,
       existingHtml ? `VORHANDENES HTML (behalte Struktur, hebe Ausführung/Atmosphäre an):\n${existingHtml.slice(0, 6000)}\n` : ``,
       ``,
       `NUTZERAUFTRAG:`,
@@ -248,7 +289,7 @@ export function generateHtmlPrompt(brief: ArtBrief, message: string, existingHtm
     ? ` Schriften via <link href="${sys.googleFontsHref}"> im <head> VOR dem <style>.`
     : ` Schriften via Google Fonts <link> im <head>.`;
   return [
-    `Du bist Art Director UND Senior-Frontend-Engineer. EINE vollständige HTML-Datei: HTML5 + inline <style> + minimales inline <script>. Keine Builds, keine Frameworks.`,
+    `Du bist Art Director UND Senior-Frontend-Engineer. EINE vollständige HTML-Datei: HTML5 + inline <style> + <script>. CDN-Libraries via <script src> erlaubt (GSAP, vanilla JS). Kein npm/Build-Schritt.`,
     ``,
     `DESIGN-SYSTEM: ${sys.label} — TOKENS BINDEND.`,
     `Kopiere diesen :root-Block 1:1 als ERSTES ins <style>, referenziere ALLES via var(--token). Kein Hex-Wert außerhalb von :root.`,
@@ -271,10 +312,15 @@ export function generateHtmlPrompt(brief: ArtBrief, message: string, existingHtm
     `AUSSTRAHLUNG — ein konsequenter Mood, Lichtführung, EINE Geste die im Gedächtnis bleibt; Zurückhaltung plus ein mutiger Akzent. Editorial, nicht Template.`,
     CRAFT_DUTIES,
     ``,
+    experienceBlock,
+    ``,
+    ULTRA_QUALITY_BAR,
+    ``,
     ANTI_SLOP_CRAFT,
     ``,
-    `TECHNIK: 5 sektionen (Hero, Leistungen, Preise, Über uns/Stimmung, Kontakt). Mobile-first responsive. Semantisches HTML, alt-Texte, prefers-reduced-motion. Inline-SVG für Deko, keine Emoji-Icons.`,
-    `KOMPAKTHEIT & VOLLSTÄNDIGKEIT (BINDEND): Schreibe KOMPRIMIERTES CSS — kurze Regeln, keine repetitiven Resets, fasse zusammen (z. B. gemeinsame Display/Font/Color in einer Regel). KEINE langen Base-Resets. Das Ziel: die VOLLSTÄNDIGE Datei mit schließendem </body></html> MUSS in einer Antwort passen. Gib NIEMALS ein unvollständiges Dokument — wenn der Platz knapp wird, kürze Deko/CSS, nie die Schluss-Tags. Der letzte Token MUSS </html> sein.`,
+    `BILDER-PFLICHT: Mindestens 4 <img> — frisch generierte Fotos, KEIN Unsplash/Stock. Palette ${p.background}/${p.accent}, gleiche Lichtstimmung.`,
+    `TECHNIK: Mobile-first responsive. Semantisches HTML, alt-Texte, prefers-reduced-motion. Inline-SVG für Deko, keine Emoji-Icons.`,
+    `VOLLSTÄNDIGKEIT (BINDEND): VOLLSTÄNDIGE Datei mit </body></html>. Wenn Platz knapp wird: redundantes CSS kürzen — NIEMALS <img>-Tags, <script>-Blöcke, Interaktionen oder Schluss-Tags weglassen. Letzter Token: </html>.`,
     existingHtml ? `VORHANDENES HTML (behalte Struktur, hebe Ausführung/Atmosphäre an):\n${existingHtml.slice(0, 6000)}\n` : ``,
     ``,
     `NUTZERAUFTRAG:`,

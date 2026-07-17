@@ -1,0 +1,14 @@
+---
+pid: 27072
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "try { $r = Invoke-WebRequest -Uri \"http://localhost:3020/\" -UseBasicParsing -TimeoutSec 120; \"OK $($r.StatusCode) len=$($r.Content.Length)\" } catch { \"FAIL $($_.Exception.Message)\" }"
+started_at: 2026-07-14T21:02:34.636Z
+running_for_ms: 86400014 
+---
+OK 200 len=90550
+
+---
+exit_code: -1
+elapsed_ms: 86400014
+ended_at: 2026-07-15T21:02:52.511Z
+---

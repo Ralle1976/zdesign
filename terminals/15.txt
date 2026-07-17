@@ -1,0 +1,23 @@
+---
+pid: 29116
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "Set-Location \"G:\\Andere Computer\\Mein Computer\\Desktop\\Z.Design\\Projekt\"; & \"C:\\Program Files\\nodejs\\node.exe\" \".\\tests\\pipeline-integration.mjs\" \"http://localhost:3020\""
+started_at: 2026-07-14T21:04:15.990Z
+running_for_ms: 86400001 
+---
+
+Pipeline integration tests @ http://localhost:3020
+
+✓ GET / homepage — status 200, 90540 bytes (565ms)
+✓ POST /api/design/concepts returns 3 concepts — 3 valid concept(s), first="KINETIK" (66095ms)
+✓ POST /api/design/agent/stream emits SSE frames — 1 frame(s): [error] (15007ms)
+✓ POST /api/design/cream quick rejects empty body — status 400 (validation OK) (18512ms)
+
+4/4 passed
+
+
+---
+exit_code: -1
+elapsed_ms: 86400001
+ended_at: 2026-07-15T21:04:34.763Z
+---

@@ -16,6 +16,13 @@
 // This makes every design visually unique instead of using identical stock photos.
 
 import { generateImageWithProvider } from '@/lib/ai/image-providers';
+import { getActiveImageProvider } from '@/lib/ai/call-text-llm';
+import {
+  buildHarmonizedImagePrompt,
+  imageStyleSeed,
+  type ImageHarmonyContext,
+} from '@/lib/ai/image-harmony';
+import type { DesignPalette } from '@/lib/ai/fusion/design-direction';
 
 interface ImageReplacement {
   originalSrc: string;
@@ -72,14 +79,22 @@ function extractImageContexts(html: string): Array<{ src: string; alt: string; c
  * Build a generation prompt for an image based on domain + context.
  * Combines the domain's photographic style with the specific subject.
  */
-function buildImagePrompt(domain: string, alt: string, context: string): string {
-  // The alt text is the most specific signal — it describes what the image should show
+function buildImagePrompt(
+  domain: string,
+  alt: string,
+  context: string,
+  harmony?: Pick<ImageHarmonyContext, 'mood' | 'palette' | 'styleSeed'>,
+): string {
   const subject = alt || context || domain;
-
-  // Domain-specific photographic style hints
-  const domainStyle = getDomainStyle(domain);
-
-  return `${subject}. ${domainStyle}`;
+  if (harmony?.palette) {
+    return buildHarmonizedImagePrompt(subject, {
+      domain,
+      mood: harmony.mood,
+      palette: harmony.palette,
+      styleSeed: harmony.styleSeed,
+    });
+  }
+  return `${subject}. ${getDomainStyle(domain)}`;
 }
 
 function getDomainStyle(domain: string): string {
@@ -110,43 +125,44 @@ function getDomainStyle(domain: string): string {
   return 'Professional photography, dramatic lighting with soft shadows, high detail, sharp focus, rich colors, premium quality, editorial composition';
 }
 
+function isFreshTarget(src: string): boolean {
+  if (!src || src.startsWith('data:')) return false;
+  return /^https?:\/\//i.test(src);
+}
+
 /**
- * Replace all Unsplash images in the HTML with individually generated images.
- * Runs in parallel for speed (3-5 images take ~10-20s total instead of 30-50s sequential).
- *
- * @param html The generated HTML document
- * @param domain The design domain (e.g. "coffee-food")
- * @param maxImages Maximum images to generate (default 4, to bound generation time)
- * @returns HTML with generated image URLs
+ * Replace Unsplash images (legacy path).
  */
 export async function replaceImagesWithGenerated(
   html: string,
   domain: string,
-  maxImages = 4
+  maxImages = 4,
+  harmonyOpts?: { mood?: string; palette?: Partial<DesignPalette>; message?: string },
 ): Promise<{ html: string; replaced: number; failed: number }> {
   const imageContexts = extractImageContexts(html);
-
-  // Filter to only Unsplash images (skip already-generated or external URLs)
-  const unsplashImages = imageContexts.filter(img => img.src.includes('unsplash.com'));
-
+  const unsplashImages = imageContexts.filter((img) => img.src.includes('unsplash.com'));
   if (unsplashImages.length === 0) {
     return { html, replaced: 0, failed: 0 };
   }
-
-  // Limit to maxImages to bound generation time
   const toGenerate = unsplashImages.slice(0, maxImages);
 
   console.log(`[html-image-gen] Generating ${toGenerate.length} images for domain "${domain}"`);
 
-  // Generate all images in parallel via Minimax (premium, user's coding plan)
-  // — falls back to Pollinations automatically if Minimax is unavailable.
+  const imageProvider = await getActiveImageProvider();
+  const styleSeed = imageStyleSeed(domain, harmonyOpts?.palette);
+
   const replacements: ImageReplacement[] = await Promise.all(
     toGenerate.map(async (img) => {
-      const prompt = buildImagePrompt(domain, img.alt, img.context);
+      const prompt = buildImagePrompt(domain, img.alt, img.context, {
+        mood: harmonyOpts?.mood,
+        palette: harmonyOpts?.palette,
+        styleSeed,
+      });
       try {
         const result = await generateImageWithProvider(prompt, {
-          provider: 'minimax', // Premium quality, uses MINIMAX_API_KEY
-          size: '1024x768', // landscape, fits most web hero/feature slots
+          provider: imageProvider.id,
+          model: imageProvider.model,
+          size: '1024x768',
         });
         return {
           originalSrc: img.src,
@@ -178,5 +194,79 @@ export async function replaceImagesWithGenerated(
   }
 
   console.log(`[html-image-gen] Done: ${replaced} replaced, ${failed} failed`);
+  return { html: updatedHtml, replaced, failed };
+}
+
+/**
+ * Replace ALL external images with freshly generated ones (every run = new photos).
+ */
+export async function replaceAllImagesWithFresh(
+  html: string,
+  domain: string,
+  maxImages = 6,
+  harmonyOpts?: {
+    mood?: string;
+    palette?: Partial<DesignPalette>;
+    message?: string;
+    uniqueRun?: boolean;
+  },
+): Promise<{ html: string; replaced: number; failed: number }> {
+  const imageContexts = extractImageContexts(html).filter((img) => isFreshTarget(img.src));
+
+  if (imageContexts.length === 0) {
+    return { html, replaced: 0, failed: 0 };
+  }
+
+  const toGenerate = imageContexts.slice(0, maxImages);
+  console.log(
+    `[html-image-gen] Fresh pass: ${toGenerate.length} images for "${domain}"`,
+  );
+
+  const imageProvider = await getActiveImageProvider();
+  const baseSeed = imageStyleSeed(domain, harmonyOpts?.palette);
+  const runSalt = harmonyOpts?.uniqueRun ? `-${Date.now()}` : '';
+
+  const replacements: ImageReplacement[] = await Promise.all(
+    toGenerate.map(async (img, i) => {
+      const prompt = buildImagePrompt(domain, img.alt || harmonyOpts?.message || domain, img.context, {
+        mood: harmonyOpts?.mood,
+        palette: harmonyOpts?.palette,
+        styleSeed: `${baseSeed}-${i}${runSalt}`,
+      });
+      try {
+        const result = await generateImageWithProvider(prompt, {
+          provider: imageProvider.id,
+          model: imageProvider.model,
+          size: '1024x768',
+        });
+        return {
+          originalSrc: img.src,
+          newSrc: result?.url ?? null,
+          alt: img.alt,
+          context: img.context,
+        };
+      } catch (err) {
+        console.warn(
+          `[html-image-gen] Fresh gen failed for img ${i}:`,
+          err instanceof Error ? err.message : err,
+        );
+        return { originalSrc: img.src, newSrc: null, alt: img.alt, context: img.context };
+      }
+    }),
+  );
+
+  let updatedHtml = html;
+  let replaced = 0;
+  let failed = 0;
+  for (const r of replacements) {
+    if (r.newSrc) {
+      updatedHtml = updatedHtml.split(r.originalSrc).join(r.newSrc);
+      replaced++;
+    } else {
+      failed++;
+    }
+  }
+
+  console.log(`[html-image-gen] Fresh pass done: ${replaced} replaced, ${failed} failed`);
   return { html: updatedHtml, replaced, failed };
 }

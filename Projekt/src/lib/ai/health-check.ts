@@ -93,6 +93,11 @@ async function pingProvider(
       return !!key;
     case 'replicate':
       return pingReplicate(key);
+    case 'xai':
+    case 'xai-imagine':
+      return pingXai(key, provider.id === 'xai-imagine');
+    case 'gemini':
+      return pingGemini(key);
     default:
       return false;
   }
@@ -143,6 +148,58 @@ async function pingMinimax(key: string | undefined): Promise<boolean> {
       messages: [{ role: 'user', content: 'OK' }],
     }),
   });
+  return res.ok;
+}
+
+async function pingXai(key: string | undefined, image = false): Promise<boolean> {
+  const baseUrl = (process.env.XAI_BASE_URL || 'https://api.x.ai/v1').replace(/\/$/, '');
+  if (image) {
+    const res = await fetchWithTimeout(`${baseUrl}/images/generations`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${key || ''}`,
+      },
+      body: JSON.stringify({
+        model: 'grok-imagine-image',
+        prompt: 'OK',
+        n: 1,
+      }),
+    });
+    // 200 = ok; 402/429 still means the key is valid and API reachable.
+    return res.ok || res.status === 402 || res.status === 429;
+  }
+  const res = await fetchWithTimeout(`${baseUrl}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${key || ''}`,
+    },
+    body: JSON.stringify({
+      model: process.env.XAI_MODEL || 'grok-4.5',
+      max_tokens: 1,
+      messages: [{ role: 'user', content: 'OK' }],
+    }),
+  });
+  return res.ok || res.status === 402 || res.status === 429;
+}
+
+async function pingGemini(key: string | undefined): Promise<boolean> {
+  const model = process.env.GEMINI_MODEL || 'gemini-3.5-flash';
+  const res = await fetchWithTimeout(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-goog-api-key': key || '',
+      },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: 'OK' }] }],
+        generationConfig: { maxOutputTokens: 1 },
+      }),
+    },
+  );
   return res.ok;
 }
 

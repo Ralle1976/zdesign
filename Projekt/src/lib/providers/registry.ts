@@ -112,6 +112,23 @@ export function getProviderRegistry(): ProviderConfig[] {
       status: has("MINIMAX_API_KEY") ? "connected" : "disconnected",
     },
     {
+      id: "xai",
+      name: "xAI Grok",
+      type: "text",
+      connectionType: "api",
+      enabled: true,
+      active: false,
+      models: [
+        { id: "grok-4.5", label: "Grok 4.5", pricing: "API credits" },
+        { id: "grok-build-0.1", label: "Grok Build 0.1" },
+        { id: "grok-4.3", label: "Grok 4.3", pricing: "fast" },
+      ],
+      selectedModel: "grok-4.5",
+      apiKeyEnv: "XAI_API_KEY",
+      endpoint: "https://api.x.ai/v1",
+      status: has("XAI_API_KEY") ? "connected" : "disconnected",
+    },
+    {
       id: "openrouter",
       name: "OpenRouter",
       type: "text",
@@ -144,6 +161,23 @@ export function getProviderRegistry(): ProviderConfig[] {
       endpoint: "https://image.pollinations.ai",
       quota: "~unlimited, no key required",
       status: "connected", // no key check — always connected
+    },
+    {
+      id: "xai-imagine",
+      name: "xAI Grok Imagine",
+      type: "image",
+      connectionType: "api",
+      enabled: true,
+      active: false,
+      models: [
+        { id: "grok-imagine-image", label: "Grok Imagine", pricing: "~$0.02/img" },
+        { id: "grok-imagine-image-quality", label: "Grok Imagine Quality", pricing: "~$0.05/img" },
+      ],
+      selectedModel: "grok-imagine-image",
+      apiKeyEnv: "XAI_API_KEY",
+      endpoint: "https://api.x.ai/v1",
+      quota: "pay per image",
+      status: has("XAI_API_KEY") ? "connected" : "disconnected",
     },
     {
       id: "deepinfra",

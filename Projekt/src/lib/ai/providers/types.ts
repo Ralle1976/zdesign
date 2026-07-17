@@ -13,7 +13,7 @@ export type ProviderCapability =
 
 // ============ Provider Types ============
 
-export type ProviderType = 'zai' | 'openai' | 'anthropic' | 'google' | 'stability' | 'replicate' | 'openrouter' | 'minimax' | 'custom';
+export type ProviderType = 'zai' | 'xai' | 'openai' | 'anthropic' | 'google' | 'stability' | 'replicate' | 'openrouter' | 'minimax' | 'custom';
 
 // ============ Configuration Interfaces ============
 

@@ -18,6 +18,7 @@ import { OpenAIProvider } from './openai-provider';
 import { AnthropicProvider } from './anthropic-provider';
 import { OpenRouterProvider } from './openrouter-provider';
 import { MinimaxProvider } from './minimax-provider';
+import { XAIProvider } from './xai-provider';
 // NOTE: import the persona-routing LEAF directly (not the fusion barrel) to avoid a
 // circular import: registry -> fusion/index -> fusion-pipeline -> registry.
 import { resolvePersonaProvider, personaPreferredModel, type PersonaRole } from '../fusion/persona-routing';
@@ -83,6 +84,22 @@ const DEFAULT_PROVIDERS: ProviderConfig[] = [
     capabilities: ['llm-chat', 'llm-streaming', 'image-understanding'],
     isActive: false,
     priority: 3,
+    config: {},
+  },
+  {
+    id: 'xai-default',
+    name: 'xAI Grok',
+    provider: 'xai',
+    apiKey: '',
+    baseUrl: 'https://api.x.ai/v1',
+    models: [
+      { id: 'grok-4.5', name: 'Grok 4.5', type: 'llm', capabilities: ['llm-chat'], maxTokens: 131072 },
+      { id: 'grok-build-0.1', name: 'Grok Build 0.1', type: 'llm', capabilities: ['llm-chat'], maxTokens: 131072 },
+      { id: 'grok-4.3', name: 'Grok 4.3', type: 'llm', capabilities: ['llm-chat'], maxTokens: 131072 },
+    ],
+    capabilities: ['llm-chat', 'llm-streaming'],
+    isActive: false,
+    priority: 5,
     config: {},
   },
   {
@@ -153,6 +170,9 @@ export class ProviderRegistry {
         break;
       case 'minimax':
         this.adapters.set(config.id, new MinimaxProvider(config));
+        break;
+      case 'xai':
+        this.adapters.set(config.id, new XAIProvider(config));
         break;
     }
   }
@@ -275,16 +295,20 @@ export class ProviderRegistry {
   private isRateLimited(providerId: string): boolean {
     const info = this.rateLimits.get(providerId);
     if (!info) return false;
-    // If we've never seen rate limit headers, don't assume it's limited
-    if (info.requestsLimit === 0) return false;
-    // If remaining is <= 0, it's rate limited
+    // FIX: even if requestsLimit is 0 (never seen rate-limit headers), we must
+    // honor markRateLimited() which sets requestsRemaining=0 + requestsResetAt.
+    // The old early-return on requestsLimit===0 made 429-rotation ineffective:
+    // markRateLimited set remaining=0, but isRateLimited said "not limited"
+    // because limit was still 0.
     if (info.requestsRemaining <= 0) {
       // Check if reset time has passed
       if (info.requestsResetAt && info.requestsResetAt <= new Date()) {
-        // Reset window has passed, clear rate limit
-        info.requestsRemaining = info.requestsLimit;
+        // Reset window has passed — clear the rate limit
+        info.requestsRemaining = Math.max(1, info.requestsLimit);
+        info.requestsResetAt = null;
         return false;
       }
+      // Still within the rate-limit window (or no reset known → assume limited)
       return true;
     }
     return false;

@@ -1,0 +1,16 @@
+---
+pid: 22684
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "Set-Location \"G:\\Andere Computer\\Mein Computer\\Desktop\\Z.Design\\Projekt\"; & \"C:\\Program Files\\nodejs\\node.exe\" \".\\node_modules\\typescript\\bin\\tsc\" --noEmit --pretty false 2>&1 | Select-Object -First 10; Write-Output \"exit=$LASTEXITCODE\""
+started_at: 2026-07-14T21:07:18.693Z
+running_for_ms: 86400003 
+---
+src/components/zdesign/ChatPanel.tsx(1494,15): error TS2322: Type 'Concept' is not assignable to type '{ [key: string]: unknown; name: string; bigIdea: string; narrative: string; signatureVisual: string; layoutApproach: string; palette: { [key: string]: string; bg: string; surface: string; primary: string; accent: string; }; }'.
+  Index signature for type 'string' is missing in type 'Concept'.
+exit=2
+
+---
+exit_code: -1
+elapsed_ms: 86400003
+ended_at: 2026-07-15T21:07:36.539Z
+---

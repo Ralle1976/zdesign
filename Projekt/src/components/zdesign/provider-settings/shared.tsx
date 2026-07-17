@@ -59,14 +59,27 @@ export interface ProviderDTO {
   models: { id: string; name: string }[];
   configured: boolean;
   maskedKey: string | null;
+  baseUrl?: string | null;
 }
 
 /** Top-level GET /api/providers response. */
 export interface ProvidersResponse {
   providers: ProviderDTO[];
-  selection: { textProviderId: string; imageProviderId: string };
+  selection: {
+    textProviderId: string;
+    imageProviderId: string;
+    sttProviderId: string;
+  };
   overrides: Record<string, { enabled?: boolean; model?: string; mcpUrl?: string }>;
 }
+
+/** Providers that can handle Speech-to-Text (separate from text LLM selection). */
+export const STT_PROVIDER_IDS = ['openrouter', 'zai'] as const;
+
+export const STT_DEFAULT_MODELS: Record<string, string> = {
+  openrouter: 'openai/whisper-1',
+  zai: 'glm-asr-2512',
+};
 
 /** ProviderDTO enriched with parsed/derived UI state. */
 export interface ParsedProvider extends ProviderDTO {
@@ -90,10 +103,25 @@ export const TYPE_TABS: { key: ProviderType; label: string; icon: typeof Type }[
 
 // ============ Helpers ============
 
-/** Classify a provider into a UI tab. The API `kind` is authoritative. */
+/** Classify a provider into a UI tab. STT providers also appear under AUDIO. */
 export function classifyProvider(p: ProviderDTO | ParsedProvider): ProviderType {
   if (p.kind === 'image') return 'IMAGE';
   return 'TEXT';
+}
+
+export function isSttProvider(p: ProviderDTO | ParsedProvider): boolean {
+  return STT_PROVIDER_IDS.includes(p.id as (typeof STT_PROVIDER_IDS)[number]);
+}
+
+export function isProviderActiveForTab(
+  p: ParsedProvider,
+  tab: ProviderType,
+  selection: ProvidersResponse['selection'],
+): boolean {
+  if (tab === 'TEXT') return p.kind === 'text' && p.id === selection.textProviderId;
+  if (tab === 'IMAGE') return p.kind === 'image' && p.id === selection.imageProviderId;
+  if (tab === 'AUDIO') return isSttProvider(p) && p.id === selection.sttProviderId;
+  return false;
 }
 
 /**
@@ -113,7 +141,8 @@ export function parseProvider(
     modelList,
     isActive:
       (p.kind === 'text' && p.id === selection.textProviderId) ||
-      (p.kind === 'image' && p.id === selection.imageProviderId),
+      (p.kind === 'image' && p.id === selection.imageProviderId) ||
+      (isSttProvider(p) && p.id === selection.sttProviderId),
     selectedModel: ov.model || p.defaultModel || modelList[0] || '',
     mcpUrl: ov.mcpUrl || '',
   };
@@ -307,8 +336,8 @@ export function ProviderCardRow({
               className="h-9 text-xs font-mono bg-muted/50"
             />
           ) : (
-            <div className="h-9 flex items-center px-3 rounded-md border bg-muted/40 text-xs font-mono text-muted-foreground truncate">
-              {p.envBaseUrl || '—'}
+            <div className="h-9 flex items-center px-3 rounded-md border bg-muted/40 text-xs font-mono text-muted-foreground truncate" title={p.baseUrl || undefined}>
+              {p.baseUrl || (p.id === 'openrouter' ? 'https://openrouter.ai/api/v1' : '—')}
             </div>
           )}
         </div>

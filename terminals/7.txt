@@ -1,0 +1,77 @@
+---
+pid: 8164
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "Set-Location \"G:\\Andere Computer\\Mein Computer\\Desktop\\Z.Design\"; git branch --show-current; git stash push -m \"temp server logs\" -- Projekt/server_err.txt Projekt/server_out.txt; git checkout main; git merge auto/session-2026-07-14-778858 -m \"Merge branch auto/session-2026-07-14-778858: parallel agent pipeline with canvas status\""
+started_at: 2026-07-14T20:57:19.121Z
+running_for_ms: 86400011 
+---
+auto/session-2026-07-14-778858
+warning: in the working copy of 'Projekt/server_err.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'Projekt/server_out.txt', LF will be replaced by CRLF the next time Git touches it
+Saved working directory and index state On auto/session-2026-07-14-778858: temp server logs
+warning: in the working copy of 'Projekt/server_err.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'Projekt/server_out.txt', LF will be replaced by CRLF the next time Git touches it
+warning: unable to unlink 'Projekt/server_out.txt': Permission denied
+warning: unable to unlink 'Projekt/server_err.txt': Permission denied
+warning: unable to rmdir 'showcase': Directory not empty
+Switched to branch 'main'
+error: Unable to create 'G:/Andere Computer/Mein Computer/Desktop/Z.Design/.git/packed-refs.lock': File exists.
+
+Another git process seems to be running in this repository, or the lock file may be stale
+Your branch is up to date with 'origin/main'.
+error: Unable to create 'G:/Andere Computer/Mein Computer/Desktop/Z.Design/.git/packed-refs.lock': File exists.
+
+Another git process seems to be running in this repository, or the lock file may be stale
+error: cannot stat '.zcode': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+Updating d7c1331..7d96e86
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+error: cannot stat 'graphify-out': Permission denied
+
+---
+exit_code: -1
+elapsed_ms: 86400011
+ended_at: 2026-07-15T20:57:37.442Z
+---

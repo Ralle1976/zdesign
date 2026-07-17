@@ -348,22 +348,42 @@ function fold(s: string): string {
  * Falls back to "claude-editorial" (the safe, broadly-applicable warm editorial
  * direction) when nothing matches.
  */
+function topicHash(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+/** Pick among candidates with hash-based rotation — same topic can look different per brief. */
+function pickRotated(message: string, keys: (keyof typeof DESIGN_SYSTEMS)[]): DesignSystem {
+  const idx = topicHash(message) % keys.length;
+  return DESIGN_SYSTEMS[keys[idx]];
+}
+
 export function pickSystemForTopic(message: string): DesignSystem {
+  // FIX: fold() converts diacritics via NFD decomposition (ä→a+ combining mark → strip → a).
+  // So "Bäckerei" becomes "backerei", not "baeckerei". The regex literals must
+  // therefore use the FOLDED (ASCII) form — non-ASCII literals like "bäck" or
+  // "dramatisch" would never match the folded message. All patterns below are
+  // pure ASCII to be consistent with fold()'s output.
   const m = fold(message);
 
   if (/\b(spa|massage|thai|wellness|kosmetik|beauty|sauna|retreat|ritual|serene)\b/.test(m)) {
-    return DESIGN_SYSTEMS["asian-spa"];
+    return pickRotated(message, ['asian-spa', 'jade-garden', 'claude-editorial']);
   }
-  if (/\b(fashion|luxury|serif|editorial|literary|magazine|brand|premium|boutique|atelier)\b/.test(m)) {
-    return DESIGN_SYSTEMS["claude-editorial"];
+  if (/\b(parfum|duft|fragrance|perfume|fashion|luxury|serif|editorial|literary|magazine|brand|premium|boutique|atelier)\b/.test(m)) {
+    return pickRotated(message, ['claude-editorial', 'midnight-temple', 'asian-spa']);
   }
-  if (/\b(crypto|music|night|club|dark|dramatisch|dramatic|gaming|cyber|neon|techno|event|concert)\b/.test(m)) {
-    return DESIGN_SYSTEMS["midnight-temple"];
+  if (/\b(crypto|music|night|club|dark|dramatic|dramatisch|gaming|cyber|neon|techno|event|concert)\b/.test(m)) {
+    return pickRotated(message, ['midnight-temple', 'claude-editorial']);
   }
   if (/\b(nature|yoga|meditation|botanic|oeko|oko|green|organic|tea|zen|plant|garden|nachhaltig)\b/.test(m)) {
-    return DESIGN_SYSTEMS["jade-garden"];
+    return pickRotated(message, ['jade-garden', 'asian-spa']);
   }
-  return DESIGN_SYSTEMS["claude-editorial"];
+  if (/\b(food|coffee|back|backerei|restaurant|kitchen|chef|bistro)\b/.test(m)) {
+    return pickRotated(message, ['claude-editorial', 'jade-garden']);
+  }
+  return pickRotated(message, ['claude-editorial', 'midnight-temple', 'jade-garden', 'asian-spa']);
 }
 
 /* ------------------------------------------------------------------ */

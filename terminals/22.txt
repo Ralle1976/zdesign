@@ -1,0 +1,7 @@
+---
+pid: 13720
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "Set-Location \"G:\\Andere Computer\\Mein Computer\\Desktop\\Z.Design\\Projekt\"; npx.cmd tsc --noEmit 2>&1"
+started_at: 2026-07-14T22:33:44.828Z
+running_for_ms: 82435006 
+---

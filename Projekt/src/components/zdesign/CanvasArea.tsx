@@ -220,7 +220,11 @@ function GenerationProgressIndicator() {
         {creativeMode && !isComplete && (
           <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
             <Zap className="size-3.5" />
-            <span className="font-medium">Creative Mode — Multi-pass generation enabled</span>
+            <span className="font-medium">
+              {locale === 'de'
+                ? 'Kreativ-Modus — verstärkt Konzepte & Agent-Pipeline'
+                : 'Creative Mode — boosts concepts & agent pipeline'}
+            </span>
           </div>
         )}
 

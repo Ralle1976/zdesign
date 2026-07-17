@@ -112,7 +112,7 @@ const DIRECTIONS: DirectionDef[] = [
     // gold, elegant serif) — must win before generic health-fitness (energetic
     // green) and before the neutral defaults. Covers Thai/spa specifically.
     domain: 'asian-spa-thai-wellness',
-    match: ['massage', 'thaimassage', 'thai-massage', 'thai', 'spa', 'wellness', 'fusspflege', 'fußpflege', 'manikuere', 'maniküre', 'pedikuere', 'pediküre', 'hot stone', 'hot-stone', 'aroma', 'oel-massage', 'öl-massage', 'entspannung', 'kosmetik', 'beautyfarm', 'ayurveda', 'reflexzonen', 'balinese', 'shiatsu', 'lomi', 'ritual', 'thermal', 'kurbad', 'massagestudio', 'massagesalon', 'kosmetikstudio', 'nagelstudio', 'gesichtsbehandlung'],
+    match: ['massage', 'thaimassage', 'thai-massage', 'thai spa', 'spa', 'wellness', 'fusspflege', 'fußpflege', 'manikuere', 'maniküre', 'pedikuere', 'pediküre', 'hot stone', 'hot-stone', 'aroma', 'oel-massage', 'öl-massage', 'entspannung', 'beautyfarm', 'ayurveda', 'reflexzonen', 'balinese', 'shiatsu', 'lomi', 'ritual', 'thermal', 'kurbad', 'massagestudio', 'massagesalon', 'kosmetikstudio', 'nagelstudio', 'gesichtsbehandlung'],
     mood: 'seren · warm · edel · asiatisch',
     rationale: 'Thai/Spa/Wellness → edle, warme Spa-Ästhetik (Reispapier-Elfenbein + tiefes Ink + GOLD als Akzent), elegante Serif-Display, viel Weißraum, ruhige Hierarchie. Keine Tech- oder SaaS-Farben.',
     palette: { background: '#FBF6EA', surface: '#F4ECD6', primary: '#2A2118', accent: '#B0892F', secondary: '#7C2D2A', text: '#2A2118', textMuted: '#8A7B62', border: '#E4D6B5' },
@@ -124,7 +124,7 @@ const DIRECTIONS: DirectionDef[] = [
   },
   {
     domain: 'coffee-food',
-    match: ['kaffee', 'cafe', 'restaurant', 'bäckerei', 'bakery', 'bistro', 'wein', 'wine', 'cocktail', 'brauerei', 'chocolat', 'schokolade', 'lebensmittel', 'pizzeria', 'konditorei', 'honig', 'teehaus', 'matcha', 'gastronom', 'catering', 'küche', 'koch', 'food', 'metzgerei', 'wirtshaus', 'brew', 'coffee', 'espresso', 'barista', 'eisdiele', 'kantine', 'speise', 'cafehaus', 'menu'],
+    match: ['kaffee', 'cafe', 'restaurant', 'bäckerei', 'bakery', 'bistro', 'wein', 'wine', 'cocktail', 'brauerei', 'chocolat', 'schokolade', 'lebensmittel', 'pizzeria', 'konditorei', 'honig', 'teehaus', 'matcha', 'gastronom', 'catering', 'küche', 'koch', 'food', 'metzgerei', 'wirtshaus', 'brew', 'coffee', 'espresso', 'barista', 'eisdiele', 'kantine', 'speise', 'cafehaus', 'menu', 'pad thai', 'thai food', 'thai imbiss', 'thai kitchen', 'thai restaurant', 'street food', 'imbiss', 'curry', 'nudel', 'noodle', 'siam', 'speisekarte', 'gastronomie'],
     mood: 'warm · handwerklich · eingeladen',
     rationale: 'Thema ist Essen/Trinken → warme, erdige Palette (Espresso/Cream/Terrakotta) + Serif-Display für handwerklichen Charakter. Keine Tech-Farben.',
     palette: { background: '#FAF6F0', surface: '#F2EADD', primary: '#2B1B12', accent: '#C2612A', secondary: '#6B7A5A', text: '#2B1B12', textMuted: '#8A7A68', border: '#E4D8C7' },
@@ -331,8 +331,34 @@ function fold(s: string): string {
  * Derive a topic-appropriate DesignDirective from the user message.
  * Deterministic — same message ⇒ same directive. No LLM, no I/O.
  */
+/** Disambiguate topics where broad keywords collide (thai food vs thai spa, atelier vs boutique fashion). */
+function domainOverride(message: string): string | null {
+  const f = fold(message);
+  if (
+    /\b(pad thai|street food|thai imbiss|thai kitchen|thai restaurant|thai food|speisekarte|gastronomie)\b/.test(f) ||
+    (f.includes('thai') && /\b(food|imbiss|restaurant|kitchen|speise|menu|imbiss|curry|noodle|nudel|pad)\b/.test(f))
+  ) {
+    return 'coffee-food';
+  }
+  if (
+    /\b(architekt|architect|holzbau|bauhaus|lichteck)\b/.test(f) &&
+    !/\b(fashion|mode|parfum|beauty|couture|kosmetik)\b/.test(f)
+  ) {
+    return 'portfolio-creative-agency';
+  }
+  if (/\b(saas|analytics|dashboard|b2b|pulsemetrics|ecommerce|e-commerce)\b/.test(f)) {
+    return 'tech-saas';
+  }
+  return null;
+}
+
 export function deriveDesignDirection(message: string): DesignDirective {
   const clean = (message || '').trim();
+  const forced = domainOverride(clean);
+  if (forced) {
+    const hit = DIRECTIONS.find((d) => d.domain === forced);
+    if (hit) return toDirective(hit);
+  }
   // 1) Best domain match (first def whose keywords hit; ties → earliest = priority)
   for (const def of DIRECTIONS) {
     if (matchesTopic(clean, def.match)) {

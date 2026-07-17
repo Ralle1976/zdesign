@@ -5,7 +5,7 @@
  *
  * Contract (src/lib/ai/provider-config.ts):
  *   GET  /api/providers → { providers, selection, overrides }
- *   POST /api/providers { textProviderId?, imageProviderId?, overrides? }
+ *   POST /api/providers { textProviderId?, imageProviderId?, sttProviderId?, overrides? }
  *   POST /api/providers/test   { providerId } → { ok, latencyMs, message }
  *   POST /api/providers/keys   { providerId, apiKey } → { maskedKey, saved }
  *
@@ -30,6 +30,8 @@ import {
   type ProvidersResponse,
   TYPE_TABS,
   classifyProvider,
+  isSttProvider,
+  isProviderActiveForTab,
   parseProvider,
   ProviderCardRow,
 } from './provider-settings/shared';
@@ -45,6 +47,11 @@ export function ProviderSettingsPage() {
   const [tests, setTests] = useState<Record<string, TestState>>({});
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [selection, setSelection] = useState<ProvidersResponse['selection']>({
+    textProviderId: 'zai',
+    imageProviderId: 'minimax',
+    sttProviderId: 'openrouter',
+  });
 
   const fetchProviders = useCallback(async () => {
     setLoading(true);
@@ -53,9 +60,14 @@ export function ProviderSettingsPage() {
       const res = await fetch('/api/providers');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = (await res.json()) as ProvidersResponse;
-      const selection = data.selection || { textProviderId: '', imageProviderId: '' };
+      const loadedSelection = data.selection || {
+        textProviderId: 'zai',
+        imageProviderId: 'minimax',
+        sttProviderId: 'openrouter',
+      };
       const overrides = data.overrides || {};
-      setProviders((data.providers || []).map((p) => parseProvider(p, selection, overrides)));
+      setSelection(loadedSelection);
+      setProviders((data.providers || []).map((p) => parseProvider(p, loadedSelection, overrides)));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load providers');
     } finally {
@@ -67,12 +79,27 @@ export function ProviderSettingsPage() {
     fetchProviders();
   }, [fetchProviders]);
 
-  // Radio-style activation: only one active per kind (text / image).
+  // Radio-style activation per tab — text LLM, image, and STT are independent.
   const setActive = useCallback((id: string, value: boolean, type: ProviderType) => {
+    if (!value) return;
+    setSelection((prev) => {
+      if (type === 'TEXT') return { ...prev, textProviderId: id };
+      if (type === 'IMAGE') return { ...prev, imageProviderId: id };
+      if (type === 'AUDIO') return { ...prev, sttProviderId: id };
+      return prev;
+    });
     setProviders((prev) =>
       prev.map((p) => {
-        if (classifyProvider(p) !== type) return p;
-        return p.id === id ? { ...p, isActive: value } : value ? { ...p, isActive: false } : p;
+        if (type === 'TEXT' && p.kind === 'text') {
+          return { ...p, isActive: p.id === id };
+        }
+        if (type === 'IMAGE' && p.kind === 'image') {
+          return { ...p, isActive: p.id === id };
+        }
+        if (type === 'AUDIO' && isSttProvider(p)) {
+          return { ...p, isActive: p.id === id };
+        }
+        return p;
       }),
     );
     setDirty(true);
@@ -144,11 +171,9 @@ export function ProviderSettingsPage() {
     }
   }, [apiKeys]);
 
-  /** Build the {textProviderId, imageProviderId, overrides} payload from a
-   *  provider list and POST it to /api/providers. */
-  const postConfig = useCallback(async (list: ParsedProvider[]): Promise<boolean> => {
-    const textProviderId = list.find((p) => p.kind === 'text' && p.isActive)?.id;
-    const imageProviderId = list.find((p) => p.kind === 'image' && p.isActive)?.id;
+  /** Build the selection + overrides payload and POST it to /api/providers. */
+  const postConfig = useCallback(
+    async (list: ParsedProvider[], sel: ProvidersResponse['selection']): Promise<boolean> => {
     const overrides: Record<string, { model?: string; mcpUrl?: string }> = {};
     for (const p of list) {
       const entry: { model?: string; mcpUrl?: string } = {};
@@ -156,9 +181,12 @@ export function ProviderSettingsPage() {
       if (p.mcpUrl) entry.mcpUrl = p.mcpUrl;
       if (Object.keys(entry).length) overrides[p.id] = entry;
     }
-    const body: Record<string, unknown> = { overrides };
-    if (textProviderId) body.textProviderId = textProviderId;
-    if (imageProviderId) body.imageProviderId = imageProviderId;
+    const body: Record<string, unknown> = {
+      overrides,
+      textProviderId: sel.textProviderId,
+      imageProviderId: sel.imageProviderId,
+      sttProviderId: sel.sttProviderId,
+    };
 
     const res = await fetch('/api/providers', {
       method: 'POST',
@@ -166,7 +194,9 @@ export function ProviderSettingsPage() {
       body: JSON.stringify(body),
     });
     return res.ok;
-  }, []);
+  },
+    [],
+  );
 
   // MCP connect: persist the URL into overrides[id].mcpUrl via the config save.
   const handleConnectMcp = useCallback(
@@ -177,7 +207,7 @@ export function ProviderSettingsPage() {
       setProviders(updated);
       setMcpUrls((prev) => ({ ...prev, [p.id]: '' }));
       setSaving(true);
-      const ok = await postConfig(updated);
+      const ok = await postConfig(updated, selection);
       setSaving(false);
       setDirty(false);
       setTests((prev) => ({
@@ -190,13 +220,13 @@ export function ProviderSettingsPage() {
         },
       }));
     },
-    [mcpUrls, providers, postConfig],
+    [mcpUrls, providers, postConfig, selection],
   );
 
   const handleSaveConfig = useCallback(async () => {
     setSaving(true);
     const list = providers;
-    const ok = await postConfig(list);
+    const ok = await postConfig(list, selection);
     setTests((prev) => ({
       ...prev,
       __global__: {
@@ -208,10 +238,13 @@ export function ProviderSettingsPage() {
     }));
     if (ok) setDirty(false);
     setSaving(false);
-  }, [providers, postConfig]);
+  }, [providers, postConfig, selection]);
 
   const grouped: Record<ProviderType, ParsedProvider[]> = { TEXT: [], IMAGE: [], AUDIO: [], VIDEO: [] };
-  for (const p of providers) grouped[classifyProvider(p)].push(p);
+  for (const p of providers) {
+    grouped[classifyProvider(p)].push(p);
+    if (isSttProvider(p)) grouped.AUDIO.push(p);
+  }
   const tabsToShow = TYPE_TABS.filter((t) => grouped[t.key].length > 0);
 
   return (
@@ -223,7 +256,8 @@ export function ProviderSettingsPage() {
             Providers
           </h2>
           <p className="text-xs text-muted-foreground hidden sm:block">
-            Configure AI providers, API keys, models, and quota. Keys are written to .env.local (restart to apply).
+            Text-LLM, Bild und Sprache (Whisper) getrennt wählbar — z.&nbsp;B. Z.ai für Design + OpenRouter für STT.
+            Keys landen in .env.local.
           </p>
         </div>
         <div className="flex items-center gap-2 pr-9 sm:pr-11">
@@ -281,6 +315,13 @@ export function ProviderSettingsPage() {
           <div className="p-4 sm:p-6 pt-4">
             {tabsToShow.map((tab) => (
               <TabsContent key={tab.key} value={tab.key} className="mt-0">
+                {tab.key === 'AUDIO' && !loading && (
+                  <p className="text-xs text-muted-foreground mb-4 max-w-2xl">
+                    Spracherkennung (Mikrofon-Fallback) — unabhängig vom Text-LLM. OpenRouter Whisper braucht{' '}
+                    <code className="text-[10px]">OPENROUTER_API_KEY</code>; Z.ai ASR braucht{' '}
+                    <code className="text-[10px]">ZAI_API_KEY</code>.
+                  </p>
+                )}
                 {loading ? (
                   <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     {[0, 1, 2].map((i) => (
@@ -293,7 +334,7 @@ export function ProviderSettingsPage() {
                       <ProviderCardRow
                         key={p.id}
                         p={p}
-                        active={p.isActive}
+                        active={isProviderActiveForTab(p, tab.key, selection)}
                         testState={tests[p.id] || { loading: false, result: null }}
                         apiKeyInput={apiKeys[p.id] || ''}
                         mcpInput={mcpUrls[p.id] || ''}

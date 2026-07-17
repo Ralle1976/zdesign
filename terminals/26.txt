@@ -1,0 +1,9 @@
+---
+pid: 38364
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "G:; cd \"G:\\Andere Computer\\Mein Computer\\Desktop\\Z.Design\\Projekt\"; node node_modules/typescript/bin/tsc --noEmit --pretty false 2>&1 | Select-Object -First 30"
+started_at: 2026-07-15T07:22:48.227Z
+running_for_ms: 50695225 
+---
+src/components/zdesign/canvas/HtmlArtifactPreview.tsx(353,15): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.

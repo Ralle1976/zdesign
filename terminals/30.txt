@@ -1,0 +1,53 @@
+---
+pid: 39780
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "G:; cd \"G:\\Andere Computer\\Mein Computer\\Desktop\\Z.Design\\Projekt\"; node scripts/retry-failed-tests.mjs \"G:\\Andere Computer\\Mein Computer\\Desktop\\Z.Design\\showcase\\test-runs\\2026-07-15-10-54-35\" 2>&1"
+started_at: 2026-07-15T11:02:30.253Z
+running_for_ms: 37524997 
+---
+
+Retry: Thai Street Food Imbiss
+[thai-food] art-direction: Art Direction
+[thai-food] experience-mode: Erlebnis-Modus
+[thai-food] creative-dna: Kreativ-DNA: Split-Screen · Scroll-Reveal Fade-Up + Text-Gradient + Glow · Neon-Glow
+[thai-food] premium: Premium Luxe Mode
+[thai-food] negative-memory: Gedächtnis: 9 Muster vermeiden
+[thai-food] generate-start: Entwurf wird generiert
+[thai-food] reference-rag: Referenz-Stil geladen
+[thai-food] ia-start: IA-Struktur (Pass 1)
+[thai-food] ia-failed: IA fehlgeschlagen
+[thai-food] generate-fallback: Single-Pass Fallback
+[thai-food] generate-done: Entwurf v1 generiert
+[thai-food] theater-round-1: Theater Runde 1
+[thai-food] images-final: Bilder gesichert
+[thai-food] audit: Accessibility-Audit
+[thai-food] lint: Anti-Slop final
+✓ 352.7s composite 2.94
+
+Retry: SaaS Analytics
+[saas-analytics] art-direction: Art Direction
+[saas-analytics] experience-mode: Erlebnis-Modus
+[saas-analytics] creative-dna: Kreativ-DNA: Horizontal-Scroll-Sektion · Cursor-Magnet + Parallax-Tiefe · Glassmorphism
+[saas-analytics] negative-memory: Gedächtnis: 8 Muster vermeiden
+[saas-analytics] generate-start: Entwurf wird generiert
+[saas-analytics] reference-rag: Referenz-Stil geladen
+[saas-analytics] ia-start: IA-Struktur (Pass 1)
+[saas-analytics] ia-done: IA-Struktur fertig
+[saas-analytics] images-first: Bilder zuerst
+[saas-analytics] images-first-done: Bilder gesperrt
+[saas-analytics] global-css: Shared CSS (Pass 2a)
+[saas-analytics] view-start: View: Produkt
+[saas-analytics] view-start: View: Features
+[saas-analytics] view-start: View: Pricing
+[saas-analytics] view-start: View: Demo
+[saas-analytics] assemble: Shell zusammenbauen (Pass 3)
+[saas-analytics] multi-pass-done: Multi-Pass fertig
+[saas-analytics] generate: Multi-Pass Pipeline
+[saas-analytics] generate-done: Entwurf v1 generiert
+[saas-analytics] lint: Anti-Slop-Check v1
+[saas-analytics] theater-round-1: Theater Runde 1
+[saas-analytics] audit: Accessibility-Audit
+[saas-analytics] lint: Anti-Slop final
+✓ 382.9s composite 2.12
+
+Galerie: file:///G:/Andere Computer/Mein Computer/Desktop/Z.Design/showcase/test-runs/2026-07-15-10-54-35/index.html

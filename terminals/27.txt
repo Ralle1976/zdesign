@@ -1,0 +1,8 @@
+---
+pid: 38720
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "G:; cd \"G:\\Andere Computer\\Mein Computer\\Desktop\\Z.Design\\Projekt\"; node -e \"const ts=require('typescript'); const fs=require('fs'); const files=['src/lib/ai/multi-pass-pipeline.ts','src/lib/ai/images-first.ts','src/lib/ai/reference-rag.ts','src/app/api/design/feedback/route.ts','src/components/zdesign/LearningPanel.tsx']; let err=0; for(const f of files){const r=ts.createProgram([f],{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.ESNext,jsx:ts.JsxEmit.React,strict:true,paths:{'@/*':['src/*']},moduleResolution:ts.ModuleResolutionKind.Bundler,skipLibCheck:true,noEmit:true}).emit(); if(r.emitSkipped) err++;} console.log('spot check done');\""
+started_at: 2026-07-15T07:24:49.970Z
+running_for_ms: 50570001 
+---
+spot check done

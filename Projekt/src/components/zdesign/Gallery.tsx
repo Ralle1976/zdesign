@@ -102,7 +102,7 @@ function GalleryCard({
             srcDoc={project.designHTML}
             className="pointer-events-none h-full w-full origin-top-left"
             style={{ width: '1280px', height: '720px', transform: 'scale(0.234)' }}
-            sandbox="allow-same-origin"
+            sandbox="allow-same-origin allow-scripts"
             loading="lazy"
             scrolling="no"
           />

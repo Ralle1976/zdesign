@@ -7,4 +7,5 @@ export { OpenAIProvider } from './openai-provider';
 export { AnthropicProvider } from './anthropic-provider';
 export { OpenRouterProvider } from './openrouter-provider';
 export { MinimaxProvider } from './minimax-provider';
+export { XAIProvider } from './xai-provider';
 export { ProviderRegistry } from './registry';

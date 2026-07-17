@@ -1,0 +1,14 @@
+---
+pid: 21388
+cwd: "G:\Andere Computer\Mein Computer\Desktop\Z.Design"
+command: "Start-Sleep -Seconds 8; try { $r = Invoke-WebRequest -Uri \"http://localhost:3020/\" -UseBasicParsing -TimeoutSec 60; \"3020 OK $($r.StatusCode)\" } catch { \"3020 FAIL: $($_.Exception.Message)\" }"
+started_at: 2026-07-14T20:59:32.682Z
+running_for_ms: 86400014 
+---
+3020 FAIL: Das Zeitlimit fr diesen Vorgang wurde berschritten.
+
+---
+exit_code: -1
+elapsed_ms: 86400014
+ended_at: 2026-07-15T20:59:52.161Z
+---
