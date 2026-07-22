@@ -6,32 +6,172 @@
 // snippets that the LLM must follow. Inspired by Minimax-M3 analysis of what
 // separates generic AI landing pages from agency-grade work.
 
-// ─── CONCRETE LAYOUT SPECS (inject into prompt) ──────────────────────────────
-// Without exact numbers, GLM defaults to 16px/centered/40px-padding = flat.
-export const AGENCY_LAYOUT_SPECS = `
-═══ AGENCY LAYOUT-SPEZIFIKATIONEN (BINDEND — exakt diese Werte) ═══
+// ─── CONCEPT-VARIABLE LAYOUT SPECS ──────────────────────────────────────────
+// FIX: The old AGENCY_LAYOUT_SPECS were identical for every design — always
+// 12-col grid, always clamp(64-144px), always 1320px. That's exactly why every
+// design looked the same. These specs are now DOMAIN-ADAPTIVE: the design
+// direction (palette, fonts, mood) determines which spec set applies.
 
-GRID: 12-Spalten CSS Grid mit explizitem grid-template-areas. NIEMALS eine zentrierte Single-Column. Jede Sektion nutzt asymmetrische Spaltenpaare (8/4, 5/7, 7/5, 10/2), versetzt um 1-2 Spalten.
+export interface ConceptSpecs {
+  layout: string;
+  typography: string;
+  spacing: string;
+  color: string;
+  motion: string;
+}
 
+export function getConceptSpecs(domain: string, mood: string): ConceptSpecs {
+  // Editorial/Magazine domains: huge typography, asymmetric layouts, warm colors
+  if (domain.includes('food') || domain.includes('coffee') || domain.includes('restaurant') || domain.includes('bakery')) {
+    return {
+      layout: `
+GRID: Asymmetrisches Editorial-Grid — KEIN gleichmäßiges 12-Spalten-Grid. Nutze: (a) 7-Spalten-Text + 5-Spalten-Bild mit Versatz, (b) Full-bleed Bild mit Text-Overlay unten links, (c) 2/3-1/3 Split mit overlapping Cards. KEINE zentrierte Single-Column.`,
+      typography: `
+TYPO-SKALA (Editorial, groß, atmend):
+  H1: clamp(48px, 8vw, 128px) — font-weight 300 (dünn!), letter-spacing -0.03em, line-height 0.95, font-family: Display-Serif (Cormorant/Fraunces)
+  H2: clamp(36px, 5vw, 64px) — font-weight 400, italic für Akzente
+  Body: 18px, line-height 1.75, max-width 52ch
+  Eyebrow: 11px uppercase, letter-spacing 0.3em (!), goldene Akzentfarbe`,
+      spacing: `
+ABSTÄNDE (editorial, großzügig):
+  Section padding: clamp(120px, 18vh, 220px) vertical
+  Text-Container: max-width 65ch (lesbar!), KEIN 1320px-Template-Container
+  Inter-Element: 32px-80px`,
+      color: `
+FARB-TIEFE (warm, handwerklich, einladend):
+  Background: Warme Creme/Elfenbein (#FAF6F0, #F5EFE6), KEIN reines Weiß
+  Akzent: EINE warme Farbe (Terrakotta, Gold, Espresso) — sparsam, maximal 10% der Fläche
+  Text: Warmes Dunkelbraun (#2B1B12, #1A1410), NIEMALS reines Schwarz
+  Verläufe: Subtiler radial-gradient von warm-light zu warm-surface`,
+      motion: `
+BEWEGUNG (langsam, bedächtig, editorial):
+  Reveal: opacity 0→1, translateY 40px→0, 1s cubic-bezier(0.22,1,0.36,1)
+  Bilder: slow zoom (scale 1→1.08, 25s alternate infinite)
+  Hover: subtle scale(1.03) mit 600ms ease
+  KEIN schnelles Fade, KEIN bounce, KEIN shake`,
+    };
+  }
+  // Tech/SaaS/Crypto domains: dark, modern, bold typography, dynamic
+  if (domain.includes('crypto') || domain.includes('web3') || domain.includes('tech') || domain.includes('saas') || domain.includes('startup')) {
+    return {
+      layout: `
+GRID: Modernes Bento-Grid — KEIN Editorial-Layout. Nutze: (a) Bento-Boxen mit verschiedenen Größen (2fr 1fr 1fr), (b) Full-bleed Dark-Hero mit Glow, (c) Stats-Dashboard mit großen Zahlen. KEINE Serif-Fonts.`,
+      typography: `
+TYPO-SKALA (Tech, fett, dynamisch):
+  H1: clamp(56px, 10vw, 160px) — font-weight 600-800 (FETT!), letter-spacing -0.02em, font-family: Sans (Space Grotesk/Inter)
+  H2: clamp(40px, 6vw, 80px) — font-weight 700
+  Body: 16px, line-height 1.6, font-weight 400
+  Mono-Akzente: JetBrains Mono für Code/Preise/Daten`,
+      spacing: `
+ABSTÄNDE (kompakt, dynamisch):
+  Section padding: clamp(80px, 12vh, 160px)
+  Container: max-width 1400px, padding 0 clamp(20px, 4vw, 48px)
+  Inter-Element: 16px-48px`,
+      color: `
+FARB-TIEFE (dark, neon, dynamisch):
+  Background: Deep Onyx (#0a0d12, #0B0F1A), KEIN Hellgrau
+  Akzent: EINE vivide Farbe (Cyan #22D3EE, Indigo #6366F1, Emerald #10B981) — mit Glow
+  Text: Off-White (#F1F5F9, #F5F4F0), NIEMALS grau
+  Verläufe: Radial-gradient Glow hinter Hero-Element, conic-gradient Light-Sweep`,
+      motion: `
+BEWEGUNG (schnell, präzise, dynamisch):
+  Reveal: opacity 0→1, translateY 24px→0, 600ms ease-out
+  Hover: scale(1.05) mit 300ms transition, Glow-Effekt
+  Scroll-Parallax: Elemente bewegen sich unterschiedlich schnell
+  Sticky-Panels: Mind. 1 Sektion mit position:sticky`,
+    };
+  }
+  // Luxury/Fashion/Premium domains: dark, minimal, elegant
+  if (domain.includes('fashion') || domain.includes('luxury') || domain.includes('premium') || domain.includes('beauty') || domain.includes('watch') || domain.includes('jewelry')) {
+    return {
+      layout: `
+GRID: Minimales Luxus-Grid — extrem viel Whitespace. Nutze: (a) Full-bleed Bild mit minimalem Text-Overlay, (b) Zentriertes Produkt mit symmetrischem Text, (c) Vertikale Split mit viel negativem Raum. KEINE Cards, KEINE Grids.`,
+      typography: `
+TYPO-SKALA (Luxus, dünn, elegant):
+  H1: clamp(64px, 12vw, 200px) — font-weight 300 (EXTREM dünn!), letter-spacing -0.04em, font-family: Display-Serif (Cormorant/Playfair)
+  H2: clamp(40px, 6vw, 96px) — font-weight 300, italic
+  Body: 16px, line-height 1.8, font-weight 300, max-width 45ch
+  Eyebrow: 10px uppercase, letter-spacing 0.4em (!), Gold`,
+      spacing: `
+ABSTÄNDE (extrem großzügig, luxuriös):
+  Section padding: clamp(160px, 25vh, 300px)
+  Container: max-width 1200px, viel Whitespace
+  Inter-Element: 48px-120px`,
+      color: `
+FARB-TIEFE (dunkel, gold, luxuriös):
+  Background: Deep Onyx (#08070a, #0a0a0a), KEIN Hell
+  Akzent: EINE goldene Farbe (#C9A961, #B8860B, #D4AF37) — sparsam, wie Schmuck
+  Text: Warm Off-White (#F4F1EC, #E8E2D4), NIEMALS kalt
+  Verläufe: Subtiler radial-gradient Glow hinter Produkt, ambient lighting`,
+      motion: `
+BEWEGUNG (langsam, elegant, luxuriös):
+  Reveal: opacity 0→1, translateY 60px→0, 1.5s cubic-bezier(0.22,1,0.36,1)
+  Bilder: slow zoom (scale 1→1.1, 30s alternate infinite)
+  Hover: subtle scale(1.02) mit 800ms ease, golden glow
+  KEIN schnelles Fade, KEIN bounce, KEIN shake`,
+    };
+  }
+  // Law/Corporate/Finance domains: structured, trustworthy, professional
+  if (domain.includes('law') || domain.includes('finance') || domain.includes('corporate') || domain.includes('consulting') || domain.includes('insurance')) {
+    return {
+      layout: `
+GRID: Strukturiertes Corporate-Grid — Vertrauen durch Ordnung. Nutze: (a) Zentrierte 3-Spalten-Features, (b) Stats-Bar mit großen Zahlen, (c) Team-Grid mit Fotos, (d) Testimonial-Carousel. KEINE Asymmetrie, KEINE kreative Layouts.`,
+      typography: `
+TYPO-SKALA (Corporate, vertrauenswürdig, strukturiert):
+  H1: clamp(40px, 6vw, 80px) — font-weight 600, letter-spacing -0.02em, font-family: Serif (Source Serif Pro/Lora)
+  H2: clamp(32px, 4vw, 56px) — font-weight 600
+  Body: 17px, line-height 1.7, font-weight 400, max-width 60ch
+  Eyebrow: 12px uppercase, letter-spacing 0.2em, Navy/Gold`,
+      spacing: `
+ABSTÄNDE (strukturiert, vertrauenswürdig):
+  Section padding: clamp(96px, 14vh, 180px)
+  Container: max-width 1280px, padding 0 clamp(24px, 4vw, 48px)
+  Inter-Element: 24px-64px`,
+      color: `
+FARB-TIEFE (navy, gold, vertrauenswürdig):
+  Background: Reines Weiß (#FFFFFF) oder sehr helles Grau (#F8FAFC), KEIN Dunkel
+  Akzent: Navy (#0F2A47) + EINE Gold (#B08D57, #D4AF37) — klassisch, sparsam
+  Text: Navy Dark (#0F1B2D, #1E293B), NIEMALS reines Schwarz
+  Verläufe: Subtiler linear-gradient von White zu Light-Gray, KEIN Glow`,
+      motion: `
+BEWEGUNG (subtil, professionell, vertrauenswürdig):
+  Reveal: opacity 0→1, translateY 20px→0, 800ms ease
+  Hover: subtle shadow increase, KEIN scale, KEIN Glow
+  Scroll: Smooth scrolling, KEIN Parallax, KEIN Sticky
+  KEIN schnelles Fade, KEIN bounce, KEIN shake`,
+    };
+  }
+  // Default: balanced editorial approach
+  return {
+    layout: `
+GRID: 12-Spalten CSS Grid mit explizitem grid-template-areas. NIEMALS eine zentrierte Single-Column. Jede Sektion nutzt asymmetrische Spaltenpaare (8/4, 5/7, 7/5, 10/2), versetzt um 1-2 Spalten.`,
+    typography: `
 TYPO-SKALA (clamp für fluid scaling):
   H1: clamp(64px, 9vw, 144px) — font-weight 400 (NICHT bold!), letter-spacing -0.04em, line-height 0.95
   H2: clamp(40px, 5vw, 72px) — font-weight 500, letter-spacing -0.03em
   H3: clamp(24px, 3vw, 36px) — font-weight 600
   Body: 18px, line-height 1.65, letter-spacing 0
-  Labels/Eyebrows: 12px, uppercase, letter-spacing 0.15em, font-weight 600
-
+  Labels/Eyebrows: 12px, uppercase, letter-spacing 0.15em, font-weight 600`,
+    spacing: `
 ABSTÄNDE (generös, atemend):
   Section padding: clamp(96px, 14vh, 180px) vertical
   Container max-width: 1320px, padding 0 clamp(24px, 4vw, 48px)
-  Inter-Element: 24px-64px (niemals <16px zwischen Sektionen)
-
+  Inter-Element: 24px-64px (niemals <16px zwischen Sektionen)`,
+    color: `
 FARB-TIEFE (NICHT flach!):
   Background: KEINE flache Einfarbigkeit. IMMER ein subtiler Verlauf:
     linear-gradient(180deg, var(--bg) 0%, color-mix(in oklch, var(--surface) 50%, var(--bg)) 100%)
   Surface/Card: 1px hairline border: border: 1px solid color-mix(in oklch, var(--text) 8%, transparent)
   Shadows: GESCHICHTEXTE Schatten, nicht ein flacher:
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06), 0 32px 64px rgba(0,0,0,0.04)
-`;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06), 0 32px 64px rgba(0,0,0,0.04)`,
+    motion: `
+BEWEGUNG (lebendig, nicht statisch):
+  Reveal: opacity 0→1, translateY 40px→0, 1s cubic-bezier(0.22,1,0.36,1)
+  Bilder: slow zoom (scale 1→1.08, 20s alternate infinite)
+  Hover: scale(1.03) mit 600ms cubic-bezier transition
+  Sticky-Panels: Mind. 1 Sektion mit position:sticky`,
+  };
+}
 
 // ─── SCROLL-DRIVEN ANIMATIONS (native CSS, no JS) ────────────────────────────
 export const AGENCY_ANIMATIONS = `

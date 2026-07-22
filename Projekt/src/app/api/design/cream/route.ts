@@ -26,7 +26,7 @@ import { pickTemplate } from '@/lib/ai/templates/registry';
 import { loadReferenceHtml, buildAdaptPrompt } from '@/lib/ai/templates/generate-from-reference';
 import { lintHtml } from '@/lib/ai/lint/anti-slop';
 import { ensureDesignImages } from '@/lib/ai/ensure-design-images';
-import { injectAgencyCraft, AGENCY_LAYOUT_SPECS, AGENCY_ANIMATIONS, AGENCY_CONCEPT, AGENCY_PREMIUM_LUXE } from '@/lib/ai/skills/agency-craft';
+import { injectAgencyCraft, getConceptSpecs, AGENCY_ANIMATIONS, AGENCY_CONCEPT, AGENCY_PREMIUM_LUXE } from '@/lib/ai/skills/agency-craft';
 import { ensureGoogleFonts } from '@/lib/ai/ensure-google-fonts';
 import { ensureExperienceRuntime } from '@/lib/ai/experience-stack';
 import { ensureAppShell } from '@/lib/ai/app-shell';
@@ -145,8 +145,12 @@ Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
       referenceBlock = `\nVERWENDE EXKLUSIV diese vorgenerierten Premium-Bilder als <img src> (KEINE Unsplash-URLs):\n${referenceImages.map((url, i) => `  Bild ${i + 1}: ${url}`).join('\n')}\nJedes Bild MUSS als <img src="..."> im HTML erscheinen.\n`;
     }
 
+    const conceptSpecs = getConceptSpecs(brief.domain, brief.mood);
+    const conceptSpecBlock = conceptSpecs.layout + conceptSpecs.typography + conceptSpecs.spacing + conceptSpecs.color + conceptSpecs.motion;
+
     const prompt = lessonsToPromptBlock() + userMemoryBlock + memoryBlock + imageBlock + referenceBlock
-      + AGENCY_LAYOUT_SPECS + AGENCY_ANIMATIONS + AGENCY_CONCEPT
+      + conceptSpecBlock
+      + AGENCY_ANIMATIONS + AGENCY_CONCEPT
       + (premiumTier ? AGENCY_PREMIUM_LUXE : '')
       + generatePrompt;
 

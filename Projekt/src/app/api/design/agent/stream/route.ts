@@ -39,8 +39,8 @@ import { axesLabel, pickCreativeAxes } from '@/lib/ai/skills/creative-diversity'
 import {
   AGENCY_ANIMATIONS,
   AGENCY_CONCEPT,
-  AGENCY_LAYOUT_SPECS,
   AGENCY_PREMIUM_LUXE,
+  getConceptSpecs,
   injectAgencyCraft,
 } from '@/lib/ai/skills/agency-craft';
 import { creativeSeed, isPremiumBrief } from '@/lib/ai/pipeline-intent';
@@ -193,9 +193,10 @@ export async function POST(request: NextRequest) {
         brief.experienceMode = detectExperienceMode(message, concept);
         const premium = isPremiumBrief(message, concept);
         // With a concept, skip generic layout specs — they fight layoutApproach.
+        const conceptSpecs = getConceptSpecs(brief.domain, brief.mood);
         const agencyBlock = concept
           ? AGENCY_ANIMATIONS + AGENCY_CONCEPT + (premium ? AGENCY_PREMIUM_LUXE : '')
-          : AGENCY_LAYOUT_SPECS + AGENCY_ANIMATIONS + AGENCY_CONCEPT + (premium ? AGENCY_PREMIUM_LUXE : '');
+          : conceptSpecs.layout + conceptSpecs.typography + conceptSpecs.spacing + conceptSpecs.color + conceptSpecs.motion + AGENCY_ANIMATIONS + AGENCY_CONCEPT + (premium ? AGENCY_PREMIUM_LUXE : '');
         const directionLabel = briefLabel(brief);
         pushTrace('art-direction', 'Art Direction', directionLabel);
         pushTrace('experience-mode', 'Erlebnis-Modus', experienceModeLabel(brief.experienceMode!));

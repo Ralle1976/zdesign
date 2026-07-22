@@ -1,0 +1,1235 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bäckerei Morgenrot — Handwerksbäckerei München</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Mulish:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ivory:#f4ede1;
+    --ivory-soft:#faf5ea;
+    --paper:#efe6d4;
+    --ink:#1a1410;
+    --ink-soft:#3d2f24;
+    --ink-muted:#6b5a4a;
+    --gold:#b8893f;
+    --gold-bright:#d4a55a;
+    --gold-deep:#8a6328;
+    --line:rgba(26,20,16,.14);
+    --line-gold:rgba(184,137,63,.32);
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Mulish',sans-serif;
+    background:var(--ivory);
+    color:var(--ink);
+    line-height:1.6;
+    font-weight:300;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{display:block;max-width:100%;height:auto}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+  ::selection{background:var(--gold);color:var(--ivory)}
+
+  a:focus-visible,button:focus-visible{
+    outline:2px solid var(--gold);
+    outline-offset:4px;
+  }
+
+  /* ============ NAV ============ */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 48px;
+    transition:background .5s var(--ease),padding .4s var(--ease),border-color .4s;
+    border-bottom:1px solid transparent;
+  }
+  .nav.scrolled{
+    background:rgba(244,237,225,.92);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    padding:14px 48px;
+    border-bottom:1px solid var(--line);
+  }
+  .nav__brand{
+    font-family:'Cormorant Garamond',serif;
+    font-size:26px;font-weight:500;
+    letter-spacing:.04em;
+    color:var(--ink);
+  }
+  .nav__brand em{font-style:italic;color:var(--gold-deep);font-weight:400}
+  .nav__links{display:flex;gap:36px;align-items:center}
+  .nav__links a{
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:500;
+    position:relative;padding:6px 0;
+    transition:color .3s;
+  }
+  .nav__links a::after{
+    content:'';position:absolute;left:0;bottom:0;
+    width:0;height:1px;background:var(--gold);
+    transition:width .4s var(--ease);
+  }
+  .nav__links a:hover{color:var(--ink)}
+  .nav__links a:hover::after{width:100%}
+  .nav__cta{
+    padding:10px 22px;
+    border:1px solid var(--ink);
+    color:var(--ink);
+    font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    transition:all .35s var(--ease);
+  }
+  .nav__cta:hover{background:var(--ink);color:var(--ivory)}
+
+  /* ============ HERO ============ */
+  .hero{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    min-height:100vh;
+    position:relative;
+  }
+  .hero__text{
+    padding:140px 80px 80px 80px;
+    display:flex;flex-direction:column;justify-content:center;
+    position:relative;
+    background:var(--ivory);
+  }
+  .hero__eyebrow{
+    display:flex;align-items:center;gap:14px;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold-deep);
+    margin-bottom:36px;
+    font-weight:500;
+  }
+  .hero__eyebrow::before{
+    content:'';width:42px;height:1px;background:var(--gold);
+  }
+  .hero__title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(56px,7.2vw,108px);
+    line-height:.95;
+    font-weight:400;
+    letter-spacing:-.015em;
+    color:var(--ink);
+    margin-bottom:36px;
+  }
+  .hero__title em{
+    font-style:italic;
+    font-weight:300;
+    color:var(--gold-deep);
+    display:block;
+  }
+  .hero__sub{
+    font-size:17px;line-height:1.7;
+    color:var(--ink-soft);
+    max-width:440px;
+    margin-bottom:48px;
+    font-weight:300;
+  }
+  .hero__actions{
+    display:flex;gap:24px;align-items:center;
+    margin-bottom:64px;
+  }
+  .btn-primary{
+    display:inline-flex;align-items:center;gap:14px;
+    padding:18px 36px;
+    background:var(--ink);
+    color:var(--ivory);
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    font-weight:500;
+    transition:all .4s var(--ease);
+    position:relative;
+  }
+  .btn-primary svg{transition:transform .4s var(--ease)}
+  .btn-primary:hover{
+    background:var(--gold-deep);
+    box-shadow:0 0 32px rgba(184,137,63,.45);
+  }
+  .btn-primary:hover svg{transform:translateX(6px)}
+  .btn-ghost{
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--ink);font-weight:500;
+    border-bottom:1px solid var(--ink);
+    padding:8px 0;
+    transition:color .3s,border-color .3s;
+  }
+  .btn-ghost:hover{color:var(--gold-deep);border-color:var(--gold)}
+
+  .hero__meta{
+    display:flex;gap:48px;
+    padding-top:32px;
+    border-top:1px solid var(--line);
+  }
+  .hero__meta-item span:first-child{
+    display:block;
+    font-family:'Cormorant Garamond',serif;
+    font-size:32px;font-weight:400;
+    color:var(--ink);
+    line-height:1;
+    margin-bottom:6px;
+  }
+  .hero__meta-item span:last-child{
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-muted);
+  }
+
+  .hero__image{
+    position:relative;
+    overflow:hidden;
+    background:var(--ink);
+  }
+  .hero__image img{
+    width:100%;height:100%;object-fit:cover;
+    border-radius:0;
+    filter:saturate(.92) contrast(1.02);
+  }
+  .hero__image-tag{
+    position:absolute;
+    bottom:40px;left:40px;
+    color:var(--ivory);
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+    display:flex;align-items:center;gap:12px;
+    z-index:2;
+  }
+  .hero__image-tag::before{
+    content:'';width:32px;height:1px;background:var(--gold-bright);
+  }
+  .hero__image-overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(26,20,16,.15) 0%,transparent 40%,transparent 60%,rgba(26,20,16,.55) 100%);
+    pointer-events:none;
+  }
+
+  .hero__seal{
+    position:absolute;
+    top:50%;right:-60px;
+    transform:translateY(-50%);
+    width:120px;height:120px;
+    z-index:5;
+    pointer-events:none;
+  }
+  .hero__seal svg{width:100%;height:100%;animation:spin 60s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ============ QUOTE STRIP ============ */
+  .quote-strip{
+    padding:120px 80px;
+    background:var(--paper);
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .quote-strip__mark{
+    font-family:'Cormorant Garamond',serif;
+    font-size:140px;line-height:.5;
+    color:var(--gold);
+    opacity:.35;
+    margin-bottom:20px;
+    font-style:italic;
+  }
+  .quote-strip__text{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(28px,3.4vw,46px);
+    line-height:1.35;
+    font-weight:300;
+    font-style:italic;
+    color:var(--ink);
+    max-width:980px;margin:0 auto 28px;
+  }
+  .quote-strip__cite{
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--ink-muted);
+  }
+  .quote-strip__cite em{color:var(--gold-deep);font-style:normal}
+
+  /* ============ SECTION SPLIT (reversed) ============ */
+  .split{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    min-height:90vh;
+  }
+  .split--image-left .split__image{order:1}
+  .split--image-left .split__text{order:2}
+  .split__image{
+    position:relative;overflow:hidden;
+    background:var(--ink);
+  }
+  .split__image img{
+    width:100%;height:100%;object-fit:cover;
+    filter:saturate(.92);
+  }
+  .split__text{
+    padding:120px 80px;
+    display:flex;flex-direction:column;justify-content:center;
+    background:var(--ivory);
+    position:relative;
+  }
+  .split__eyebrow{
+    display:flex;align-items:center;gap:14px;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold-deep);
+    margin-bottom:32px;
+    font-weight:500;
+  }
+  .split__eyebrow::before{
+    content:'';width:42px;height:1px;background:var(--gold);
+  }
+  .split__title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(42px,4.6vw,68px);
+    line-height:1.05;
+    font-weight:400;
+    letter-spacing:-.01em;
+    color:var(--ink);
+    margin-bottom:32px;
+  }
+  .split__title em{font-style:italic;color:var(--gold-deep);font-weight:300}
+  .split__body{
+    font-size:16px;line-height:1.75;
+    color:var(--ink-soft);
+    max-width:480px;
+    margin-bottom:24px;
+  }
+  .split__body + .split__body{margin-bottom:40px}
+
+  .split__list{
+    list-style:none;
+    margin-top:8px;
+  }
+  .split__list li{
+    display:flex;align-items:flex-start;gap:18px;
+    padding:18px 0;
+    border-top:1px solid var(--line);
+    font-size:15px;color:var(--ink-soft);
+  }
+  .split__list li:last-child{border-bottom:1px solid var(--line)}
+  .split__list strong{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:500;color:var(--ink);
+    font-size:18px;
+    min-width:130px;
+  }
+  .split__list span{color:var(--ink-muted);font-size:13px;margin-left:auto}
+
+  /* ============ RITUALS GRID ============ */
+  .rituals{
+    padding:140px 80px;
+    background:var(--ivory-soft);
+    position:relative;
+  }
+  .rituals__head{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    margin-bottom:72px;
+    gap:60px;
+  }
+  .rituals__head-left{max-width:600px}
+  .rituals__title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(48px,5.4vw,82px);
+    line-height:1;
+    font-weight:400;
+    letter-spacing:-.015em;
+    margin-top:24px;
+  }
+  .rituals__title em{font-style:italic;color:var(--gold-deep);font-weight:300}
+  .rituals__intro{
+    font-size:15px;line-height:1.7;
+    color:var(--ink-soft);
+    max-width:380px;
+    padding-bottom:10px;
+  }
+
+  .rituals__grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  .ritual{
+    background:var(--ivory-soft);
+    padding:44px 36px 40px;
+    position:relative;
+    transition:background .5s var(--ease);
+    cursor:pointer;
+  }
+  .ritual:hover{background:var(--ivory)}
+  .ritual__num{
+    font-family:'Cormorant Garamond',serif;
+    font-size:13px;letter-spacing:.2em;
+    color:var(--gold-deep);
+    margin-bottom:32px;
+    font-style:italic;
+  }
+  .ritual__icon{
+    width:48px;height:48px;
+    margin-bottom:28px;
+    color:var(--ink);
+    transition:transform .5s var(--ease),color .3s;
+  }
+  .ritual:hover .ritual__icon{
+    color:var(--gold-deep);
+    transform:translateY(-4px);
+  }
+  .ritual__icon svg{width:100%;height:100%;stroke-width:1}
+  .ritual__name{
+    font-family:'Cormorant Garamond',serif;
+    font-size:26px;font-weight:500;
+    line-height:1.15;
+    margin-bottom:8px;
+    color:var(--ink);
+  }
+  .ritual__name-en{
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--ink-muted);
+    margin-bottom:18px;
+  }
+  .ritual__desc{
+    font-size:14px;line-height:1.65;
+    color:var(--ink-soft);
+    margin-bottom:24px;
+  }
+  .ritual__price{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+  }
+  .ritual__price-duration{
+    font-size:12px;color:var(--ink-muted);
+    letter-spacing:.06em;
+  }
+  .ritual__price-amount{
+    font-family:'Cormorant Garamond',serif;
+    font-size:22px;font-weight:500;
+    color:var(--ink);
+  }
+  .ritual__price-amount em{font-style:normal;color:var(--gold-deep);font-size:13px;margin-left:4px}
+
+  /* ============ DAY SPA (split with image right) ============ */
+  .dayspa{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    min-height:90vh;
+  }
+  .dayspa__text{
+    padding:120px 80px;
+    display:flex;flex-direction:column;justify-content:center;
+    background:var(--paper);
+    position:relative;
+  }
+  .dayspa__title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(44px,5vw,72px);
+    line-height:1.02;
+    font-weight:400;
+    letter-spacing:-.01em;
+    margin:24px 0 36px;
+  }
+  .dayspa__title em{font-style:italic;color:var(--gold-deep);font-weight:300}
+  .dayspa__body{
+    font-size:16px;line-height:1.75;
+    color:var(--ink-soft);
+    max-width:480px;
+    margin-bottom:48px;
+  }
+  .dayspa__packages{
+    display:flex;flex-direction:column;gap:0;
+  }
+  .pkg{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:center;
+    padding:24px 0;
+    border-top:1px solid var(--line);
+    gap:30px;
+    transition:padding .4s var(--ease);
+  }
+  .pkg:last-child{border-bottom:1px solid var(--line)}
+  .pkg:hover{padding-left:14px}
+  .pkg__name{
+    font-family:'Cormorant Garamond',serif;
+    font-size:24px;font-weight:500;
+    color:var(--ink);
+    margin-bottom:6px;
+  }
+  .pkg__name em{font-style:italic;color:var(--gold-deep);font-weight:400}
+  .pkg__detail{font-size:13px;color:var(--ink-muted);line-height:1.55}
+  .pkg__price{
+    font-family:'Cormorant Garamond',serif;
+    font-size:30px;font-weight:500;
+    color:var(--ink);
+    text-align:right;
+    white-space:nowrap;
+  }
+  .pkg__price small{
+    display:block;
+    font-family:'Mulish',sans-serif;
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-muted);font-weight:500;
+    margin-top:4px;
+  }
+  .dayspa__image{
+    position:relative;overflow:hidden;
+    min-height:600px;
+    background:var(--ink);
+  }
+  .dayspa__image img{
+    width:100%;height:100%;object-fit:cover;
+    filter:saturate(.92);
+  }
+
+  /* ============ GLOW CTA ============ */
+  .glow-cta{
+    padding:160px 80px;
+    text-align:center;
+    background:var(--ink);
+    color:var(--ivory);
+    position:relative;
+    overflow:hidden;
+  }
+  .glow-cta::before{
+    content:'';
+    position:absolute;inset:0;
+    background:
+      radial-gradient(circle at 30% 40%,rgba(184,137,63,.18) 0%,transparent 50%),
+      radial-gradient(circle at 70% 60%,rgba(184,137,63,.12) 0%,transparent 55%);
+    pointer-events:none;
+  }
+  .glow-cta__eyebrow{
+    position:relative;
+    display:inline-flex;align-items:center;gap:14px;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold-bright);
+    margin-bottom:36px;
+    font-weight:500;
+  }
+  .glow-cta__eyebrow::before,
+  .glow-cta__eyebrow::after{
+    content:'';width:36px;height:1px;background:var(--gold);
+  }
+  .glow-cta__title{
+    position:relative;
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(52px,6.4vw,96px);
+    line-height:1.02;
+    font-weight:300;
+    margin-bottom:32px;
+    letter-spacing:-.015em;
+  }
+  .glow-cta__title em{
+    font-style:italic;
+    color:var(--gold-bright);
+    text-shadow:0 0 38px rgba(212,165,90,.55),0 0 80px rgba(184,137,63,.3);
+  }
+  .glow-cta__sub{
+    position:relative;
+    font-size:17px;line-height:1.7;
+    color:rgba(244,237,225,.72);
+    max-width:560px;margin:0 auto 56px;
+    font-weight:300;
+  }
+  .glow-cta__btn{
+    position:relative;
+    display:inline-flex;align-items:center;gap:16px;
+    padding:22px 48px;
+    background:var(--gold);
+    color:var(--ink);
+    font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+    font-weight:600;
+    transition:all .45s var(--ease);
+    box-shadow:0 0 0 rgba(184,137,63,0);
+  }
+  .glow-cta__btn:hover{
+    background:var(--gold-bright);
+    box-shadow:0 0 42px rgba(212,165,90,.6),0 0 90px rgba(184,137,63,.35);
+    transform:translateY(-2px);
+  }
+  .glow-cta__btn svg{transition:transform .4s var(--ease)}
+  .glow-cta__btn:hover svg{transform:translateX(6px)}
+
+  .glow-cta__hours{
+    position:relative;
+    margin-top:64px;
+    padding-top:40px;
+    border-top:1px solid rgba(244,237,225,.12);
+    display:inline-flex;gap:64px;
+    color:rgba(244,237,225,.7);
+    font-size:13px;
+    letter-spacing:.04em;
+  }
+  .glow-cta__hours strong{
+    display:block;
+    color:var(--gold-bright);
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    margin-bottom:8px;font-weight:500;
+  }
+
+  /* ============ FOOTER ============ */
+  .footer{
+    background:var(--ink);
+    color:var(--ivory);
+    padding:80px 80px 40px;
+    border-top:1px solid rgba(244,237,225,.08);
+  }
+  .footer__grid{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr 1fr;
+    gap:60px;
+    margin-bottom:64px;
+  }
+  .footer__brand{
+    font-family:'Cormorant Garamond',serif;
+    font-size:32px;font-weight:500;
+    margin-bottom:18px;
+    letter-spacing:.02em;
+  }
+  .footer__brand em{font-style:italic;color:var(--gold-bright);font-weight:400}
+  .footer__tagline{
+    font-size:14px;line-height:1.7;
+    color:rgba(244,237,225,.6);
+    max-width:340px;
+    font-weight:300;
+  }
+  .footer__col h4{
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--gold-bright);
+    margin-bottom:22px;font-weight:500;
+  }
+  .footer__col ul{list-style:none}
+  .footer__col li{margin-bottom:12px}
+  .footer__col a{
+    font-size:14px;
+    color:rgba(244,237,225,.72);
+    transition:color .3s;
+    font-weight:300;
+  }
+  .footer__col a:hover{color:var(--gold-bright)}
+  .footer__col p{
+    font-size:14px;line-height:1.7;
+    color:rgba(244,237,225,.72);
+    font-weight:300;
+  }
+  .footer__bottom{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-top:32px;
+    border-top:1px solid rgba(244,237,225,.1);
+    font-size:12px;
+    color:rgba(244,237,225,.5);
+    letter-spacing:.04em;
+  }
+  .footer__bottom a{color:rgba(244,237,225,.5);transition:color .3s}
+  .footer__bottom a:hover{color:var(--gold-bright)}
+
+  /* ============ PARALLAX DECOR ============ */
+  .decor{
+    position:absolute;
+    pointer-events:none;
+    opacity:.5;
+    z-index:0;
+  }
+  .decor--leaf-1{
+    top:8%;right:-40px;
+    width:140px;height:140px;
+    color:var(--gold);
+    opacity:.18;
+  }
+  .decor--leaf-2{
+    bottom:10%;left:-30px;
+    width:100px;height:100px;
+    color:var(--gold-deep);
+    opacity:.15;
+  }
+
+  /* ============ REVEAL ANIMATIONS ============ */
+  .reveal{
+    opacity:0;
+    transform:translateY(40px);
+    transition:opacity 1s var(--ease),transform 1s var(--ease);
+  }
+  .reveal.in{opacity:1;transform:translateY(0)}
+  .reveal-delay-1{transition-delay:.1s}
+  .reveal-delay-2{transition-delay:.2s}
+  .reveal-delay-3{transition-delay:.3s}
+
+  .magnetic{
+    transition:transform .35s var(--ease);
+    will-change:transform;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:1024px){
+    .nav{padding:18px 28px}
+    .nav.scrolled{padding:12px 28px}
+    .nav__links{display:none}
+    .hero{grid-template-columns:1fr}
+    .hero__text{padding:120px 32px 60px;min-height:60vh}
+    .hero__image{min-height:50vh;order:-1}
+    .hero__seal{display:none}
+    .quote-strip{padding:80px 32px}
+    .split{grid-template-columns:1fr}
+    .split__text{padding:80px 32px}
+    .split__image{min-height:50vh}
+    .split--image-left .split__image{order:0}
+    .split--image-left .split__text{order:0}
+    .rituals{padding:80px 32px}
+    .rituals__head{flex-direction:column;align-items:flex-start;gap:24px}
+    .rituals__grid{grid-template-columns:repeat(2,1fr)}
+    .dayspa{grid-template-columns:1fr}
+    .dayspa__text{padding:80px 32px}
+    .dayspa__image{min-height:400px}
+    .glow-cta{padding:100px 32px}
+    .glow-cta__hours{flex-direction:column;gap:24px}
+    .footer{padding:60px 32px 32px}
+    .footer__grid{grid-template-columns:1fr 1fr;gap:40px}
+    .footer__bottom{flex-direction:column;gap:14px;text-align:center}
+  }
+  @media (max-width:640px){
+    .hero__title{font-size:54px}
+    .hero__meta{flex-wrap:wrap;gap:24px}
+    .rituals__grid{grid-template-columns:1fr}
+    .footer__grid{grid-template-columns:1fr}
+    .nav__brand{font-size:22px}
+  }
+
+  /* ============ REDUCED MOTION ============ */
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.01ms !important;
+    }
+    .reveal{opacity:1;transform:none}
+    .hero__seal svg{animation:none}
+    .magnetic{transform:none !important}
+    [data-parallax]{transform:none !important}
+    html{scroll-behavior:auto}
+  }
+</style>
+
+<style id="__zd_image_harmony__">
+  figure, .img-wrap, [class*="visual"], [class*="hero"] { position: relative; overflow: hidden; }
+  img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.88) contrast(1.04) brightness(0.97); }
+  figure::after, .img-wrap::after, .od-hero-visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, color-mix(in oklch, #1C1917 8%, transparent) 0%, color-mix(in oklch, #7C3AED 12%, transparent) 100%);
+    mix-blend-mode: multiply;
+    opacity: 0.35;
+  }
+  .app-view img, section img { border-radius: inherit; }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav" id="nav" aria-label="Hauptnavigation">
+  <a href="#" class="nav__brand">Morgenrot <em>·</em> Bäckerei</a>
+  <div class="nav__links">
+    <a href="#sortiment">Sortiment</a>
+    <a href="#wochenend">Wochenend</a>
+    <a href="#kontakt">Filialen</a>
+    <a href="#kontakt">Galerie</a>
+  </div>
+  <a href="#vorbestellung" class="nav__cta magnetic">Brot vorbestellen</a>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <div class="hero__text">
+    <div class="decor decor--leaf-1" data-parallax data-speed="0.25" aria-hidden="true">
+      <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M20 80 Q 30 40 50 20 Q 70 40 80 80 Z"/>
+        <path d="M50 20 L 50 80" stroke-width=".8"/>
+        <path d="M40 40 Q 45 45 48 48 M60 40 Q 55 45 52 48"/>
+        <path d="M35 55 Q 42 58 48 60 M65 55 Q 58 58 52 60"/>
+        <path d="M30 70 Q 40 72 48 74 M70 70 Q 60 72 52 74"/>
+      </svg>
+    </div>
+
+    <div class="hero__eyebrow reveal">Handwerksbäckerei · München · seit 1924</div>
+    <h1 class="hero__title reveal reveal-delay-1">
+      Zeit als
+      <em>unsere Zutat.</em>
+    </h1>
+    <p class="hero__sub reveal reveal-delay-2">
+      Wenn die Stadt noch schläft, beginnt bei uns das Handwerk. Mit Roggen und Dinkel, Natursauerteig und 24 Stunden Geduld. Jeder Laib ein langsames Versprechen aus Mehl, Wasser, Salz und Zeit.
+    </p>
+    <div class="hero__actions reveal reveal-delay-3">
+      <a href="#vorbestellung" class="btn-primary magnetic">
+        Frisch reservieren
+        <svg width="18" height="10" viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M1 5 H17 M12 1 L17 5 L12 9"/>
+        </svg>
+      </a>
+      <a href="#sortiment" class="btn-ghost">Sortiment ansehen</a>
+    </div>
+
+    <div class="hero__meta reveal reveal-delay-3">
+      <div class="hero__meta-item">
+        <span>24</span>
+        <span>Stunden Sauerteig-Führung</span>
+      </div>
+      <div class="hero__meta-item">
+        <span>4,9</span>
+        <span>Google · 860 Bewertungen</span>
+      </div>
+      <div class="hero__meta-item">
+        <span>100</span>
+        <span>Jahre Familientradition</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__image">
+    <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-22%2F6d966a86-355d-4f87-a075-1196a4ca8f01_aigc.jpeg?Expires=1784820866&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=WZqRCj0vJmWkA328V9dTtT95E3U%3D" alt="Frisch gebackenes, handwerkliches Brot mit krustiger Struktur auf einem Holztisch">
+    <div class="hero__image-overlay"></div>
+    <div class="hero__image-tag">Am Markt 4 · Altstadt</div>
+  </div>
+
+  <div class="hero__seal" aria-hidden="true">
+    <svg viewBox="0 0 120 120" fill="none" stroke="var(--gold-bright)" stroke-width=".8">
+      <circle cx="60" cy="60" r="58"/>
+      <circle cx="60" cy="60" r="48"/>
+      <path d="M60 30 Q 50 45 50 60 Q 50 75 60 90 Q 70 75 70 60 Q 70 45 60 30" stroke-width=".7"/>
+      <text font-family="Cormorant Garamond" font-size="8" fill="var(--gold-bright)" stroke="none" letter-spacing="2">
+        <textPath href="#sealPath">MORGENROT · BÄCKEREI · SEIT 1924 · NATURSAUERTEIG ·</textPath>
+      </text>
+      <path id="sealPath" d="M 60 60 m -42 0 a 42 42 0 1 1 84 0 a 42 42 0 1 1 -84 0" fill="none" stroke="none"/>
+    </svg>
+  </div>
+</header>
+
+<!-- ============ QUOTE STRIP ============ -->
+<section data-reveal data-od-id="scene-intro" class="quote-strip" aria-label="Zitat">
+  <div class="quote-strip__mark">"</div>
+  <p class="quote-strip__text reveal">
+    Ein gutes Brot lässt sich nicht hetzen. Es braucht den Takt der Natur, die Wärme der Hände und die Bereitschaft, in der Nacht aufzustehen, wenn andere noch träumen.
+  </p>
+  <div class="quote-strip__cite reveal reveal-delay-1">
+    Friedrich Morgenrot · <em>Bäckermeister & Inhaber in 4. Generation</em>
+  </div>
+</section>
+
+<!-- ============ PHILOSOPHIE SPLIT (image left) ============ -->
+<section data-reveal data-od-id="scene-discovery" class="split split--image-left" id="philosophie">
+  <div class="split__image" data-parallax-img>
+    <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-22%2F13a6b13b-3413-4373-a715-0cc686cb43ed_aigc.jpeg?Expires=1784820868&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=N9bWe8F6jzT2UOBI%2BAT9h8ajv8M%3D" alt="Hände eines Bäckers beim Einkneten von Brotteig in einer Holzmulde">
+  </div>
+  <div class="split__text">
+    <div class="decor decor--leaf-2" data-parallax data-speed="0.3" aria-hidden="true">
+      <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M20 80 Q 30 40 50 20 Q 70 40 80 80 Z"/>
+        <path d="M50 20 L 50 80" stroke-width=".8"/>
+      </svg>
+    </div>
+    <div class="split__eyebrow reveal">Philosophie · Die Kunst des Langsamen</div>
+    <h2 class="split__title reveal reveal-delay-1">
+      Was wir erben,
+      <em>backen wir weiter.</em>
+    </h2>
+    <p class="split__body reveal reveal-delay-2">
+      Unser Urgroßvater backte 1924 seinen ersten Laib in einem steinernen Holzkohlenofen. Heute backen wir noch immer ohne Convenience, ohne Backmittel, ohne Hefe im Sauerteig. Nur Mehl aus bayerischer Demeter-Landwirtschaft, Quellwasser aus den Alpen und Salz aus Bad Reichenhall.
+    </p>
+    <p class="split__body reveal reveal-delay-2">
+      Wir verzichten auf Industrie-Hefe. Unser Natursauerteig reift 24 Stunden, bevor er in den Ofen wandert. Das Ergebnis: Brot, das drei Wochen frisch bleibt und leicht verdaulich ist.
+    </p>
+    <ul class="split__list reveal reveal-delay-3">
+      <li>
+        <strong>Steinofen</strong>
+        Traditioneller Holzbackofen, befeuert mit Buchenholz
+        <span>seit 1924</span>
+      </li>
+      <li>
+        <strong>Demeter Getreide</strong>
+        Korn aus kontrolliert bayerischem Anbau
+        <span>mahlen wir selbst</span>
+      </li>
+      <li>
+        <strong>Ohne Zusätze</strong>
+        Keine Backmittel, keine Industrie-Hefe
+        <span>nur Natur</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ RITUALS GRID ============ -->
+<section data-reveal data-od-id="scene-ritual" class="rituals" id="sortiment">
+  <div class="rituals__head">
+    <div class="rituals__head-left">
+      <div class="split__eyebrow reveal" style="margin-bottom:24px">Sortiment · Unsere Brotspezialitäten</div>
+      <h2 class="rituals__title reveal reveal-delay-1">
+        Vier Laibe,
+        <em>ein Ursprung.</em>
+      </h2>
+    </div>
+    <p class="rituals__intro reveal reveal-delay-2">
+      Vom saftigen Dinkel-Roggen bis zur knusprigen Sonntagssemmel — jedes unserer Brote reift 24 Stunden im Sauerteig. Preise inklusive natürlicher Frische und handwerklicher Sorgfalt.
+    </p>
+  </div>
+
+  <div class="rituals__grid">
+    <article class="ritual reveal magnetic">
+      <div class="ritual__num">Nº 01</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <ellipse cx="24" cy="26" rx="16" ry="12"/>
+          <path d="M14 24 Q 18 20 24 22 Q 30 20 34 24" opacity=".6"/>
+          <path d="M18 28 Q 22 26 24 28 Q 26 26 30 28" opacity=".5"/>
+          <path d="M24 14 L 22 10 M24 14 L 26 10 M24 14 L 24 8" opacity=".7"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">Bauernlaib</h3>
+      <div class="ritual__name-en">Dinkel-Roggen Natursauerteig</div>
+      <p class="ritual__desc">
+        Unser Signature-Brot. 70% Roggen, 30% Dinkel, 24 Stunden Sauerteigreifung. Kräftige Rinde, saftige Krume, intensiver nussiger Geschmack. 3 Wochen haltbar.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">750g · 1,5kg</span>
+        <span class="ritual__price-amount">6,80<em>€</em></span>
+      </div>
+    </article>
+
+    <article class="ritual reveal reveal-delay-1 magnetic">
+      <div class="ritual__num">Nº 02</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <rect x="12" y="18" width="24" height="16" rx="3"/>
+          <path d="M12 22 Q 16 20 20 22 M28 22 Q 32 20 36 22" opacity=".5"/>
+          <path d="M16 26 L 18 26 M22 26 L 24 26 M28 26 L 30 26" opacity=".6"/>
+          <path d="M18 18 Q 20 12 18 8 M24 18 Q 26 12 24 8 M30 18 Q 32 12 30 8" opacity=".4"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">Walnussbrot</h3>
+      <div class="ritual__name-en">Mit gerösteten Walnüssen</div>
+      <p class="ritual__desc">
+        Dinkel-Weizen-Mischteig mit 30% frisch gerösteten Walnüssen aus Bayern. Tief und würzig im Geschmack, perfekt zu Käse oder einfach mit Butter.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">500g · 1kg</span>
+        <span class="ritual__price-amount">8,20<em>€</em></span>
+      </div>
+    </article>
+
+    <article class="ritual reveal reveal-delay-2 magnetic">
+      <div class="ritual__num">Nº 03</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <circle cx="24" cy="26" r="14"/>
+          <path d="M18 24 Q 20 22 22 24 M26 24 Q 28 22 30 24" opacity=".5"/>
+          <path d="M20 30 Q 24 28 28 30" opacity=".4"/>
+          <path d="M16 14 Q 18 10 22 12 M26 12 Q 30 10 32 14" opacity=".6"/>
+          <circle cx="24" cy="26" r="2" fill="currentColor" opacity=".4"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">Sonntagsweck</h3>
+      <div class="ritual__name-en">Buttermilch-Hefefeinteig</div>
+      <p class="ritual__desc">
+        Weicher Milchbrötchen-Laib mit frischer Buttermilch, Butter und einem Hauch Vanille. Saftiger Hefeteig, der auf der Zunge zergeht. Nur sonntags.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">750g · am Wochenende</span>
+        <span class="ritual__price-amount">7,40<em>€</em></span>
+      </div>
+    </article>
+
+    <article class="ritual reveal reveal-delay-3 magnetic">
+      <div class="ritual__num">Nº 04</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <path d="M14 30 Q 14 16 24 14 Q 34 16 34 30 Z"/>
+          <path d="M14 30 Q 24 32 34 30"/>
+          <path d="M18 24 Q 20 22 22 24 M26 24 Q 28 22 30 24" opacity=".6"/>
+          <circle cx="21" cy="22" r="1.2" fill="currentColor"/>
+          <circle cx="27" cy="20" r="1" fill="currentColor"/>
+          <circle cx="24" cy="26" r="1" fill="currentColor"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">Dinkel-Rosmarin</h3>
+      <div class="ritual__name-en">Mediterranes Olivenöl-Brot</div>
+      <p class="ritual__desc">
+        Dinkelteig mit nativem Olivenöl, frischem Rosmarin und einem Hauch Meersalz. Mediterrane Leichtigkeit, eine krachende Kruste und ein Duft, der an Sommer erinnert.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">600g · Saisonbrot</span>
+        <span class="ritual__price-amount">7,90<em>€</em></span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ DAY SPA (image right) ============ -->
+<section data-reveal data-od-id="scene-material" class="dayspa" id="wochenend">
+  <div class="dayspa__text">
+    <div class="split__eyebrow reveal">Feingebäck · Für besondere Anlässe</div>
+    <h2 class="dayspa__title reveal reveal-delay-1">
+      Ein Wochenende,
+      <em>das süß beginnt.</em>
+    </h2>
+    <p class="dayspa__body reveal reveal-delay-2">
+      Drei süße Verführungen für Sonntagsfrühstück, Geburtstage oder einfach als Dankeschön. Mit frischer Butter, Valrhona-Schokolade und saisonalen Früchten aus der Region.
+    </p>
+
+    <div class="dayspa__packages reveal reveal-delay-3">
+      <div class="pkg magnetic">
+        <div>
+          <div class="pkg__name">Buttercroissant <em>— Klassisch</em></div>
+          <div class="pkg__detail">27 Lagen Butter-Blätterteig · 24h kaltgeruht · goldbraun gebacken · Stück</div>
+        </div>
+        <div class="pkg__price">2,20€ <small>frisch am Morgen</small></div>
+      </div>
+      <div class="pkg magnetic">
+        <div>
+          <div class="pkg__name">Schokobrötchen <em>— Sonntags</em></div>
+          <div class="pkg__detail">Dinkel-Wecken mit Valrhona-Zartbitter · mit Puddingfüllung · 4 Stück</div>
+        </div>
+        <div class="pkg__price">8,80€ <small>im 4er-Pack</small></div>
+      </div>
+      <div class="pkg magnetic">
+        <div>
+          <div class="pkg__name">Obstkuchen <em>— Saisonell</em></div>
+          <div class="pkg__detail">Boden aus Dinkel-Mürbeteig · Vanillecreme · frische Früchte der Saison · ganze Form</div>
+        </div>
+        <div class="pkg__price">18,50€ <small>voraussichtlich bestellt</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="dayspa__image" data-parallax-img>
+    <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-22%2Fba9d5888-5ce8-486c-abfe-59607b7bd2b6_aigc.jpeg?Expires=1784820869&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=3zASvW0jdXNey0CbrBTujfTGmII%3D" alt="Frisch gebackene Croissants und Kleingebäck in einer warm beleuchteten Auslage">
+  </div>
+</section>
+
+<!-- ============ GLOW CTA ============ -->
+<section data-reveal data-od-id="scene-voice" class="glow-cta" id="vorbestellung">
+  <div class="glow-cta__eyebrow reveal">Vorbestellung · Persönlich gebacken</div>
+  <h2 class="glow-cta__title reveal reveal-delay-1">
+    Lassen Sie uns
+    <em>Ihr Brot backen.</em>
+  </h2>
+  <p class="glow-cta__sub reveal reveal-delay-2">
+    Um die frische Qualität zu garantieren, backen wir nur so viel, wie bestellt und gebraucht wird. Rufen Sie uns an oder schreiben Sie uns bis spätestens 18 Uhr für den Folgetag.
+  </p>
+  <a href="tel:+498912345678" class="glow-cta__btn magnetic reveal reveal-delay-3">
+    +49 89 12 34 56 78
+    <svg width="20" height="10" viewBox="0 0 20 10" fill="none" stroke="currentColor" stroke-width="1.6">
+      <path d="M1 5 H18 M13 1 L18 5 L13 9"/>
+    </svg>
+  </a>
+
+  <div class="glow-cta__hours reveal reveal-delay-3">
+    <div>
+      <strong>Mo – Fr</strong>
+      06:00 – 18:00 Uhr
+    </div>
+    <div>
+      <strong>Sa – So</strong>
+      07:00 – 14:00 Uhr
+    </div>
+    <div>
+      <strong>Feiertage</strong>
+      nach Vereinbarung
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer" id="kontakt">
+  <div class="footer__grid">
+    <div class="footer__col">
+      <div class="footer__brand">Morgenrot <em>·</em> Bäckerei</div>
+      <p class="footer__tagline">
+        Eine Handwerksbäckerei in der Münchner Altstadt. In vier Generationen ruht das Wissen von 100 Jahren Backkultur — bereit, für Sie zu kneten, zu wirken und zu backen.
+      </p>
+    </div>
+    <div class="footer__col">
+      <h4>Hauptfiliale</h4>
+      <p>
+        Am Markt 4<br>
+        80331 München<br>
+        Altstadt · S-Bahn Marienplatz
+      </p>
+    </div>
+    <div class="footer__col">
+      <h4>Öffnungszeiten</h4>
+      <ul>
+        <li><a href="#">Mo – Fr · 06–18 Uhr</a></li>
+        <li><a href="#">Sa – So · 07–14 Uhr</a></li>
+        <li><a href="#">Feiertage · nach Absprache</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h4>Kontakt</h4>
+      <ul>
+        <li><a href="tel:+498912345678">+49 89 12 34 56 78</a></li>
+        <li><a href="mailto:backstube@morgenrot.de">backstube@morgenrot.de</a></li>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">Gutscheine</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <div>© 2024 Bäckerei Morgenrot München · Alle Rechte vorbehalten</div>
+    <div>
+      <a href="#">Impressum</a> · <a href="#">Datenschutz</a> · <a href="#">AGB</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const nav = document.getElementById('nav');
+  let lastScroll = 0;
+  function onScrollNav(){
+    const y = window.scrollY;
+    if(y > 40) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+    lastScroll = y;
+  }
+  window.addEventListener('scroll', onScrollNav, {passive:true});
+
+  if('IntersectionObserver' in window){
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('in');
+          revealObs.unobserve(entry.target);
+        }
+      });
+    }, {threshold: 0.12, rootMargin: '0px 0px -60px 0px'});
+    
+    document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+  }
+
+  if(!reduceMotion && window.matchMedia('(pointer: fine)').matches){
+    const magnetics = document.querySelectorAll('.magnetic');
+    magnetics.forEach(el => {
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        el.style.transform = `translate(${x * 0.15}px, ${y * 0.25}px)`;
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = '';
+      });
+    });
+  }
+
+  if(!reduceMotion){
+    const parallaxElements = document.querySelectorAll('[data-parallax]');
+    const parallaxImgs = document.querySelectorAll('[data-parallax-img] img');
+    
+    function onScrollParallax(){
+      const y = window.scrollY;
+      parallaxElements.forEach(el => {
+        const speed = parseFloat(el.dataset.speed || 0.2);
+        el.style.transform = `translate3d(0, ${y * speed}px, 0)`;
+      });
+      parallaxImgs.forEach(img => {
+        const rect = img.parentElement.getBoundingClientRect();
+        const offset = (rect.top + rect.height / 2) - window.innerHeight / 2;
+        img.style.transform = `translate3d(0, ${offset * -0.08}px, 0) scale(1.1)`;
+      });
+    }
+    window.addEventListener('scroll', onScrollParallax, {passive:true});
+    onScrollParallax();
+  }
+})();
+</script>
+
+<!-- AGENCY POST-PROCESS LAYER (deterministic craft floor) -->
+<style id="__agency_craft__">
+  /* Subtle film grain — adds texture, removes "flat digital" feel */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* Smooth scrolling with offset */
+  html { scroll-behavior: smooth; }
+  /* Premium selection style */
+  ::selection { background: var(--accent, currentColor); color: var(--bg, #fff); }
+  /* Hairline borders everywhere by default for cards */
+  [class*="card"], [class*="Card"] {
+    border: 1px solid color-mix(in oklch, currentColor 8%, transparent);
+  }
+  /* Image hover — subtle life */
+  img { transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1); }
+  img:hover { transform: scale(1.03); }
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+
+<!-- Z.Design Experience Runtime (deterministic interactivity floor) -->
+<style id="__zd_experience_runtime__-css">
+  [data-reveal]:not(.is-visible) { opacity: 0; transform: translateY(40px); }
+  [data-reveal].is-visible { opacity: 1; transform: translateY(0); transition: opacity 0.9s cubic-bezier(0.22,1,0.36,1), transform 0.9s cubic-bezier(0.22,1,0.36,1); }
+  #zd-scroll-progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; transform-origin: left; transform: scaleX(0); background: var(--accent, var(--primary, #c9a962)); z-index: 10000; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
+    #zd-scroll-progress { display: none; }
+  }
+</style>
+<div id="zd-scroll-progress" aria-hidden="true"></div>
+<script id="__zd_experience_runtime__">
+(function(){
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var bar = document.getElementById('zd-scroll-progress');
+  function onScroll(){
+    var h = document.documentElement;
+    var p = h.scrollHeight - h.clientHeight;
+    if (bar && p > 0) bar.style.transform = 'scaleX(' + (h.scrollTop / p) + ')';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  var els = document.querySelectorAll('[data-reveal], section:not([data-reveal])');
+  els.forEach(function(el, i){
+    if (!el.hasAttribute('data-reveal')) el.setAttribute('data-reveal', '');
+    if (window.gsap && window.ScrollTrigger) return;
+    if (!('IntersectionObserver' in window)) { el.classList.add('is-visible'); return; }
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    obs.observe(el);
+  });
+  if (window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('[data-reveal]').forEach(function(el){
+      gsap.from(el, { y: 48, opacity: 0, duration: 1, ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' }
+      });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1416 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sterling & Hayes LLP — Counsel of Record</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Mulish:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ivory:#f4f5f7;
+    --ivory-soft:#fafbfc;
+    --paper:#e9ecf2;
+    --ink:#0a1124;
+    --ink-soft:#2d3550;
+    --ink-muted:#5a6584;
+    --gold:#b8893f;
+    --gold-bright:#d4a55a;
+    --gold-deep:#8a6328;
+    --line:rgba(10,17,36,.14);
+    --line-gold:rgba(184,137,63,.32);
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Mulish',sans-serif;
+    background:var(--ivory);
+    color:var(--ink);
+    line-height:1.6;
+    font-weight:300;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{display:block;max-width:100%;height:auto}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+  ::selection{background:var(--gold);color:var(--ivory)}
+
+  a:focus-visible,button:focus-visible{
+    outline:2px solid var(--gold);
+    outline-offset:4px;
+  }
+
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 48px;
+    transition:background .5s var(--ease),padding .4s var(--ease),border-color .4s;
+    border-bottom:1px solid transparent;
+  }
+  .nav.scrolled{
+    background:rgba(244,245,247,.92);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    padding:14px 48px;
+    border-bottom:1px solid var(--line);
+  }
+  .nav__brand{
+    font-family:'Cormorant Garamond',serif;
+    font-size:26px;font-weight:500;
+    letter-spacing:.04em;
+    color:var(--ink);
+  }
+  .nav__brand em{font-style:italic;color:var(--gold-deep);font-weight:400}
+  .nav__links{display:flex;gap:36px;align-items:center}
+  .nav__links a{
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:500;
+    position:relative;padding:6px 0;
+    transition:color .3s;
+  }
+  .nav__links a::after{
+    content:'';position:absolute;left:0;bottom:0;
+    width:0;height:1px;background:var(--gold);
+    transition:width .4s var(--ease);
+  }
+  .nav__links a:hover{color:var(--ink)}
+  .nav__links a:hover::after{width:100%}
+  .nav__cta{
+    padding:10px 22px;
+    border:1px solid var(--ink);
+    color:var(--ink);
+    font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    transition:all .35s var(--ease);
+  }
+  .nav__cta:hover{background:var(--ink);color:var(--ivory)}
+
+  .hero{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    min-height:100vh;
+    position:relative;
+  }
+  .hero__text{
+    padding:140px 80px 80px 80px;
+    display:flex;flex-direction:column;justify-content:center;
+    position:relative;
+    background:var(--ivory);
+  }
+  .hero__eyebrow{
+    display:flex;align-items:center;gap:14px;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold-deep);
+    margin-bottom:36px;
+    font-weight:500;
+  }
+  .hero__eyebrow::before{
+    content:'';width:42px;height:1px;background:var(--gold);
+  }
+  .hero__title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(56px,7.2vw,108px);
+    line-height:.95;
+    font-weight:400;
+    letter-spacing:-.015em;
+    color:var(--ink);
+    margin-bottom:36px;
+  }
+  .hero__title em{
+    font-style:italic;
+    font-weight:300;
+    color:var(--gold-deep);
+    display:block;
+  }
+  .hero__sub{
+    font-size:17px;line-height:1.7;
+    color:var(--ink-soft);
+    max-width:440px;
+    margin-bottom:48px;
+    font-weight:300;
+  }
+  .hero__actions{
+    display:flex;gap:24px;align-items:center;
+    margin-bottom:64px;
+  }
+  .btn-primary{
+    display:inline-flex;align-items:center;gap:14px;
+    padding:18px 36px;
+    background:var(--ink);
+    color:var(--ivory);
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    font-weight:500;
+    transition:all .4s var(--ease);
+    position:relative;
+  }
+  .btn-primary svg{transition:transform .4s var(--ease)}
+  .btn-primary:hover{
+    background:var(--gold-deep);
+    box-shadow:0 0 32px rgba(184,137,63,.45);
+  }
+  .btn-primary:hover svg{transform:translateX(6px)}
+  .btn-ghost{
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--ink);font-weight:500;
+    border-bottom:1px solid var(--ink);
+    padding:8px 0;
+    transition:color .3s,border-color .3s;
+  }
+  .btn-ghost:hover{color:var(--gold-deep);border-color:var(--gold)}
+
+  .hero__meta{
+    display:flex;gap:48px;
+    padding-top:32px;
+    border-top:1px solid var(--line);
+  }
+  .hero__meta-item span:first-child{
+    display:block;
+    font-family:'Cormorant Garamond',serif;
+    font-size:32px;font-weight:400;
+    color:var(--ink);
+    line-height:1;
+    margin-bottom:6px;
+  }
+  .hero__meta-item span:last-child{
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-muted);
+  }
+
+  .hero__image{
+    position:relative;
+    overflow:hidden;
+    background:var(--ink);
+  }
+  .hero__image img{
+    width:100%;height:100%;object-fit:cover;
+    border-radius:0;
+    filter:saturate(.92) contrast(1.02);
+  }
+  .hero__image-tag{
+    position:absolute;
+    bottom:40px;left:40px;
+    color:var(--ivory);
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+    display:flex;align-items:center;gap:12px;
+    z-index:2;
+  }
+  .hero__image-tag::before{
+    content:'';width:32px;height:1px;background:var(--gold-bright);
+  }
+  .hero__image-overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(10,17,36,.15) 0%,transparent 40%,transparent 60%,rgba(10,17,36,.65) 100%);
+    pointer-events:none;
+  }
+
+  .hero__seal{
+    position:absolute;
+    top:50%;right:-60px;
+    transform:translateY(-50%);
+    width:120px;height:120px;
+    z-index:5;
+    pointer-events:none;
+  }
+  .hero__seal svg{width:100%;height:100%;animation:spin 60s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .quote-strip{
+    padding:120px 80px;
+    background:var(--paper);
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .quote-strip__mark{
+    font-family:'Cormorant Garamond',serif;
+    font-size:140px;line-height:.5;
+    color:var(--gold);
+    opacity:.35;
+    margin-bottom:20px;
+    font-style:italic;
+  }
+  .quote-strip__text{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(28px,3.4vw,46px);
+    line-height:1.35;
+    font-weight:300;
+    font-style:italic;
+    color:var(--ink);
+    max-width:980px;margin:0 auto 28px;
+  }
+  .quote-strip__cite{
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--ink-muted);
+  }
+  .quote-strip__cite em{color:var(--gold-deep);font-style:normal}
+
+  .split{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    min-height:90vh;
+  }
+  .split--image-left .split__image{order:1}
+  .split--image-left .split__text{order:2}
+  .split__image{
+    position:relative;overflow:hidden;
+    background:var(--ink);
+  }
+  .split__image img{
+    width:100%;height:100%;object-fit:cover;
+    filter:saturate(.92);
+  }
+  .split__text{
+    padding:120px 80px;
+    display:flex;flex-direction:column;justify-content:center;
+    background:var(--ivory);
+    position:relative;
+  }
+  .split__eyebrow{
+    display:flex;align-items:center;gap:14px;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold-deep);
+    margin-bottom:32px;
+    font-weight:500;
+  }
+  .split__eyebrow::before{
+    content:'';width:42px;height:1px;background:var(--gold);
+  }
+  .split__title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(42px,4.6vw,68px);
+    line-height:1.05;
+    font-weight:400;
+    letter-spacing:-.01em;
+    color:var(--ink);
+    margin-bottom:32px;
+  }
+  .split__title em{font-style:italic;color:var(--gold-deep);font-weight:300}
+  .split__body{
+    font-size:16px;line-height:1.75;
+    color:var(--ink-soft);
+    max-width:480px;
+    margin-bottom:24px;
+  }
+  .split__body + .split__body{margin-bottom:40px}
+
+  .split__list{
+    list-style:none;
+    margin-top:8px;
+  }
+  .split__list li{
+    display:flex;align-items:flex-start;gap:18px;
+    padding:18px 0;
+    border-top:1px solid var(--line);
+    font-size:15px;color:var(--ink-soft);
+  }
+  .split__list li:last-child{border-bottom:1px solid var(--line)}
+  .split__list strong{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:500;color:var(--ink);
+    font-size:18px;
+    min-width:130px;
+  }
+  .split__list span{color:var(--ink-muted);font-size:13px;margin-left:auto}
+
+  .rituals{
+    padding:140px 80px;
+    background:var(--ivory-soft);
+    position:relative;
+  }
+  .rituals__head{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    margin-bottom:72px;
+    gap:60px;
+  }
+  .rituals__head-left{max-width:600px}
+  .rituals__title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(48px,5.4vw,82px);
+    line-height:1;
+    font-weight:400;
+    letter-spacing:-.015em;
+    margin-top:24px;
+  }
+  .rituals__title em{font-style:italic;color:var(--gold-deep);font-weight:300}
+  .rituals__intro{
+    font-size:15px;line-height:1.7;
+    color:var(--ink-soft);
+    max-width:380px;
+    padding-bottom:10px;
+  }
+
+  .rituals__grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  .ritual{
+    background:var(--ivory-soft);
+    padding:44px 36px 40px;
+    position:relative;
+    transition:background .5s var(--ease);
+    cursor:pointer;
+  }
+  .ritual:hover{background:var(--ivory)}
+  .ritual__num{
+    font-family:'Cormorant Garamond',serif;
+    font-size:13px;letter-spacing:.2em;
+    color:var(--gold-deep);
+    margin-bottom:32px;
+    font-style:italic;
+  }
+  .ritual__icon{
+    width:48px;height:48px;
+    margin-bottom:28px;
+    color:var(--ink);
+    transition:transform .5s var(--ease),color .3s;
+  }
+  .ritual:hover .ritual__icon{
+    color:var(--gold-deep);
+    transform:translateY(-4px);
+  }
+  .ritual__icon svg{width:100%;height:100%;stroke-width:1}
+  .ritual__name{
+    font-family:'Cormorant Garamond',serif;
+    font-size:26px;font-weight:500;
+    line-height:1.15;
+    margin-bottom:8px;
+    color:var(--ink);
+  }
+  .ritual__name-en{
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--ink-muted);
+    margin-bottom:18px;
+  }
+  .ritual__desc{
+    font-size:14px;line-height:1.65;
+    color:var(--ink-soft);
+    margin-bottom:24px;
+  }
+  .ritual__price{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+  }
+  .ritual__price-duration{
+    font-size:12px;color:var(--ink-muted);
+    letter-spacing:.06em;
+  }
+  .ritual__price-amount{
+    font-family:'Cormorant Garamond',serif;
+    font-size:22px;font-weight:500;
+    color:var(--ink);
+  }
+  .ritual__price-amount em{font-style:normal;color:var(--gold-deep);font-size:13px;margin-left:4px}
+
+  .dayspa{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    min-height:90vh;
+  }
+  .dayspa__text{
+    padding:120px 80px;
+    display:flex;flex-direction:column;justify-content:center;
+    background:var(--paper);
+    position:relative;
+  }
+  .dayspa__title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(44px,5vw,72px);
+    line-height:1.02;
+    font-weight:400;
+    letter-spacing:-.01em;
+    margin:24px 0 36px;
+  }
+  .dayspa__title em{font-style:italic;color:var(--gold-deep);font-weight:300}
+  .dayspa__body{
+    font-size:16px;line-height:1.75;
+    color:var(--ink-soft);
+    max-width:480px;
+    margin-bottom:48px;
+  }
+  .dayspa__packages{
+    display:flex;flex-direction:column;gap:0;
+  }
+  .pkg{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:center;
+    padding:24px 0;
+    border-top:1px solid var(--line);
+    gap:30px;
+    transition:padding .4s var(--ease);
+  }
+  .pkg:last-child{border-bottom:1px solid var(--line)}
+  .pkg:hover{padding-left:14px}
+  .pkg__name{
+    font-family:'Cormorant Garamond',serif;
+    font-size:24px;font-weight:500;
+    color:var(--ink);
+    margin-bottom:6px;
+  }
+  .pkg__name em{font-style:italic;color:var(--gold-deep);font-weight:400}
+  .pkg__detail{font-size:13px;color:var(--ink-muted);line-height:1.55}
+  .pkg__price{
+    font-family:'Cormorant Garamond',serif;
+    font-size:30px;font-weight:500;
+    color:var(--ink);
+    text-align:right;
+    white-space:nowrap;
+  }
+  .pkg__price small{
+    display:block;
+    font-family:'Mulish',sans-serif;
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-muted);font-weight:500;
+    margin-top:4px;
+  }
+  .dayspa__image{
+    position:relative;overflow:hidden;
+    min-height:600px;
+    background:var(--ink);
+  }
+  .dayspa__image img{
+    width:100%;height:100%;object-fit:cover;
+    filter:saturate(.92);
+  }
+
+  .glow-cta{
+    padding:160px 80px;
+    text-align:center;
+    background:var(--ink);
+    color:var(--ivory);
+    position:relative;
+    overflow:hidden;
+  }
+  .glow-cta::before{
+    content:'';
+    position:absolute;inset:0;
+    background:
+      radial-gradient(circle at 30% 40%,rgba(184,137,63,.18) 0%,transparent 50%),
+      radial-gradient(circle at 70% 60%,rgba(184,137,63,.12) 0%,transparent 55%);
+    pointer-events:none;
+  }
+  .glow-cta__eyebrow{
+    position:relative;
+    display:inline-flex;align-items:center;gap:14px;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold-bright);
+    margin-bottom:36px;
+    font-weight:500;
+  }
+  .glow-cta__eyebrow::before,
+  .glow-cta__eyebrow::after{
+    content:'';width:36px;height:1px;background:var(--gold);
+  }
+  .glow-cta__title{
+    position:relative;
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(52px,6.4vw,96px);
+    line-height:1.02;
+    font-weight:300;
+    margin-bottom:32px;
+    letter-spacing:-.015em;
+  }
+  .glow-cta__title em{
+    font-style:italic;
+    color:var(--gold-bright);
+    text-shadow:0 0 38px rgba(212,165,90,.55),0 0 80px rgba(184,137,63,.3);
+  }
+  .glow-cta__sub{
+    position:relative;
+    font-size:17px;line-height:1.7;
+    color:rgba(244,245,247,.72);
+    max-width:560px;margin:0 auto 56px;
+    font-weight:300;
+  }
+  .glow-cta__btn{
+    position:relative;
+    display:inline-flex;align-items:center;gap:16px;
+    padding:22px 48px;
+    background:var(--gold);
+    color:var(--ink);
+    font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+    font-weight:600;
+    transition:all .45s var(--ease);
+    box-shadow:0 0 0 rgba(184,137,63,0);
+  }
+  .glow-cta__btn:hover{
+    background:var(--gold-bright);
+    box-shadow:0 0 42px rgba(212,165,90,.6),0 0 90px rgba(184,137,63,.35);
+    transform:translateY(-2px);
+  }
+  .glow-cta__btn svg{transition:transform .4s var(--ease)}
+  .glow-cta__btn:hover svg{transform:translateX(6px)}
+
+  .glow-cta__hours{
+    position:relative;
+    margin-top:64px;
+    padding-top:40px;
+    border-top:1px solid rgba(244,245,247,.12);
+    display:inline-flex;gap:64px;
+    color:rgba(244,245,247,.7);
+    font-size:13px;
+    letter-spacing:.04em;
+  }
+  .glow-cta__hours strong{
+    display:block;
+    color:var(--gold-bright);
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    margin-bottom:8px;font-weight:500;
+  }
+
+  .footer{
+    background:var(--ink);
+    color:var(--ivory);
+    padding:80px 80px 40px;
+    border-top:1px solid rgba(244,245,247,.08);
+  }
+  .footer__grid{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr 1fr;
+    gap:60px;
+    margin-bottom:64px;
+  }
+  .footer__brand{
+    font-family:'Cormorant Garamond',serif;
+    font-size:32px;font-weight:500;
+    margin-bottom:18px;
+    letter-spacing:.02em;
+  }
+  .footer__brand em{font-style:italic;color:var(--gold-bright);font-weight:400}
+  .footer__tagline{
+    font-size:14px;line-height:1.7;
+    color:rgba(244,245,247,.6);
+    max-width:340px;
+    font-weight:300;
+  }
+  .footer__col h4{
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--gold-bright);
+    margin-bottom:22px;font-weight:500;
+  }
+  .footer__col ul{list-style:none}
+  .footer__col li{margin-bottom:12px}
+  .footer__col a{
+    font-size:14px;
+    color:rgba(244,245,247,.72);
+    transition:color .3s;
+    font-weight:300;
+  }
+  .footer__col a:hover{color:var(--gold-bright)}
+  .footer__col p{
+    font-size:14px;line-height:1.7;
+    color:rgba(244,245,247,.72);
+    font-weight:300;
+  }
+  .footer__bottom{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-top:32px;
+    border-top:1px solid rgba(244,245,247,.1);
+    font-size:12px;
+    color:rgba(244,245,247,.5);
+    letter-spacing:.04em;
+  }
+  .footer__bottom a{color:rgba(244,245,247,.5);transition:color .3s}
+  .footer__bottom a:hover{color:var(--gold-bright)}
+
+  .decor{
+    position:absolute;
+    pointer-events:none;
+    opacity:.5;
+    z-index:0;
+  }
+  .decor--leaf-1{
+    top:8%;right:-40px;
+    width:140px;height:140px;
+    color:var(--gold);
+    opacity:.18;
+  }
+  .decor--leaf-2{
+    bottom:10%;left:-30px;
+    width:100px;height:100px;
+    color:var(--gold-deep);
+    opacity:.15;
+  }
+
+  .reveal{
+    opacity:0;
+    transform:translateY(40px);
+    transition:opacity 1s var(--ease),transform 1s var(--ease);
+  }
+  .reveal.in{opacity:1;transform:translateY(0)}
+  .reveal-delay-1{transition-delay:.1s}
+  .reveal-delay-2{transition-delay:.2s}
+  .reveal-delay-3{transition-delay:.3s}
+
+  .magnetic{
+    transition:transform .35s var(--ease);
+    will-change:transform;
+  }
+
+  @media (max-width:1024px){
+    .nav{padding:18px 28px}
+    .nav.scrolled{padding:12px 28px}
+    .nav__links{display:none}
+    .hero{grid-template-columns:1fr}
+    .hero__text{padding:120px 32px 60px;min-height:60vh}
+    .hero__image{min-height:50vh;order:-1}
+    .hero__seal{display:none}
+    .quote-strip{padding:80px 32px}
+    .split{grid-template-columns:1fr}
+    .split__text{padding:80px 32px}
+    .split__image{min-height:50vh}
+    .split--image-left .split__image{order:0}
+    .split--image-left .split__text{order:0}
+    .rituals{padding:80px 32px}
+    .rituals__head{flex-direction:column;align-items:flex-start;gap:24px}
+    .rituals__grid{grid-template-columns:repeat(2,1fr)}
+    .dayspa{grid-template-columns:1fr}
+    .dayspa__text{padding:80px 32px}
+    .dayspa__image{min-height:400px}
+    .glow-cta{padding:100px 32px}
+    .glow-cta__hours{flex-direction:column;gap:24px}
+    .footer{padding:60px 32px 32px}
+    .footer__grid{grid-template-columns:1fr 1fr;gap:40px}
+    .footer__bottom{flex-direction:column;gap:14px;text-align:center}
+  }
+  @media (max-width:640px){
+    .hero__title{font-size:54px}
+    .hero__meta{flex-wrap:wrap;gap:24px}
+    .rituals__grid{grid-template-columns:1fr}
+    .footer__grid{grid-template-columns:1fr}
+    .nav__brand{font-size:22px}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.01ms !important;
+    }
+    .reveal{opacity:1;transform:none}
+    .hero__seal svg{animation:none}
+    .magnetic{transform:none !important}
+    [data-parallax]{transform:none !important}
+    html{scroll-behavior:auto}
+  }
+</style>
+
+<style id="__zd_image_harmony__">
+  figure, .img-wrap, [class*="visual"], [class*="hero"] { position: relative; overflow: hidden; }
+  img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.88) contrast(1.04) brightness(0.97); }
+  figure::after, .img-wrap::after, .od-hero-visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, color-mix(in oklch, #1C1917 8%, transparent) 0%, color-mix(in oklch, #7C3AED 12%, transparent) 100%);
+    mix-blend-mode: multiply;
+    opacity: 0.35;
+  }
+  .app-view img, section img { border-radius: inherit; }
+</style>
+</head>
+<body>
+<nav id="app-nav" class="app-nav" data-app-nav style="display:flex;gap:1rem;padding:1rem 2rem;position:sticky;top:0;z-index:100;background:var(--surface,var(--bg));border-bottom:1px solid var(--border,color-mix(in oklch,currentColor 12%,transparent))">
+    <button type="button" data-nav="view-home" class="is-active">Start</button>
+    <button type="button" data-nav="view-catalog" class="">Katalog</button>
+    <button type="button" data-nav="view-story" class="">Story</button>
+    <button type="button" data-nav="view-contact" class="">Kontakt</button>
+  </nav>
+<main id="app-main">
+<section id="view-home" class="app-view is-active" data-od-id="view-home" class="quote-strip" aria-label="Zitat">
+  <div class="quote-strip__mark">"</div>
+  <p class="quote-strip__text reveal">
+    The law is a shield for those who prepare. We build that shield not from precedent alone, but from an exhaustive understanding of our clients' enterprise.
+  </p>
+  <div class="quote-strip__cite reveal reveal-delay-1">
+    Jonathan Hayes · <em>Senior Founding Partner</em>
+  </div>
+</section>
+<section id="view-catalog" class="app-view" data-od-id="view-catalog" class="split split--image-left" id="philosophie" hidden>
+  <div class="split__image" data-parallax-img>
+    <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-22%2F35b43667-b983-44fd-b012-452fa434fbf8_aigc.jpeg?Expires=1784821199&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=Jh8l9YQ71ZNrJFj2sSiLfRfHq9U%3D" alt="Close-up of a classic brass scale of justice resting on a wooden desk in low light">
+  </div>
+  <div class="split__text">
+    <div class="decor decor--leaf-2" data-parallax data-speed="0.3" aria-hidden="true">
+      <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M50 10 L 62 38 L 90 38 L 68 56 L 76 84 L 50 68 L 24 84 L 32 56 L 10 38 L 38 38 Z"/>
+        <path d="M50 10 L 50 68" stroke-width=".8"/>
+      </svg>
+    </div>
+    <div class="split__eyebrow reveal">Firm Philosophy · The Standard of Counsel</div>
+    <h2 class="split__title reveal reveal-delay-1">
+      We do not chase volume.
+      <em>We pursue outcome.</em>
+    </h2>
+    <p class="split__body reveal reveal-delay-2">
+      Founded in 1984, Sterling & Hayes established its reputation by representing institutional clients in bet-the-company litigation. We deliberately limit our caseload to ensure every matter receives the direct attention of a managing partner.
+    </p>
+    <p class="split__body reveal reveal-delay-2">
+      Our approach integrates former federal prosecutors, SEC enforcement attorneys, and industry-specific experts into unified trial teams. We prepare every case as if it will be argued before the Supreme Court.
+    </p>
+    <ul class="split__list reveal reveal-delay-3">
+      <li>
+        <strong>Partner-Led</strong>
+        Direct involvement from intake through resolution
+        <span>Guaranteed</span>
+      </li>
+      <li>
+        <strong>Strict Confidentiality</strong>
+        Off-record systems for sensitive corporate matters
+        <span>Air-gapped</span>
+      </li>
+      <li>
+        <strong>Global Reach</strong>
+        Integrated counsel in 14 international jurisdictions
+        <span>24/7 Response</span>
+      </li>
+    </ul>
+  </div>
+</section>
+<section id="view-story" class="app-view" data-od-id="view-story" class="rituals" id="practice" hidden>
+  <div class="rituals__head">
+    <div class="rituals__head-left">
+      <div class="split__eyebrow reveal" style="margin-bottom:24px">Core Practices · Areas of Concentration</div>
+      <h2 class="rituals__title reveal reveal-delay-1">
+        Four disciplines,
+        <em>one standard.</em>
+      </h2>
+    </div>
+    <p class="rituals__intro reveal reveal-delay-2">
+      Our practice groups operate with the cohesion of a boutique firm and the resources of an Am Law 100 institution. Select a concentration to review our recent representations and partner bench.
+    </p>
+  </div>
+
+  <div class="rituals__grid">
+    <article class="ritual reveal magnetic">
+      <div class="ritual__num">Nº 01</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <path d="M24 6 V 42 M18 6 H 30 M14 14 H 34 M10 42 H 38"/>
+          <path d="M10 42 V 22 Q 10 18 14 18 M38 42 V 22 Q 38 18 34 18" opacity=".7"/>
+          <path d="M18 42 V 32 M22 42 V 32 M26 42 V 32 M30 42 V 32" opacity=".4"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">Litigation</h3>
+      <div class="ritual__name-en">Complex Commercial & Trial</div>
+      <p class="ritual__desc">
+        First-chair trial lawyers for bet-the-company disputes, class action defense, and intellectual property litigation. A track record of 92% favorable outcomes in federal and state courts.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">42 Partners · 110 Associates</span>
+        <span class="ritual__price-amount">Band<em>1</em></span>
+      </div>
+    </article>
+
+    <article class="ritual reveal reveal-delay-1 magnetic">
+      <div class="ritual__num">Nº 02</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <rect x="10" y="14" width="28" height="24" rx="1"/>
+          <path d="M10 22 H 38 M16 14 V 10 H 12 V 14 M36 14 V 10 H 32 V 14"/>
+          <path d="M16 30 H 24 M16 34 H 32" opacity=".6"/>
+          <circle cx="32" cy="28" r="2" fill="currentColor"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">M & A</h3>
+      <div class="ritual__name-en">Mergers, Acquisitions & Capital</div>
+      <p class="ritual__desc">
+        Strategic counsel for public and private mergers, leveraged buyouts, and cross-border joint ventures. We advised on over $48 billion in closed transactions over the last three fiscal years.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">28 Partners · 80 Associates</span>
+        <span class="ritual__price-amount">Tier<em>1</em></span>
+      </div>
+    </article>
+
+    <article class="ritual reveal reveal-delay-2 magnetic">
+      <div class="ritual__num">Nº 03</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <path d="M24 8 L 40 14 V 26 Q 40 36 24 42 Q 8 36 8 26 V 14 Z"/>
+          <path d="M16 24 L 22 30 L 33 18" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">Regulatory</h3>
+      <div class="ritual__name-en">Government Enforcement & Defense</div>
+      <p class="ritual__desc">
+        Former SEC and DOJ prosecutors defending clients in high-stakes government inquiries, FCPA matters, and antitrust reviews. Navigating the intersection of commerce and federal enforcement.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">18 Partners · 45 Associates</span>
+        <span class="ritual__price-amount">Band<em>2</em></span>
+      </div>
+    </article>
+
+    <article class="ritual reveal reveal-delay-3 magnetic">
+      <div class="ritual__num">Nº 04</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <path d="M16 10 H 32 V 40 H 16 Z"/>
+          <path d="M20 18 H 28 M20 24 H 28 M20 30 H 26" opacity=".7"/>
+          <circle cx="24" cy="36" r="1.5" fill="currentColor"/>
+          <path d="M12 14 V 36 H 14 M36 14 V 36 H 34" opacity=".5"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">IP & Tech</h3>
+      <div class="ritual__name-en">Intellectual Property & Technology</div>
+      <p class="ritual__desc">
+        Patent prosecution, trademark portfolios, and complex technology licensing for software, life sciences, and semiconductor innovators. Protecting the assets that drive the modern enterprise.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">22 Partners · 60 Associates</span>
+        <span class="ritual__price-amount">Tier<em>1</em></span>
+      </div>
+    </article>
+  </div>
+</section>
+<section id="view-contact" class="app-view" data-od-id="view-contact" class="dayspa" id="attorneys" hidden>
+  <div class="dayspa__text">
+    <div class="split__eyebrow reveal">Counsel · Partner Representation</div>
+    <h2 class="dayspa__title reveal reveal-delay-1">
+      Bench strength
+      <em>where it matters.</em>
+    </h2>
+    <p class="dayspa__body reveal reveal-delay-2">
+      Our partners are recognized leaders in their respective fields, consistently ranked by Chambers, Legal 500, and Benchmark Litigation. Meet the attorneys who will directly manage your matter.
+    </p>
+
+    <div class="dayspa__packages reveal reveal-delay-3">
+      <div class="pkg magnetic">
+        <div>
+          <div class="pkg__name">J. Hayes <em>— Founding Partner</em></div>
+          <div class="pkg__detail">Complex Commercial Litigation · Former Federal Prosecutor · 35 Yrs Experience</div>
+        </div>
+        <div class="pkg__price">NY <small>Bar Admission</small></div>
+      </div>
+      <div class="pkg magnetic">
+        <div>
+          <div class="pkg__name">E. Sterling <em>— Managing Partner</em></div>
+          <div class="pkg__detail">Mergers & Acquisitions · Corporate Finance · Fortune 100 Board Counsel</div>
+        </div>
+        <div class="pkg__price">DC <small>Bar Admission</small></div>
+      </div>
+      <div class="pkg magnetic">
+        <div>
+          <div class="pkg__name">M. Vance <em>— Head of Regulatory</em></div>
+          <div class="pkg__detail">SEC Enforcement · Government Investigations · Former SEC Division Director</div>
+        </div>
+        <div class="pkg__price">DC <small>Bar Admission</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="dayspa__image" data-parallax-img>
+    <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-22%2F44714023-f74a-41ea-85e0-8ac2a79a2782_aigc.jpeg?Expires=1784821196&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=H70hx7sxbSz5O3gtp2FMFezNclc%3D" alt="Professional attorneys reviewing documents around a conference table in a modern corporate office">
+  </div>
+</section>
+<section id="view-5" class="app-view" data-od-id="view-5" class="glow-cta" id="consult" hidden>
+  <div class="glow-cta__eyebrow reveal">Engagement · Strictly Confidential</div>
+  <h2 class="glow-cta__title reveal reveal-delay-1">
+    Request an initial
+    <em>consultation.</em>
+  </h2>
+  <p class="glow-cta__sub reveal reveal-delay-2">
+    We accept new matters by referral or direct inquiry. All communications are protected under attorney-client privilege from the moment of contact. Expect a response from a managing partner within four hours.
+  </p>
+  <a href="tel:+12125551234" class="glow-cta__btn magnetic reveal reveal-delay-3">
+    +1 212 555 1234
+    <svg width="20" height="10" viewBox="0 0 20 10" fill="none" stroke="currentColor" stroke-width="1.6">
+      <path d="M1 5 H18 M13 1 L18 5 L13 9"/>
+    </svg>
+  </a>
+
+  <div class="glow-cta__hours reveal reveal-delay-3">
+    <div>
+      <strong>Privilege Line</strong>
+      24/7 Availability
+    </div>
+    <div>
+      <strong>International</strong>
+      +44 20 7946 0123
+    </div>
+    <div>
+      <strong>Secure Portal</strong>
+      client.sterlinghayes.com
+    </div>
+  </div>
+</section>
+</main>
+
+<nav class="nav" id="nav" aria-label="Hauptnavigation">
+  <a href="#" class="nav__brand">Sterling <em>&</em> Hayes</a>
+  <div class="nav__links">
+    <a href="#practice">Practices</a>
+    <a href="#attorneys">Attorneys</a>
+    <a href="#insights">Insights</a>
+    <a href="#contact">Firm</a>
+  </div>
+  <a href="#consult" class="nav__cta magnetic">Request Counsel</a>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero__text">
+    <div class="decor decor--leaf-1" data-parallax data-speed="0.25" aria-hidden="true">
+      <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M50 10 L 62 38 L 90 38 L 68 56 L 76 84 L 50 68 L 24 84 L 32 56 L 10 38 L 38 38 Z"/>
+        <path d="M50 10 L 50 68" stroke-width=".8"/>
+        <path d="M50 30 L 35 40 M50 30 L 65 40"/>
+        <path d="M50 50 L 30 60 M50 50 L 70 60"/>
+      </svg>
+    </div>
+
+    <div class="hero__eyebrow reveal">Sterling & Hayes LLP · Counsel of Record · Est. 1984</div>
+    <h1 class="hero__title reveal reveal-delay-1">
+      Counsel built for
+      <em>the complex matter.</em>
+    </h1>
+    <p class="hero__sub reveal reveal-delay-2">
+      For four decades, our partners have guided Fortune 500 boards, high-growth enterprises, and sovereign entities through high-stakes litigation, regulatory enforcement, and cross-border transactions. Discretion is our standard. Outcome is our metric.
+    </p>
+    <div class="hero__actions reveal reveal-delay-3">
+      <a href="#consult" class="btn-primary magnetic">
+        Request Engagement
+        <svg width="18" height="10" viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M1 5 H17 M12 1 L17 5 L12 9"/>
+        </svg>
+      </a>
+      <a href="#practice" class="btn-ghost">View Practices</a>
+    </div>
+
+    <div class="hero__meta reveal reveal-delay-3">
+      <div class="hero__meta-item">
+        <span>240+</span>
+        <span>Attorneys & Counsel</span>
+      </div>
+      <div class="hero__meta-item">
+        <span>Band 1</span>
+        <span>Chambers USA Ranking</span>
+      </div>
+      <div class="hero__meta-item">
+        <span>$18B</span>
+        <span>Matters Resolved in 2023</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__image">
+    <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-22%2F2bdb605d-ba21-4fae-8479-812f568eb38a_aigc.jpeg?Expires=1784821197&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=YM0enZm8PH5AOxgJ7w%2FmvtiGdBk%3D" alt="Interior of a historic law library with rows of legal texts, arches, and warm reading lights">
+    <div class="hero__image-overlay"></div>
+    <div class="hero__image-tag">120 Broadway · Suite 4400 · New York</div>
+  </div>
+
+  <div class="hero__seal" aria-hidden="true">
+    <svg viewBox="0 0 120 120" fill="none" stroke="var(--gold-bright)" stroke-width=".8">
+      <circle cx="60" cy="60" r="58"/>
+      <circle cx="60" cy="60" r="48"/>
+      <path d="M60 30 Q 50 45 50 60 Q 50 75 60 90 Q 70 75 70 60 Q 70 45 60 30" stroke-width=".7"/>
+      <text font-family="Cormorant Garamond" font-size="8" fill="var(--gold-bright)" stroke="none" letter-spacing="2">
+        <textPath href="#sealPath">STERLING & HAYES · COUNSEL OF RECORD · EST 1984 ·</textPath>
+      </text>
+      <path id="sealPath" d="M 60 60 m -42 0 a 42 42 0 1 1 84 0 a 42 42 0 1 1 -84 0" fill="none" stroke="none"/>
+    </svg>
+  </div>
+</header>
+
+<section class="quote-strip" aria-label="Zitat">
+  <div class="quote-strip__mark">"</div>
+  <p class="quote-strip__text reveal">
+    The law is a shield for those who prepare. We build that shield not from precedent alone, but from an exhaustive understanding of our clients' enterprise.
+  </p>
+  <div class="quote-strip__cite reveal reveal-delay-1">
+    Jonathan Hayes · <em>Senior Founding Partner</em>
+  </div>
+</section>
+
+<section class="split split--image-left" id="philosophie">
+  <div class="split__image" data-parallax-img>
+    <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-22%2F35b43667-b983-44fd-b012-452fa434fbf8_aigc.jpeg?Expires=1784821199&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=Jh8l9YQ71ZNrJFj2sSiLfRfHq9U%3D" alt="Close-up of a classic brass scale of justice resting on a wooden desk in low light">
+  </div>
+  <div class="split__text">
+    <div class="decor decor--leaf-2" data-parallax data-speed="0.3" aria-hidden="true">
+      <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M50 10 L 62 38 L 90 38 L 68 56 L 76 84 L 50 68 L 24 84 L 32 56 L 10 38 L 38 38 Z"/>
+        <path d="M50 10 L 50 68" stroke-width=".8"/>
+      </svg>
+    </div>
+    <div class="split__eyebrow reveal">Firm Philosophy · The Standard of Counsel</div>
+    <h2 class="split__title reveal reveal-delay-1">
+      We do not chase volume.
+      <em>We pursue outcome.</em>
+    </h2>
+    <p class="split__body reveal reveal-delay-2">
+      Founded in 1984, Sterling & Hayes established its reputation by representing institutional clients in bet-the-company litigation. We deliberately limit our caseload to ensure every matter receives the direct attention of a managing partner.
+    </p>
+    <p class="split__body reveal reveal-delay-2">
+      Our approach integrates former federal prosecutors, SEC enforcement attorneys, and industry-specific experts into unified trial teams. We prepare every case as if it will be argued before the Supreme Court.
+    </p>
+    <ul class="split__list reveal reveal-delay-3">
+      <li>
+        <strong>Partner-Led</strong>
+        Direct involvement from intake through resolution
+        <span>Guaranteed</span>
+      </li>
+      <li>
+        <strong>Strict Confidentiality</strong>
+        Off-record systems for sensitive corporate matters
+        <span>Air-gapped</span>
+      </li>
+      <li>
+        <strong>Global Reach</strong>
+        Integrated counsel in 14 international jurisdictions
+        <span>24/7 Response</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="rituals" id="practice">
+  <div class="rituals__head">
+    <div class="rituals__head-left">
+      <div class="split__eyebrow reveal" style="margin-bottom:24px">Core Practices · Areas of Concentration</div>
+      <h2 class="rituals__title reveal reveal-delay-1">
+        Four disciplines,
+        <em>one standard.</em>
+      </h2>
+    </div>
+    <p class="rituals__intro reveal reveal-delay-2">
+      Our practice groups operate with the cohesion of a boutique firm and the resources of an Am Law 100 institution. Select a concentration to review our recent representations and partner bench.
+    </p>
+  </div>
+
+  <div class="rituals__grid">
+    <article class="ritual reveal magnetic">
+      <div class="ritual__num">Nº 01</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <path d="M24 6 V 42 M18 6 H 30 M14 14 H 34 M10 42 H 38"/>
+          <path d="M10 42 V 22 Q 10 18 14 18 M38 42 V 22 Q 38 18 34 18" opacity=".7"/>
+          <path d="M18 42 V 32 M22 42 V 32 M26 42 V 32 M30 42 V 32" opacity=".4"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">Litigation</h3>
+      <div class="ritual__name-en">Complex Commercial & Trial</div>
+      <p class="ritual__desc">
+        First-chair trial lawyers for bet-the-company disputes, class action defense, and intellectual property litigation. A track record of 92% favorable outcomes in federal and state courts.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">42 Partners · 110 Associates</span>
+        <span class="ritual__price-amount">Band<em>1</em></span>
+      </div>
+    </article>
+
+    <article class="ritual reveal reveal-delay-1 magnetic">
+      <div class="ritual__num">Nº 02</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <rect x="10" y="14" width="28" height="24" rx="1"/>
+          <path d="M10 22 H 38 M16 14 V 10 H 12 V 14 M36 14 V 10 H 32 V 14"/>
+          <path d="M16 30 H 24 M16 34 H 32" opacity=".6"/>
+          <circle cx="32" cy="28" r="2" fill="currentColor"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">M & A</h3>
+      <div class="ritual__name-en">Mergers, Acquisitions & Capital</div>
+      <p class="ritual__desc">
+        Strategic counsel for public and private mergers, leveraged buyouts, and cross-border joint ventures. We advised on over $48 billion in closed transactions over the last three fiscal years.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">28 Partners · 80 Associates</span>
+        <span class="ritual__price-amount">Tier<em>1</em></span>
+      </div>
+    </article>
+
+    <article class="ritual reveal reveal-delay-2 magnetic">
+      <div class="ritual__num">Nº 03</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <path d="M24 8 L 40 14 V 26 Q 40 36 24 42 Q 8 36 8 26 V 14 Z"/>
+          <path d="M16 24 L 22 30 L 33 18" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">Regulatory</h3>
+      <div class="ritual__name-en">Government Enforcement & Defense</div>
+      <p class="ritual__desc">
+        Former SEC and DOJ prosecutors defending clients in high-stakes government inquiries, FCPA matters, and antitrust reviews. Navigating the intersection of commerce and federal enforcement.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">18 Partners · 45 Associates</span>
+        <span class="ritual__price-amount">Band<em>2</em></span>
+      </div>
+    </article>
+
+    <article class="ritual reveal reveal-delay-3 magnetic">
+      <div class="ritual__num">Nº 04</div>
+      <div class="ritual__icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <path d="M16 10 H 32 V 40 H 16 Z"/>
+          <path d="M20 18 H 28 M20 24 H 28 M20 30 H 26" opacity=".7"/>
+          <circle cx="24" cy="36" r="1.5" fill="currentColor"/>
+          <path d="M12 14 V 36 H 14 M36 14 V 36 H 34" opacity=".5"/>
+        </svg>
+      </div>
+      <h3 class="ritual__name">IP & Tech</h3>
+      <div class="ritual__name-en">Intellectual Property & Technology</div>
+      <p class="ritual__desc">
+        Patent prosecution, trademark portfolios, and complex technology licensing for software, life sciences, and semiconductor innovators. Protecting the assets that drive the modern enterprise.
+      </p>
+      <div class="ritual__price">
+        <span class="ritual__price-duration">22 Partners · 60 Associates</span>
+        <span class="ritual__price-amount">Tier<em>1</em></span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="dayspa" id="attorneys">
+  <div class="dayspa__text">
+    <div class="split__eyebrow reveal">Counsel · Partner Representation</div>
+    <h2 class="dayspa__title reveal reveal-delay-1">
+      Bench strength
+      <em>where it matters.</em>
+    </h2>
+    <p class="dayspa__body reveal reveal-delay-2">
+      Our partners are recognized leaders in their respective fields, consistently ranked by Chambers, Legal 500, and Benchmark Litigation. Meet the attorneys who will directly manage your matter.
+    </p>
+
+    <div class="dayspa__packages reveal reveal-delay-3">
+      <div class="pkg magnetic">
+        <div>
+          <div class="pkg__name">J. Hayes <em>— Founding Partner</em></div>
+          <div class="pkg__detail">Complex Commercial Litigation · Former Federal Prosecutor · 35 Yrs Experience</div>
+        </div>
+        <div class="pkg__price">NY <small>Bar Admission</small></div>
+      </div>
+      <div class="pkg magnetic">
+        <div>
+          <div class="pkg__name">E. Sterling <em>— Managing Partner</em></div>
+          <div class="pkg__detail">Mergers & Acquisitions · Corporate Finance · Fortune 100 Board Counsel</div>
+        </div>
+        <div class="pkg__price">DC <small>Bar Admission</small></div>
+      </div>
+      <div class="pkg magnetic">
+        <div>
+          <div class="pkg__name">M. Vance <em>— Head of Regulatory</em></div>
+          <div class="pkg__detail">SEC Enforcement · Government Investigations · Former SEC Division Director</div>
+        </div>
+        <div class="pkg__price">DC <small>Bar Admission</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="dayspa__image" data-parallax-img>
+    <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-22%2F44714023-f74a-41ea-85e0-8ac2a79a2782_aigc.jpeg?Expires=1784821196&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=H70hx7sxbSz5O3gtp2FMFezNclc%3D" alt="Professional attorneys reviewing documents around a conference table in a modern corporate office">
+  </div>
+</section>
+
+<section class="glow-cta" id="consult">
+  <div class="glow-cta__eyebrow reveal">Engagement · Strictly Confidential</div>
+  <h2 class="glow-cta__title reveal reveal-delay-1">
+    Request an initial
+    <em>consultation.</em>
+  </h2>
+  <p class="glow-cta__sub reveal reveal-delay-2">
+    We accept new matters by referral or direct inquiry. All communications are protected under attorney-client privilege from the moment of contact. Expect a response from a managing partner within four hours.
+  </p>
+  <a href="tel:+12125551234" class="glow-cta__btn magnetic reveal reveal-delay-3">
+    +1 212 555 1234
+    <svg width="20" height="10" viewBox="0 0 20 10" fill="none" stroke="currentColor" stroke-width="1.6">
+      <path d="M1 5 H18 M13 1 L18 5 L13 9"/>
+    </svg>
+  </a>
+
+  <div class="glow-cta__hours reveal reveal-delay-3">
+    <div>
+      <strong>Privilege Line</strong>
+      24/7 Availability
+    </div>
+    <div>
+      <strong>International</strong>
+      +44 20 7946 0123
+    </div>
+    <div>
+      <strong>Secure Portal</strong>
+      client.sterlinghayes.com
+    </div>
+  </div>
+</section>
+
+<footer class="footer" id="contact">
+  <div class="footer__grid">
+    <div class="footer__col">
+      <div class="footer__brand">Sterling <em>&</em> Hayes</div>
+      <p class="footer__tagline">
+        Counsel of record for the entities that shape global enterprise. A boutique standard of commitment, delivered with the resources of an international firm.
+      </p>
+    </div>
+    <div class="footer__col">
+      <h4>Headquarters</h4>
+      <p>
+        120 Broadway, Suite 4400<br>
+        New York, NY 10271<br>
+        United States
+      </p>
+    </div>
+    <div class="footer__col">
+      <h4>Offices</h4>
+      <ul>
+        <li><a href="#">New York · HQ</a></li>
+        <li><a href="#">Washington D.C.</a></li>
+        <li><a href="#">London · UK</a></li>
+        <li><a href="#">Frankfurt · DE</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="tel:+12125551234">+1 212 555 1234</a></li>
+        <li><a href="mailto:counsel@sterlinghayes.com">counsel@sterlinghayes.com</a></li>
+        <li><a href="#">Secure Portal</a></li>
+        <li><a href="#">Pro Bono</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <div>© 2024 Sterling & Hayes LLP · Attorney Advertising · Prior results do not guarantee a similar outcome.</div>
+    <div>
+      <a href="#">Privacy Policy</a> · <a href="#">Terms of Use</a> · <a href="#">Disclaimer</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const nav = document.getElementById('nav');
+  let lastScroll = 0;
+  function onScrollNav(){
+    const y = window.scrollY;
+    if(y > 40) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+    lastScroll = y;
+  }
+  window.addEventListener('scroll', onScrollNav, {passive:true});
+
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+  }
+
+  if (!reduceMotion && window.matchMedia('(pointer: fine)').matches) {
+    document.querySelectorAll('.magnetic').forEach(el => {
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        el.style.transform = `translate(${x * 0.15}px, ${y * 0.2}px)`;
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = '';
+      });
+    });
+
+    const parallaxElements = document.querySelectorAll('[data-parallax]');
+    window.addEventListener('scroll', () => {
+      parallaxElements.forEach(el => {
+        const speed = parseFloat(el.dataset.speed || 0.2);
+        const rect = el.parentElement.getBoundingClientRect();
+        const offset = rect.top * speed;
+        el.style.transform = `translateY(${offset}px)`;
+      });
+    }, {passive: true});
+  }
+})();
+</script>
+
+<!-- AGENCY POST-PROCESS LAYER (deterministic craft floor) -->
+<style id="__agency_craft__">
+  /* Subtle film grain — adds texture, removes "flat digital" feel */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* Smooth scrolling with offset */
+  html { scroll-behavior: smooth; }
+  /* Premium selection style */
+  ::selection { background: var(--accent, currentColor); color: var(--bg, #fff); }
+  /* Hairline borders everywhere by default for cards */
+  [class*="card"], [class*="Card"] {
+    border: 1px solid color-mix(in oklch, currentColor 8%, transparent);
+  }
+  /* Image hover — subtle life */
+  img { transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1); }
+  img:hover { transform: scale(1.03); }
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+
+<!-- Z.Design App-Shell Runtime -->
+<style id="__zd_app_shell__-css">
+  .app-view { display: none; min-height: calc(100vh - var(--nav-h, 64px)); animation: viewIn .45s cubic-bezier(0.22,1,0.36,1); }
+  .app-view.is-active { display: block; }
+  @keyframes viewIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .app-nav [data-nav].is-active { color: var(--accent, var(--primary)); }
+  @media (prefers-reduced-motion: reduce) { .app-view { animation: none; } }
+</style>
+<script id="__zd_app_shell__">
+(function(){
+  var nav = document.getElementById('app-nav') || document.querySelector('.app-nav, nav[data-app-nav]');
+  var views = document.querySelectorAll('.app-view, [id^="view-"][data-od-id], section[id^="view-"]');
+  if (!views.length) return;
+  function show(id){
+    views.forEach(function(v){
+      var on = v.id === id;
+      v.classList.toggle('is-active', on);
+      v.hidden = !on;
+    });
+    if (nav) nav.querySelectorAll('[data-nav]').forEach(function(b){
+      b.classList.toggle('is-active', b.getAttribute('data-nav') === id);
+    });
+    try { history.replaceState(null, '', '#' + id); } catch(e){}
+    window.scrollTo(0, 0);
+  }
+  if (nav) nav.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-nav]');
+    if (!btn) return;
+    e.preventDefault();
+    show(btn.getAttribute('data-nav'));
+  });
+  var hash = (location.hash || '').replace('#','');
+  if (hash && document.getElementById(hash)) show(hash);
+  else if (views[0]) show(views[0].id);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kinetix — Projektmanagement mit Schwung</title>
+<meta name="description" content="Echtzeit-Tasks, automatisierte Sprints und visuelle Roadmaps für skalierende Teams. Eine Plattform, voller Fokus, null Chaos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0d12;
+    --bg-2:#0f141c;
+    --ink:#f4f6fb;
+    --ink-dim:#a8b0c0;
+    --ink-mute:#6b7384;
+    --indigo:#3b4bd8;
+    --indigo-deep:#1e2a8a;
+    --cyan:#22d3ee;
+    --cyan-soft:#67e8f9;
+    --line:rgba(255,255,255,.08);
+    --line-strong:rgba(255,255,255,.14);
+    --glass:rgba(255,255,255,.04);
+    --glass-strong:rgba(255,255,255,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    font-size:16px;
+    line-height:1.55;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--cyan);color:#04141a}
+
+  .bg-layer{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+  .bg-grid{
+    position:absolute;inset:-2px;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 30%,#000 30%,transparent 80%);
+  }
+  .bg-blob{position:absolute;border-radius:50%;filter:blur(120px);opacity:.45;will-change:transform}
+  .blob-1{width:680px;height:680px;background:radial-gradient(circle,#3b4bd8 0%,transparent 65%);top:-180px;left:-160px;}
+  .blob-2{width:540px;height:540px;background:radial-gradient(circle,#22d3ee 0%,transparent 65%);top:30%;right:-180px;opacity:.25;}
+  .blob-3{width:600px;height:600px;background:radial-gradient(circle,#1e2a8a 0%,transparent 65%);bottom:-200px;left:30%;opacity:.35;}
+
+  .wrap{max-width:1280px;margin:0 auto;padding:0 32px}
+  @media(max-width:640px){.wrap{padding:0 20px}}
+
+  nav.top{
+    position:fixed;top:18px;left:50%;transform:translateX(-50%);
+    z-index:100;width:calc(100% - 48px);max-width:1180px;
+    background:rgba(10,13,18,.55);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    border:1px solid var(--line);border-radius:14px;
+    padding:12px 14px 12px 22px;
+    display:flex;align-items:center;justify-content:space-between;
+    box-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 20px 60px -20px rgba(0,0,0,.6);
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk';font-weight:600;font-size:17px;letter-spacing:-.01em}
+  .brand-mark{width:26px;height:26px;flex:none}
+  nav ul{display:flex;gap:6px;list-style:none}
+  nav ul a{color:var(--ink-dim);text-decoration:none;font-size:14px;font-weight:500;padding:8px 14px;border-radius:8px;transition:.2s}
+  nav ul a:hover{color:var(--ink);background:var(--glass)}
+  nav ul a:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  .nav-cta{
+    background:var(--ink);color:#0a0d12;padding:9px 16px;border-radius:9px;
+    font-weight:600;font-size:14px;text-decoration:none;transition:.2s;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .nav-cta:hover{background:#fff;transform:translateY(-1px)}
+  @media(max-width:860px){nav ul{display:none}}
+
+  header.hero{position:relative;padding:180px 0 80px;min-height:88vh;display:flex;align-items:center}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:60px;align-items:center;width:100%}
+  @media(max-width:980px){.hero-grid{grid-template-columns:1fr;gap:48px}}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:'Space Grotesk';font-size:13px;font-weight:500;
+    color:var(--cyan);letter-spacing:.04em;text-transform:uppercase;
+    padding:7px 14px;border:1px solid rgba(34,211,238,.25);border-radius:100px;
+    background:rgba(34,211,238,.05);margin-bottom:28px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan)}
+
+  h1.title{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;
+    font-size:clamp(44px,6.4vw,86px);line-height:.98;letter-spacing:-.035em;
+    margin-bottom:28px;color:var(--ink);
+  }
+  .title .word{display:inline-block;overflow:hidden;vertical-align:top}
+  .title .word>span{
+    display:inline-block;transform:translateY(110%) rotate(8deg);opacity:0;
+    animation:wordRise .9s cubic-bezier(.2,.7,.2,1) forwards;
+    animation-delay:calc(var(--w)*120ms + 200ms);
+  }
+  .title .accent{
+    font-style:italic;font-weight:500;
+    background:linear-gradient(120deg,var(--cyan) 0%,var(--cyan-soft) 50%,#9b8cff 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  @keyframes wordRise{to{transform:translateY(0) rotate(0);opacity:1}}
+
+  .lede{font-size:19px;line-height:1.55;color:var(--ink-dim);max-width:540px;margin-bottom:36px;opacity:0;animation:fade 1s ease .9s forwards}
+  @keyframes fade{to{opacity:1}}
+
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;opacity:0;animation:fade 1s ease 1.1s forwards}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:14px 22px;border-radius:11px;font-weight:600;font-size:15px;
+    text-decoration:none;cursor:pointer;border:none;font-family:inherit;
+    transition:transform .25s ease, box-shadow .25s ease, background .2s;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--indigo) 0%,#5a6cf0 100%);color:#fff;
+    box-shadow:0 10px 30px -8px rgba(59,75,216,.55), inset 0 1px 0 rgba(255,255,255,.18);
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 40px -10px rgba(59,75,216,.7), inset 0 1px 0 rgba(255,255,255,.25)}
+  .btn-ghost{background:var(--glass);color:var(--ink);border:1px solid var(--line-strong);backdrop-filter:blur(8px)}
+  .btn-ghost:hover{background:var(--glass-strong);transform:translateY(-2px)}
+  .btn:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+  .hero-meta{margin-top:48px;display:flex;gap:36px;flex-wrap:wrap;opacity:0;animation:fade 1s ease 1.3s forwards}
+  .hero-meta div{display:flex;flex-direction:column}
+  .hero-meta .num{font-family:'Space Grotesk';font-size:28px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+  .hero-meta .lab{font-size:13px;color:var(--ink-mute);margin-top:2px}
+
+  .hero-visual{position:relative;opacity:0;animation:fade 1.2s ease .7s forwards}
+  .panel{
+    background:rgba(15,20,28,.7);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    border:1px solid var(--line-strong);border-radius:18px;padding:22px;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06);
+    position:relative;
+  }
+  .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .panel-title{font-family:'Space Grotesk';font-size:14px;font-weight:600;color:var(--ink)}
+  .panel-tag{font-size:11px;color:var(--cyan);background:rgba(34,211,238,.1);padding:3px 8px;border-radius:6px;font-family:'Space Grotesk';letter-spacing:.03em}
+  .spark{display:flex;align-items:flex-end;gap:4px;height:80px;margin-bottom:6px}
+  .spark .bar{flex:1;background:linear-gradient(180deg,var(--cyan) 0%,var(--indigo) 100%);border-radius:3px 3px 0 0;opacity:.85;animation:barRise 1.2s ease-out backwards}
+  @keyframes barRise{from{height:0!important}}
+  .panel-foot{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-mute);margin-top:8px}
+
+  .float-card{
+    position:absolute;background:rgba(15,20,28,.85);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--line-strong);border-radius:14px;padding:14px 16px;
+    box-shadow:0 20px 50px -15px rgba(0,0,0,.7);font-size:13px;
+  }
+  .float-1{top:-22px;right:-12px;display:flex;align-items:center;gap:10px;animation:floaty 6s ease-in-out infinite}
+  .float-2{bottom:-20px;left:-20px;animation:floaty 7s ease-in-out infinite .8s}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .float-card .k{font-family:'Space Grotesk';font-weight:600;color:var(--ink);font-size:18px}
+  .float-card .l{color:var(--ink-mute);font-size:11px}
+  .float-card .pulse{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 0 rgba(34,211,238,.6);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,211,238,.6)}70%{box-shadow:0 0 0 10px rgba(34,211,238,0)}100%{box-shadow:0 0 0 0 rgba(34,211,238,0)}}
+
+  .trust{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:32px 0;margin-top:40px}
+  .trust-row{display:flex;justify-content:space-between;align-items:center;gap:30px;flex-wrap:wrap}
+  .trust-label{font-size:12px;color:var(--ink-mute);letter-spacing:.08em;text-transform:uppercase;font-family:'Space Grotesk'}
+  .trust-logos{display:flex;gap:36px;flex-wrap:wrap;align-items:center}
+  .trust-logos span{font-family:'Space Grotesk';font-weight:600;font-size:18px;color:var(--ink-dim);letter-spacing:-.02em;opacity:.7;transition:.2s}
+  .trust-logos span:hover{opacity:1;color:var(--ink)}
+
+  section{padding:120px 0;position:relative}
+  .section-head{margin-bottom:64px;max-width:780px}
+  .section-num{font-family:'Space Grotesk';font-size:13px;color:var(--cyan);letter-spacing:.1em;display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .section-num::before{content:"";width:24px;height:1px;background:var(--cyan)}
+  h2{font-family:'Space Grotesk';font-weight:600;font-size:clamp(34px,4.4vw,56px);line-height:1.05;letter-spacing:-.025em;margin-bottom:18px}
+  h2 em{font-style:italic;font-weight:500;color:var(--cyan-soft)}
+  .section-sub{font-size:18px;color:var(--ink-dim);max-width:620px}
+
+  .features{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+  .feature{
+    background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:30px;
+    transition:transform .35s ease, background .25s, border-color .25s;position:relative;overflow:hidden;
+  }
+  .feature:hover{transform:translateY(-4px);background:var(--glass-strong);border-color:var(--line-strong)}
+  .feature:focus-within{border-color:var(--cyan)}
+  .feature .ico{
+    width:44px;height:44px;border-radius:11px;
+    background:linear-gradient(135deg,rgba(59,75,216,.18),rgba(34,211,238,.12));
+    border:1px solid rgba(34,211,238,.2);
+    display:flex;align-items:center;justify-content:center;margin-bottom:22px;color:var(--cyan);
+  }
+  .feature h3{font-family:'Space Grotesk';font-size:21px;font-weight:600;letter-spacing:-.01em;margin-bottom:10px}
+  .feature p{color:var(--ink-dim);font-size:15px;line-height:1.55}
+  .feature .tag{display:inline-block;margin-top:16px;font-size:12px;color:var(--cyan);font-family:'Space Grotesk';letter-spacing:.04em}
+  .f-1{grid-column:span 5}.f-2{grid-column:span 4}.f-3{grid-column:span 3}
+  .f-4{grid-column:span 4}.f-5{grid-column:span 4}.f-6{grid-column:span 4}
+  @media(max-width:900px){.feature{grid-column:span 6!important}}
+  @media(max-width:600px){.feature{grid-column:span 12!important}}
+
+  .mosaic{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:160px;gap:14px}
+  .tile{
+    position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);
+    transition:transform .5s cubic-bezier(.2,.7,.2,1), z-index 0s, box-shadow .4s;cursor:pointer;
+  }
+  .tile img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    transition:transform .8s cubic-bezier(.2,.7,.2,1), filter .4s;filter:saturate(.85) contrast(1.05);
+  }
+  .tile::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,13,18,0) 40%,rgba(10,13,18,.85) 100%);pointer-events:none}
+  .tile-label{position:absolute;left:18px;bottom:16px;right:18px;z-index:2;color:#fff;transform:translateY(8px);opacity:.85;transition:.4s}
+  .tile:hover{transform:scale(1.04);z-index:5;box-shadow:0 30px 70px -20px rgba(0,0,0,.8)}
+  .tile:hover img{transform:scale(1.08);filter:saturate(1.1) contrast(1.05)}
+  .tile:hover .tile-label{transform:translateY(0);opacity:1}
+  .tile-label .t{font-family:'Space Grotesk';font-weight:600;font-size:16px;letter-spacing:-.01em}
+  .tile-label .d{font-size:12px;color:var(--ink-dim);margin-top:3px}
+
+  .t-1{grid-column:span 2;grid-row:span 2}
+  .t-2{grid-column:span 1;grid-row:span 1}
+  .t-3{grid-column:span 1;grid-row:span 2}
+  .t-4{grid-column:span 2;grid-row:span 1}
+  .t-5{grid-column:span 1;grid-row:span 1}
+  .t-6{grid-column:span 2;grid-row:span 1}
+  .t-7{grid-column:span 1;grid-row:span 1}
+
+  .tile-stat{
+    background:linear-gradient(135deg,rgba(59,75,216,.15),rgba(34,211,238,.08));
+    border:1px solid rgba(34,211,238,.2);
+    display:flex;flex-direction:column;justify-content:space-between;padding:20px;
+  }
+  .tile-stat .big{font-family:'Space Grotesk';font-size:42px;font-weight:600;letter-spacing:-.03em;color:var(--ink)}
+  .tile-stat .cap{font-size:12px;color:var(--ink-dim);line-height:1.4}
+
+  @media(max-width:800px){
+    .mosaic{grid-template-columns:repeat(2,1fr)}
+    .t-1,.t-3,.t-4,.t-6{grid-column:span 2!important;grid-row:span 1!important}
+  }
+
+  .sdk-wrap{display:grid;grid-template-columns:1fr 1.1fr;gap:60px;align-items:center}
+  @media(max-width:900px){.sdk-wrap{grid-template-columns:1fr}}
+  .code-block{
+    background:rgba(15,20,28,.85);backdrop-filter:blur(14px);
+    border:1px solid var(--line-strong);border-radius:14px;overflow:hidden;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.7);
+  }
+  .code-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
+  .code-head .dot{width:11px;height:11px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{margin-left:12px;font-family:'Space Grotesk';font-size:13px;color:var(--ink-mute)}
+  .code-block pre{padding:22px 24px;font-family:'Space Grotesk',monospace;font-size:13.5px;line-height:1.7;color:var(--ink-dim);overflow-x:auto}
+  .tk-key{color:#9b8cff}.tk-str{color:var(--cyan-soft)}.tk-fn{color:var(--cyan)}.tk-com{color:var(--ink-mute);font-style:italic}.tk-num{color:#ffb86c}
+
+  .sdk-list{list-style:none;margin-top:24px;display:flex;flex-direction:column;gap:14px}
+  .sdk-list li{display:flex;gap:14px;color:var(--ink-dim);font-size:15px}
+  .sdk-list li svg{flex:none;margin-top:2px;color:var(--cyan)}
+  .sdk-list strong{color:var(--ink);font-weight:600}
+
+  .cta-section{padding:80px 0 120px}
+  .cta-box{
+    position:relative;
+    background:
+      radial-gradient(ellipse at top left,rgba(59,75,216,.35),transparent 60%),
+      radial-gradient(ellipse at bottom right,rgba(34,211,238,.18),transparent 60%),
+      rgba(15,20,28,.7);
+    backdrop-filter:blur(14px);border:1px solid var(--line-strong);
+    border-radius:24px;padding:72px 60px;text-align:center;overflow:hidden;
+    box-shadow:0 40px 100px -30px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .cta-box::before{
+    content:"";position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:48px 48px;
+    mask-image:radial-gradient(ellipse 60% 60% at 50% 50%,#000,transparent 80%);
+    pointer-events:none;
+  }
+  .cta-box h2{position:relative;font-size:clamp(32px,4.5vw,54px);margin-bottom:18px}
+  .cta-box p{position:relative;color:var(--ink-dim);font-size:18px;max-width:560px;margin:0 auto 32px}
+  .cta-box .cta-row{position:relative;justify-content:center}
+  @media(max-width:600px){.cta-box{padding:48px 24px}}
+
+  footer{border-top:1px solid var(--line);padding:60px 0 40px}
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+  @media(max-width:760px){.foot-grid{grid-template-columns:1fr 1fr;gap:32px}}
+  .foot-brand p{color:var(--ink-mute);font-size:14px;margin-top:14px;max-width:280px}
+  footer h4{font-family:'Space Grotesk';font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:16px;font-weight:500}
+  footer ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  footer ul a{color:var(--ink-dim);text-decoration:none;font-size:14px;transition:.2s}
+  footer ul a:hover{color:var(--cyan)}
+  footer ul a:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px}
+  .foot-bottom{border-top:1px solid var(--line);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--ink-mute)}
+
+  .deco{position:absolute;pointer-events:none;will-change:transform}
+  .deco-line{top:10%;right:-100px;width:300px;height:300px;border:1px solid rgba(34,211,238,.12);border-radius:50%}
+  .deco-line-2{top:40%;left:-80px;width:200px;height:200px;border:1px solid rgba(155,140,255,.1);border-radius:50%}
+
+  .reveal{opacity:0;transform:translateY(30px);transition:opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:opacity .3s ease!important}
+    .title .word>span{transform:none;opacity:1}
+    .reveal{opacity:1;transform:none}
+    .bg-blob,.deco{transform:none!important}
+    .float-card{animation:none!important}
+    .tile:hover{transform:none}
+    .tile:hover img{transform:none}
+  }
+</style>
+
+<style id="__zd_image_harmony__">
+  figure, .img-wrap, [class*="visual"], [class*="hero"] { position: relative; overflow: hidden; }
+  img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.88) contrast(1.04) brightness(0.97); }
+  figure::after, .img-wrap::after, .od-hero-visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, color-mix(in oklch, #4F46E5 8%, transparent) 0%, color-mix(in oklch, #06B6D4 12%, transparent) 100%);
+    mix-blend-mode: multiply;
+    opacity: 0.35;
+  }
+  .app-view img, section img { border-radius: inherit; }
+</style>
+</head>
+<body>
+
+<div class="bg-layer" aria-hidden="true">
+  <div class="bg-grid"></div>
+  <div class="bg-blob blob-1" data-speed="0.15"></div>
+  <div class="bg-blob blob-2" data-speed="0.25"></div>
+  <div class="bg-blob blob-3" data-speed="0.18"></div>
+</div>
+
+<nav class="top" aria-label="Hauptnavigation">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+      <path d="M14 2 L26 14 L14 26 L2 14 Z" stroke="url(#g1)" stroke-width="1.6" fill="rgba(34,211,238,.08)"/>
+      <path d="M14 8 L20 14 L14 20 L8 14 Z" fill="url(#g1)"/>
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="28" y2="28">
+          <stop offset="0" stop-color="#22d3ee"/>
+          <stop offset="1" stop-color="#3b4bd8"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    Kinetix
+  </a>
+  <ul>
+    <li><a href="#features">Plattform</a></li>
+    <li><a href="#mosaic">Workflows</a></li>
+    <li><a href="#sdk">Integration</a></li>
+    <li><a href="#cta">Preise</a></li>
+    <li><a href="#docs">Doku</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">
+    Workspace starten
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </a>
+</nav>
+
+<header class="hero">
+  <span class="deco deco-line" data-speed="0.3" aria-hidden="true"></span>
+  <span class="deco deco-line-2" data-speed="0.2" aria-hidden="true"></span>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow"><span class="dot"></span>Kinetix 4.0 · Live seit Juni</span>
+        <h1 class="title" aria-label="Chaos wird zu Klarheit.">
+          <span class="word" style="--w:0"><span>Chaos</span></span>
+          <span class="word" style="--w:1"><span>wird</span></span>
+          <span class="word" style="--w:2"><span>zu</span></span><br>
+          <span class="word" style="--w:3"><span class="accent">Klarheit.</span></span>
+        </h1>
+        <p class="lede">
+          Kinetix bündelt Task-Management, Sprint-Planung und Roadmaps in einer einzigen Plattform. Sie importieren Ihr Board, wir synchronisieren innerhalb von Sekunden alle Abhängigkeiten — ohne Manual, ohne Excel-Exporte, ohne Status-Meetings.
+        </p>
+        <div class="cta-row">
+          <a href="#cta" class="btn btn-primary">
+            14 Tage kostenlos testen
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#sdk" class="btn btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="8 9 12 5 16 9"/><line x1="12" y1="5" x2="12" y2="15"/><path d="M5 19h14"/></svg>
+            Live-Demo ansehen
+          </a>
+        </div>
+        <div class="hero-meta">
+          <div><span class="num">12 Mio.</span><span class="lab">Tasks / Monat automatisiert</span></div>
+          <div><span class="num">120 ms</span><span class="lab">P95 Synchronisations-Latenz</span></div>
+          <div><span class="num">30 Sek</span><span class="lab">bis zum ersten Sprint</span></div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Velocity · Sprint 42</span>
+            <span class="panel-tag">LIVE</span>
+          </div>
+          <div class="spark" aria-hidden="true">
+            <div class="bar" style="height:38%;animation-delay:.1s"></div>
+            <div class="bar" style="height:52%;animation-delay:.15s"></div>
+            <div class="bar" style="height:44%;animation-delay:.2s"></div>
+            <div class="bar" style="height:65%;animation-delay:.25s"></div>
+            <div class="bar" style="height:58%;animation-delay:.3s"></div>
+            <div class="bar" style="height:78%;animation-delay:.35s"></div>
+            <div class="bar" style="height:71%;animation-delay:.4s"></div>
+            <div class="bar" style="height:88%;animation-delay:.45s"></div>
+            <div class="bar" style="height:82%;animation-delay:.5s"></div>
+            <div class="bar" style="height:96%;animation-delay:.55s"></div>
+            <div class="bar" style="height:91%;animation-delay:.6s"></div>
+            <div class="bar" style="height:99%;animation-delay:.65s"></div>
+          </div>
+          <div class="panel-foot">
+            <span>Woche 1</span>
+            <span>Woche 12</span>
+          </div>
+        </div>
+        <div class="float-card float-1">
+          <span class="pulse"></span>
+          <div>
+            <div class="k">+38 %</div>
+            <div class="l">Durchsatz vs. Vorquartal</div>
+          </div>
+        </div>
+        <div class="float-card float-2">
+          <div class="k">142</div>
+          <div class="l">Tasks heute erledigt</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section data-reveal data-od-id="scene-intro" class="trust" style="padding:48px 0">
+  <div class="wrap">
+    <div class="trust-row">
+      <span class="trust-label">Vertraut von Produktteams bei</span>
+      <div class="trust-logos">
+        <span>Northwind</span>
+        <span>Helix&nbsp;Labs</span>
+        <span>ORBIT</span>
+        <span>Kantonswerk</span>
+        <span>Vela</span>
+        <span>Sternefeld</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-reveal data-od-id="scene-discovery" id="features" style="padding-top:100px">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="section-num">01 — Plattform</div>
+      <h2>Vier Module, ein Workspace, <em>kein Chaos mehr.</em></h2>
+      <p class="section-sub">Kinetix ersetzt die zersplitterte Tool-Landschaft aus Task-Trackern, Wiki-Dokumenten, Tabellen und Chat-Threads. Sie definieren ein Projekt einmal, jedes Team arbeitet auf derselben Datenbasis.</p>
+    </div>
+
+    <div class="features">
+      <article class="feature f-1 reveal" tabindex="0">
+        <div class="ico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        </div>
+        <h3>Dynamische Boards</h3>
+        <p>Kanban, Scrum oder Custom Workflows mit Drag-and-Drop in unter 10&nbsp;ms. Status-Änderungen triggeren automatisch Webhooks, Notifications und Sub-Tasks — kein manuelles Update, keine verwaisten Tickets.</p>
+        <span class="tag">Native Apps · iOS / Android / Web / Mac</span>
+      </article>
+
+      <article class="feature f-2 reveal" tabindex="0">
+        <div class="ico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <h3>Sprint-Automatisierung</h3>
+        <p>Frei definierbare Sprints über beliebige Projekte hinweg. Velocity-Berechnungen in Echtzeit, nicht im Nachhinein — auch über 14&nbsp;Teams und 8.000&nbsp;Epics hinweg.</p>
+        <span class="tag">Burn-down · visuell</span>
+      </article>
+
+      <article class="feature f-3 reveal" tabindex="0">
+        <div class="ico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        </div>
+        <h3>Live-Roadmaps</h3>
+        <p>Meilensteine nach Quartal, Team oder Produktlinie — synchron in Slack, Confluence oder Intranet veröffentlicht.</p>
+      </article>
+
+      <article class="feature f-4 reveal" tabindex="0">
+        <div class="ico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
+        </div>
+        <h3>Kapazitäts-Planung</h3>
+        <p>Workload-Prognosen pro Team-Mitglied. Auslastung und Engpässe sofort sichtbar, aktualisiert alle 60 Sekunden, inklusive Urlaubs- und Feiertagskalender.</p>
+        <span class="tag">Engine v4 · 92 % Accuracy</span>
+      </article>
+
+      <article class="feature f-5 reveal" tabindex="0">
+        <div class="ico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <h3>Developer API</h3>
+        <p>REST & GraphQL, 24&nbsp;KB SDK, webhook-first. Typisierte Responses für alle Objekte direkt in der IDE.</p>
+        <span class="tag">v4.0.1 · MIT</span>
+      </article>
+
+      <article class="feature f-6 reveal" tabindex="0">
+        <div class="ico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>Slack & MS Teams</h3>
+        <p>Neue Tasks, Fristen und Kommentare landen automatisch im Kanal Ihrer Wahl — mit Deep-Link zurück zum Board.</p>
+        <span class="tag">Native Integrationen · 18</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section data-reveal data-od-id="scene-ritual" id="mosaic" style="padding-top:80px">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="section-num">02 — Workflow</div>
+      <h2>Vom rohen Input <em>zum fertigen Release.</em></h2>
+      <p class="section-sub">Sechs Phasen, die ein skalierendes Team bei Vela in einer typischen Woche mit Kinetix durchläuft — vom ersten Feature-Wunsch bis zum ausgerollten Update.</p>
+    </div>
+
+    <div class="mosaic reveal">
+      <div class="tile t-1">
+        <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-22%2F2e1fa772-49a8-46a3-a348-bdf036865c2c_aigc.jpeg?Expires=1784821027&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=UfJpdwTnNiWxt6Sov1E%2FSTg1AQY%3D" alt="Team arbeitet an Projektplan" style="width:100%;height:100%;object-fit:cover">
+        <div class="tile-label">
+          <div class="t">01 · Idea Capture</div>
+          <div class="d">Inbox, Templates, Auto-Kategorisierung</div>
+        </div>
+      </div>
+
+      <div class="tile t-2">
+        <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-22%2F2a4edfc6-2658-4f25-915b-260a651be1c6_aigc.jpeg?Expires=1784821027&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=gp6an7ozykcpu3NklPr%2F9LNwno8%3D" alt="Meeting für Projektmanagement" style="width:100%;height:100%;object-fit:cover">
+        <div class="tile-label">
+          <div class="t">02 · Backlog Grooming</div>
+        </div>
+      </div>
+
+      <div class="tile t-3">
+        <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-22%2F67c6d207-9ab2-4be6-8468-6b6677fba668_aigc.jpeg?Expires=1784821027&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=sUBpQXqlKWBb1JtB06hMl4uerZs%3D" alt="Entwickler im Sprint-Planning" style="width:100%;height:100%;object-fit:cover">
+        <div class="tile-label">
+          <div class="t">03 · Sprint-Planung</div>
+          <div class="d">Drag-and-Drop, mit Kapazitäts-Check</div>
+        </div>
+      </div>
+
+      <div class="tile t-4 tile-stat">
+        <div>
+          <div class="cap" style="font-family:'Space Grotesk';color:var(--cyan);letter-spacing:.06em;font-size:11px;text-transform:uppercase">04 · Blocker erkannt</div>
+        </div>
+        <div>
+          <div class="big">3 Tickets</div>
+          <div class="cap">Warten auf QA-Review im Epic "Auth 2.0", 14. Juni 07:42 Uhr. Automatisch eskaliert.</div>
+        </div>
+      </div>
+
+      <div class="tile t-5">
+        <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-22%2F8b22c467-60ec-4e76-b665-c48b404441ff_aigc.jpeg?Expires=1784821029&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=YrxHAreYKXLllyh2zrNgseclFXA%3D" alt="Code Review und Projektstatus" style="width:100%;height:100%;object-fit:cover">
+        <div class="tile-label">
+          <div class="t">05 · Deployment</div>
+        </div>
+      </div>
+
+      <div class="tile t-6">
+        <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=80" alt="Team feiert erfolgreiches Projekt" style="width:100%;height:100%;object-fit:cover">
+        <div class="tile-label">
+          <div class="t">06 · Retro &amp; Analyse</div>
+          <div class="d">Velocity, Burndown, Feedback — vorausgefüllt</div>
+        </div>
+      </div>
+
+      <div class="tile t-7 tile-stat">
+        <div>
+          <div class="cap" style="font-family:'Space Grotesk';color:var(--cyan);letter-spacing:.06em;font-size:11px;text-transform:uppercase">07 · Slack-Alert</div>
+        </div>
+        <div>
+          <div class="big">07:43</div>
+          <div class="cap">UTC — ausgelöst an #team-payments</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-reveal data-od-id="scene-material" id="sdk">
+  <div class="wrap">
+    <div class="sdk-wrap">
+      <div class="reveal">
+        <div class="section-num">03 — Integration</div>
+        <h2 style="font-size:clamp(30px,3.8vw,46px)">Ein API-Call. <em>Vier Zeilen.</em> Lauffähig.</h2>
+        <p style="color:var(--ink-dim);font-size:17px;margin-bottom:8px">Das Kinetix-SDK ist TypeScript-first, 24&nbsp;KB gzipped und tree-shakbar. Autocomplete schlägt Task-Typen und Custom Fields direkt in der IDE vor — basierend auf dem Live-Schema Ihres Workspaces.</p>
+        <ul class="sdk-list">
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <span><strong>Offline-Modus</strong> bei mobilen Geräten — bis zu 5.000 Tasks, dann Auto-Sync.</span>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <span><strong>Granulare RBAC</strong> auf Client-Seite — sensible Projekte bleiben unsichtbar.</span>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <span><strong>SSO &amp; SCIM</strong> für Okta, Azure AD und Google Workspace — integriert in einen Aufruf.</span>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <span><strong>Versionierung</strong> wird automatisch archiviert — auch bei Löschungen.</span>
+          </li>
+        </ul>
+        <div style="margin-top:32px">
+          <a href="#" class="btn btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Zur vollständigen Doku
+          </a>
+        </div>
+      </div>
+      
+      <div class="code-block reveal">
+        <div class="code-head">
+          <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+          <span class="file">project-setup.ts</span>
+        </div>
+        <pre><span class="tk-com">// 1. Install via npm</span>
+<span class="tk-key">import</span> { Kinetix } <span class="tk-key">from</span> <span class="tk-str">'@kinetix/sdk'</span>;
+
+<span class="tk-com">// 2. Initialize client</span>
+<span class="tk-key">const</span> kinetix = <span class="tk-key">new</span> <span class="tk-fn">Kinetix</span>({
+  apiKey: process.env.<span class="tk-str">KINETIX_KEY</span>,
+  workspace: <span class="tk-str">'acme-corp'</span>
+});
+
+<span class="tk-com">// 3. Create a new task</span>
+<span class="tk-key">await</span> kinetix.tasks.<span class="tk-fn">create</span>({
+  title: <span class="tk-str">"Implement OAuth 2.0 flow"</span>,
+  sprint: <span class="tk-num">42</span>,
+  priority: <span class="tk-str">"high"</span>,
+  tags: [<span class="tk-str">"backend"</span>, <span class="tk-str">"auth"</span>]
+});</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-reveal data-od-id="scene-voice" class="cta-section" id="cta">
+  <div class="wrap">
+    <div class="cta-box reveal">
+      <h2>Stoppen Sie das <em>Task-Chaos.</em></h2>
+      <p>Starten Sie in unter 2 Minuten mit Kinetix. Keine Kreditkarte nötig, direkte Jira- & Asana-Importe vorhanden.</p>
+      <div class="cta-row">
+        <a href="#" class="btn btn-primary">
+          Workspace kostenlos erstellen
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#" class="btn btn-ghost">Vertrieb kontaktieren</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#" class="brand">
+          <svg class="brand-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <path d="M14 2 L26 14 L14 26 L2 14 Z" stroke="url(#g2)" stroke-width="1.6" fill="rgba(34,211,238,.08)"/>
+            <path d="M14 8 L20 14 L14 20 L8 14 Z" fill="url(#g2)"/>
+            <defs>
+              <linearGradient id="g2" x1="0" y1="0" x2="28" y2="28">
+                <stop offset="0" stop-color="#22d3ee"/>
+                <stop offset="1" stop-color="#3b4bd8"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          Kinetix
+        </a>
+        <p>Das Projektmanagement-Tool für Teams, die Geschwindigkeit und Klarheit lieben.</p>
+      </div>
+      <div>
+        <h4>Produkt</h4>
+        <ul>
+          <li><a href="#">Features</a></li>
+          <li><a href="#">Integrationen</a></li>
+          <li><a href="#">Preise</a></li>
+          <li><a href="#">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Ressourcen</h4>
+        <ul>
+          <li><a href="#">Dokumentation</a></li>
+          <li><a href="#">API-Referenz</a></li>
+          <li><a href="#">Guides</a></li>
+          <li><a href="#">Community</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Unternehmen</h4>
+        <ul>
+          <li><a href="#">Über uns</a></li>
+          <li><a href="#">Karriere</a></li>
+          <li><a href="#">Datenschutz</a></li>
+          <li><a href="#">Impressum</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Kinetix Inc. Alle Rechte vorbehalten.</span>
+      <span>Made with Focus in Berlin.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  reveals.forEach(el => observer.observe(el));
+
+  // Parallax background blobs
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const blobs = document.querySelectorAll('[data-speed]');
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      blobs.forEach(blob => {
+        const speed = parseFloat(blob.dataset.speed);
+        blob.style.transform = `translateY(${scrollY * speed}px)`;
+      });
+    }, { passive: true });
+  }
+</script>
+
+
+<!-- AGENCY POST-PROCESS LAYER (deterministic craft floor) -->
+<style id="__agency_craft__">
+  /* Subtle film grain — adds texture, removes "flat digital" feel */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* Smooth scrolling with offset */
+  html { scroll-behavior: smooth; }
+  /* Premium selection style */
+  ::selection { background: var(--accent, currentColor); color: var(--bg, #fff); }
+  /* Hairline borders everywhere by default for cards */
+  [class*="card"], [class*="Card"] {
+    border: 1px solid color-mix(in oklch, currentColor 8%, transparent);
+  }
+  /* Image hover — subtle life */
+  img { transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1); }
+  img:hover { transform: scale(1.03); }
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+
+<!-- Z.Design Experience Runtime (deterministic interactivity floor) -->
+<style id="__zd_experience_runtime__-css">
+  [data-reveal]:not(.is-visible) { opacity: 0; transform: translateY(40px); }
+  [data-reveal].is-visible { opacity: 1; transform: translateY(0); transition: opacity 0.9s cubic-bezier(0.22,1,0.36,1), transform 0.9s cubic-bezier(0.22,1,0.36,1); }
+  #zd-scroll-progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; transform-origin: left; transform: scaleX(0); background: var(--accent, var(--primary, #c9a962)); z-index: 10000; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
+    #zd-scroll-progress { display: none; }
+  }
+</style>
+<div id="zd-scroll-progress" aria-hidden="true"></div>
+<script id="__zd_experience_runtime__">
+(function(){
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var bar = document.getElementById('zd-scroll-progress');
+  function onScroll(){
+    var h = document.documentElement;
+    var p = h.scrollHeight - h.clientHeight;
+    if (bar && p > 0) bar.style.transform = 'scaleX(' + (h.scrollTop / p) + ')';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  var els = document.querySelectorAll('[data-reveal], section:not([data-reveal])');
+  els.forEach(function(el, i){
+    if (!el.hasAttribute('data-reveal')) el.setAttribute('data-reveal', '');
+    if (window.gsap && window.ScrollTrigger) return;
+    if (!('IntersectionObserver' in window)) { el.classList.add('is-visible'); return; }
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    obs.observe(el);
+  });
+  if (window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('[data-reveal]').forEach(function(el){
+      gsap.from(el, { y: 48, opacity: 0, duration: 1, ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' }
+      });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
