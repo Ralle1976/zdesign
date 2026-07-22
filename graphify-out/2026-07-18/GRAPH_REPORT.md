@@ -1,7 +1,7 @@
-# Graph Report - Z.Design  (2026-07-18)
+# Graph Report - Z.Design  (2026-07-17)
 
 ## Corpus Check
-- 328 files · ~1,716,159 words
+- 328 files · ~1,716,065 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c0122895`
+- Built from commit: `fef4ac23`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -254,16 +254,16 @@ Cohesion: 0.07
 Nodes (34): AnnotationPin, AnnotationPinProps, CanvasToolbar, CanvasToolbarProps, DesignRenderer, DesignRendererProps, NodeRenderer, NodeRendererProps (+26 more)
 
 ### Community 9 - "props-editors.tsx"
-Cohesion: 0.08
-Nodes (37): Accordion(), AccordionContent(), AccordionItem(), AccordionTrigger(), AccessibilityScannerProps, CATEGORY_CONFIG, ScoreCircle(), SEVERITY_CONFIG (+29 more)
+Cohesion: 0.13
+Nodes (19): Accordion(), AccordionContent(), AccordionItem(), AccordionTrigger(), BorderEditor(), ColorInput(), ContentEditor(), DESIGN_TOKEN_COLORS (+11 more)
 
 ### Community 10 - "patch-disclosure.ts"
 Cohesion: 0.08
 Nodes (42): appendRecord(), autoRevertIfRegressed(), ensureDir(), evaluatePatch(), OutcomeRecord, outcomesPath(), PatchOutcome, readRecords() (+34 more)
 
 ### Community 11 - "design.ts"
-Cohesion: 0.06
-Nodes (42): NewProjectDialogProps, MODE_ICONS, StatusBarProps, VIEWPORT_ICONS, CapabilitiesManifest, CapabilityFeature, CapabilityProvider, CapabilityRouteGroup (+34 more)
+Cohesion: 0.07
+Nodes (38): NewProjectDialogProps, MODE_ICONS, StatusBarProps, VIEWPORT_ICONS, CapabilitiesManifest, BUILT_IN_PROVIDERS, defaultDesignTree, defaultGenerationProgress (+30 more)
 
 ### Community 12 - "orchestra.ts"
 Cohesion: 0.12
@@ -278,16 +278,16 @@ Cohesion: 0.06
 Nodes (35): Sheet(), SheetContent(), SheetDescription(), SheetFooter(), SheetHeader(), SheetOverlay(), SheetTitle(), Sidebar() (+27 more)
 
 ### Community 15 - "ChatPanel.tsx"
-Cohesion: 0.08
-Nodes (25): Avatar(), AvatarFallback(), Badge(), badgeVariants, ScrollArea(), Separator(), AGENT_ICONS, AgentStatus (+17 more)
+Cohesion: 0.07
+Nodes (33): buildInjectCss(), DEFAULT_SLIDERS, HtmlArtifactPreview(), HtmlArtifactPreviewProps, RefinePopover, scaleBox(), SliderRowProps, SliderState (+25 more)
 
 ### Community 16 - "compilerOptions"
 Cohesion: 0.05
 Nodes (36): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+28 more)
 
 ### Community 17 - "TopToolbar.tsx"
-Cohesion: 0.12
-Nodes (25): Button(), Dialog(), DialogContent(), DialogDescription(), DialogFooter(), DialogHeader(), DialogTitle(), DialogTrigger() (+17 more)
+Cohesion: 0.10
+Nodes (28): Avatar(), AvatarFallback(), Button(), Dialog(), DialogContent(), DialogDescription(), DialogFooter(), DialogHeader() (+20 more)
 
 ### Community 18 - "use-toast.ts"
 Cohesion: 0.09
@@ -314,8 +314,8 @@ Cohesion: 0.06
 Nodes (31): bun-types, eslint, eslint-config-next, devDependencies, bun-types, eslint, eslint-config-next, tailwindcss (+23 more)
 
 ### Community 24 - "useZDesignStore"
-Cohesion: 0.11
-Nodes (38): Progress(), ResizableHandle(), ResizablePanel(), ResizablePanelGroup(), Tabs(), TabsContent(), TabsList(), TabsTrigger() (+30 more)
+Cohesion: 0.15
+Nodes (28): Progress(), AccessibilityScanner(), AnnotationsPanel(), CanvasArea(), GENERATION_STEPS, GenerationProgressIndicator(), getStepIndex(), QualityBadge() (+20 more)
 
 ### Community 25 - "call-text-llm.ts"
 Cohesion: 0.07
@@ -326,16 +326,16 @@ Cohesion: 0.24
 Nodes (15): ENV_PATH, GET(), POST(), upsertEnvEntry(), GET(), GET(), POST(), bustTextLLMConfigCache() (+7 more)
 
 ### Community 27 - "DesignSystemManager.tsx"
-Cohesion: 0.10
-Nodes (24): Select(), SelectContent(), SelectItem(), SelectTrigger(), SelectValue(), COLOR_CATEGORIES, DEFAULT_BORDER_RADIUS, DEFAULT_SHADOWS (+16 more)
+Cohesion: 0.07
+Nodes (46): Badge(), badgeVariants, ScrollArea(), Select(), SelectContent(), SelectItem(), SelectTrigger(), SelectValue() (+38 more)
 
 ### Community 28 - "art-direction.ts"
 Cohesion: 0.11
 Nodes (25): POST(), POST(), callTextLLM(), getTextConfig(), isProviderConfigured(), PromptInput, TextLLMCallOptions, MultiPassInput (+17 more)
 
 ### Community 29 - "shared.tsx"
-Cohesion: 0.13
-Nodes (16): buildInjectCss(), DEFAULT_SLIDERS, HtmlArtifactPreview(), HtmlArtifactPreviewProps, RefinePopover, scaleBox(), SliderRowProps, SliderState (+8 more)
+Cohesion: 0.17
+Nodes (16): AccessibilityScannerProps, CATEGORY_CONFIG, ScoreCircle(), SEVERITY_CONFIG, A11yCategory, A11ySeverity, AccessibilityIssue, calculateContrastRatio() (+8 more)
 
 ### Community 30 - "db.ts"
 Cohesion: 0.10
@@ -350,8 +350,8 @@ Cohesion: 0.14
 Nodes (20): main(), callFusionText(), extractText(), DEFAULT_BRIEFS, extractWeaknessSignal(), FusionCall, generatePrompt(), GepaResult (+12 more)
 
 ### Community 33 - "ZDesignApp.tsx"
-Cohesion: 0.22
-Nodes (17): classifyProvider(), isMcpProvider(), isProviderActiveForTab(), isSttProvider(), ParsedProvider, parseProvider(), ProviderCardRow(), ProviderCardRowProps (+9 more)
+Cohesion: 0.18
+Nodes (16): ResizableHandle(), ResizablePanel(), ResizablePanelGroup(), Tabs(), TabsContent(), TabsList(), TabsTrigger(), PropsPanel() (+8 more)
 
 ### Community 34 - "multi-pass-pipeline.ts"
 Cohesion: 0.13
@@ -589,11 +589,11 @@ Nodes (3): applyRuleBasedEnhancements(), getZAI(), POST()
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `cn` to `props-editors.tsx`, `sidebar.tsx`, `ChatPanel.tsx`, `TopToolbar.tsx`, `use-toast.ts`, `useZDesignStore`, `DesignSystemManager.tsx`, `alert-dialog.tsx`, `react`, `utils.ts`, `menubar.tsx`, `context-menu.tsx`, `dropdown-menu.tsx`, `HtmlArtifactPreview.tsx`, `carousel.tsx`, `form.tsx`, `drawer.tsx`, `toggle-group.tsx`, `alert.tsx`?**
+- **Why does `cn()` connect `cn` to `props-editors.tsx`, `sidebar.tsx`, `TopToolbar.tsx`, `use-toast.ts`, `useZDesignStore`, `DesignSystemManager.tsx`, `alert-dialog.tsx`, `ZDesignApp.tsx`, `react`, `utils.ts`, `menubar.tsx`, `context-menu.tsx`, `dropdown-menu.tsx`, `HtmlArtifactPreview.tsx`, `carousel.tsx`, `form.tsx`, `drawer.tsx`, `toggle-group.tsx`, `alert.tsx`?**
   _High betweenness centrality (0.138) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `dependencies` to `next-intl`, `next-themes`, `prisma`, `@prisma/client`, `zip-generator.ts`, `puppeteer`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-scroll-area`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-slider`, `devDependencies`, `@radix-ui/react-slot`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toast`, `@radix-ui/react-toggle`, `@radix-ui/react-tooltip`, `react-day-picker`, `react-dom`, `react-hook-form`, `react-markdown`, `react-resizable-panels`, `@reactuses/core`, `recharts`, `sharp`, `socket.io-client`, `react`, `sonner`, `tailwind-merge`, `tailwindcss-animate`, `@tanstack/react-query`, `@tanstack/react-table`, `@types/jszip`, `uuid`, `vaul`, `z-ai-web-dev-sdk`, `zustand`, `command.tsx`, `clsx`, `cmdk`, `date-fns`, `@dnd-kit/core`, `@dnd-kit/utilities`, `embla-carousel-react`, `framer-motion`, `@hookform/resolvers`, `html-pdf-node`, `input-otp`, `jsonrepair`, `lucide-react`, `@mdxeditor/editor`, `next`, `next-auth`?**
   _High betweenness centrality (0.131) - this node is a cross-community bridge._
-- **Why does `Concept` connect `art-direction.ts` to `multi-pass-pipeline.ts`, `route.ts`, `design.ts`, `ChatPanel.tsx`, `shared.tsx`?**
+- **Why does `Concept` connect `art-direction.ts` to `multi-pass-pipeline.ts`, `design.ts`, `route.ts`, `ChatPanel.tsx`?**
   _High betweenness centrality (0.100) - this node is a cross-community bridge._
 - **What connects `build.sh script`, `NEXT_TELEMETRY_DISABLED`, `start.sh script` to the rest of the system?**
   _604 weakly-connected nodes found - possible documentation gaps or missing edges._
