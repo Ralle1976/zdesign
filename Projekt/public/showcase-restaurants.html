@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Z.Design Showcase — 7 Restaurant Designs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #15151f;
+  --border: #252535;
+  --text: #e8e8ef;
+  --text-muted: #9999b0;
+  --accent: #a89eff;
+  --accent-dim: #6b5ee0;
+  --success: #22c55e;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 48px 24px 96px;
+}
+.header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.badge {
+  display: inline-block;
+  padding: 6px 16px;
+  background: rgba(168, 158, 255, 0.15);
+  border: 1px solid rgba(168, 158, 255, 0.3);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--accent);
+  margin-bottom: 24px;
+  letter-spacing: 0.5px;
+}
+.title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 800;
+  margin: 0 0 16px;
+  background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.subtitle {
+  font-size: 18px;
+  color: var(--text-muted);
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 32px;
+}
+.card {
+  background: var(--surface);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: transform 0.2s, border-color 0.2s;
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+}
+.card__image {
+  position: relative;
+  aspect-ratio: 1280 / 900;
+  background: #000;
+  overflow: hidden;
+}
+.card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+.card__badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 600;
+}
+.card__pass {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  background: rgba(34, 197, 94, 0.85);
+  border-radius: 6px;
+  font-size: 11px;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.card__content {
+  padding: 20px;
+}
+.card__title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: #fff;
+}
+.card__category {
+  font-size: 12px;
+  padding: 3px 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.card__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.card__features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11px;
+}
+.feature-tag {
+  padding: 3px 8px;
+  background: rgba(168, 158, 255, 0.1);
+  border: 1px solid rgba(168, 158, 255, 0.2);
+  border-radius: 4px;
+  color: var(--accent);
+  font-family: monospace;
+}
+.footer {
+  text-align: center;
+  margin-top: 80px;
+  padding: 32px;
+  color: #555570;
+  font-size: 13px;
+}
+.footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.footer a:hover {
+  text-decoration: underline;
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.stat__value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.stat__label {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <div class="badge">Z.DESIGN · RESTAURANT-SKELETON · PREMIUM</div>
+    <h1 class="title">7 Designs. Eine Vision.</h1>
+    <p class="subtitle">
+      Jedes Design wurde von Z.Design aus einer einzigen Text-Beschreibung generiert.
+      Powered by Z.ai GLM-5.2 über die Cream-Pipeline mit Restaurant-Skeleton.
+      Vollständige Struktur: Header, Hero, Features, Story, Testimonials, FAQ, CTA, Footer.
+    </p>
+  </header>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat__value">7</div>
+      <div class="stat__label">Designs</div>
+    </div>
+    <div class="stat">
+      <div class="stat__value">12</div>
+      <div class="stat__label">Sections pro Design</div>
+    </div>
+    <div class="stat">
+      <div class="stat__value">4</div>
+      <div class="stat__label">Premium-Bilder pro Design</div>
+    </div>
+    <div class="stat">
+      <div class="stat__value">89s</div>
+      <div class="stat__label">Durchschnittliche Zeit</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    
+    <article class="card">
+      <div class="card__image">
+        <img src="showcase-italian-restaurant.png" alt="Italian Restaurant" loading="lazy">
+        <div class="card__badge">#01</div>
+        <div class="card__pass">✓ PASS</div>
+      </div>
+      <div class="card__content">
+        <div class="card__meta">
+          <h2 class="card__title">Italian Restaurant</h2>
+          <span class="card__category">Fine Dining</span>
+        </div>
+        <div class="card__features">
+          <span class="feature-tag">Header</span>
+          <span class="feature-tag">Hero</span>
+          <span class="feature-tag">Features</span>
+          <span class="feature-tag">Story</span>
+          <span class="feature-tag">Testimonials</span>
+          <span class="feature-tag">FAQ</span>
+          <span class="feature-tag">CTA</span>
+          <span class="feature-tag">Footer</span>
+        </div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <div class="card__image">
+        <img src="showcase-sushi-bar.png" alt="Sushi Bar" loading="lazy">
+        <div class="card__badge">#02</div>
+        <div class="card__pass">✓ PASS</div>
+      </div>
+      <div class="card__content">
+        <div class="card__meta">
+          <h2 class="card__title">Sushi Bar</h2>
+          <span class="card__category">Japanese</span>
+        </div>
+        <div class="card__features">
+          <span class="feature-tag">Header</span>
+          <span class="feature-tag">Hero</span>
+          <span class="feature-tag">Features</span>
+          <span class="feature-tag">Story</span>
+          <span class="feature-tag">Testimonials</span>
+          <span class="feature-tag">FAQ</span>
+          <span class="feature-tag">CTA</span>
+          <span class="feature-tag">Footer</span>
+        </div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <div class="card__image">
+        <img src="showcase-french-bistro.png" alt="French Bistro" loading="lazy">
+        <div class="card__badge">#03</div>
+        <div class="card__pass">✓ PASS</div>
+      </div>
+      <div class="card__content">
+        <div class="card__meta">
+          <h2 class="card__title">French Bistro</h2>
+          <span class="card__category">European</span>
+        </div>
+        <div class="card__features">
+          <span class="feature-tag">Header</span>
+          <span class="feature-tag">Hero</span>
+          <span class="feature-tag">Features</span>
+          <span class="feature-tag">Story</span>
+          <span class="feature-tag">Testimonials</span>
+          <span class="feature-tag">FAQ</span>
+          <span class="feature-tag">CTA</span>
+          <span class="feature-tag">Footer</span>
+        </div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <div class="card__image">
+        <img src="showcase-steakhouse.png" alt="Steakhouse" loading="lazy">
+        <div class="card__badge">#04</div>
+        <div class="card__pass">✓ PASS</div>
+      </div>
+      <div class="card__content">
+        <div class="card__meta">
+          <h2 class="card__title">Steakhouse</h2>
+          <span class="card__category">Premium Meat</span>
+        </div>
+        <div class="card__features">
+          <span class="feature-tag">Header</span>
+          <span class="feature-tag">Hero</span>
+          <span class="feature-tag">Features</span>
+          <span class="feature-tag">Story</span>
+          <span class="feature-tag">Testimonials</span>
+          <span class="feature-tag">FAQ</span>
+          <span class="feature-tag">CTA</span>
+          <span class="feature-tag">Footer</span>
+        </div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <div class="card__image">
+        <img src="showcase-vegan-cafe.png" alt="Vegan Cafe" loading="lazy">
+        <div class="card__badge">#05</div>
+        <div class="card__pass">✓ PASS</div>
+      </div>
+      <div class="card__content">
+        <div class="card__meta">
+          <h2 class="card__title">Vegan Cafe</h2>
+          <span class="card__category">Plant-Based</span>
+        </div>
+        <div class="card__features">
+          <span class="feature-tag">Header</span>
+          <span class="feature-tag">Hero</span>
+          <span class="feature-tag">Features</span>
+          <span class="feature-tag">Story</span>
+          <span class="feature-tag">Testimonials</span>
+          <span class="feature-tag">FAQ</span>
+          <span class="feature-tag">CTA</span>
+          <span class="feature-tag">Footer</span>
+        </div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <div class="card__image">
+        <img src="showcase-thai-restaurant.png" alt="Thai Restaurant" loading="lazy">
+        <div class="card__badge">#06</div>
+        <div class="card__pass">✓ PASS</div>
+      </div>
+      <div class="card__content">
+        <div class="card__meta">
+          <h2 class="card__title">Thai Restaurant</h2>
+          <span class="card__category">Asian</span>
+        </div>
+        <div class="card__features">
+          <span class="feature-tag">Header</span>
+          <span class="feature-tag">Hero</span>
+          <span class="feature-tag">Features</span>
+          <span class="feature-tag">Story</span>
+          <span class="feature-tag">Testimonials</span>
+          <span class="feature-tag">FAQ</span>
+          <span class="feature-tag">CTA</span>
+          <span class="feature-tag">Footer</span>
+        </div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <div class="card__image">
+        <img src="showcase-pizzeria.png" alt="Pizzeria" loading="lazy">
+        <div class="card__badge">#07</div>
+        <div class="card__pass">✓ PASS</div>
+      </div>
+      <div class="card__content">
+        <div class="card__meta">
+          <h2 class="card__title">Pizzeria</h2>
+          <span class="card__category">Italian Casual</span>
+        </div>
+        <div class="card__features">
+          <span class="feature-tag">Header</span>
+          <span class="feature-tag">Hero</span>
+          <span class="feature-tag">Features</span>
+          <span class="feature-tag">Story</span>
+          <span class="feature-tag">Testimonials</span>
+          <span class="feature-tag">FAQ</span>
+          <span class="feature-tag">CTA</span>
+          <span class="feature-tag">Footer</span>
+        </div>
+      </div>
+    </article>
+    
+  </div>
+
+  <footer class="footer">
+    <p>
+      Generiert am 29.7.2026 ·{' '}
+      <a href="/">Zurück zu Z.Design →</a>
+    </p>
+    <p style="margin-top: 8px;">
+      Pipeline: Z.ai GLM-5.2 · Restaurant-Skeleton · Minimax image-01 · Agency-Craft · LESSONS.md Memory
+    </p>
+  </footer>
+</div>
+</body>
+</html>
