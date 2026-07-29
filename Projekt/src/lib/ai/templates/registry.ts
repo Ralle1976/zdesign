@@ -6,6 +6,16 @@ import type { Template } from './types';
 
 export const TEMPLATES: Template[] = [
   {
+    id: 'restaurant-premium',
+    name: "Restaurant Premium",
+    label: "restaurant-premium · Full-Stack Landingpage",
+    domainFit: ["food", "coffee-food", "restaurant", "bakery", "bistro"],
+    palette: {"background":"","surface":"","primary":"","accent":"","text":""},
+    fonts: {"display":"'Cormorant Garamond',Georgia,serif","body":"'Inter',system-ui,sans-serif"},
+    signature: {"layout":"Editorial Split","motion":["Scroll-Reveal","Slow-Zoom"],"effect":"Ambient-Glow"},
+    referencePath: 'restaurant-reference.html',
+  },
+  {
     id: 'orathai-thai-spa',
     name: "Orathai Thai Spa",
     label: "orathai-thai-spa · Split-Screen",
