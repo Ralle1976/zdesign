@@ -1,0 +1,1092 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Osteria Dolce Vita — Handgemachte Pasta & Weinbar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0d12;
+  --surface: #161318;
+  --primary: #1f1b22;
+  --accent: #c8a96a;
+  --text: #F5EFE6;
+  --text-muted: #9b948e;
+  --border: #2a252e;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.035;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+::selection { background: var(--accent); color: var(--bg); }
+
+.header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 20px clamp(24px, 5vw, 64px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(180deg, var(--bg) 0%, transparent 100%);
+  backdrop-filter: blur(0px);
+  transition: backdrop-filter 0.6s var(--ease), background 0.6s var(--ease);
+}
+.header.scrolled {
+  backdrop-filter: blur(20px);
+  background: linear-gradient(180deg, var(--bg) 0%, color-mix(in oklch, var(--bg) 85%, transparent) 100%);
+}
+.header__brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+}
+.header__nav {
+  display: flex;
+  gap: 40px;
+  list-style: none;
+}
+.header__nav a {
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.4s var(--ease);
+  position: relative;
+}
+.header__nav a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 1px;
+  background: var(--accent);
+  transition: width 0.4s var(--ease);
+}
+.header__nav a:hover { color: var(--accent); }
+.header__nav a:hover::after { width: 100%; }
+.header__cta {
+  padding: 12px 28px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: all 0.4s var(--ease);
+}
+.header__cta:hover {
+  background: var(--accent);
+  color: var(--bg);
+  box-shadow: 0 0 30px color-mix(in oklch, var(--accent) 30%, transparent);
+}
+
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 30% 50%, color-mix(in oklch, var(--accent) 8%, transparent) 0%, transparent 60%);
+  animation: ambientGlow 15s ease-in-out infinite;
+}
+@keyframes ambientGlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+.hero__text {
+  padding: clamp(64px, 10vw, 120px) clamp(24px, 5vw, 64px);
+  z-index: 2;
+}
+.hero__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+.hero__heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 32px;
+}
+.hero__heading em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 400;
+}
+.hero__sub {
+  font-size: 17px;
+  color: var(--text-muted);
+  line-height: 1.75;
+  max-width: 440px;
+  margin-bottom: 40px;
+}
+.hero__actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.hero__btn-primary {
+  padding: 16px 36px;
+  background: var(--accent);
+  color: var(--bg);
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+  transition: all 0.4s var(--ease);
+}
+.hero__btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px color-mix(in oklch, var(--accent) 40%, transparent);
+}
+.hero__btn-secondary {
+  padding: 16px 36px;
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transition: all 0.4s var(--ease);
+}
+.hero__btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.hero__visual {
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+.hero__visual img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  animation: slowZoom 25s ease-in-out infinite alternate;
+}
+@keyframes slowZoom {
+  to { transform: scale(1.08); }
+}
+.hero__visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--bg) 0%, transparent 30%);
+}
+.hero__stats {
+  display: flex;
+  gap: 48px;
+  padding: 0 clamp(24px, 5vw, 64px) 40px;
+  position: absolute;
+  bottom: 40px; left: 0;
+  z-index: 3;
+}
+.hero__stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  color: var(--accent);
+  font-weight: 400;
+}
+.hero__stat-label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.features {
+  padding: clamp(100px, 15vh, 160px) clamp(24px, 5vw, 64px);
+  background: var(--surface);
+}
+.features__head {
+  text-align: center;
+  margin-bottom: 80px;
+}
+.features__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.features__title em { color: var(--accent); font-style: italic; }
+.features__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.feature {
+  padding: 48px 32px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  transition: all 0.6s var(--ease);
+}
+.feature:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+.feature__num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 48px;
+  color: var(--accent);
+  margin-bottom: 16px;
+  font-weight: 400;
+}
+.feature__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  color: var(--text);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.feature__desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.story {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 90vh;
+  align-items: center;
+}
+.story__text {
+  padding: clamp(64px, 10vw, 120px);
+}
+.story__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+.story__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 300;
+  line-height: 1.05;
+  margin-bottom: 32px;
+  letter-spacing: -0.02em;
+}
+.story__title em { color: var(--accent); font-style: italic; }
+.story__body {
+  font-size: 16px;
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin-bottom: 40px;
+  max-width: 440px;
+}
+.story__visual {
+  height: 90vh;
+  position: relative;
+  overflow: hidden;
+}
+.story__visual img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  animation: slowZoom 25s ease-in-out infinite alternate;
+}
+.story__visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--bg) 0%, transparent 30%);
+}
+
+.testimonials {
+  padding: clamp(100px, 15vh, 160px) clamp(24px, 5vw, 64px);
+  background: var(--bg);
+  position: relative;
+}
+.testimonials__head {
+  text-align: center;
+  margin-bottom: 80px;
+}
+.testimonials__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.testimonials__title em { color: var(--accent); font-style: italic; }
+.testimonials__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.testimonial {
+  padding: 40px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  position: relative;
+}
+.testimonial__mark {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px;
+  color: var(--accent);
+  opacity: 0.2;
+  line-height: 0;
+  margin-bottom: 24px;
+}
+.testimonial__text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  font-style: italic;
+}
+.testimonial__author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.testimonial__avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--accent);
+  font-size: 16px;
+}
+.testimonial__name {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+.testimonial__role {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.faq {
+  padding: clamp(100px, 15vh, 160px) clamp(24px, 5vw, 64px);
+  background: var(--surface);
+}
+.faq__head {
+  text-align: center;
+  margin-bottom: 80px;
+}
+.faq__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.faq__title em { color: var(--accent); font-style: italic; }
+.faq__list {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.faq__item {
+  border-bottom: 1px solid var(--border);
+}
+.faq__question {
+  width: 100%;
+  padding: 28px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.3s var(--ease);
+}
+.faq__question:hover { color: var(--accent); }
+.faq__icon {
+  font-size: 20px;
+  color: var(--accent);
+  transition: transform 0.3s var(--ease);
+}
+.faq__item.open .faq__icon { transform: rotate(45deg); }
+.faq__answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s var(--ease), padding 0.3s var(--ease);
+  padding: 0;
+}
+.faq__item.open .faq__answer {
+  max-height: 500px;
+  padding-bottom: 28px;
+}
+.faq__answer-text {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.cta {
+  padding: clamp(120px, 20vh, 200px) 24px;
+  text-align: center;
+  background: radial-gradient(ellipse at center, var(--surface) 0%, var(--bg) 70%);
+  position: relative;
+  overflow: hidden;
+}
+.cta::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80vw; height: 80vw;
+  max-width: 600px; max-height: 600px;
+  background: radial-gradient(circle, color-mix(in oklch, var(--accent) 6%, transparent) 0%, transparent 60%);
+}
+.cta__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(40px, 7vw, 88px);
+  font-weight: 300;
+  line-height: 1;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 2;
+}
+.cta__title em { color: var(--accent); font-style: italic; }
+.cta__sub {
+  font-size: 15px;
+  color: var(--text-muted);
+  max-width: 480px;
+  margin: 0 auto 48px;
+  line-height: 1.8;
+  position: relative;
+  z-index: 2;
+}
+.cta__form {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.cta__input {
+  flex: 1;
+  padding: 16px 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  transition: border-color 0.3s var(--ease);
+}
+.cta__input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.cta__submit {
+  padding: 16px 32px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s var(--ease);
+}
+.cta__submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px color-mix(in oklch, var(--accent) 40%, transparent);
+}
+
+.footer {
+  padding: 80px clamp(24px, 5vw, 64px) 40px;
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+}
+.footer__brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.footer__tagline {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 300px;
+}
+.footer__col h4 {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+.footer__col ul { list-style: none; }
+.footer__col li { margin-bottom: 12px; }
+.footer__col a {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.footer__col a:hover { color: var(--accent); }
+.footer__bottom {
+  grid-column: 1 / -1;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 1s var(--ease), transform 1s var(--ease);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.15s; }
+.reveal-delay-2 { transition-delay: 0.3s; }
+.reveal-delay-3 { transition-delay: 0.45s; }
+
+@media (max-width: 900px) {
+  .hero, .story { grid-template-columns: 1fr; }
+  .features__grid, .testimonials__grid { grid-template-columns: 1fr; }
+  .footer { grid-template-columns: 1fr 1fr; }
+  .header__nav { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+
+<style id="__zd_image_harmony__">
+  figure, .img-wrap, [class*="visual"], [class*="hero"] { position: relative; overflow: hidden; }
+  img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.88) contrast(1.04) brightness(0.97); }
+  figure::after, .img-wrap::after, .od-hero-visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, color-mix(in oklch, #2B1B12 8%, transparent) 0%, color-mix(in oklch, #C2612A 12%, transparent) 100%);
+    mix-blend-mode: multiply;
+    opacity: 0.35;
+  }
+  .app-view img, section img { border-radius: inherit; }
+</style>
+</head>
+<body>
+<nav id="app-nav" class="app-nav" data-app-nav style="display:flex;gap:1rem;padding:1rem 2rem;position:sticky;top:0;z-index:100;background:var(--surface,var(--bg));border-bottom:1px solid var(--border,color-mix(in oklch,currentColor 12%,transparent))">
+    <button type="button" data-nav="view-home" class="is-active">Start</button>
+    <button type="button" data-nav="view-catalog" class="">Katalog</button>
+    <button type="button" data-nav="view-story" class="">Story</button>
+    <button type="button" data-nav="view-contact" class="">Kontakt</button>
+  </nav>
+<main id="app-main">
+<section id="view-home" class="app-view is-active" data-od-id="view-home" class="hero">
+  <div class="hero__text">
+    <div class="hero__eyebrow">Cucina Autentica · Milano</div>
+    <h1 class="hero__heading">Handgemachte <em>Pasta</em> & reine Trüffel</h1>
+    <p class="hero__sub">Ein kulinarischer Zufluchtsort, wo每一 Nudel von Hand geformt und jedes Glas Wein die Seele Toskanas atmet.</p>
+    <div class="hero__actions">
+      <a href="#menu" class="hero__btn-primary">Speisekarte entdecken</a>
+      <a href="#story" class="hero__btn-secondary">Unsere Geschichte</a>
+    </div>
+  </div>
+  <div class="hero__visual">
+    <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-29%2F71a84653-e301-4a76-a293-07490c51393a_aigc.jpeg?Expires=1785418423&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=l1OMsMDLa3gUiLEFCQwZMdfAieg%3D" alt="Frisch zubereitete Pasta in einer eleganten Schüssel" loading="eager">
+  </div>
+  <div class="hero__stats">
+    <div class="hero__stat">
+      <div class="hero__stat-num">12</div>
+      <div class="hero__stat-label">Jahre Tradition</div>
+    </div>
+    <div class="hero__stat">
+      <div class="hero__stat-num">24</div>
+      <div class="hero__stat-label">Sortiment Weine</div>
+    </div>
+    <div class="hero__stat">
+      <div class="hero__stat-num">100%</div>
+      <div class="hero__stat-label">Familienrezepte</div>
+    </div>
+  </div>
+</section>
+<section id="view-catalog" class="app-view" data-od-id="view-catalog" class="features" id="menu" hidden>
+  <div class="features__head">
+    <h2 class="features__title">Küche der <em>langsamkeit</em></h2>
+  </div>
+  <div class="features__grid">
+    <div class="feature reveal">
+      <div class="feature__num">I.</div>
+      <div class="feature__title">Truffle Tagliatelle</div>
+      <div class="feature__desc">Frisch gezogene Nudeln, veredelt mit schwarzem Wintertrüffel aus Umbrien und brauner Butter.</div>
+    </div>
+    <div class="feature reveal reveal-delay-1">
+      <div class="feature__num">II.</div>
+      <div class="feature__title">Barolo Riserva 2015</div>
+      <div class="feature__desc">Ein tiefgründiger, edler Rotwein aus dem Piemont, der im Eichenfass über Jahre reifen durfte.</div>
+    </div>
+    <div class="feature reveal reveal-delay-2">
+      <div class="feature__num">III.</div>
+      <div class="feature__title">Risotto allo Zafferano</div>
+      <div class="feature__desc">Carnaroli-Reis aus dem Vercellese, langsam gerührt mit edlem Saffiran und gereiftem Parmigiano.</div>
+    </div>
+  </div>
+</section>
+<section id="view-story" class="app-view" data-od-id="view-story" class="story" id="story" hidden>
+  <div class="story__text">
+    <div class="story__eyebrow reveal">Unsere Philosophie</div>
+    <h2 class="story__title reveal reveal-delay-1">Die Zeit als <em>Zutat</em></h2>
+    <p class="story__body reveal reveal-delay-2">Wir glauben, dass wahre Aromen nicht in Eile entstehen. Jede Focaccia ruht vierundzwanzig Stunden, unser Sugo simmert stundenlang vor sich hin. In unserer Osteria kehren Sie der Hektik des Alltags den Rücken zu und schmecken die Leidenschaft von drei Generationen.</p>
+  </div>
+  <div class="story__visual">
+    <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-29%2Fe18b4fd6-b9a2-4c6f-ba04-4921a40bc202_aigc.jpeg?Expires=1785418506&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=GB6PJeXPJxAyyC67G92z2LY6V7Y%3D" alt="Kunstvoll angerichtetes Gourmet-Essen in dunkler Atmosphäre" loading="lazy">
+  </div>
+</section>
+<section id="view-contact" class="app-view" data-od-id="view-contact" class="testimonials" id="testimonials" hidden>
+  <div class="testimonials__head">
+    <h2 class="testimonials__title">Stimmen unserer <em>Gäste</em></h2>
+  </div>
+  <div class="testimonials__grid">
+    <div class="testimonial reveal">
+      <div class="testimonial__mark">"</div>
+      <p class="testimonial__text">Ein Ort, der die Seele von Italien in jeder Faser atmet. Die Tagliatelle schmelzen förmlich auf der Zunge.</p>
+      <div class="testimonial__author">
+        <div class="testimonial__avatar">S</div>
+        <div>
+          <div class="testimonial__name">Sofia Moretti</div>
+          <div class="testimonial__role">Food Kritikerin</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial reveal reveal-delay-1">
+      <div class="testimonial__mark">"</div>
+      <p class="testimonial__text">Die Weinbegleitung war ein offenes Buch der toskanischen Hügel. Ein unvergesslicher Abend im Kerzenschein.</p>
+      <div class="testimonial__author">
+        <div class="testimonial__avatar">L</div>
+        <div>
+          <div class="testimonial__name">Lukas Fischer</div>
+          <div class="testimonial__role">Sommelier</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial reveal reveal-delay-2">
+      <div class="testimonial__mark">"</div>
+      <p class="testimonial__text">Nie zuvor habe ich die Essenz von Trüffel so rein und tiefgründig geschmeckt. Absolute Perfektion auf dem Teller.</p>
+      <div class="testimonial__author">
+        <div class="testimonial__avatar">M</div>
+        <div>
+          <div class="testimonial__name">Marco Romano</div>
+          <div class="testimonial__role">Stammgast</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="view-5" class="app-view" data-od-id="view-5" class="faq" id="faq" hidden>
+  <div class="faq__head">
+    <h2 class="faq__title">Häufige <em>Fragen</em></h2>
+  </div>
+  <div class="faq__list">
+    <div class="faq__item reveal">
+      <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+        Bieten Sie auch vegane Optionen an?
+        <span class="faq__icon">+</span>
+      </button>
+      <div class="faq__answer">
+        <p class="faq__answer-text">Ja, unsere Speisekarte beinhaltet eine sorgfältig kuratierte Auswahl an rein pflanzlichen Gerichten, die denselben Respekt vor dem Produkt und der Tradition widerspiegeln.</p>
+      </div>
+    </div>
+    <div class="faq__item reveal reveal-delay-1">
+      <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+        Kann ich einen Tisch für besondere Anlässe reservieren?
+        <span class="faq__icon">+</span>
+      </button>
+      <div class="faq__answer">
+        <p class="faq__answer-text">Ob Geburtstage oder Heiratsanträge – wir gestalten Ihren Abend mit privaten Menüs und exklusiver Weinbegleitung zu einem unvergesslichen Erlebnis.</p>
+      </div>
+    </div>
+    <div class="faq__item reveal reveal-delay-2">
+      <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+        Woher beziehen Sie Ihre Zutaten?
+        <span class="faq__icon">+</span>
+      </button>
+      <div class="faq__answer">
+        <p class="faq__answer-text">Wir arbeiten ausschließlich mit ausgewählten Höfen aus der Region und direkten Importeuren aus Italien zusammen, um höchste Qualität und Authentizität zu garantieren.</p>
+      </div>
+    </div>
+    <div class="faq__item reveal reveal-delay-3">
+      <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+        Gibt es einen Dresscode?
+        <span class="faq__icon">+</span>
+      </button>
+      <div class="faq__answer">
+        <p class="faq__answer-text">Wir wünschen uns eine elegante, gehobene Alltagskleidung (Smart Casual), um das stilvolle Ambiente für alle Gäste zu bewahren.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="view-6" class="app-view" data-od-id="view-6" class="cta" id="cta" hidden>
+  <h2 class="cta__title reveal">Reservieren Sie Ihren <em>Tisch</em></h2>
+  <p class="cta__sub reveal reveal-delay-1">Buchen Sie Ihr kulinarisches Erlebnis und lassen Sie sich von uns in das Herz Italiens entführen.</p>
+  <form class="cta__form reveal reveal-delay-2" onsubmit="event.preventDefault(); alert('Danke für Ihre Anfrage! Wir melden uns in Kürze.');">
+    <input type="email" class="cta__input" placeholder="Ihre E-Mail-Adresse" required>
+    <button type="submit" class="cta__submit">Anfragen</button>
+  </form>
+</section>
+</main>
+
+<header class="header" id="header">
+  <a href="#" class="header__brand">Osteria Dolce Vita</a>
+  <ul class="header__nav">
+    <li><a href="#menu">Speisekarte</a></li>
+    <li><a href="#story">Über uns</a></li>
+    <li><a href="#testimonials">Bewertungen</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <a href="#cta" class="header__cta">Reservieren</a>
+</header>
+
+<section class="hero">
+  <div class="hero__text">
+    <div class="hero__eyebrow">Cucina Autentica · Milano</div>
+    <h1 class="hero__heading">Handgemachte <em>Pasta</em> & reine Trüffel</h1>
+    <p class="hero__sub">Ein kulinarischer Zufluchtsort, wo每一 Nudel von Hand geformt und jedes Glas Wein die Seele Toskanas atmet.</p>
+    <div class="hero__actions">
+      <a href="#menu" class="hero__btn-primary">Speisekarte entdecken</a>
+      <a href="#story" class="hero__btn-secondary">Unsere Geschichte</a>
+    </div>
+  </div>
+  <div class="hero__visual">
+    <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-29%2F71a84653-e301-4a76-a293-07490c51393a_aigc.jpeg?Expires=1785418423&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=l1OMsMDLa3gUiLEFCQwZMdfAieg%3D" alt="Frisch zubereitete Pasta in einer eleganten Schüssel" loading="eager">
+  </div>
+  <div class="hero__stats">
+    <div class="hero__stat">
+      <div class="hero__stat-num">12</div>
+      <div class="hero__stat-label">Jahre Tradition</div>
+    </div>
+    <div class="hero__stat">
+      <div class="hero__stat-num">24</div>
+      <div class="hero__stat-label">Sortiment Weine</div>
+    </div>
+    <div class="hero__stat">
+      <div class="hero__stat-num">100%</div>
+      <div class="hero__stat-label">Familienrezepte</div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="menu">
+  <div class="features__head">
+    <h2 class="features__title">Küche der <em>langsamkeit</em></h2>
+  </div>
+  <div class="features__grid">
+    <div class="feature reveal">
+      <div class="feature__num">I.</div>
+      <div class="feature__title">Truffle Tagliatelle</div>
+      <div class="feature__desc">Frisch gezogene Nudeln, veredelt mit schwarzem Wintertrüffel aus Umbrien und brauner Butter.</div>
+    </div>
+    <div class="feature reveal reveal-delay-1">
+      <div class="feature__num">II.</div>
+      <div class="feature__title">Barolo Riserva 2015</div>
+      <div class="feature__desc">Ein tiefgründiger, edler Rotwein aus dem Piemont, der im Eichenfass über Jahre reifen durfte.</div>
+    </div>
+    <div class="feature reveal reveal-delay-2">
+      <div class="feature__num">III.</div>
+      <div class="feature__title">Risotto allo Zafferano</div>
+      <div class="feature__desc">Carnaroli-Reis aus dem Vercellese, langsam gerührt mit edlem Saffiran und gereiftem Parmigiano.</div>
+    </div>
+  </div>
+</section>
+
+<section class="story" id="story">
+  <div class="story__text">
+    <div class="story__eyebrow reveal">Unsere Philosophie</div>
+    <h2 class="story__title reveal reveal-delay-1">Die Zeit als <em>Zutat</em></h2>
+    <p class="story__body reveal reveal-delay-2">Wir glauben, dass wahre Aromen nicht in Eile entstehen. Jede Focaccia ruht vierundzwanzig Stunden, unser Sugo simmert stundenlang vor sich hin. In unserer Osteria kehren Sie der Hektik des Alltags den Rücken zu und schmecken die Leidenschaft von drei Generationen.</p>
+  </div>
+  <div class="story__visual">
+    <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-29%2Fe18b4fd6-b9a2-4c6f-ba04-4921a40bc202_aigc.jpeg?Expires=1785418506&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=GB6PJeXPJxAyyC67G92z2LY6V7Y%3D" alt="Kunstvoll angerichtetes Gourmet-Essen in dunkler Atmosphäre" loading="lazy">
+  </div>
+</section>
+
+<section class="testimonials" id="testimonials">
+  <div class="testimonials__head">
+    <h2 class="testimonials__title">Stimmen unserer <em>Gäste</em></h2>
+  </div>
+  <div class="testimonials__grid">
+    <div class="testimonial reveal">
+      <div class="testimonial__mark">"</div>
+      <p class="testimonial__text">Ein Ort, der die Seele von Italien in jeder Faser atmet. Die Tagliatelle schmelzen förmlich auf der Zunge.</p>
+      <div class="testimonial__author">
+        <div class="testimonial__avatar">S</div>
+        <div>
+          <div class="testimonial__name">Sofia Moretti</div>
+          <div class="testimonial__role">Food Kritikerin</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial reveal reveal-delay-1">
+      <div class="testimonial__mark">"</div>
+      <p class="testimonial__text">Die Weinbegleitung war ein offenes Buch der toskanischen Hügel. Ein unvergesslicher Abend im Kerzenschein.</p>
+      <div class="testimonial__author">
+        <div class="testimonial__avatar">L</div>
+        <div>
+          <div class="testimonial__name">Lukas Fischer</div>
+          <div class="testimonial__role">Sommelier</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial reveal reveal-delay-2">
+      <div class="testimonial__mark">"</div>
+      <p class="testimonial__text">Nie zuvor habe ich die Essenz von Trüffel so rein und tiefgründig geschmeckt. Absolute Perfektion auf dem Teller.</p>
+      <div class="testimonial__author">
+        <div class="testimonial__avatar">M</div>
+        <div>
+          <div class="testimonial__name">Marco Romano</div>
+          <div class="testimonial__role">Stammgast</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="faq" id="faq">
+  <div class="faq__head">
+    <h2 class="faq__title">Häufige <em>Fragen</em></h2>
+  </div>
+  <div class="faq__list">
+    <div class="faq__item reveal">
+      <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+        Bieten Sie auch vegane Optionen an?
+        <span class="faq__icon">+</span>
+      </button>
+      <div class="faq__answer">
+        <p class="faq__answer-text">Ja, unsere Speisekarte beinhaltet eine sorgfältig kuratierte Auswahl an rein pflanzlichen Gerichten, die denselben Respekt vor dem Produkt und der Tradition widerspiegeln.</p>
+      </div>
+    </div>
+    <div class="faq__item reveal reveal-delay-1">
+      <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+        Kann ich einen Tisch für besondere Anlässe reservieren?
+        <span class="faq__icon">+</span>
+      </button>
+      <div class="faq__answer">
+        <p class="faq__answer-text">Ob Geburtstage oder Heiratsanträge – wir gestalten Ihren Abend mit privaten Menüs und exklusiver Weinbegleitung zu einem unvergesslichen Erlebnis.</p>
+      </div>
+    </div>
+    <div class="faq__item reveal reveal-delay-2">
+      <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+        Woher beziehen Sie Ihre Zutaten?
+        <span class="faq__icon">+</span>
+      </button>
+      <div class="faq__answer">
+        <p class="faq__answer-text">Wir arbeiten ausschließlich mit ausgewählten Höfen aus der Region und direkten Importeuren aus Italien zusammen, um höchste Qualität und Authentizität zu garantieren.</p>
+      </div>
+    </div>
+    <div class="faq__item reveal reveal-delay-3">
+      <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+        Gibt es einen Dresscode?
+        <span class="faq__icon">+</span>
+      </button>
+      <div class="faq__answer">
+        <p class="faq__answer-text">Wir wünschen uns eine elegante, gehobene Alltagskleidung (Smart Casual), um das stilvolle Ambiente für alle Gäste zu bewahren.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="cta">
+  <h2 class="cta__title reveal">Reservieren Sie Ihren <em>Tisch</em></h2>
+  <p class="cta__sub reveal reveal-delay-1">Buchen Sie Ihr kulinarisches Erlebnis und lassen Sie sich von uns in das Herz Italiens entführen.</p>
+  <form class="cta__form reveal reveal-delay-2" onsubmit="event.preventDefault(); alert('Danke für Ihre Anfrage! Wir melden uns in Kürze.');">
+    <input type="email" class="cta__input" placeholder="Ihre E-Mail-Adresse" required>
+    <button type="submit" class="cta__submit">Anfragen</button>
+  </form>
+</section>
+
+<footer class="footer">
+  <div>
+    <div class="footer__brand">Osteria Dolce Vita</div>
+    <p class="footer__tagline">Wo jedes Gericht eine Geschichte erzählt und jeder Schluck Wein die Seele streichelt.</p>
+  </div>
+  <div class="footer__col">
+    <h4>Navigation</h4>
+    <ul>
+      <li><a href="#menu">Speisekarte</a></li>
+      <li><a href="#story">Über uns</a></li>
+      <li><a href="#testimonials">Bewertungen</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </div>
+  <div class="footer__col">
+    <h4>Kontakt</h4>
+    <ul>
+      <li><a href="tel:+49301234567">+49 30 123 456 7</a></li>
+      <li><a href="mailto:bonjour@dolcevita.it">bonjour@dolcevita.it</a></li>
+      <li>Via Bella 12, 20121 Milano</li>
+    </ul>
+  </div>
+  <div class="footer__col">
+    <h4>Öffnungszeiten</h4>
+    <ul>
+      <li>Di - Fr: 17:00 - 23:00</li>
+      <li>Sa - So: 12:00 - 23:00</li>
+      <li>Montag: Ruhetag</li>
+    </ul>
+  </div>
+  <div class="footer__bottom">
+    <div>© 2024 Osteria Dolce Vita · Handgemachte Pasta & Weinbar</div>
+    <div>Mit Liebe in Milano gemacht</div>
+  </div>
+</footer>
+
+<script>
+const header = document.getElementById('header');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -80px 0px' });
+reveals.forEach(r => obs.observe(r));
+</script>
+
+<!-- AGENCY POST-PROCESS LAYER (deterministic craft floor) -->
+<style id="__agency_craft__">
+  /* Subtle film grain — adds texture, removes "flat digital" feel */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* Smooth scrolling with offset */
+  html { scroll-behavior: smooth; }
+  /* Premium selection style */
+  ::selection { background: var(--accent, currentColor); color: var(--bg, #fff); }
+  /* Hairline borders everywhere by default for cards */
+  [class*="card"], [class*="Card"] {
+    border: 1px solid color-mix(in oklch, currentColor 8%, transparent);
+  }
+  /* Image hover — subtle life */
+  img { transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1); }
+  img:hover { transform: scale(1.03); }
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+
+<!-- Z.Design App-Shell Runtime -->
+<style id="__zd_app_shell__-css">
+  .app-view { display: none; min-height: calc(100vh - var(--nav-h, 64px)); animation: viewIn .45s cubic-bezier(0.22,1,0.36,1); }
+  .app-view.is-active { display: block; }
+  @keyframes viewIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .app-nav [data-nav].is-active { color: var(--accent, var(--primary)); }
+  @media (prefers-reduced-motion: reduce) { .app-view { animation: none; } }
+</style>
+<script id="__zd_app_shell__">
+(function(){
+  var nav = document.getElementById('app-nav') || document.querySelector('.app-nav, nav[data-app-nav]');
+  var views = document.querySelectorAll('.app-view, [id^="view-"][data-od-id], section[id^="view-"]');
+  if (!views.length) return;
+  function show(id){
+    views.forEach(function(v){
+      var on = v.id === id;
+      v.classList.toggle('is-active', on);
+      v.hidden = !on;
+    });
+    if (nav) nav.querySelectorAll('[data-nav]').forEach(function(b){
+      b.classList.toggle('is-active', b.getAttribute('data-nav') === id);
+    });
+    try { history.replaceState(null, '', '#' + id); } catch(e){}
+    window.scrollTo(0, 0);
+  }
+  if (nav) nav.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-nav]');
+    if (!btn) return;
+    e.preventDefault();
+    show(btn.getAttribute('data-nav'));
+  });
+  var hash = (location.hash || '').replace('#','');
+  if (hash && document.getElementById(hash)) show(hash);
+  else if (views[0]) show(views[0].id);
+})();
+</script>
+
+</body>
+</html>
