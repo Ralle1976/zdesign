@@ -1295,8 +1295,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/lib/ai/templates/registry.ts": {
-    "mtime": 1785329346.639,
-    "ast_hash": "647715c173aabed9a0651fc1c7e06992",
+    "mtime": 1782563248.546,
+    "ast_hash": "3d3ba0ca283bffa2131d29ef7057475d",
     "semantic_hash": ""
   },
   "Projekt/src/lib/ai/templates/types.ts": {
@@ -2564,6 +2564,11 @@
     "ast_hash": "9d1ade6deb441d88d1d8a51977c01e8f",
     "semantic_hash": ""
   },
+  "Projekt/_fresh_bakery.mjs": {
+    "mtime": 1784747251.009,
+    "ast_hash": "5d0cdac74f4f794a3113c018dd21cb6d",
+    "semantic_hash": ""
+  },
   "Projekt/src/lib/ai/templates/restaurant-reference.ts": {
     "mtime": 1784755622.194,
     "ast_hash": "9fbb99e7bb5ec4eefd9abbf6fc7bd3a1",
@@ -2589,6 +2594,16 @@
     "ast_hash": "56678fe7d3d98746708fe1702d1f0717",
     "semantic_hash": ""
   },
+  "Projekt/FINAL_bakery.png": {
+    "mtime": 1784747213.789,
+    "ast_hash": "d1c1039468908f6955e0618f36c79064",
+    "semantic_hash": ""
+  },
+  "Projekt/FINAL_bakery_fresh.png": {
+    "mtime": 1784747673.656,
+    "ast_hash": "a7db29a40f28b9186f97a390ecd009e8",
+    "semantic_hash": ""
+  },
   "Projekt/public/bakery-screenshot.png": {
     "mtime": 1784734809.609,
     "ast_hash": "64be6950f966a823f3e80a6192ff96b4",
@@ -2597,101 +2612,6 @@
   "Projekt/public/creative-concept-bakery.png": {
     "mtime": 1784740342.994,
     "ast_hash": "0ffcce9123a5331fb8eb86c691a22ccb",
-    "semantic_hash": ""
-  },
-  "Projekt/public/french-bistro.html": {
-    "mtime": 1785332308.646,
-    "ast_hash": "92e4ec4ff000d53308fb1332239d20ad",
-    "semantic_hash": ""
-  },
-  "Projekt/public/italian-restaurant.html": {
-    "mtime": 1785332107.573,
-    "ast_hash": "9ee415688d28f34e40c409b7f329c6de",
-    "semantic_hash": ""
-  },
-  "Projekt/public/pizzeria.html": {
-    "mtime": 1785332813.754,
-    "ast_hash": "303dd921f2649f8a02a8ec1ca9af262d",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase-restaurants.html": {
-    "mtime": 1785332961.945,
-    "ast_hash": "51a8283feb1ef428bd9d572f7b240d5d",
-    "semantic_hash": ""
-  },
-  "Projekt/public/steakhouse.html": {
-    "mtime": 1785332414.769,
-    "ast_hash": "cfd125855c7e0a96134216b5120a72e2",
-    "semantic_hash": ""
-  },
-  "Projekt/public/sushi-bar.html": {
-    "mtime": 1785332198.188,
-    "ast_hash": "d01d8dd6c48bb53575f72b8c84a10694",
-    "semantic_hash": ""
-  },
-  "Projekt/public/test-restaurant-template.html": {
-    "mtime": 1785329727.684,
-    "ast_hash": "901e288652ee60864f8b06cc61374cd5",
-    "semantic_hash": ""
-  },
-  "Projekt/public/thai-restaurant.html": {
-    "mtime": 1785332719.0,
-    "ast_hash": "9ce7c12bbcc2a55d217a9f8397833170",
-    "semantic_hash": ""
-  },
-  "Projekt/public/vegan-cafe.html": {
-    "mtime": 1785332613.168,
-    "ast_hash": "eb8af08f5ad7d87f106b243ab38c26b7",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/templates/refs/restaurant-reference.html": {
-    "mtime": 1785329376.623,
-    "ast_hash": "5d5578c67e24a1b70d094a0475d0784b",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase-french-bistro.png": {
-    "mtime": 1785332319.142,
-    "ast_hash": "4e885a2e03890e4d2a3c5e457c68a844",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase-italian-restaurant.png": {
-    "mtime": 1785332118.21,
-    "ast_hash": "3666e75b62601ea013acfcdfb01b295f",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase-pizzeria.png": {
-    "mtime": 1785332824.371,
-    "ast_hash": "55a8ff3ff98a489557ec2fa9a8e86215",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase-steakhouse.png": {
-    "mtime": 1785332425.317,
-    "ast_hash": "08d21181bd7dcde8f8cbc824812d1875",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase-sushi-bar.png": {
-    "mtime": 1785332208.809,
-    "ast_hash": "121f81fafc8096af7571651d369d83f9",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase-thai-restaurant.png": {
-    "mtime": 1785332729.478,
-    "ast_hash": "d22db3fdc73c6080edfe8f083dadc74e",
-    "semantic_hash": ""
-  },
-  "Projekt/public/showcase-vegan-cafe.png": {
-    "mtime": 1785332623.832,
-    "ast_hash": "09f7cc3b291f130b990ddee8d3a00983",
-    "semantic_hash": ""
-  },
-  "Projekt/showcase-overview.png": {
-    "mtime": 1785332994.452,
-    "ast_hash": "1e54a88c5a6b9a780e18ede3fb125780",
-    "semantic_hash": ""
-  },
-  "Projekt/test-restaurant-template.png": {
-    "mtime": 1785329785.897,
-    "ast_hash": "43d0c3102f77920ca49fee977840cec2",
     "semantic_hash": ""
   }
 }
