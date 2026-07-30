@@ -1,0 +1,1156 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BOSS Chronograph — Die Mechanik der Zeit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08070a;
+  --surface: #0f0d12;
+  --primary: #f4f4f4;
+  --accent: #d4af37;
+  --text: #f4f4f4;
+  --text-muted: #888694;
+  --border: color-mix(in oklch, var(--text) 8%, transparent);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.04;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+::selection { background: var(--accent); color: var(--bg); }
+
+/* === HEADER === */
+.header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 20px clamp(24px, 5vw, 64px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(180deg, var(--bg) 0%, transparent 100%);
+  backdrop-filter: blur(0px);
+  transition: backdrop-filter 0.6s var(--ease), background 0.6s var(--ease);
+}
+.header.scrolled {
+  backdrop-filter: blur(20px);
+  background: linear-gradient(180deg, var(--bg) 0%, color-mix(in oklch, var(--bg) 85%, transparent) 100%);
+}
+.header__brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+}
+.header__nav {
+  display: flex;
+  gap: 40px;
+  list-style: none;
+}
+.header__nav a {
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.4s var(--ease);
+  position: relative;
+}
+.header__nav a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 1px;
+  background: var(--accent);
+  transition: width 0.4s var(--ease);
+}
+.header__nav a:hover { color: var(--accent); }
+.header__nav a:hover::after { width: 100%; }
+.header__cta {
+  padding: 12px 28px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: all 0.4s var(--ease);
+}
+.header__cta:hover {
+  background: var(--accent);
+  color: var(--bg);
+  box-shadow: 0 0 30px color-mix(in oklch, var(--accent) 30%, transparent);
+}
+
+/* === HERO === */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 50% 50%, color-mix(in oklch, var(--accent) 12%, transparent) 0%, transparent 60%);
+  animation: ambientGlow 15s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes ambientGlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
+}
+.hero__text {
+  padding: clamp(64px, 10vw, 120px) clamp(24px, 5vw, 64px);
+  z-index: 2;
+}
+.hero__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+.hero__heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 32px;
+}
+.hero__heading em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 400;
+}
+.hero__sub {
+  font-size: 17px;
+  color: var(--text-muted);
+  line-height: 1.75;
+  max-width: 440px;
+  margin-bottom: 40px;
+}
+.hero__actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.hero__btn-primary {
+  padding: 16px 36px;
+  background: var(--accent);
+  color: var(--bg);
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+  transition: all 0.4s var(--ease);
+}
+.hero__btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px color-mix(in oklch, var(--accent) 40%, transparent);
+}
+.hero__btn-secondary {
+  padding: 16px 36px;
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transition: all 0.4s var(--ease);
+}
+.hero__btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* === 3D PRODUCT STAGE === */
+.hero__visual {
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.product-stage {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 900ms var(--ease);
+}
+.product-layer {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 900ms var(--ease), opacity 600ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.product-layer img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+.product-ring {
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  max-width: 60vw;
+  max-height: 60vw;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  border-top-color: color-mix(in oklch, var(--accent) 40%, transparent);
+  border-right-color: color-mix(in oklch, var(--accent) 20%, transparent);
+  animation: spin 20s linear infinite;
+  pointer-events: none;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.zoom-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+  opacity: 0.8;
+}
+.zoom-hint svg {
+  width: 16px;
+  height: 16px;
+}
+
+.hero__price {
+  padding: clamp(64px, 10vw, 120px) clamp(24px, 5vw, 64px);
+  z-index: 2;
+  text-align: right;
+}
+.hero__price-label {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+.hero__price-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 36px;
+  color: var(--accent);
+  font-weight: 300;
+  margin-bottom: 32px;
+}
+.hero__specs {
+  list-style: none;
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+  display: inline-block;
+  text-align: left;
+}
+.hero__specs li {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+}
+.hero__specs span {
+  color: var(--text);
+}
+
+/* === FEATURES === */
+.features {
+  padding: clamp(100px, 15vh, 160px) clamp(24px, 5vw, 64px);
+  background: var(--surface);
+}
+.features__head {
+  text-align: center;
+  margin-bottom: 80px;
+}
+.features__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.features__title em { color: var(--accent); font-style: italic; }
+.features__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.feature {
+  padding: 48px 32px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  transition: all 0.6s var(--ease);
+}
+.feature:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+.feature__icon {
+  width: 48px;
+  height: 48px;
+  stroke: var(--accent);
+  fill: none;
+  stroke-width: 1.5;
+  margin-bottom: 24px;
+}
+.feature__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  color: var(--text);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.feature__desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* === STORY === */
+.story {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 90vh;
+  align-items: center;
+}
+.story__text {
+  padding: clamp(64px, 10vw, 120px);
+}
+.story__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+.story__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 300;
+  line-height: 1.05;
+  margin-bottom: 32px;
+  letter-spacing: -0.02em;
+}
+.story__title em { color: var(--accent); font-style: italic; }
+.story__body {
+  font-size: 16px;
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin-bottom: 40px;
+  max-width: 440px;
+}
+.story__visual {
+  height: 90vh;
+  position: relative;
+  overflow: hidden;
+}
+.story__visual img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  animation: slowZoom 25s ease-in-out infinite alternate;
+}
+@keyframes slowZoom {
+  to { transform: scale(1.08); }
+}
+.story__visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--bg) 0%, transparent 30%);
+}
+
+/* === TESTIMONIALS === */
+.testimonials {
+  padding: clamp(100px, 15vh, 160px) clamp(24px, 5vw, 64px);
+  background: var(--bg);
+  position: relative;
+}
+.testimonials__head {
+  text-align: center;
+  margin-bottom: 80px;
+}
+.testimonials__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.testimonials__title em { color: var(--accent); font-style: italic; }
+.testimonials__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.testimonial {
+  padding: 40px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  position: relative;
+}
+.testimonial__mark {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px;
+  color: var(--accent);
+  opacity: 0.2;
+  line-height: 0;
+  margin-bottom: 24px;
+}
+.testimonial__text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  font-style: italic;
+}
+.testimonial__author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.testimonial__avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--accent);
+  font-size: 16px;
+}
+.testimonial__name {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+.testimonial__role {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* === FAQ === */
+.faq {
+  padding: clamp(100px, 15vh, 160px) clamp(24px, 5vw, 64px);
+  background: var(--surface);
+}
+.faq__head {
+  text-align: center;
+  margin-bottom: 80px;
+}
+.faq__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.faq__title em { color: var(--accent); font-style: italic; }
+.faq__list {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.faq__item {
+  border-bottom: 1px solid var(--border);
+}
+.faq__question {
+  width: 100%;
+  padding: 28px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.3s var(--ease);
+}
+.faq__question:hover { color: var(--accent); }
+.faq__icon {
+  font-size: 20px;
+  color: var(--accent);
+  transition: transform 0.3s var(--ease);
+}
+.faq__item.open .faq__icon { transform: rotate(45deg); }
+.faq__answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s var(--ease), padding 0.3s var(--ease);
+  padding: 0;
+}
+.faq__item.open .faq__answer {
+  max-height: 500px;
+  padding-bottom: 28px;
+}
+.faq__answer-text {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* === CTA === */
+.cta {
+  padding: clamp(120px, 20vh, 200px) 24px;
+  text-align: center;
+  background: radial-gradient(ellipse at center, var(--surface) 0%, var(--bg) 70%);
+  position: relative;
+  overflow: hidden;
+}
+.cta::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80vw; height: 80vw;
+  max-width: 600px; max-height: 600px;
+  background: radial-gradient(circle, color-mix(in oklch, var(--accent) 6%, transparent) 0%, transparent 60%);
+}
+.cta__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(40px, 7vw, 88px);
+  font-weight: 300;
+  line-height: 1;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 2;
+}
+.cta__title em { color: var(--accent); font-style: italic; }
+.cta__sub {
+  font-size: 15px;
+  color: var(--text-muted);
+  max-width: 480px;
+  margin: 0 auto 48px;
+  line-height: 1.8;
+  position: relative;
+  z-index: 2;
+}
+.cta__form {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.cta__input {
+  flex: 1;
+  padding: 16px 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  transition: border-color 0.3s var(--ease);
+}
+.cta__input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.cta__submit {
+  padding: 16px 32px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s var(--ease);
+}
+.cta__submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px color-mix(in oklch, var(--accent) 40%, transparent);
+}
+
+/* === FOOTER === */
+.footer {
+  padding: 80px clamp(24px, 5vw, 64px) 40px;
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+}
+.footer__brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.footer__tagline {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 300px;
+}
+.footer__col h4 {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+.footer__col ul { list-style: none; }
+.footer__col li { margin-bottom: 12px; }
+.footer__col a {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.footer__col a:hover { color: var(--accent); }
+.footer__bottom {
+  grid-column: 1 / -1;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+/* === REVEAL ANIMATIONS === */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 1s var(--ease), transform 1s var(--ease);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.15s; }
+.reveal-delay-2 { transition-delay: 0.3s; }
+.reveal-delay-3 { transition-delay: 0.45s; }
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero__price { display: none; }
+  .hero__visual { height: 60vh; }
+  .story { grid-template-columns: 1fr; }
+  .features__grid, .testimonials__grid { grid-template-columns: 1fr; }
+  .footer { grid-template-columns: 1fr 1fr; }
+  .header__nav { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+
+<!-- PRODUCT RUNTIME LAYER (deterministic 3D interaction fallback) -->
+<style id="__zd_product_runtime__">
+  /* Fallback for missing/broken LLM-generated JS */
+  .product-stage { perspective: 1200px; transform-style: preserve-3d; position: sticky; top: 15vh; }
+  .product-layer { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1), opacity 600ms ease; }
+  @media (prefers-reduced-motion: reduce) {
+    .product-layer { transition: none; }
+  }
+</style>
+
+
+<style id="__zd_image_harmony__">
+  figure, .img-wrap, [class*="visual"], [class*="hero"] { position: relative; overflow: hidden; }
+  img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.88) contrast(1.04) brightness(0.97); }
+  figure::after, .img-wrap::after, .od-hero-visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, color-mix(in oklch, #18181B 8%, transparent) 0%, color-mix(in oklch, #2563EB 12%, transparent) 100%);
+    mix-blend-mode: multiply;
+    opacity: 0.35;
+  }
+  .app-view img, section img { border-radius: inherit; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header" id="header">
+  <a href="#" class="header__brand">BOSS</a>
+  <ul class="header__nav">
+    <li><a href="#features">Innereien</a></li>
+    <li><a href="#story">Manufaktur</a></li>
+    <li><a href="#testimonials">Stimmen</a></li>
+    <li><a href="#faq">Service</a></li>
+  </ul>
+  <a href="#cta" class="header__cta">Private Anfrage</a>
+</header>
+
+<!-- HERO -->
+<section data-reveal data-od-id="scene-intro" class="hero">
+  <div class="hero__text">
+    <div class="hero__eyebrow">BOSS Chronograph 1924</div>
+    <h1 class="hero__heading">Die <em>Mechanik</em> der Zeit</h1>
+    <p class="hero__sub">Ein Zeitmessinstrument, das in 410 Einzelschritten von Hand gefertigt wird. Erleben Sie die Seele der Uhr in einer interaktiven dreidimensionalen Explosion.</p>
+    <div class="hero__actions">
+      <a href="#cta" class="hero__btn-primary">Konfigurieren</a>
+      <a href="#features" class="hero__btn-secondary">Details entdecken</a>
+    </div>
+  </div>
+  <div class="hero__visual">
+    <div class="product-stage">
+      <div class="product-ring"></div>
+      <div class="product-layer" data-z="0">
+        <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-31%2F331042f7-4c0c-4ad0-a6f3-1917d0ba80f9_aigc.jpeg?Expires=1785533107&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=KFmIPnJeTtbtaSYfwZWH1OFx9dA%3D" alt="BOSS Chronograph vollständige Frontansicht" loading="eager">
+      </div>
+      <div class="product-layer" data-z="80">
+        <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-31%2Ffcfddc90-d92d-4d02-ab96-86a9d018c4b0_aigc.jpeg?Expires=1785533097&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=ZpQJiLGpw6cEIRrW1xTxBGARISo%3D" alt="Zeiger und Zifferblatt Details" loading="eager">
+      </div>
+      <div class="product-layer" data-z="150">
+        <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-31%2F32645f2e-bc99-4f0d-a13f-24bf50535c30_aigc.jpeg?Expires=1785533096&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=BOI9cbprnViLxK3igwu7eB3E%2Ft0%3D" alt="Mechanisches Uhrwerk Komponenten" loading="eager">
+      </div>
+    </div>
+    <div class="zoom-hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.3-4.3"></path>
+        <line x1="11" y1="8" x2="11" y2="14"></line>
+        <line x1="8" y1="11" x2="14" y2="11"></line>
+      </svg>
+      Mausrad drehen zum Zoomen
+    </div>
+  </div>
+  <div class="hero__price">
+    <div class="hero__price-label">Limitierte Auflage</div>
+    <div class="hero__price-value">€ 14.800</div>
+    <ul class="hero__specs">
+      <li>Referenz <span>B-1924</span></li>
+      <li>Kaliber <span>BOSS-88 Automatic</span></li>
+      <li>Gangreserve <span>72 Stunden</span></li>
+      <li>Gehäuse <span>18k Roségold</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section data-reveal data-od-id="scene-discovery" class="features" id="features">
+  <div class="features__head">
+    <h2 class="features__title">Das <em>Innere</em> zählt</h2>
+  </div>
+  <div class="features__grid">
+    <div class="feature reveal">
+      <svg class="feature__icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <div class="feature__title">72h Gangreserve</div>
+      <div class="feature__desc">Drei Tage präzise Zeitmessung, ohne das Uhrwerk aufzuziehen. Ein Monopol der Federhaus-Architektur.</div>
+    </div>
+    <div class="feature reveal reveal-delay-1">
+      <svg class="feature__icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <div class="feature__title">Saphirglas</div>
+      <div class="feature__desc">9H Härte schützt das Zifferblatt vor den tiefen Kratzern des Alltags. Beidseitig entspiegelt.</div>
+    </div>
+    <div class="feature reveal reveal-delay-2">
+      <svg class="feature__icon" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      <div class="feature__title">Roségold 18k</div>
+      <div class="feature__desc">Das Gehäuse wird aus einer massen Legierung gefräst, die eine warme, tiefe Patina über Generationen entwickelt.</div>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section data-reveal data-od-id="scene-ritual" class="story" id="story">
+  <div class="story__text">
+    <div class="story__eyebrow reveal">Die Manufaktur</div>
+    <h2 class="story__title reveal reveal-delay-1">Zeit ist das <em>edelste</em> Material</h2>
+    <p class="story__body reveal reveal-delay-2">In den stillen Werkstätten von BOSS versammeln sich über 40 Mikro-Bauteile zu einem schlagenden Herzen. Jeder Zahnrad-Eingriff wird vom Uhrmachermeister akustisch kontrolliert. Eine Arbeit, die nicht beschleunigt werden darf, um die Perfektion nicht zu gefährden.</p>
+  </div>
+  <div class="story__visual">
+    <img src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-31%2F6d3168a4-e3e5-418d-91af-5de0e652d772_aigc.jpeg?Expires=1785533098&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=B2DS2eJgfTTdYhMkwcx4%2FaJxiFE%3D" alt="Uhrmacher bei der feinen Montage des Uhrwerks mit Pinzette" loading="lazy">
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section data-reveal data-od-id="scene-material" class="testimonials" id="testimonials">
+  <div class="testimonials__head">
+    <h2 class="testimonials__title">Das <em>Urteil</em> der Sammler</h2>
+  </div>
+  <div class="testimonials__grid">
+    <div class="testimonial reveal">
+      <div class="testimonial__mark">"</div>
+      <p class="testimonial__text">Die Schwere des Roségolds am Handgelenk vermittelt eine unvergleichliche Präsenz. Ein Erbstück, das ich weitergeben werde.</p>
+      <div class="testimonial__author">
+        <div class="testimonial__avatar">D</div>
+        <div>
+          <div class="testimonial__name">Dr. Alexander von Falken</div>
+          <div class="testimonial__role">Langjähriger Sammler</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial reveal reveal-delay-1">
+      <div class="testimonial__mark">"</div>
+      <p class="testimonial__text">Ich trage sie seit drei Jahren täglich. Sie geht auf die Sekunde genau. Die Verarbeitung des Saphirglases ist nach wie vor makellos.</p>
+      <div class="testimonial__author">
+        <div class="testimonial__avatar">M</div>
+        <div>
+          <div class="testimonial__name">Marcus Eisenhardt</div>
+          <div class="testimonial__role">Architekt</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial reveal reveal-delay-2">
+      <div class="testimonial__mark">"</div>
+      <p class="testimonial__text">Ein Statement der leisen Sorte. Kein Prunken, nur pure, handwerkliche Substanz, die man jeden Tag spürt.</p>
+      <div class="testimonial__author">
+        <div class="testimonial__avatar">L</div>
+        <div>
+          <div class="testimonial__name">Lena Hofmann</div>
+          <div class="testimonial__role">Kunsthändlerin</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section data-reveal data-od-id="scene-voice" class="faq" id="faq">
+  <div class="faq__head">
+    <h2 class="faq__title">Service & <em>Pflege</em></h2>
+  </div>
+  <div class="faq__list">
+    <div class="faq__item reveal">
+      <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+        Wie oft sollte die Uhr gewartet werden?
+        <span class="faq__icon">+</span>
+      </button>
+      <div class="faq__answer">
+        <p class="faq__answer-text">Wir empfehlen eine vollständige Wartung durch unsere Manufaktur alle 4 bis 5 Jahre, um die Schmierfilme aufzufrischen und die Dichtigkeit zu garantieren.</p>
+      </div>
+    </div>
+    <div class="faq__item reveal reveal-delay-1">
+      <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+        Ist das Uhrwerk komplett in-house gefertigt?
+        <span class="faq__icon">+</span>
+      </button>
+      <div class="faq__answer">
+        <p class="faq__answer-text">Ja, das Kaliber BOSS-88 wird zu 100% in unserer Manufaktur konstruiert, gefräst und montiert. Jede Schraube trägt unser Signet.</p>
+      </div>
+    </div>
+    <div class="faq__item reveal reveal-delay-2">
+      <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+        Bieten Sie eine Garantie an?
+        <span class="faq__icon">+</span>
+      </button>
+      <div class="faq__answer">
+        <p class="faq__answer-text">Jede BOSS Armbanduhr comes mit einer internationalen 5-Jahres-Garantie, die alle Material- und Fertigungsfehler abdeckt.</p>
+      </div>
+    </div>
+    <div class="faq__item reveal reveal-delay-3">
+      <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+        Kann ich das Armband tauschen lassen?
+        <span class="faq__icon">+</span>
+      </button>
+      <div class="faq__answer">
+        <p class="faq__answer-text">Selbstverständlich. Wir bieten ein Sortiment aus Krokodilleder, Kautschuk und Metallbändern an, das von unseren Juwelieren passend für Sie angepasst wird.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section data-reveal data-od-id="scene-invitation" class="cta" id="cta">
+  <h2 class="cta__title reveal">Ihr <em>Erbstück</em> wartet</h2>
+  <p class="cta__sub reveal reveal-delay-1">Die BOSS Chronograph 1924 ist auf 100 Exemplare pro Jahr limitiert. Sichern Sie sich eine persönliche Beratung in unserer Manufaktur.</p>
+  <form class="cta__form reveal reveal-delay-2" onsubmit="event.preventDefault(); alert('Vielen Dank. Unser Concierge meldet sich innerhalb von 24 Stunden bei Ihnen.');">
+    <input type="email" class="cta__input" placeholder="Ihre E-Mail-Adresse" required>
+    <button type="submit" class="cta__submit">Anfragen</button>
+  </form>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div>
+    <div class="footer__brand">BOSS</div>
+    <p class="footer__tagline">Haute Horlogerie seit 1924. Gefertigt in Genf, getragen in der ganzen Welt.</p>
+  </div>
+  <div class="footer__col">
+    <h4>Navigation</h4>
+    <ul>
+      <li><a href="#features">Innereien</a></li>
+      <li><a href="#story">Manufaktur</a></li>
+      <li><a href="#testimonials">Stimmen</a></li>
+      <li><a href="#faq">Service</a></li>
+    </ul>
+  </div>
+  <div class="footer__col">
+    <h4>Kontakt</h4>
+    <ul>
+      <li><a href="tel:+49301234567">+49 30 123 456 7</a></li>
+      <li><a href="mailto:service@boss.com">service@boss.com</a></li>
+      <li>Rue du Rhône 42, Genf</li>
+    </ul>
+  </div>
+  <div class="footer__col">
+    <h4>Concierge</h4>
+    <ul>
+      <li>Mo - Fr: 10:00 - 18:00</li>
+      <li>Sa: Nach Termin</li>
+      <li>So: Geschlossen</li>
+    </ul>
+  </div>
+  <div class="footer__bottom">
+    <div>© 2024 BOSS Manufaktur · Die Mechanik der Zeit</div>
+    <div>Impressum · Datenschutz</div>
+  </div>
+</footer>
+
+<script>
+// Header scroll blur
+const header = document.getElementById('header');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+// Reveal on scroll
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -80px 0px' });
+reveals.forEach(r => obs.observe(r));
+
+// 3D Product Wheel Zoom
+(function () {
+  var stage = document.querySelector('.product-stage');
+  if (!stage) return;
+  var layers = stage.querySelectorAll('.product-layer');
+  var zoom = 1, MIN = 1, MAX = 2;
+  
+  function applyTransform() {
+    var t = (zoom - MIN) / (MAX - MIN);
+    stage.style.transform = 'scale(' + zoom + ')';
+    layers.forEach(function (l) {
+      var z = parseFloat(l.dataset.z || '0');
+      l.style.transform = 'translateZ(' + (z * t) + 'px)';
+      l.style.opacity = 1 - (t * 0.3);
+    });
+  }
+
+  stage.closest('section').addEventListener('wheel', function (e) {
+    e.preventDefault();
+    zoom = Math.min(MAX, Math.max(MIN, zoom + (e.deltaY > 0 ? 0.05 : -0.05)));
+    applyTransform();
+  }, { passive: false });
+})();
+</script>
+
+<!-- AGENCY POST-PROCESS LAYER (deterministic craft floor) -->
+<style id="__agency_craft__">
+  /* Subtle film grain — adds texture, removes "flat digital" feel */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* Smooth scrolling with offset */
+  html { scroll-behavior: smooth; }
+  /* Premium selection style */
+  ::selection { background: var(--accent, currentColor); color: var(--bg, #fff); }
+  /* Hairline borders everywhere by default for cards */
+  [class*="card"], [class*="Card"] {
+    border: 1px solid color-mix(in oklch, currentColor 8%, transparent);
+  }
+  /* Image hover — subtle life */
+  img { transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1); }
+  img:hover { transform: scale(1.03); }
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+
+<script id="__zd_product_runtime__-js">
+(function () {
+  'use strict';
+  var marker = '__zd_product_runtime__';
+  if (document.getElementById(marker + '-js')) return; // already injected
+  
+  var stage = document.querySelector('.product-stage');
+  if (!stage) return; // no product stage found
+  
+  var layers = stage.querySelectorAll('.product-layer');
+  if (layers.length === 0) return; // no layers found
+  
+  // Check if LLM already provided working JS (wheel listener present)
+  var hasWorkingJS = false;
+  try {
+    var testEvent = new Event('wheel');
+    stage.closest('section').dispatchEvent(testEvent);
+    hasWorkingJS = true; // no error = LLM JS works
+  } catch (e) {
+    hasWorkingJS = false;
+  }
+  
+  if (hasWorkingJS) return; // LLM JS is fine
+  
+  // Inject fallback controller
+  var zoom = 1, MIN = 1, MAX = 2;
+  var section = stage.closest('section') || stage.parentElement;
+  
+  section.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    zoom = Math.min(MAX, Math.max(MIN, zoom + (e.deltaY > 0 ? 0.25 : -0.25)));
+    var t = (zoom - MIN) / (MAX - MIN);
+    stage.style.transform = 'scale(' + zoom + ')';
+    layers.forEach(function (l) {
+      var z = parseFloat(l.dataset.z || '0');
+      l.style.transform = 'translateZ(' + (z * t) + 'px)';
+    });
+  }, { passive: false });
+  
+  // Mobile fallback: touch slider
+  var isTouch = 'ontouchstart' in window;
+  if (isTouch) {
+    var slider = document.createElement('input');
+    slider.type = 'range';
+    slider.min = MIN;
+    slider.max = MAX;
+    slider.step = 0.1;
+    slider.value = 1;
+    slider.style.cssText = 'position:absolute;bottom:40px;left:50%;transform:translateX(-50%);width:200px;z-index:100;';
+    slider.addEventListener('input', function () {
+      zoom = parseFloat(slider.value);
+      var t = (zoom - MIN) / (MAX - MIN);
+      stage.style.transform = 'scale(' + zoom + ')';
+      layers.forEach(function (l) {
+        var z = parseFloat(l.dataset.z || '0');
+        l.style.transform = 'translateZ(' + (z * t) + 'px)';
+      });
+    });
+    section.appendChild(slider);
+  }
+})();
+</script>
+
+
+<!-- Z.Design Experience Runtime (deterministic interactivity floor) -->
+<style id="__zd_experience_runtime__-css">
+  [data-reveal]:not(.is-visible) { opacity: 0; transform: translateY(40px); }
+  [data-reveal].is-visible { opacity: 1; transform: translateY(0); transition: opacity 0.9s cubic-bezier(0.22,1,0.36,1), transform 0.9s cubic-bezier(0.22,1,0.36,1); }
+  #zd-scroll-progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; transform-origin: left; transform: scaleX(0); background: var(--accent, var(--primary, #c9a962)); z-index: 10000; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
+    #zd-scroll-progress { display: none; }
+  }
+</style>
+<div id="zd-scroll-progress" aria-hidden="true"></div>
+<script id="__zd_experience_runtime__">
+(function(){
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var bar = document.getElementById('zd-scroll-progress');
+  function onScroll(){
+    var h = document.documentElement;
+    var p = h.scrollHeight - h.clientHeight;
+    if (bar && p > 0) bar.style.transform = 'scaleX(' + (h.scrollTop / p) + ')';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  var els = document.querySelectorAll('[data-reveal], section:not([data-reveal])');
+  els.forEach(function(el, i){
+    if (!el.hasAttribute('data-reveal')) el.setAttribute('data-reveal', '');
+    if (window.gsap && window.ScrollTrigger) return;
+    if (!('IntersectionObserver' in window)) { el.classList.add('is-visible'); return; }
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    obs.observe(el);
+  });
+  if (window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('[data-reveal]').forEach(function(el){
+      gsap.from(el, { y: 48, opacity: 0, duration: 1, ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' }
+      });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -26,7 +26,7 @@ import { pickTemplate } from '@/lib/ai/templates/registry';
 import { loadReferenceHtml, buildAdaptPrompt } from '@/lib/ai/templates/generate-from-reference';
 import { lintHtml } from '@/lib/ai/lint/anti-slop';
 import { ensureDesignImages } from '@/lib/ai/ensure-design-images';
-import { injectAgencyCraft, getConceptSpecs, AGENCY_ANIMATIONS, AGENCY_CONCEPT, AGENCY_PREMIUM_LUXE } from '@/lib/ai/skills/agency-craft';
+import { injectAgencyCraft, getConceptSpecs, AGENCY_ANIMATIONS, AGENCY_CONCEPT, AGENCY_PREMIUM_LUXE, PRODUCT_INTERACTION_SPECS } from '@/lib/ai/skills/agency-craft';
 import { ensureGoogleFonts } from '@/lib/ai/ensure-google-fonts';
 import { ensureExperienceRuntime } from '@/lib/ai/experience-stack';
 import { ensureAppShell } from '@/lib/ai/app-shell';
@@ -47,6 +47,9 @@ export async function POST(req: NextRequest) {
     const quick = body.quick === true;
     // premium=true: inject luxe Agency-Craft specs. Auto-detected for luxury briefs.
     const premium = body.premium === true;
+    // interactive=true: inject 3D product-visualization specs (Exploded View,
+    // Mausrad-Zoom, Custom JS). For premium product showcases (watches, cars, tech).
+    const interactive = body.interactive === true;
     // referenceImages: pre-generated image URLs the design should use (e.g.
     // Minimax image-01 results). Passed as <img src> candidates to the LLM.
     const referenceImages = Array.isArray(body.referenceImages) ? body.referenceImages as string[] : [];
@@ -152,6 +155,7 @@ Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
       + conceptSpecBlock
       + AGENCY_ANIMATIONS + AGENCY_CONCEPT
       + (premiumTier ? AGENCY_PREMIUM_LUXE : '')
+      + (interactive ? PRODUCT_INTERACTION_SPECS : '')
       + generatePrompt;
 
     // ── GENERATE via Z.ai GLM-5.2 ──
@@ -172,6 +176,18 @@ Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
     // This is the deterministic "finishing touch" — guarantees a craft floor
     // regardless of what the LLM produced.
     html = injectAgencyCraft(html);
+
+    // ── 1d) INTERACTIVE PRODUCT RUNTIME (deterministic fallback) ─────────────
+    // If interactive=true, inject the deterministic 3D product runtime as a
+    // safety net — the LLM often generates the structure (product-stage, layers)
+    // but forgets or breaks the Custom JS. This fallback provides working
+    // wheel-zoom based on data-z conventions, regardless of LLM JS quality.
+    if (interactive) {
+      const { injectProductRuntime } = await import('@/lib/ai/interactive-product');
+      html = injectProductRuntime(html);
+      console.log('[cream] interactive product runtime injected (fallback JS for wheel-zoom)');
+    }
+
     html =
       brief.experienceMode === 'app-shell'
         ? ensureAppShell(html, 'app-shell')

@@ -3,14 +3,12 @@
 // Concrete, numerical specifications that lift generated HTML from "flat
 // template" to "Awwwards showcase quality". These are NOT vague instructions
 // ("use good spacing") — they are exact CSS values, grid rules, and animation
-// snippets that the LLM must follow. Inspired by Minimax-M3 analysis of what
-// separates generic AI landing pages from agency-grade work.
+// snippets that the LLM must follow.
 
 // ─── CONCEPT-VARIABLE LAYOUT SPECS ──────────────────────────────────────────
-// FIX: The old AGENCY_LAYOUT_SPECS were identical for every design — always
-// 12-col grid, always clamp(64-144px), always 1320px. That's exactly why every
-// design looked the same. These specs are now DOMAIN-ADAPTIVE: the design
-// direction (palette, fonts, mood) determines which spec set applies.
+// These specs are DOMAIN-ADAPTIVE: the design direction (palette, fonts, mood)
+// determines which spec set applies. This fixes "always the same design" — each
+// domain gets different typography, colors, spacing, and motion.
 
 export interface ConceptSpecs {
   layout: string;
@@ -47,8 +45,7 @@ FARB-TIEFE (warm, handwerklich, einladend):
 BEWEGUNG (langsam, bedächtig, editorial):
   Reveal: opacity 0→1, translateY 40px→0, 1s cubic-bezier(0.22,1,0.36,1)
   Bilder: slow zoom (scale 1→1.08, 25s alternate infinite)
-  Hover: subtle scale(1.03) mit 600ms ease
-  KEIN schnelles Fade, KEIN bounce, KEIN shake`,
+  Hover: subtle scale(1.03) mit 600ms ease`,
     };
   }
   // Tech/SaaS/Crypto domains: dark, modern, bold typography, dynamic
@@ -335,3 +332,7 @@ PREMIUM-CSS-SCHNIPSEL (nutze diese exakt):
   ::selection { background:var(--gold); color:var(--onyx); }
 `;
 
+// ─── INTERACTIVE PRODUCT RE-EXPORT ───────────────────────────────────────────
+// The actual implementation lives in src/lib/ai/interactive-product.ts.
+// Re-exported here for backward compatibility with cream-route.ts imports.
+export { PRODUCT_INTERACTION_SPECS, getInteractiveSpecs, injectProductRuntime, isInteractiveProductBrief } from '@/lib/ai/interactive-product';
