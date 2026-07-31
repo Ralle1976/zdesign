@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BOSS — Exploded View Sequence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --onyx: #08070a;
+  --gold: #c9a961;
+  --bone: #f4f1ec;
+  --ash: #888;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--onyx);
+  color: var(--bone);
+  overflow-x: hidden;
+}
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  align-items: center;
+  padding: 0 48px;
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70vw; height: 70vw;
+  max-width: 800px;
+  background: radial-gradient(circle, rgba(201,169,97,0.12) 0%, transparent 60%);
+  animation: pulseGlow 8s ease-in-out infinite;
+}
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.hero__text {
+  text-align: right;
+  z-index: 2;
+}
+.hero__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  margin-bottom: 20px;
+}
+.hero__heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(48px, 7vw, 96px);
+  font-weight: 300;
+  line-height: 0.95;
+  color: var(--bone);
+}
+.hero__heading em {
+  font-style: italic;
+  color: var(--gold);
+}
+.hero__sub {
+  font-size: 14px;
+  color: var(--ash);
+  margin-top: 24px;
+  max-width: 280px;
+  margin-left: auto;
+  line-height: 1.8;
+}
+
+/* === EXPLODED VIEW SEQUENCE === */
+.exploded-view {
+  position: relative;
+  width: clamp(320px, 32vw, 480px);
+  height: clamp(320px, 32vw, 480px);
+  z-index: 2;
+  perspective: 1200px;
+}
+.exploded-view__stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+.exploded-view__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.exploded-view__image.active {
+  opacity: 1;
+}
+.exploded-view__hint {
+  position: absolute;
+  bottom: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--ash);
+  text-transform: uppercase;
+  z-index: 3;
+}
+.exploded-view__controls {
+  position: absolute;
+  bottom: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 3;
+}
+.exploded-view__btn {
+  padding: 8px 16px;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+.exploded-view__btn:hover,
+.exploded-view__btn.active {
+  background: var(--gold);
+  color: var(--onyx);
+}
+
+/* Scroll-driven animation */
+@media (min-width: 768px) {
+  .exploded-view__image {
+    animation: explodeScroll linear;
+    animation-timeline: scroll(root);
+    animation-range: entry 0% cover 100%;
+  }
+  @keyframes explodeScroll {
+    0%, 33% { opacity: 0; }
+    33.1%, 66% { opacity: 0; }
+    66.1%, 100% { opacity: 0; }
+  }
+  .exploded-view__image[data-state="assembled"] {
+    animation-range: entry 0% cover 33%;
+  }
+  .exploded-view__image[data-state="half-exploded"] {
+    animation-range: entry 33% cover 66%;
+  }
+  .exploded-view__image[data-state="fully-exploded"] {
+    animation-range: entry 66% cover 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exploded-view__image { transition: none; animation: none; }
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero__text">
+    <div class="hero__eyebrow">BOSS Manufaktur · Kaliber 88</div>
+    <h1 class="hero__heading">Die Mechanik<br>der <em>Zeit</em>.</h1>
+    <p class="hero__sub">Explodieren Sie die Uhr mit dem Mausrad. Sehen Sie das Innere.</p>
+  </div>
+  <div class="exploded-view">
+    <div class="exploded-view__stage" id="stage">
+      <img class="exploded-view__image active" data-state="assembled" src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-31%2Fba86e490-d510-4b80-a98a-eecd4db2f5aa_aigc.jpeg?Expires=1785558715&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=ezuouM6%2FUyYRLJOApXuy%2BkgxaUQ%3D" alt="BOSS watch assembled">
+      <img class="exploded-view__image" data-state="half-exploded" src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-31%2F6a2daf90-b980-4252-93e7-9004bf5e720b_aigc.jpeg?Expires=1785558730&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=xSXvKbsYaEr%2FFm2irKareAKZQW4%3D" alt="BOSS watch half exploded">
+      <img class="exploded-view__image" data-state="fully-exploded" src="http://hailuo-image-algeng-data-us.oss-us-east-1.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-07-31%2F5303e37a-7aab-4b34-a34c-5728a3ddb487_aigc.jpeg?Expires=1785558755&OSSAccessKeyId=LTAI5tRDTcyEYLLuBEpJRwCi&Signature=pR4v8fEAtsqvsQKQX%2F8Pil2eZTI%3D" alt="BOSS watch fully exploded">
+    </div>
+    <div class="exploded-view__hint">Mausrad drehen · oder klicken</div>
+    <div class="exploded-view__controls">
+      <button class="exploded-view__btn active" data-state="assembled">Zusammen</button>
+      <button class="exploded-view__btn" data-state="half-exploded">Halb</button>
+      <button class="exploded-view__btn" data-state="fully-exploded">Explodiert</button>
+    </div>
+  </div>
+  <div class="hero__price">
+    <div style="font-family: 'Cormorant Garamond', serif; font-size: 32px; color: var(--gold);">€ 14.800</div>
+    <a href="#" style="display: inline-block; margin-top: 24px; padding: 16px 40px; border: 1px solid var(--gold); color: var(--gold); text-decoration: none; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase;">Private Anfrage</a>
+  </div>
+</section>
+
+<script>
+// Exploded View Sequence Controller
+(function () {
+  const images = document.querySelectorAll('.exploded-view__image');
+  const buttons = document.querySelectorAll('.exploded-view__btn');
+  const stage = document.getElementById('stage');
+  let currentState = 0;
+  const states = ['assembled', 'half-exploded', 'fully-exploded'];
+
+  function setState(index) {
+    currentState = Math.max(0, Math.min(states.length - 1, index));
+    images.forEach((img, i) => {
+      img.classList.toggle('active', i === currentState);
+    });
+    buttons.forEach((btn, i) => {
+      btn.classList.toggle('active', i === currentState);
+    });
+  }
+
+  // Click controls
+  buttons.forEach((btn, i) => {
+    btn.addEventListener('click', () => setState(i));
+  });
+
+  // Wheel events (scroll down = explode, scroll up = assemble)
+  document.querySelector('.hero').addEventListener('wheel', (e) => {
+    e.preventDefault();
+    if (e.deltaY > 0 && currentState < states.length - 1) {
+      setState(currentState + 1);
+    } else if (e.deltaY < 0 && currentState > 0) {
+      setState(currentState - 1);
+    }
+  }, { passive: false });
+
+  // Keyboard controls
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      setState(currentState + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      setState(currentState - 1);
+    }
+  });
+})();
+</script>
+</body>
+</html>
