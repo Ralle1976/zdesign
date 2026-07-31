@@ -170,39 +170,46 @@ const PRODUCT_RUNTIME_JS = `
   
   if (hasWorkingJS) return; // LLM JS is fine
   
-  // Inject fallback controller
-  var zoom = 1, MIN = 1, MAX = 2;
+  // Inject fallback controller — EXPLODED VIEW (not zoom)
+  // scroll down (wheel down): layers spread APART (see the inside)
+  // scroll up (wheel up): layers come TOGETHER (back to complete product)
+  var explosion = 0; // 0 = zusammen, 1 = vollständig exploded
+  var MAX_EXPLOSION = 1.0;
   var section = stage.closest('section') || stage.parentElement;
-  
+
+  function updateExplosion() {
+    // t = 0: alle Schichten eng zusammen (translateZ: 0)
+    // t = 1: alle Schichten maximal auseinander (translateZ: data-z * t)
+    layers.forEach(function (l) {
+      var baseZ = parseFloat(l.dataset.z || '0');
+      var spreadZ = baseZ * explosion;
+      l.style.transform = 'translateZ(' + spreadZ + 'px)';
+      // Optional: slight opacity fade for depth effect
+      l.style.opacity = explosion > 0.5 ? String(1 - (explosion - 0.5) * 0.3) : '1';
+    });
+  }
+
   section.addEventListener('wheel', function (e) {
     e.preventDefault();
-    zoom = Math.min(MAX, Math.max(MIN, zoom + (e.deltaY > 0 ? 0.25 : -0.25)));
-    var t = (zoom - MIN) / (MAX - MIN);
-    stage.style.transform = 'scale(' + zoom + ')';
-    layers.forEach(function (l) {
-      var z = parseFloat(l.dataset.z || '0');
-      l.style.transform = 'translateZ(' + (z * t) + 'px)';
-    });
+    // wheel down (positive deltaY) = explode (see inside)
+    // wheel up (negative deltaY) = implode (back to complete)
+    explosion = Math.min(MAX_EXPLOSION, Math.max(0, explosion + (e.deltaY > 0 ? 0.15 : -0.15)));
+    updateExplosion();
   }, { passive: false });
-  
+
   // Mobile fallback: touch slider
   var isTouch = 'ontouchstart' in window;
   if (isTouch) {
     var slider = document.createElement('input');
     slider.type = 'range';
-    slider.min = MIN;
-    slider.max = MAX;
-    slider.step = 0.1;
-    slider.value = 1;
+    slider.min = 0;
+    slider.max = MAX_EXPLOSION;
+    slider.step = 0.05;
+    slider.value = 0;
     slider.style.cssText = 'position:absolute;bottom:40px;left:50%;transform:translateX(-50%);width:200px;z-index:100;';
     slider.addEventListener('input', function () {
-      zoom = parseFloat(slider.value);
-      var t = (zoom - MIN) / (MAX - MIN);
-      stage.style.transform = 'scale(' + zoom + ')';
-      layers.forEach(function (l) {
-        var z = parseFloat(l.dataset.z || '0');
-        l.style.transform = 'translateZ(' + (z * t) + 'px)';
-      });
+      explosion = parseFloat(slider.value);
+      updateExplosion();
     });
     section.appendChild(slider);
   }

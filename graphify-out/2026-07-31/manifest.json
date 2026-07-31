@@ -180,8 +180,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/app/api/design/cream/route.ts": {
-    "mtime": 1785446543.875,
-    "ast_hash": "49f6b807dc26f4c9b470f8d74a01e6be",
+    "mtime": 1784733204.275,
+    "ast_hash": "fc96268fffa84b3ee86a9e70d04463e4",
     "semantic_hash": ""
   },
   "Projekt/src/app/api/design/enhance/route.ts": {
@@ -1220,8 +1220,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/lib/ai/skills/agency-craft.ts": {
-    "mtime": 1785446013.906,
-    "ast_hash": "10e600ec45ac78b0f0307a2f94b1d828",
+    "mtime": 1784733118.289,
+    "ast_hash": "195d51cb4d734ee35a20548c0aa297da",
     "semantic_hash": ""
   },
   "Projekt/src/lib/ai/skills/art-direction.ts": {
@@ -2692,26 +2692,6 @@
   "Projekt/test-restaurant-template.png": {
     "mtime": 1785329785.897,
     "ast_hash": "43d0c3102f77920ca49fee977840cec2",
-    "semantic_hash": ""
-  },
-  "Projekt/_live_demo.mjs": {
-    "mtime": 1785441162.813,
-    "ast_hash": "2428bcf9480dfbab30ef2f7be5ba0c8d",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/interactive-product.ts": {
-    "mtime": 1785445431.229,
-    "ast_hash": "91503c008faeda603211a9bf46ab38de",
-    "semantic_hash": ""
-  },
-  "Projekt/public/boss-watches-interactive.html": {
-    "mtime": 1785446709.098,
-    "ast_hash": "8d2b388da5bcb0a6bd5955f49b24307b",
-    "semantic_hash": ""
-  },
-  "Projekt/public/live-demo-kaiseki.html": {
-    "mtime": 1785441329.723,
-    "ast_hash": "d04f905976b0bc67100c397113381813",
     "semantic_hash": ""
   }
 }
