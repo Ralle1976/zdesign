@@ -26,6 +26,7 @@ import { pickTemplate } from '@/lib/ai/templates/registry';
 import { loadReferenceHtml, buildAdaptPrompt } from '@/lib/ai/templates/generate-from-reference';
 import { lintHtml } from '@/lib/ai/lint/anti-slop';
 import { ensureDesignImages } from '@/lib/ai/ensure-design-images';
+import { runRefinementQc } from '@/lib/ai/refinement-qc';
 import { injectAgencyCraft, getConceptSpecs, AGENCY_ANIMATIONS, AGENCY_CONCEPT, AGENCY_PREMIUM_LUXE, PRODUCT_INTERACTION_SPECS } from '@/lib/ai/skills/agency-craft';
 import { ensureGoogleFonts } from '@/lib/ai/ensure-google-fonts';
 import { ensureExperienceRuntime } from '@/lib/ai/experience-stack';
@@ -79,9 +80,10 @@ export async function POST(req: NextRequest) {
     }
     const premiumTier = premium || isPremiumBrief(briefText, concept);
 
-    // BILDER: keine MiniMax-Generierung mehr (unzuverlässig, oft falscher Content).
-    // Stattdessen liefert brief.imagery (imageryGuidance) domain-spezifische
-    // Unsplash-URLs direkt im Prompt → GLM-5.2 nutzt echte, kuratierte Fotos.
+    // BILDER: keine Vorab-Generierung im Prompt — der LLM bekommt kuratierte
+    // Unsplash-URLs als sicheren Startpunkt; in Schritt 1b ersetzt
+    // ensureDesignImages sie durch frisch generierte MiniMax-Bilder
+    // (tryGenerate: true). Unsplash ist nur der Fallback bei Gen-Fehlern.
     let imageBlock = '';
 
     // negative memory (avoid past failures)
@@ -166,6 +168,23 @@ Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
     let html = cleanHtml(await callTextLLM(prompt, { model, maxTokens: GEN_MAX_TOKENS, temperature: isRefinement ? 0.4 : 0.6, timeoutMs: 300_000 }));
     if (!html || !/<html/i.test(html)) {
       return NextResponse.json({ error: 'Z.ai generate returned no valid HTML' }, { status: 502 });
+    }
+
+    // ── REFINEMENT QC: deterministic gate for the quick path (no vision loop) ──
+    // Guards against silent quality loss: truncation, image loss, P0 regressions.
+    let qcWarnings: string[] = [];
+    if (isRefinement && existingHtml) {
+      const qc = runRefinementQc(existingHtml, html);
+      if (!qc.ok) {
+        return NextResponse.json(
+          { error: qc.rejectReason, html: existingHtml, qcRejected: true },
+          { status: 422 },
+        );
+      }
+      qcWarnings = qc.warnings;
+      if (qcWarnings.length > 0) {
+        console.warn(`[cream] refinement QC warnings: ${qcWarnings.join(' · ')}`);
+      }
     }
 
     // ── 1a) DETERMINISTIC FONT INJECTION ────────────────────────────────────
@@ -385,6 +404,7 @@ Gib NUR die vollständige HTML-Datei zurück (<!doctype html> ... </html>).`;
       projectId,
       model: GEN_MODEL,
       createdAt,
+      qcWarnings,
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'cream route failed';

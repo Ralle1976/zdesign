@@ -3,78 +3,44 @@
  *
  * Replaces the single 16k-token one-shot with modular passes so each view
  * gets distinct layout and pre-locked imagery.
+ *
+ * Split for single responsibility:
+ *   multi-pass/types.ts  — shared types
+ *   multi-pass/ia.ts     — IA generation (Pass 1)
+ *   multi-pass/shell.ts  — shell runtime + document assembly (Pass 3)
+ *   this file            — view prompts (Pass 2b), global CSS (Pass 2a), orchestration
  */
 
-import { jsonrepair } from 'jsonrepair';
 import type { ArtBrief } from '@/lib/ai/skills/art-direction';
 import type { Concept } from '@/lib/ai/skills/creative-director';
-import { getExperiencePrompt } from '@/lib/ai/app-shell';
-import type { ExperienceMode } from '@/lib/ai/pipeline-intent';
 import { buildReferenceAnchor } from '@/lib/ai/reference-rag';
 import { ensureImageSlots, generateImagesFirst, imageMapToPromptBlock } from '@/lib/ai/images-first';
-import { applyImageHarmonyCss } from '@/lib/ai/image-harmony';
 import { applyFreshImages } from '@/lib/ai/fresh-images';
 import { ULTRA_IMAGE_RULES, ULTRA_QUALITY_BAR } from '@/lib/ai/ultra-quality';
 import { cleanHtml } from '@/lib/ai/fusion/fusion-client';
+import { generateIA } from '@/lib/ai/multi-pass/ia';
+import { assembleDocument } from '@/lib/ai/multi-pass/shell';
+import type {
+  DesignIA,
+  LLMCall,
+  MultiPassInput,
+  MultiPassOutput,
+  ViewIA,
+} from '@/lib/ai/multi-pass/types';
+
+// Re-export shared types (backward compat — images-first.ts imports them here).
+export type {
+  DesignIA,
+  ImageSlot,
+  LLMCall,
+  MultiPassInput,
+  MultiPassOutput,
+  ProgressFn,
+  ViewIA,
+} from '@/lib/ai/multi-pass/types';
 
 const VIEW_MAX_TOKENS = 8192;
-const IA_MAX_TOKENS = 2048;
 const GLOBAL_CSS_MAX_TOKENS = 4096;
-
-export interface ImageSlot {
-  id: string;
-  subject: string;
-  aspect?: string;
-}
-
-export interface ViewIA {
-  id: string;
-  label: string;
-  purpose: string;
-  layoutHint: string;
-  sections: Array<{ type: string; headline: string; body: string }>;
-  imageSlots: ImageSlot[];
-}
-
-export interface DesignIA {
-  title: string;
-  tagline: string;
-  views: ViewIA[];
-  nav: Array<{ id: string; label: string }>;
-  globalStyle: string;
-}
-
-export type ProgressFn = (step: string, label: string, detail?: string) => void;
-
-export interface MultiPassInput {
-  brief: ArtBrief;
-  message: string;
-  concept?: Concept;
-  existingHtml?: string;
-  creativeMode?: boolean;
-  rationalePrefix?: string;
-  memoryBlock?: string;
-  userMemoryBlock?: string;
-  lessonsBlock?: string;
-  onProgress?: ProgressFn;
-}
-
-export interface MultiPassOutput {
-  html: string;
-  ia: DesignIA;
-  templateId?: string;
-  imageCount: number;
-}
-
-type LLMCall = (
-  prompt: string,
-  opts?: {
-    maxTokens?: number;
-    temperature?: number;
-    timeoutMs?: number;
-    thinking?: boolean;
-  },
-) => Promise<string>;
 
 function isValidHtmlDoc(s: string): boolean {
   const lower = s.trim().toLowerCase();
@@ -83,75 +49,6 @@ function isValidHtmlDoc(s: string): boolean {
     s.length > 2000 &&
     lower.includes('</html>')
   );
-}
-
-function extractJsonBlob(raw: string): string {
-  const trimmed = raw.trim().replace(/^```json?\s*/i, '').replace(/```\s*$/i, '');
-  const start = trimmed.indexOf('{');
-  const end = trimmed.lastIndexOf('}');
-  if (start >= 0 && end > start) return trimmed.slice(start, end + 1);
-  return trimmed;
-}
-
-function inputFallbackTitle(ia: DesignIA): string {
-  return ia.tagline || 'Premium-Erlebnis';
-}
-
-function padViewsForAppShell(ia: DesignIA, mode: ExperienceMode): DesignIA {
-  if (mode !== 'app-shell' || ia.views.length >= 4) return ia;
-  const defaults = [
-    { id: 'view-home', label: 'Start', purpose: 'Intro & Hero', layoutHint: 'asymmetrisch split hero' },
-    { id: 'view-catalog', label: 'Katalog', purpose: 'Angebot/Produkte', layoutHint: 'bento grid variiert' },
-    { id: 'view-story', label: 'Story', purpose: 'Geschichte/Prozess', layoutHint: 'editorial magazine' },
-    { id: 'view-contact', label: 'Kontakt', purpose: 'CTA & Kontakt', layoutHint: 'minimaler Fokus-CTA' },
-  ];
-  const views = [...ia.views];
-  for (let i = views.length; i < 4; i++) {
-    const d = defaults[i];
-    views.push({
-      ...d,
-      sections: [{ type: 'content', headline: ia.title, body: ia.tagline || inputFallbackTitle(ia) }],
-      imageSlots: [{ id: `img-pad-${i}`, subject: `${ia.title} — Motiv ${i + 1}`, aspect: '16:9' }],
-    });
-  }
-  const nav = views.map((v) => ({ id: v.id, label: v.label }));
-  return { ...ia, views, nav };
-}
-
-function parseIA(raw: string, mode: ExperienceMode): DesignIA | null {
-  try {
-    const repaired = jsonrepair(extractJsonBlob(raw));
-    const obj = JSON.parse(repaired) as Partial<DesignIA>;
-    if (!obj.views?.length || obj.views.length < 2) return null;
-
-    const views: ViewIA[] = obj.views.slice(0, 6).map((v, i) => ({
-      id: v.id || `view-${i + 1}`,
-      label: v.label || `View ${i + 1}`,
-      purpose: v.purpose || '',
-      layoutHint: v.layoutHint || 'editorial asymmetrisch',
-      sections: Array.isArray(v.sections) ? v.sections.slice(0, 6) : [],
-      imageSlots: Array.isArray(v.imageSlots) ? v.imageSlots.slice(0, 3) : [],
-    }));
-
-    const nav =
-      Array.isArray(obj.nav) && obj.nav.length > 0
-        ? obj.nav.map((n, i) => ({
-            id: n.id || views[i]?.id || `view-${i + 1}`,
-            label: n.label || views[i]?.label || `Tab ${i + 1}`,
-          }))
-        : views.map((v) => ({ id: v.id, label: v.label }));
-
-    const ia: DesignIA = {
-      title: obj.title || 'Design',
-      tagline: obj.tagline || '',
-      views,
-      nav: nav.slice(0, views.length),
-      globalStyle: obj.globalStyle || '',
-    };
-    return padViewsForAppShell(ia, mode);
-  } catch {
-    return null;
-  }
 }
 
 function paletteBlock(brief: ArtBrief, concept?: Concept): string {
@@ -172,64 +69,6 @@ function paletteBlock(brief: ArtBrief, concept?: Concept): string {
   ].join('\n');
 }
 
-function buildIAPrompt(input: MultiPassInput, refBlock: string, mode: ExperienceMode): string {
-  const b = input.brief;
-  const experience = getExperiencePrompt(mode);
-  const viewCount = mode === 'app-shell' ? '4-6 discrete views (app-shell)' : '5-7 scroll sections';
-
-  return [
-    input.rationalePrefix || '',
-    `Du bist Information Architect für ein ULTRA-PREMIUM Webdesign (Agentur-Niveau).`,
-    `Erstelle eine IA-Struktur als JSON (kein HTML, kein Markdown, kein Thinking-Text).`,
-    ``,
-    `AUFTRAG: ${input.message}`,
-    `Domain: ${b.domain} · Mood: ${b.mood} · Archetyp: ${b.archetype}`,
-    `Modus: ${mode} — ${viewCount}`,
-    refBlock,
-    experience.slice(0, 1200),
-    ``,
-    `JSON-Schema (exakt):`,
-    `{`,
-    `  "title": "Seitentitel",`,
-    `  "tagline": "kurzer Claim",`,
-    `  "globalStyle": "1-2 Sätze: Licht, Materialität, eine Signatur-Geste",`,
-    `  "nav": [{ "id": "view-home", "label": "Start" }, ...],`,
-    `  "views": [{`,
-    `    "id": "view-home",`,
-    `    "label": "Start",`,
-    `    "purpose": "was diese View leistet",`,
-    `    "layoutHint": "asymmetrisch split / bento / editorial — UNIQUE pro View",`,
-    `    "sections": [{ "type": "hero|grid|story|cta", "headline": "...", "body": "..." }],`,
-    `    "imageSlots": [{ "id": "hero-img", "subject": "konkretes Motiv für Bild-Gen", "aspect": "16:9" }]`,
-    `  }]`,
-    `}`,
-    ``,
-    `REGELN:`,
-    `- EXAKT 4 Views bei app-shell (view-home, view-catalog, view-story, view-contact)`,
-    `- Jede View: ANDERES layoutHint + mindestens 1 imageSlot mit konkretem Foto-Motiv`,
-    `- Mindestens 4 imageSlots gesamt — spezifische Subjekte für Bild-Generierung`,
-    `- globalStyle: mutige Signatur-Geste + Lichtführung (1-2 Sätze)`,
-    `Antworte NUR mit gültigem JSON — erstes Zeichen {, letztes Zeichen }.`,
-  ]
-    .filter(Boolean)
-    .join('\n');
-}
-
-async function generateIA(
-  input: MultiPassInput,
-  callLLM: LLMCall,
-  refBlock: string,
-): Promise<DesignIA | null> {
-  const mode = input.brief.experienceMode ?? 'app-shell';
-  const raw = await callLLM(buildIAPrompt(input, refBlock, mode), {
-    maxTokens: IA_MAX_TOKENS,
-    temperature: input.creativeMode ? 0.85 : 0.7,
-    timeoutMs: 120_000,
-    thinking: false,
-  });
-  return parseIA(raw, mode);
-}
-
 function buildViewPrompt(
   view: ViewIA,
   ia: DesignIA,
@@ -239,8 +78,9 @@ function buildViewPrompt(
 ): string {
   const b = input.brief;
   const isAppShell = (b.experienceMode ?? 'app-shell') === 'app-shell';
-  const activeClass = ia.views[0]?.id === view.id ? ' is-active' : '';
-  const hidden = ia.views[0]?.id === view.id ? '' : ' hidden';
+  const isFirstView = ia.views[0]?.id === view.id;
+  const activeClass = isFirstView ? ' is-active' : '';
+  const hidden = isFirstView ? '' : ' hidden';
 
   return [
     ULTRA_QUALITY_BAR,
@@ -258,6 +98,7 @@ function buildViewPrompt(
     ),
     ``,
     imageBlock,
+    ...(isFirstView && input.interactiveBlock ? [input.interactiveBlock] : []),
     ULTRA_IMAGE_RULES,
     ``,
     `SHARED CSS (nutze diese Tokens, dupliziere :root NICHT):`,
@@ -319,88 +160,6 @@ async function generateGlobalCss(
   } catch {
     return paletteBlock(b, input.concept);
   }
-}
-
-const SHELL_RUNTIME = `
-<style id="__zd_app_shell__-css">
-  .app-view { display: none; min-height: calc(100vh - var(--nav-h, 64px)); animation: viewIn .45s cubic-bezier(0.22,1,0.36,1); }
-  .app-view.is-active { display: block; }
-  @keyframes viewIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-  .app-nav [data-nav].is-active { color: var(--accent, var(--primary)); }
-  @media (prefers-reduced-motion: reduce) { .app-view { animation: none; } }
-</style>
-<script id="__zd_app_shell__">
-(function(){
-  var nav = document.getElementById('app-nav');
-  var views = document.querySelectorAll('.app-view');
-  if (!views.length) return;
-  function show(id){
-    views.forEach(function(v){ var on = v.id === id; v.classList.toggle('is-active', on); v.hidden = !on; });
-    if (nav) nav.querySelectorAll('[data-nav]').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-nav') === id); });
-    try { history.replaceState(null, '', '#' + id); } catch(e){}
-    window.scrollTo(0, 0);
-  }
-  if (nav) nav.addEventListener('click', function(e){
-    var btn = e.target.closest('[data-nav]');
-    if (!btn) return;
-    e.preventDefault();
-    show(btn.getAttribute('data-nav'));
-  });
-  var hash = (location.hash || '').replace('#','');
-  if (hash && document.getElementById(hash)) show(hash);
-  else if (views[0]) show(views[0].id);
-})();
-</script>`;
-
-function assembleDocument(
-  ia: DesignIA,
-  viewHtml: string[],
-  globalCss: string,
-  input: MultiPassInput,
-): string {
-  const b = input.brief;
-  const mode = b.experienceMode ?? 'app-shell';
-  const fontsHref = b.concept?.fonts?.googleFontsHref || b.system.googleFontsHref;
-  const fontLink = fontsHref
-    ? `<link rel="stylesheet" href="${fontsHref}">`
-    : '';
-
-  const navButtons = ia.nav
-    .map(
-      (n, i) =>
-        `<button type="button" data-nav="${n.id}" class="${i === 0 ? 'is-active' : ''}">${n.label}</button>`,
-    )
-    .join('\n    ');
-
-  const isAppShell = mode === 'app-shell';
-  const nav = isAppShell
-    ? `<nav id="app-nav" class="app-nav" data-app-nav style="display:flex;gap:1rem;padding:1rem 2rem;position:sticky;top:0;z-index:100;background:var(--surface,var(--bg));border-bottom:1px solid var(--border,color-mix(in oklch,currentColor 12%,transparent))">\n    ${navButtons}\n  </nav>`
-    : '';
-
-  const mainContent = viewHtml.join('\n');
-  const runtime = isAppShell ? SHELL_RUNTIME : '';
-
-  const doc = `<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${ia.title}</title>
-  ${fontLink}
-  <style>
-${globalCss}
-  </style>
-</head>
-<body>
-  ${nav}
-  <main id="app-main">
-${mainContent}
-  </main>
-${runtime}
-</body>
-</html>`;
-
-  return applyImageHarmonyCss(doc, b.palette);
 }
 
 /**
