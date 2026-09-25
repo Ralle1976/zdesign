@@ -106,9 +106,11 @@ export const PROVIDERS: ProviderEntry[] = [
     kind: 'text',
     envKey: 'ZAI_API_KEY',
     envBaseUrl: 'ZAI_BASE_URL',
-    defaultModel: process.env.ZAI_MODEL || 'glm-5.2',
+    defaultModel: process.env.ZAI_MODEL || 'glm-5.3',
     models: [
-      { id: 'glm-5.2', name: 'GLM-5.2 (default, strongest)' },
+      { id: 'glm-5.3', name: 'GLM-5.3 (default, 1M ctx, tiefstes Reasoning)' },
+      { id: 'glm-5.3-flash', name: 'GLM-5.3-Flash (1M ctx, schnell)' },
+      { id: 'glm-5.2', name: 'GLM-5.2 (Fallback, bewährt)' },
       { id: 'glm-4.7', name: 'GLM-4.7 (fast)' },
       { id: 'glm-5v-turbo', name: 'GLM-5v-Turbo (vision, NOT on plan)' },
       { id: 'glm-4.6v', name: 'GLM-4.6v (vision)' },
