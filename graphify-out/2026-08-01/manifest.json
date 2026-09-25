@@ -50,13 +50,13 @@
     "semantic_hash": ""
   },
   "Projekt/next-env.d.ts": {
-    "mtime": 1786662064.622,
+    "mtime": 1782819228.489,
     "ast_hash": "d0f8375ae1199dc7acd3977fc33b78b8",
     "semantic_hash": ""
   },
   "Projekt/next.config.ts": {
-    "mtime": 1786644203.966,
-    "ast_hash": "61dd02f3b7269051642ec2b8f5d07f24",
+    "mtime": 1784062651.974,
+    "ast_hash": "230087b84662b2a82c5c02a3b0340c51",
     "semantic_hash": ""
   },
   "Projekt/package.json": {
@@ -160,8 +160,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/app/api/design/agent/stream/route.ts": {
-    "mtime": 1786641174.74,
-    "ast_hash": "867ab4eed1d2594b1edd482d0780e568",
+    "mtime": 1784733528.07,
+    "ast_hash": "2615c6ff944420bcee0862f4ec39fcb3",
     "semantic_hash": ""
   },
   "Projekt/src/app/api/design/analyze/route.ts": {
@@ -180,8 +180,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/app/api/design/cream/route.ts": {
-    "mtime": 1786641584.833,
-    "ast_hash": "8a5e1d9569bd7a9403da3bc1401b9c9b",
+    "mtime": 1785446543.875,
+    "ast_hash": "49f6b807dc26f4c9b470f8d74a01e6be",
     "semantic_hash": ""
   },
   "Projekt/src/app/api/design/enhance/route.ts": {
@@ -1005,8 +1005,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/lib/ai/image-minimax.ts": {
-    "mtime": 1786641651.694,
-    "ast_hash": "c0870be9c00b7fd79efd37193583e1b1",
+    "mtime": 1784067717.826,
+    "ast_hash": "636c2acb2a6cddd9979136f886954a5c",
     "semantic_hash": ""
   },
   "Projekt/src/lib/ai/image-providers.ts": {
@@ -1140,8 +1140,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/lib/ai/multi-pass-pipeline.ts": {
-    "mtime": 1786641093.586,
-    "ast_hash": "e5e853f762ad0d334a715c6789bcd470",
+    "mtime": 1784150816.516,
+    "ast_hash": "2d2624b4c650c1863adeba56569c96f5",
     "semantic_hash": ""
   },
   "Projekt/src/lib/ai/nextgen/contracts.ts": {
@@ -1160,8 +1160,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/lib/ai/provider-config.ts": {
-    "mtime": 1788176863.781,
-    "ast_hash": "2990772f077d92795fcf9665e0966996",
+    "mtime": 1784068373.049,
+    "ast_hash": "4a54f3a21a1f66696d9791c3801d936d",
     "semantic_hash": ""
   },
   "Projekt/src/lib/ai/provider.ts": {
@@ -2700,8 +2700,8 @@
     "semantic_hash": ""
   },
   "Projekt/src/lib/ai/interactive-product.ts": {
-    "mtime": 1786640596.67,
-    "ast_hash": "c18a8e4ec95e67256f138fa466e8fd08",
+    "mtime": 1785445431.229,
+    "ast_hash": "91503c008faeda603211a9bf46ab38de",
     "semantic_hash": ""
   },
   "Projekt/public/boss-watches-interactive.html": {
@@ -2712,111 +2712,6 @@
   "Projekt/public/live-demo-kaiseki.html": {
     "mtime": 1785441329.723,
     "ast_hash": "d04f905976b0bc67100c397113381813",
-    "semantic_hash": ""
-  },
-  "Projekt/_test_exploded.mjs": {
-    "mtime": 1785470502.531,
-    "ast_hash": "7669fc13db2257269cd181de7aa69e42",
-    "semantic_hash": ""
-  },
-  "Projekt/_test_video_exploded.mjs": {
-    "mtime": 1785470723.201,
-    "ast_hash": "a1404b3415388fcf864740c259a61fba",
-    "semantic_hash": ""
-  },
-  "Projekt/public/boss-exploded-sequence.html": {
-    "mtime": 1785472356.638,
-    "ast_hash": "b4365c45fbc94443d69d495c771533b9",
-    "semantic_hash": ""
-  },
-  "Projekt/boss-exploded-sequence.png": {
-    "mtime": 1785472397.954,
-    "ast_hash": "2709e4e8f6b95f26d58ed4d44cb59e5f",
-    "semantic_hash": ""
-  },
-  "Projekt/boss-sequence-assembled.png": {
-    "mtime": 1785472504.679,
-    "ast_hash": "c381fc04de3186c5c1f51dd6f0185b1b",
-    "semantic_hash": ""
-  },
-  "Projekt/boss-sequence-fully-exploded.png": {
-    "mtime": 1785472507.167,
-    "ast_hash": "9b4c9970178b3c68ca70fd594c66dcdc",
-    "semantic_hash": ""
-  },
-  "Projekt/boss-sequence-half-exploded.png": {
-    "mtime": 1785472505.93,
-    "ast_hash": "e0b83e0b50eee229aed82016211eabd8",
-    "semantic_hash": ""
-  },
-  "Projekt/boss-sequence-wheel-down.png": {
-    "mtime": 1785472508.435,
-    "ast_hash": "a83879791aa9e5df946d04102e6496eb",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/agent-pipeline/critique.ts": {
-    "mtime": 1786640813.227,
-    "ast_hash": "f92e34ec85cd68218f20e7709118ebdb",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/agent-pipeline/generate.ts": {
-    "mtime": 1786640771.848,
-    "ast_hash": "9b7de64e65f3fbbf4f99375e9aff85f5",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/agent-pipeline/index.ts": {
-    "mtime": 1786641148.449,
-    "ast_hash": "0811e2472eebcc8fccac828e227f3ce6",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/agent-pipeline/prepare.ts": {
-    "mtime": 1786641137.762,
-    "ast_hash": "29985d2177fffc6587c78b5d79e0d29d",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/agent-pipeline/ship.ts": {
-    "mtime": 1786640857.825,
-    "ast_hash": "65287ece49a2aa360879162055ac4aa7",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/agent-pipeline/types.ts": {
-    "mtime": 1786640845.11,
-    "ast_hash": "a12c14b95ee440526ba517a7b7e33d3c",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/image-prompts.ts": {
-    "mtime": 1786641638.114,
-    "ast_hash": "e5d40671980c922ee2a658f1f3feff97",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/interactive-product.test.ts": {
-    "mtime": 1786641736.178,
-    "ast_hash": "655333f91cb869174f199d57e99a27f4",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/multi-pass/ia.ts": {
-    "mtime": 1786641033.278,
-    "ast_hash": "15d33d06a52dfa2c01913e5c6ea92dc4",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/multi-pass/shell.ts": {
-    "mtime": 1786641047.034,
-    "ast_hash": "9c07261b39a42ac914082bb7288c50f5",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/multi-pass/types.ts": {
-    "mtime": 1786641013.083,
-    "ast_hash": "31b4ab6cd985e86ef51568183729cfbf",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/refinement-qc.test.ts": {
-    "mtime": 1786641745.922,
-    "ast_hash": "ba47f8cb8ffc34e27c2b10ca39935ddd",
-    "semantic_hash": ""
-  },
-  "Projekt/src/lib/ai/refinement-qc.ts": {
-    "mtime": 1786641548.514,
-    "ast_hash": "2fe832aed55f9ecf8cbc20e79d1271e3",
     "semantic_hash": ""
   }
 }

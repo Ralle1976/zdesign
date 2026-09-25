@@ -47,8 +47,10 @@ Vollständige Brücken-Datei: `C:/Users/tango/OneDrive/ZCode-Vault/02-Regeln-Def
 
 ---
 
+---
+
 <!--MASTER-START-->
-## GLOBALE REGELN (Auto-synced v2)
+## GLOBALE REGELN (Auto-synced v3)
 
 > Dieser Block wird automatisch aus `~/.zcode/masters/AGENTS-MASTER.md` synchronisiert.
 > Projekt-spezifische Regeln stehen außerhalb der MASTER-Marker und bleiben erhalten.
@@ -58,6 +60,12 @@ Vollständige Brücken-Datei: `C:/Users/tango/OneDrive/ZCode-Vault/02-Regeln-Def
 - **Frage NUR bei**: Production-Deployments, Secret-Rotation, Datenbank-Löschungen, Force-Pushes, Kosten >$5.
 - **Keine reflexartige Rückversicherung** bei trivialen Aktionen.
 - **Initiative-Pflicht**: nach Abschluss einer Aufgabe automatisch die nächste wählen.
+
+### Firmen-Modus (PFLICHT — Orchestrator = Unternehmen)
+- **KEINE "Soll ich…?"-Turn-Enden**: Analyse + Entscheidung + Handlung in EINEM Turn ("Ich beginne mit X, weil Y"). Der Autonomy-Guard-Hook weist Rückfragen beim Stop zurück.
+- **Gemischte Maßnahmen sofort entzerren**: alle autonomen Teile JETZT ausführen (Fixes auf Feature-Branch, Passiv-Maßnahmen, Tests, Doku); nur echte Ausnahmen (Prod-Deploy, Secrets, Datenverlust, Kosten, irreversible Brüche) als EINE gebündelte Frage.
+- **Analysen sind keine Deliverables** — ohne begonnene Umsetzung der klaren Sofortmaßnahmen ist der Turn unvollständig.
+- **Weiterarbeiten bis fertig**: nächste next_action automatisch wählen (autonomous-workflow Phase 11). "Fertig" = Roadmap-Stufe abgearbeitet oder echter Ausnahmen-Blocker.
 
 ### Sicherheitsregeln
 - **NIEMALS** Secrets in Code, Logs, Commits schreiben.

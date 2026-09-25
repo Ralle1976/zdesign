@@ -1,16 +1,16 @@
-# Graph Report - Z.Design  (2026-09-02)
+# Graph Report - Z.Design  (2026-08-17)
 
 ## Corpus Check
-- 346 files · ~2,239,951 words
+- 346 files · ~2,239,931 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2498 nodes · 5498 edges · 187 communities (107 shown, 80 thin omitted)
+- 2498 nodes · 5498 edges · 188 communities (108 shown, 80 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.6)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5d26ba58`
+- Built from commit: `a4308365`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -122,6 +122,7 @@
 - mini-services-install.sh
 - start.sh
 - clsx
+- cmdk
 - date-fns
 - publish-showcase.sh
 - @dnd-kit/core
@@ -220,7 +221,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (187 total, 80 thin omitted)
+## Communities (188 total, 80 thin omitted)
 
 ### Community 0 - "registry.ts"
 Cohesion: 0.07
@@ -260,15 +261,15 @@ Nodes (25): AnnotationPin, AnnotationPinProps, CanvasToolbar, DesignRenderer, De
 
 ### Community 9 - "props-editors.tsx"
 Cohesion: 0.09
-Nodes (33): AccessibilityScanner(), AccessibilityScannerProps, CATEGORY_CONFIG, ScoreCircle(), SEVERITY_CONFIG, BorderEditor(), ColorInput(), ContentEditor() (+25 more)
+Nodes (33): Separator(), AccessibilityScannerProps, CATEGORY_CONFIG, ScoreCircle(), SEVERITY_CONFIG, BorderEditor(), ColorInput(), ContentEditor() (+25 more)
 
 ### Community 10 - "patch-disclosure.ts"
 Cohesion: 0.08
 Nodes (42): appendRecord(), autoRevertIfRegressed(), ensureDir(), evaluatePatch(), OutcomeRecord, outcomesPath(), PatchOutcome, readRecords() (+34 more)
 
 ### Community 11 - "design.ts"
-Cohesion: 0.07
-Nodes (40): CanvasToolbarProps, VIEWPORT_CONFIG, ViewportFrameProps, NewProjectDialogProps, MODE_ICONS, StatusBar(), StatusBarProps, VIEWPORT_ICONS (+32 more)
+Cohesion: 0.06
+Nodes (44): CanvasToolbarProps, VIEWPORT_CONFIG, ViewportFrameProps, NewProjectDialogProps, MODE_ICONS, StatusBarProps, VIEWPORT_ICONS, CapabilitiesManifest (+36 more)
 
 ### Community 12 - "orchestra.ts"
 Cohesion: 0.09
@@ -283,16 +284,16 @@ Cohesion: 0.14
 Nodes (33): buildInteractiveImageBlock(), getActiveImageProvider(), ensureDesignImages(), injectHeroOnly(), applyFreshImages(), FreshImageOpts, generateHeroImage(), DesignPalette (+25 more)
 
 ### Community 15 - "ChatPanel.tsx"
-Cohesion: 0.15
-Nodes (26): Progress(), AIImageDialog(), SIZE_OPTIONS, CanvasArea(), GENERATION_STEPS, GenerationProgressIndicator(), getStepIndex(), QualityBadge() (+18 more)
+Cohesion: 0.13
+Nodes (34): Progress(), Tabs(), TabsContent(), TabsList(), TabsTrigger(), AccessibilityScanner(), AnnotationsPanel(), CanvasArea() (+26 more)
 
 ### Community 16 - "compilerOptions"
 Cohesion: 0.05
 Nodes (36): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+28 more)
 
 ### Community 17 - "TopToolbar.tsx"
-Cohesion: 0.12
-Nodes (26): Avatar(), AvatarFallback(), Button(), Dialog(), DialogContent(), DialogDescription(), DialogFooter(), DialogHeader() (+18 more)
+Cohesion: 0.13
+Nodes (24): Button(), Dialog(), DialogContent(), DialogDescription(), DialogFooter(), DialogHeader(), DialogTitle(), DialogTrigger() (+16 more)
 
 ### Community 18 - "use-toast.ts"
 Cohesion: 0.09
@@ -412,7 +413,7 @@ Nodes (17): aliases, components, hooks, lib, ui, utils, iconLibrary, rsc (+9 mor
 
 ### Community 47 - "dependencies"
 Cohesion: 0.12
-Nodes (17): cmdk, dependencies, cmdk, @radix-ui/react-accordion, @radix-ui/react-checkbox, @radix-ui/react-menubar, @radix-ui/react-navigation-menu, @radix-ui/react-toggle-group (+9 more)
+Nodes (17): @dnd-kit/sortable, dependencies, @dnd-kit/sortable, @radix-ui/react-accordion, @radix-ui/react-checkbox, @radix-ui/react-menubar, @radix-ui/react-navigation-menu, @radix-ui/react-toggle-group (+9 more)
 
 ### Community 48 - "route.ts"
 Cohesion: 0.20
@@ -507,8 +508,8 @@ Cohesion: 0.21
 Nodes (8): handler, POST(), adapter, AdapterUser, authOptions, hashPassword(), providers, SCRYPT_PARAMS
 
 ### Community 71 - "index.ts"
-Cohesion: 0.14
-Nodes (20): Tabs(), TabsContent(), TabsList(), TabsTrigger(), PropsPanel(), useDebouncedCallback(), ZDesignApp(), CapabilityFeature (+12 more)
+Cohesion: 0.33
+Nodes (7): getTranslations(), I18nContext, I18nContextType, I18nProvider(), Locale, TranslationKey, translations
 
 ### Community 72 - "form.tsx"
 Cohesion: 0.16
@@ -544,7 +545,7 @@ Nodes (8): API_ROOT, apiManifest(), ApiRouteInfo, extractDescription(), extractM
 
 ### Community 80 - "xai-direct.ts"
 Cohesion: 0.07
-Nodes (32): buildInjectCss(), DEFAULT_SLIDERS, HtmlArtifactPreview(), HtmlArtifactPreviewProps, RefinePopover, scaleBox(), SliderRowProps, SliderState (+24 more)
+Nodes (33): buildInjectCss(), DEFAULT_SLIDERS, HtmlArtifactPreview(), HtmlArtifactPreviewProps, RefinePopover, scaleBox(), SliderRowProps, SliderState (+25 more)
 
 ### Community 81 - "Z.Design Showcase — Agent-Anweisungen"
 Cohesion: 0.22
@@ -565,6 +566,10 @@ Nodes (6): elapsed, hasFeatures, hasFonts, hasFooter, hasTestimonials, start
 ### Community 85 - "page.tsx"
 Cohesion: 0.33
 Nodes (5): DesignEntry, DESIGNS, metadata, readMetrics(), ShowcasePage()
+
+### Community 86 - "toggle-group.tsx"
+Cohesion: 0.60
+Nodes (3): Avatar(), AvatarFallback(), FilterMode
 
 ### Community 87 - "Gallery.tsx"
 Cohesion: 0.38
@@ -600,7 +605,7 @@ Nodes (3): applyRuleBasedEnhancements(), getZAI(), POST()
 
 ### Community 116 - "DesignSystemManager.tsx"
 Cohesion: 0.09
-Nodes (28): ScrollArea(), Select(), SelectContent(), SelectItem(), SelectTrigger(), SelectValue(), COLOR_CATEGORIES, DEFAULT_BORDER_RADIUS (+20 more)
+Nodes (27): ScrollArea(), Select(), SelectContent(), SelectItem(), SelectTrigger(), SelectValue(), COLOR_CATEGORIES, DEFAULT_BORDER_RADIUS (+19 more)
 
 ### Community 189 - "command.tsx"
 Cohesion: 0.07
@@ -618,9 +623,9 @@ Nodes (4): POST(), sseLine(), STAGE_LABELS, StreamRequestBody
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `dependencies` connect `dependencies` to `next-intl`, `next-themes`, `prisma`, `@prisma/client`, `zip-generator.ts`, `puppeteer`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-scroll-area`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-slider`, `devDependencies`, `@radix-ui/react-slot`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toast`, `@radix-ui/react-toggle`, `@radix-ui/react-tooltip`, `react-day-picker`, `react-dom`, `react-hook-form`, `react-markdown`, `react-resizable-panels`, `@reactuses/core`, `recharts`, `sharp`, `socket.io-client`, `react`, `sonner`, `tailwind-merge`, `tailwindcss-animate`, `@tanstack/react-query`, `@tanstack/react-table`, `@types/jszip`, `uuid`, `vaul`, `z-ai-web-dev-sdk`, `zustand`, `toggle-group.tsx`, `StatsBar.tsx`, `clsx`, `date-fns`, `@dnd-kit/core`, `@dnd-kit/utilities`, `embla-carousel-react`, `framer-motion`, `@hookform/resolvers`, `html-pdf-node`, `input-otp`, `jsonrepair`, `lucide-react`, `@mdxeditor/editor`, `next`, `next-auth`?**
+- **Why does `dependencies` connect `dependencies` to `next-intl`, `next-themes`, `prisma`, `@prisma/client`, `zip-generator.ts`, `puppeteer`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-scroll-area`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-slider`, `devDependencies`, `@radix-ui/react-slot`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toast`, `@radix-ui/react-toggle`, `@radix-ui/react-tooltip`, `react-day-picker`, `react-dom`, `react-hook-form`, `react-markdown`, `react-resizable-panels`, `@reactuses/core`, `recharts`, `sharp`, `socket.io-client`, `react`, `sonner`, `tailwind-merge`, `tailwindcss-animate`, `@tanstack/react-query`, `@tanstack/react-table`, `@types/jszip`, `uuid`, `vaul`, `z-ai-web-dev-sdk`, `zustand`, `StatsBar.tsx`, `clsx`, `cmdk`, `date-fns`, `@dnd-kit/core`, `@dnd-kit/utilities`, `embla-carousel-react`, `framer-motion`, `@hookform/resolvers`, `html-pdf-node`, `input-otp`, `jsonrepair`, `lucide-react`, `@mdxeditor/editor`, `next`, `next-auth`?**
   _High betweenness centrality (0.123) - this node is a cross-community bridge._
-- **Why does `cn()` connect `command.tsx` to `cn`, `ChatPanel.tsx`, `TopToolbar.tsx`, `use-toast.ts`, `useZDesignStore`, `DesignSystemManager.tsx`, `alert-dialog.tsx`, `react`, `utils.ts`, `menubar.tsx`, `context-menu.tsx`, `dropdown-menu.tsx`, `creative-diversity.ts`, `carousel.tsx`, `index.ts`, `form.tsx`, `drawer.tsx`, `alert.tsx`, `DesignSystemManager.tsx`?**
+- **Why does `cn()` connect `command.tsx` to `cn`, `props-editors.tsx`, `ChatPanel.tsx`, `TopToolbar.tsx`, `use-toast.ts`, `useZDesignStore`, `DesignSystemManager.tsx`, `alert-dialog.tsx`, `react`, `utils.ts`, `menubar.tsx`, `context-menu.tsx`, `dropdown-menu.tsx`, `creative-diversity.ts`, `carousel.tsx`, `form.tsx`, `drawer.tsx`, `toggle-group.tsx`, `alert.tsx`, `DesignSystemManager.tsx`?**
   _High betweenness centrality (0.106) - this node is a cross-community bridge._
 - **Why does `Concept` connect `art-direction.ts` to `multi-pass-pipeline.ts`, `route.ts`, `skill-memory.ts`, `design.ts`, `xai-direct.ts`?**
   _High betweenness centrality (0.095) - this node is a cross-community bridge._

@@ -1092,7 +1092,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "projekt_package_dependencies_dnd_kit_sortable",
-      "community": 86,
+      "community": 47,
       "norm_label": "@dnd-kit/sortable"
     },
     {
@@ -1102,7 +1102,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "dnd_kit_sortable",
-      "community": 86,
+      "community": 47,
       "norm_label": "@dnd-kit/sortable"
     },
     {
@@ -1852,7 +1852,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "projekt_package_dependencies_cmdk",
-      "community": 47,
+      "community": 112,
       "norm_label": "cmdk"
     },
     {
@@ -1862,7 +1862,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "cmdk",
-      "community": 47,
+      "community": 112,
       "norm_label": "cmdk"
     },
     {
@@ -5522,7 +5522,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "projekt_src_components_ui_avatar",
-      "community": 17,
+      "community": 86,
       "norm_label": "avatar.tsx"
     },
     {
@@ -5532,7 +5532,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "projekt_src_components_ui_avatar_avatar",
-      "community": 17,
+      "community": 86,
       "norm_label": "avatar()"
     },
     {
@@ -5552,7 +5552,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "projekt_src_components_ui_avatar_avatarfallback",
-      "community": 17,
+      "community": 86,
       "norm_label": "avatarfallback()"
     },
     {
@@ -7652,7 +7652,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "projekt_src_components_ui_separator",
-      "community": 17,
+      "community": 9,
       "norm_label": "separator.tsx"
     },
     {
@@ -7662,7 +7662,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "projekt_src_components_ui_separator_separator",
-      "community": 17,
+      "community": 9,
       "norm_label": "separator()"
     },
     {
@@ -8232,7 +8232,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "projekt_src_components_ui_tabs",
-      "community": 71,
+      "community": 15,
       "norm_label": "tabs.tsx"
     },
     {
@@ -8242,7 +8242,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "projekt_src_components_ui_tabs_tabs",
-      "community": 71,
+      "community": 15,
       "norm_label": "tabs()"
     },
     {
@@ -8252,7 +8252,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "projekt_src_components_ui_tabs_tabslist",
-      "community": 71,
+      "community": 15,
       "norm_label": "tabslist()"
     },
     {
@@ -8262,7 +8262,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "projekt_src_components_ui_tabs_tabstrigger",
-      "community": 71,
+      "community": 15,
       "norm_label": "tabstrigger()"
     },
     {
@@ -8272,7 +8272,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "projekt_src_components_ui_tabs_tabscontent",
-      "community": 71,
+      "community": 15,
       "norm_label": "tabscontent()"
     },
     {
@@ -8562,7 +8562,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "projekt_src_components_zdesign_aiimagedialog_size_options",
-      "community": 15,
+      "community": 17,
       "norm_label": "size_options"
     },
     {
@@ -8592,7 +8592,7 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "projekt_src_components_zdesign_aiimagedialog_aiimagedialog",
-      "community": 15,
+      "community": 17,
       "norm_label": "aiimagedialog()"
     },
     {
@@ -8662,7 +8662,7 @@
       "source_location": "L218",
       "_origin": "ast",
       "id": "projekt_src_components_zdesign_accessibilityscanner_accessibilityscanner",
-      "community": 9,
+      "community": 15,
       "norm_label": "accessibilityscanner()"
     },
     {
@@ -8712,7 +8712,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "projekt_src_components_zdesign_annotationspanel",
-      "community": 17,
+      "community": 86,
       "norm_label": "annotationspanel.tsx"
     },
     {
@@ -8722,7 +8722,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "projekt_src_components_zdesign_annotationspanel_filtermode",
-      "community": 17,
+      "community": 86,
       "norm_label": "filtermode"
     },
     {
@@ -8732,7 +8732,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "projekt_src_components_zdesign_annotationspanel_annotationspanel",
-      "community": 17,
+      "community": 15,
       "norm_label": "annotationspanel()"
     },
     {
@@ -8902,7 +8902,7 @@
       "source_location": "L373",
       "_origin": "ast",
       "id": "projekt_src_components_zdesign_chatpanel_welcomestate",
-      "community": 15,
+      "community": 80,
       "norm_label": "welcomestate()"
     },
     {
@@ -9462,7 +9462,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "projekt_src_components_zdesign_newprojectdialog_newprojectdialog",
-      "community": 15,
+      "community": 17,
       "norm_label": "newprojectdialog()"
     },
     {
@@ -9612,7 +9612,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "projekt_src_components_zdesign_propspanel",
-      "community": 71,
+      "community": 15,
       "norm_label": "propspanel.tsx"
     },
     {
@@ -9622,7 +9622,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "projekt_src_components_zdesign_propspanel_propspanel",
-      "community": 71,
+      "community": 15,
       "norm_label": "propspanel()"
     },
     {
@@ -9782,7 +9782,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "projekt_src_components_zdesign_statusbar_statusbar",
-      "community": 11,
+      "community": 15,
       "norm_label": "statusbar()"
     },
     {
@@ -10032,7 +10032,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "projekt_src_components_zdesign_zdesignapp",
-      "community": 71,
+      "community": 15,
       "norm_label": "zdesignapp.tsx"
     },
     {
@@ -10042,7 +10042,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "projekt_src_components_zdesign_zdesignapp_usedebouncedcallback",
-      "community": 71,
+      "community": 15,
       "norm_label": "usedebouncedcallback()"
     },
     {
@@ -10052,7 +10052,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "projekt_src_components_zdesign_zdesignapp_zdesignapp",
-      "community": 71,
+      "community": 15,
       "norm_label": "zdesignapp()"
     },
     {
@@ -11132,7 +11132,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "projekt_src_hooks_usecapabilities",
-      "community": 71,
+      "community": 11,
       "norm_label": "usecapabilities.ts"
     },
     {
@@ -11142,7 +11142,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "projekt_src_hooks_usecapabilities_capabilityfeature",
-      "community": 71,
+      "community": 11,
       "norm_label": "capabilityfeature"
     },
     {
@@ -11152,7 +11152,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "projekt_src_hooks_usecapabilities_capabilityprovider",
-      "community": 71,
+      "community": 11,
       "norm_label": "capabilityprovider"
     },
     {
@@ -11162,7 +11162,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "projekt_src_hooks_usecapabilities_capabilityroutegroup",
-      "community": 71,
+      "community": 11,
       "norm_label": "capabilityroutegroup"
     },
     {
@@ -11182,7 +11182,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "projekt_src_hooks_usecapabilities_usecapabilitiesresult",
-      "community": 71,
+      "community": 11,
       "norm_label": "usecapabilitiesresult"
     },
     {
@@ -11192,7 +11192,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "projekt_src_hooks_usecapabilities_usecapabilities",
-      "community": 71,
+      "community": 15,
       "norm_label": "usecapabilities()"
     },
     {
@@ -11252,7 +11252,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "projekt_src_hooks_usecollaboration_usecollaboration",
-      "community": 71,
+      "community": 15,
       "norm_label": "usecollaboration()"
     },
     {
@@ -17339,7 +17339,7 @@
       "label": "CONFIG_PATH",
       "file_type": "code",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L189",
+      "source_location": "L187",
       "_origin": "ast",
       "id": "projekt_src_lib_ai_provider_config_config_path",
       "community": 33,
@@ -17349,7 +17349,7 @@
       "label": "DEFAULT_CONFIG",
       "file_type": "code",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L191",
+      "source_location": "L189",
       "_origin": "ast",
       "id": "projekt_src_lib_ai_provider_config_default_config",
       "community": 33,
@@ -17359,7 +17359,7 @@
       "label": "getProviderById()",
       "file_type": "code",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L198",
+      "source_location": "L196",
       "_origin": "ast",
       "id": "projekt_src_lib_ai_provider_config_getproviderbyid",
       "community": 26,
@@ -17369,7 +17369,7 @@
       "label": "maskKey()",
       "file_type": "code",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L203",
+      "source_location": "L201",
       "_origin": "ast",
       "id": "projekt_src_lib_ai_provider_config_maskkey",
       "community": 26,
@@ -17379,7 +17379,7 @@
       "label": "PROVIDER_DEFAULT_BASE_URL",
       "file_type": "code",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L210",
+      "source_location": "L208",
       "_origin": "ast",
       "id": "projekt_src_lib_ai_provider_config_provider_default_base_url",
       "community": 33,
@@ -17389,7 +17389,7 @@
       "label": "readProviderKey()",
       "file_type": "code",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L218",
+      "source_location": "L216",
       "_origin": "ast",
       "id": "projekt_src_lib_ai_provider_config_readproviderkey",
       "community": 66,
@@ -17399,7 +17399,7 @@
       "label": "resolveProviderBaseUrl()",
       "file_type": "code",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L224",
+      "source_location": "L222",
       "_origin": "ast",
       "id": "projekt_src_lib_ai_provider_config_resolveproviderbaseurl",
       "community": 33,
@@ -17409,7 +17409,7 @@
       "label": "toStatus()",
       "file_type": "code",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L233",
+      "source_location": "L231",
       "_origin": "ast",
       "id": "projekt_src_lib_ai_provider_config_tostatus",
       "community": 26,
@@ -17419,7 +17419,7 @@
       "label": "readConfig()",
       "file_type": "code",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L246",
+      "source_location": "L244",
       "_origin": "ast",
       "id": "projekt_src_lib_ai_provider_config_readconfig",
       "community": 26,
@@ -17429,7 +17429,7 @@
       "label": "writeConfig()",
       "file_type": "code",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L263",
+      "source_location": "L261",
       "_origin": "ast",
       "id": "projekt_src_lib_ai_provider_config_writeconfig",
       "community": 26,
@@ -23002,7 +23002,7 @@
       "source_location": "L163",
       "_origin": "ast",
       "id": "projekt_src_types_design_designtokens",
-      "community": 116,
+      "community": 11,
       "norm_label": "designtokens"
     },
     {
@@ -69342,7 +69342,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L189",
+      "source_location": "L187",
       "weight": 1.0,
       "source": "projekt_src_lib_ai_provider_config",
       "target": "projekt_src_lib_ai_provider_config_config_path",
@@ -69352,7 +69352,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L191",
+      "source_location": "L189",
       "weight": 1.0,
       "source": "projekt_src_lib_ai_provider_config",
       "target": "projekt_src_lib_ai_provider_config_default_config",
@@ -69382,7 +69382,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L198",
+      "source_location": "L196",
       "weight": 1.0,
       "source": "projekt_src_lib_ai_provider_config",
       "target": "projekt_src_lib_ai_provider_config_getproviderbyid",
@@ -69392,7 +69392,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L203",
+      "source_location": "L201",
       "weight": 1.0,
       "source": "projekt_src_lib_ai_provider_config",
       "target": "projekt_src_lib_ai_provider_config_maskkey",
@@ -69402,7 +69402,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L210",
+      "source_location": "L208",
       "weight": 1.0,
       "source": "projekt_src_lib_ai_provider_config",
       "target": "projekt_src_lib_ai_provider_config_provider_default_base_url",
@@ -69472,7 +69472,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L246",
+      "source_location": "L244",
       "weight": 1.0,
       "source": "projekt_src_lib_ai_provider_config",
       "target": "projekt_src_lib_ai_provider_config_readconfig",
@@ -69492,7 +69492,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L218",
+      "source_location": "L216",
       "weight": 1.0,
       "source": "projekt_src_lib_ai_provider_config",
       "target": "projekt_src_lib_ai_provider_config_readproviderkey",
@@ -69502,7 +69502,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L224",
+      "source_location": "L222",
       "weight": 1.0,
       "source": "projekt_src_lib_ai_provider_config",
       "target": "projekt_src_lib_ai_provider_config_resolveproviderbaseurl",
@@ -69512,7 +69512,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L233",
+      "source_location": "L231",
       "weight": 1.0,
       "source": "projekt_src_lib_ai_provider_config",
       "target": "projekt_src_lib_ai_provider_config_tostatus",
@@ -69522,7 +69522,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L263",
+      "source_location": "L261",
       "weight": 1.0,
       "source": "projekt_src_lib_ai_provider_config",
       "target": "projekt_src_lib_ai_provider_config_writeconfig",
@@ -69544,7 +69544,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L220",
+      "source_location": "L218",
       "weight": 1.0,
       "source": "projekt_src_lib_ai_provider_config_readproviderkey",
       "target": "projekt_src_lib_ai_provider_config_readenvlocalvalue",
@@ -69588,7 +69588,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L239",
+      "source_location": "L237",
       "weight": 1.0,
       "source": "projekt_src_lib_ai_provider_config_tostatus",
       "target": "projekt_src_lib_ai_provider_config_maskkey",
@@ -69599,7 +69599,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L234",
+      "source_location": "L232",
       "weight": 1.0,
       "source": "projekt_src_lib_ai_provider_config_tostatus",
       "target": "projekt_src_lib_ai_provider_config_readproviderkey",
@@ -69632,7 +69632,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Projekt/src/lib/ai/provider-config.ts",
-      "source_location": "L235",
+      "source_location": "L233",
       "weight": 1.0,
       "source": "projekt_src_lib_ai_provider_config_tostatus",
       "target": "projekt_src_lib_ai_provider_config_resolveproviderbaseurl",
@@ -83516,5 +83516,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "5d26ba58260a1686debf35a0802cbc51095794e8"
+  "built_at_commit": "a430836582f73cfae94a89bee692bc2fcbb9a853"
 }
