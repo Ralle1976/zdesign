@@ -8,9 +8,9 @@
 | Feld | Wert |
 |---|---|
 | **Name** | Z.Design |
-| **Pfad** | `G:\Andere Computer\Mein Computer\Desktop\Z.Design` |
+| **Pfad** | `C:\dev\z.design` (NTFS — seit 2026-09-26, vorher G: = Google-Drive/FAT32, siehe Memory `zdesign-g-drive-blocker`) |
 | **Git Remote** | `https://github.com/Ralle1976/zdesign.git` |
-| **Stack** | Environment-Config |
+| **Stack** | Next.js + Prisma (SQLite) + Next.js API/MCP-Routes (`Projekt/`), Dev-Server auf Port 3100 |
 
 *TODO: projektspezifische Produkt-Charta, Konventionen, Build-Befehle hier ergänzen.*
 
@@ -49,8 +49,10 @@ Vollständige Brücken-Datei: `C:/Users/tango/OneDrive/ZCode-Vault/02-Regeln-Def
 
 ---
 
+---
+
 <!--MASTER-START-->
-## GLOBALE REGELN (Auto-synced v3)
+## GLOBALE REGELN (Auto-synced v4)
 
 > Dieser Block wird automatisch aus `~/.zcode/masters/AGENTS-MASTER.md` synchronisiert.
 > Projekt-spezifische Regeln stehen außerhalb der MASTER-Marker und bleiben erhalten.
@@ -59,13 +61,18 @@ Vollständige Brücken-Datei: `C:/Users/tango/OneDrive/ZCode-Vault/02-Regeln-Def
 - **Handle selbstständig** bei Code-Edits, Refactors, Configs, Commits auf Feature-Branches.
 - **Frage NUR bei**: Production-Deployments, Secret-Rotation, Datenbank-Löschungen, Force-Pushes, Kosten >$5.
 - **Keine reflexartige Rückversicherung** bei trivialen Aktionen.
-- **Initiative-Pflicht**: nach Abschluss einer Aufgabe automatisch die nächste wählen.
+- **Initiative-Pflicht**: nach Abschluss einer Aufgabe automatisch die nächste **des eigenen Projekts** wählen.
+
+### Projekt-Isolation (HART — User-Entscheidung 2026-09-25)
+- **Jeder Chat arbeitet NUR am Projekt seines eigenen Workspaces** — keine Register-Tasks, Work-Queue-Items, Issues oder Dateien anderer Projekte anfassen.
+- **Keine Cross-Project-Automationen**: kein Executor/Cron darf Projekte aus einem globalen Register auswählen (Mechanismus 2026-09-25 komplett entfernt).
+- **Fremdprojekt-Befunde** gehören als Notiz ins jeweilige Register — nicht selbst umsetzen.
 
 ### Firmen-Modus (PFLICHT — Orchestrator = Unternehmen)
 - **KEINE "Soll ich…?"-Turn-Enden**: Analyse + Entscheidung + Handlung in EINEM Turn ("Ich beginne mit X, weil Y"). Der Autonomy-Guard-Hook weist Rückfragen beim Stop zurück.
 - **Gemischte Maßnahmen sofort entzerren**: alle autonomen Teile JETZT ausführen (Fixes auf Feature-Branch, Passiv-Maßnahmen, Tests, Doku); nur echte Ausnahmen (Prod-Deploy, Secrets, Datenverlust, Kosten, irreversible Brüche) als EINE gebündelte Frage.
 - **Analysen sind keine Deliverables** — ohne begonnene Umsetzung der klaren Sofortmaßnahmen ist der Turn unvollständig.
-- **Weiterarbeiten bis fertig**: nächste next_action automatisch wählen (autonomous-workflow Phase 11). "Fertig" = Roadmap-Stufe abgearbeitet oder echter Ausnahmen-Blocker.
+- **Weiterarbeiten bis fertig**: nächste next_action automatisch wählen (autonomous-workflow Phase 11, nur eigene Projekt-Actions). "Fertig" = Roadmap-Stufe abgearbeitet oder echter Ausnahmen-Blocker.
 
 ### Sicherheitsregeln
 - **NIEMALS** Secrets in Code, Logs, Commits schreiben.
