@@ -1559,14 +1559,44 @@
     "ast_hash": "e9bf02c130f1734f68a6044e8c6d60f4",
     "semantic_hash": ""
   },
+  "showcase/test-runs/2026-07-15-10-54-35/architektur-studio-meta.json": {
+    "mtime": 1784113236.128,
+    "ast_hash": "7018f6127bef3f0f88b7cef2f622a796",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/architektur-studio-trace.json": {
+    "mtime": 1784113236.062,
+    "ast_hash": "9682110e9d6d9cfe1e5f03de4f50eee3",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/learning-snapshot.json": {
+    "mtime": 1784112884.613,
+    "ast_hash": "f94553f97e0cc2906b5c244d9d874e71",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/report.json": {
+    "mtime": 1784114089.574,
+    "ast_hash": "acd5ad42a44767ac47af58d62a86450c",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/saas-analytics-trace.json": {
+    "mtime": 1784114089.477,
+    "ast_hash": "d99fa00b366524cacbaa7e204d3df389",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/thai-food-trace.json": {
+    "mtime": 1784113704.004,
+    "ast_hash": "81114127d71192adb93a6ed2a33b4ef4",
+    "semantic_hash": ""
+  },
   ".github/workflows/ci.yml": {
     "mtime": 1782548692.295,
     "ast_hash": "db61ce2ac8c8a526704915a3fc17d2fe",
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1790378366.933,
-    "ast_hash": "0759fa5391777f325befc537568a764e",
+    "mtime": 1784116695.798,
+    "ast_hash": "4cd750691372f4379ead0c5f6e1ed721",
     "semantic_hash": ""
   },
   "CONTRIBUTING.md": {
@@ -1729,6 +1759,11 @@
     "ast_hash": "f6ae65cb61ca9ae4f5af74d05287165a",
     "semantic_hash": ""
   },
+  "showcase/AGENTS.md": {
+    "mtime": 1783727925.581,
+    "ast_hash": "9a13432d7d341f21a6866940f8ae7c27",
+    "semantic_hash": ""
+  },
   "showcase/designs/alpenpfad.html": {
     "mtime": 1782736383.92,
     "ast_hash": "a63c2072dea3d8e25a0af28c43887f46",
@@ -1812,6 +1847,26 @@
   "showcase/index.html": {
     "mtime": 1782552975.776,
     "ast_hash": "61c4539572c6313f77da64f0fc0d021c",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/architektur-studio.html": {
+    "mtime": 1784113236.01,
+    "ast_hash": "b22ad7f053e812193b53bb29a9100f55",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/index.html": {
+    "mtime": 1784114089.635,
+    "ast_hash": "63281cd635c13ac639b3062c61697e30",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/saas-analytics.html": {
+    "mtime": 1784114089.429,
+    "ast_hash": "7dcc445ec7a4f79b9d32d2ae0b76429e",
+    "semantic_hash": ""
+  },
+  "showcase/test-runs/2026-07-15-10-54-35/thai-food.html": {
+    "mtime": 1784113703.959,
+    "ast_hash": "43960885d391d42c41136792cee183d8",
     "semantic_hash": ""
   },
   "terminals/1.txt": {
