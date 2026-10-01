@@ -55,11 +55,27 @@ Vollständige Brücken-Datei: `C:/Users/tango/OneDrive/ZCode-Vault/02-Regeln-Def
 
 ---
 
+---
+
 <!--MASTER-START-->
-## GLOBALE REGELN (Auto-synced v4)
+## GLOBALE REGELN (Auto-synced v6)
 
 > Dieser Block wird automatisch aus `~/.zcode/masters/AGENTS-MASTER.md` synchronisiert.
 > Projekt-spezifische Regeln stehen außerhalb der MASTER-Marker und bleiben erhalten.
+
+### TOKEN-NOTBREMSE → PILOT-MODUS (ab v7 — User-Freigabe 2026-09-26: „Freigabe erteilt, go!")
+- **PILOT-LISTE (volle Rechte: Ziel-First-Zyklus, max 15 Tool-Calls pro Lauf)**:
+  - **"zcode"** (Workspace `C:\Users\tango\OneDrive\Desktop\ZCode`): PROZESS-PILOT (DoD → PM-Puls-Task-Generator → Executor → Verifikation → Register → Prozess-Learning). Ziel: Prozess zur Reife bringen, bis er sich selbst verbessert (Kriterien im zcode-Register: done_criteria "Pilot-Kriterien").
+  - **"thai-spa-platform"** (Workspace `G:\Andere Computer\Mein Computer\Desktop\thai-spa-platform`): WIRKUNGSTEST am echten Produkt — DoD-führende Läufe mit Beweisen (Tests/Lint; Build-Verifikation nur CI, da Windows-Pfadblockade laut Projekt-Register). User-Freigabe 2026-09-26.
+- **ALLE anderen Projekt-Executoren bleiben GEBREMST**: KEINE Projekt-Arbeit, max 3 Tool-Calls, ein Einzeiler-Status im eigenen Register. Keine Ausnahmen.
+- **Ausweitung auf alle Projekte erst nach Pilot-Erfolg + erneuter User-Freigabe.**
+
+### ZIEL-FIRST: Produkt-DoD vor Kosmetik (ab v5 — User-Vorgabe 2026-09-26)
+- **Jedes Projekt hat ein "fertiges Produkt"-Bild**: Register-Felder `goal` + `done_criteria` = verbindliche Definition of Done (DoD). Fehlt sie: zuerst aus Projekt-AGENTS.md/README ableiten und eintragen — KEINE Feature-Arbeit ohne DoD.
+- **Nur ziel-führende Aufgaben**: Jede next_action muss einen konkreten done_criteria-Punkt erfüllen (Referenz angeben). KEINE Kosmetik, kein Polish, kein Feature-Candy solange DoD offen. Keine neuen Features außerhalb des DoD (YAGNI).
+- **Task-Generator = PM-Puls**: erzeugt und validiert next_actions ausschließlich aus dem DoD. Sind alle done_criteria belegbar erfüllt → status=completed, KEINE neuen Tasks (nur Wartung/Reparatur/Bugs).
+- **Executoren erfinden KEINE Aufgaben**: oberste DoD-führende next_action abarbeiten; gefundene Probleme NUR als next_action notieren; Tasks dürfen geschärft, aber nicht durch eigene ersetzt werden.
+- **Token-Budget**: max 15 Tool-Calls pro Executor-Lauf (engt die 30 des Lauf-Prompts ein). Bei Budgetende: sauber beenden, Status notieren.
 
 ### Autonomie-Stufe 3 (Default)
 - **Handle selbstständig** bei Code-Edits, Refactors, Configs, Commits auf Feature-Branches.
